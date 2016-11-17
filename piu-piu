@@ -1,0 +1,334 @@
+#!/bin/bash
+
+#Color-------------------------------------
+ MAGENTA='\e[35m'; LMAGENTA='\e[95m'
+   YELOW='\e[33m';   LYELOW='\e[93m'
+   LGRAY='\e[37m';    DGRAY='\e[90m'
+    BLUE='\e[34m';    LBLUE='\e[94m'
+    CYAN='\e[36m';    LCYAN='\e[96m'
+     GRN='\e[32m';     LGRN='\e[92m'
+     RED='\e[31m';     LRED='\e[91m'
+
+       N='\e[0m' #Default color and effects
+       B='\e[1m' #Bold\bright
+       U='\e[4m' #Underline
+       I='\e[7m' #Inverted
+       D='\e[2m' #Dim
+
+#start opt---------------------------------
+tillboss=100        #100
+ bhealth=100        #100
+ savetty=$(stty -g) #save terminal settings
+ enumber=0
+ bonuses=("ammo" "life")
+  goback=false
+   enmax=10
+   frags=0
+    life=3
+    ammo=100
+     rnd=10
+      BY=1
+      BX=$(($(tput cols) - 11))
+       X=1
+       Y=1
+       L=0
+       J=0
+       K=0
+
+#messages---------------------------------------------------------------------------------------------------------
+    help=("                  ^     "
+		  "                  ${RED}W${N}     "
+		  "${B}Control with:${N} < ${RED}A S D${N} > "
+		  "                  v     "
+		  "                        "
+		  "${B}Shoot with:${N}       ${YELOW}P${N} ${B}${LRED}-=${N}${B}${GRN}>${N} ")
+
+    lose=("                            "
+"${B}${RED}  ____    _    __  __ _____ ${N}"
+   "${LRED} / ___|  / \  |  \/  | ____|${N}"
+   "${LRED}| | __  / _ \ | |\/| |  _|  ${N}"
+    "${RED}| |_\ \/ ___ \| |  | | |___ ${N}"
+"${D}${RED} \____/_/   \_\_|__|_|_____|${N}"
+"${B}${RED}  / _ \ \   / / ____|  _ \  ${N}"
+   "${LRED} | | | \ \ / /|  _| | |_) | ${N}"
+    "${RED} | |_| |\ V / | |___|  _ <  ${N}"
+"${D}${RED}  \___/  \_/  |_____|_| \_| ${N}")
+
+     win=("                        "
+"${B}${GRN}__        _____ _   _ _ ${N}"
+   "${LGRN}\ \      / /_ _| \ | | |${N}"
+   "${LGRN} \ \ /\ / / | ||  \| | |${N}"
+    "${GRN}  \ V  V /  | || |\  |_|${N}"
+"${D}${GRN}   \_/\_/  |___|_| \_(_)${N}")
+
+#sprites----------------------------------------------
+  eraser="      "
+
+   ammob=("${B}${LRED}-=${N}${GRN}>${N}"
+	      "${B}${LRED}-=${N}${GRN}>${N}"
+	      "${B}${LRED}-=${N}${GRN}>${N}")
+
+   shoot=("${RED} -${N}${B}${GRN}>${N}"
+		  "${B}${LRED}-=${N}${GRN}>${N}"
+		  "${LRED}=-${N}${B}${GRN}>${N}"
+		  "${RED}- ${N}${GRN}>${N}")
+
+  bshoot=("${LYELOW}█▓▒░${N}"
+		  "${LYELOW}▓▒░▒${N}"
+		  "${LYELOW}▒░▒▓${N}"
+		  "${LYELOW}░▒▓█${N}"
+		  "${LYELOW}▒▓█▓${N}"
+		  "${LYELOW}▓█▓▒${N}")
+
+   lifep=("${RED}/V\ ${N}"
+	      "${RED}\ / ${N}"
+		  "${RED} V  ${N}")
+
+	hero=("  "
+		  "__     "
+		  "|${RED}★${N}〵____ "
+		  " \_| /${U}${B} °${N})-"
+		  "   |/    "
+		  "     ")
+
+	 big=(" O   O "
+		  "O   O  "
+		  "   O   "
+		  "  O   O")
+
+   small=("o  "
+	 	  "   "
+	 	  "  o"
+		  " o ")
+
+#functions--------------------------------------------
+function sprites {		    #dynamic sprites
+   alien=(" _${U}${B}_${N}_"
+	      "(${U}${small[$L]}${N})")
+
+bigalien=("      "
+		  "   _${U}_${N}_  "
+		  " _/${small[$((3 - $L))]}\_ "
+		  "(${U}${big[$L]}${N})"
+		  "         ")
+}
+
+function get_dimensions {
+	endx=$( tput cols  )
+	endy=$( tput lines )
+
+bullendx=$(( $endx - 4  ))
+heroendx=$(( $endx - 12 ))
+heroendy=$(( $endy - 7  ))
+enmyendx=$(( $endx - 5  ))
+enmyendy=$(( $endy - 7  ))
+bossendx=$(( $endx - 11 ))
+bossendy=$(( $endy - 6  ))
+}
+
+function bye {
+	tput cnorm -- normal	#get cursor back
+	stty $savetty			#restore terminal settings
+	echo -e "$N"
+	clear
+	ls --color=auto
+	exit 0
+}
+
+function remove_obj {
+	for (( k=0; k<$er; k++ )); do echo -e "\e[$(($OY + $k));${OX}H$eraser"; done
+	unset OBJ[$i]; OBJ=("${OBJ[@]}"); NO=${#OBJ[@]}
+	((i--)); [ $i -lt 0 ] && i=0
+}
+
+function remove_piu {
+	echo -e "\e[$PY;${PX}H    "
+	unset PIU[$p]; PIU=("${PIU[@]}"); NP=${#PIU[@]}
+	((p--)); [ $p -lt 0 ] && p=0
+}
+
+function mess () {
+	tput cnorm -- normal	#get cursor back
+	stty $savetty
+	clear
+	case $1 in
+		 "win")	x=$(( $endx / 2 - ${#win} / 2 ))
+				for (( i=0; i<${#win[*]}; i++ ));  do echo -e "\e[$(( $endy / 2 - 5 + $i ));${x}H${win[$i]}";  done
+				printf "\e[${endy};0H"; exit 0;;
+
+		"lose")	x=$(( $endx / 2 - ${#lose} / 2 ))
+				for (( i=0; i<${#lose[*]}; i++ )); do echo -e "\e[$(( $endy / 2 - 5 + $i ));${x}H${lose[$i]}"; done
+				printf "\e[${endy};0H"; exit 0;;
+
+		"help")	x=$(( $endx / 2 - ${#help} / 2 ))
+				for (( i=0; i<${#help[*]}; i++ )); do echo -e "\e[$(( $endy / 2 - 5 + $i ));${x}H${help[$i]}"; done;;
+	esac
+}
+
+trap bye INT
+get_dimensions
+mess "help"
+stty -echo					#hide input
+tput civis -- invisible		#hide cursor
+sleep 3
+clear
+
+#main game loop----------------------------------------------------------------------------------------------------------
+while true; do
+
+	get_dimensions; sprites
+
+	#get keys
+	read -t0.01 -n1 input; case $input in
+
+		"w") ((Y--)); [ $Y -lt 1         ] && Y=1;;
+		"a") ((X--)); [ $X -lt 1         ] && X=1;;
+		"s") ((Y++)); [ $Y -gt $heroendy ] && Y=$heroendy;;
+		"d") ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
+		"p") [ $ammo -gt 0 ] && PIU+=("$HY $HX") && ((ammo--));;
+
+	esac
+
+	#hero collide coordinates
+	HX=$(($X + 9)); HY=$(($Y + 3))
+
+	#check win\lose
+	[ $bhealth -le 0 ] && mess win
+	[ $life    -le 0 ] && mess lose
+
+	#timings
+	((L++)); [ $L -gt 3  ] && L=0
+	((J++)); [ $J -gt 5  ] && J=0
+	((K++)); [ $K -gt 20 ] && K=0
+
+	#move\check\print all flying to hero objects
+	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do read OX OY type <<< ${OBJ[$i]}; case $type in
+
+		"alien")	er=${#alien[@]}
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj; ((enumber--))
+					else
+						#move
+						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+
+						#print
+						for (( p=0; p<${#alien[@]}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${alien[$p]} "; done
+					fi
+
+					#hit by plane
+					for (( t=0; t<$er; t++ )); do case "$(($OY + 1)) $(($OX + $t))" in
+
+						"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj;;
+
+					esac; done
+
+					#hit by bullet
+					NP=${#PIU[@]}; for (( p=0; p<$NP; p++ )); do for (( t=0; t<$er; t++ )); do case "$(($OY + 1)) $(($OX + $t))" in
+
+						"${PIU[$p]}")	[ $((RANDOM % $rnd)) -eq 0 ] && OBJ=("${OBJ[@]}" "$OX $OY ${bonuses[$((RANDOM % ${#bonuses[@]}))]}") #get bonus
+										((frags++));  ((enumber--)); remove_obj; remove_piu;;
+
+					esac; done; done;;
+
+		"ammo")		er=${#ammob[@]}
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj;
+					else
+						#move
+						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+
+						#print
+						for (( p=0; p<${#ammob[@]}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${ammob[$p]} "; done
+					fi
+
+					#get by plane
+					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj;; esac done;;
+
+		"life")		er=${#lifep[@]}
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj;
+					else
+						#move
+						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+
+						#print
+						for (( p=0; p<${#lifep[@]}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${lifep[$p]}"; done
+					fi
+
+					#get by plane
+					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((life++)); remove_obj;; esac done;;
+
+		"bullet")	er=1
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj;
+					else
+						#move
+						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+
+						#print
+						echo -e "\e[$OY;${OX}H${bshoot[$J]} "
+					fi
+
+					#hit plane
+					case "$OX $OY" in "$HX $HY") ((life--)); remove_obj;; esac;;
+
+	esac; done
+
+	#move\check\print hero bullets
+	NP=${#PIU[@]}; for (( p=0; p<$NP; p++ )); do read PY PX <<< ${PIU[$p]}
+
+		#fly away
+		if [ $PX -ge $bullendx ]; then remove_piu
+		else
+			#move
+			((PX++)); [ $PX -gt $bullendx ] && PX=$bullendx; PIU[$p]="$PY $PX"
+
+			#print
+			echo -e "\e[$PY;${PX}H ${shoot[$L]}"
+		fi
+
+		#hit boss
+		[ $frags -ge $tillboss ] && for (( t=1; t<3; t++ )); do case "$PY $PX" in
+
+			"$(($BY + $t)) $BX"         ) ((bhealth--)); remove_piu;;
+			"$(($BY + $t)) $(($BX + 1))") ((bhealth--)); remove_piu;;
+
+		esac; done
+
+	done
+
+	#BOSS
+	if [ $frags -ge $tillboss ]; then
+		#health
+		bar=
+		hm=$(( $endx - 10 ))
+		hp=$(( $hm * $bhealth / 100 ))
+		for (( i=0;    i<$hp;  i++  )); do bar="▒${bar}"; done
+		for (( i=$hp;  i<$hm;  i++  )); do bar="${bar} "; done
+		echo -e "\e[$(($endy - 1));1H ${B}BOSS: |${RED}$bar${N}${B}|${N}"
+
+		#boss move
+		[ $BY -lt $Y                                     ] && ((BY++))
+		[ $BY -gt $Y                                     ] && ((BY--))
+		[ $BX -gt $(($endx / 2)) -a "$goback" == "false" ] && ((BX--)) || goback=true
+		[ $BX -lt $bossendx      -a "$goback" == "true"  ] && ((BX++)) || goback=false
+
+		#boss print
+		for (( i=0; i<${#bigalien[@]}; i++ )); do echo -e "\e[$(($BY + $i));${BX}H ${bigalien[$i]} "; done
+
+		#boss fire
+		[ $BY -eq $Y -a $K -eq 0 ] && OBJ+=("$(($BX - 4)) $(($BY + 3)) bullet")
+
+		#add enemy
+		[ $enumber -lt $enmax ] && ((enumber++)) && OBJ+=("$(($BX + 2)) $(($BY + 3)) alien")
+	else
+		[ $enumber -lt $enmax ] && ((enumber++)) && OBJ+=("$enmyendx $(( (RANDOM % $enmyendy) + 3 )) alien")
+	fi
+
+	#print hero
+	for (( i=0; i<${#hero[@]}; i++ )); do echo -e "\e[$(($Y + $i));${X}H ${hero[$i]} "; done
+
+	#print game status
+	echo -e "\e[0;0H${B}killed aliens: ${N}${CYAN}$frags${N}  ${B}Life: ${N}${CYAN}$life${N}  ${B}Ammo: ${N}${CYAN}$ammo${N} "
+
+done
