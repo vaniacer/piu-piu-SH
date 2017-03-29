@@ -16,7 +16,7 @@
        D='\e[2m' #Dim
 
 #start opt---------------------------------
-tillboss=100        #100
+tillboss=1        #100
  bhealth=100        #100
  savetty=$(stty -g) #save terminal settings
  enumber=0
@@ -101,6 +101,28 @@ tillboss=100        #100
 	 	  "  o"
 		  " o ")
 
+   tree1=(" _  "
+          "/ \ "
+          "\|/ "
+          " |  ")
+
+   tree2=(" _._  "
+          "/   \ "
+          "\ | / "
+          " -║/\ "
+          "  ║_/ "
+          "  ║   ")
+
+   tree3=("   _._    "
+          "  /   \   "
+          " _\ | /   "
+          "/ \\║/ _  "
+          "\_\ ║ / \ "
+          "   \║ /_/ "
+          "    ║/    "
+          "    ║     "
+          "    ║     ")
+
 #functions--------------------------------------------
 function sprites {		    #dynamic sprites
    alien=(" _${U}${B}_${N}_"
@@ -124,7 +146,16 @@ enmyendx=$(( $endx - 5  ))
 enmyendy=$(( $endy - 7  ))
 bossendx=$(( $endx - 11 ))
 bossendy=$(( $endy - 6  ))
+tre1endx=$(( $endx - 4  ))
+tre1endy=$(( $endy - 6  ))
+tre2endx=$(( $endx - 6  ))
+tre2endy=$(( $endy - 8  ))
+tre3endx=$(( $endx - 10 ))
+tre3endy=$(( $endy - 11 ))
+lineendy=$(( $endy - 2  ))
 }
+
+function line { printf "\e[${lineendy};0H"; printf %.s- $(seq ${endx}); }
 
 function bye {
 	tput cnorm -- normal	#get cursor back
@@ -176,7 +207,7 @@ clear
 #main game loop----------------------------------------------------------------------------------------------------------
 while true; do
 
-	get_dimensions; sprites
+	get_dimensions; sprites; line
 
 	#get keys
 	read -t0.01 -n1 input; case $input in
@@ -204,7 +235,7 @@ while true; do
 	#move\check\print all flying to hero objects
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do read OX OY type <<< ${OBJ[$i]}; case $type in
 
-		"alien")	er=${#alien[@]}
+		"alien")	er=${#alien[@]}; sn=
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj; ((enumber--))
 					else
@@ -212,7 +243,7 @@ while true; do
 						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
 
 						#print
-						for (( p=0; p<${#alien[@]}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${alien[$p]} "; done
+						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${alien[$p]} "; done
 					fi
 
 					#hit by plane
@@ -238,7 +269,7 @@ while true; do
 						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
 
 						#print
-						for (( p=0; p<${#ammob[@]}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${ammob[$p]} "; done
+						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${ammob[$p]} "; done
 					fi
 
 					#get by plane
@@ -252,11 +283,44 @@ while true; do
 						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
 
 						#print
-						for (( p=0; p<${#lifep[@]}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${lifep[$p]}"; done
+						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${lifep[$p]}"; done
 					fi
 
 					#get by plane
 					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((life++)); remove_obj;; esac done;;
+
+		"tree1")	er=${#tree1[@]}
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj;
+					else
+						#move
+						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+
+						#print
+						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree1[$p]}"; done
+					fi;;
+
+		"tree2")	er=${#tree2[@]}
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj;
+					else
+						#move
+						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+
+						#print
+						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree2[$p]}"; done
+					fi;;
+
+		"tree3")	er=${#tree3[@]}
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj;
+					else
+						#move
+						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+
+						#print
+						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree3[$p]}"; done
+					fi;;
 
 		"bullet")	er=1
 					#fly away
@@ -324,6 +388,13 @@ while true; do
 	else
 		[ $enumber -lt $enmax ] && ((enumber++)) && OBJ+=("$enmyendx $(( (RANDOM % $enmyendy) + 3 )) alien")
 	fi
+
+    #add tree
+    [ $((RANDOM % 40)) = 0 ] && { treetype=$((RANDOM % 3 + 1)); case ${treetype} in
+        1) OBJ+=("${tre1endx} ${tre1endy} tree1");;
+        2) OBJ+=("${tre2endx} ${tre2endy} tree2");;
+        3) OBJ+=("${tre3endx} ${tre3endy} tree3");;
+    esac; }
 
 	#print hero
 	for (( i=0; i<${#hero[@]}; i++ )); do echo -e "\e[$(($Y + $i));${X}H ${hero[$i]} "; done
