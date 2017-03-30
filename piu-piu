@@ -1,6 +1,5 @@
 #!/bin/bash
 
-case ${TERM} in *term*)
 #                      Color picker
 #---------------------------+--------------------------------+---------+
 #        Text color         |       Background color         |         |
@@ -9,7 +8,7 @@ case ${TERM} in *term*)
 #------------+--------------+--------------+-----------------+         |
 RED='\e[31m'; LRED='\e[91m'; BRED='\e[41m'; BLRED='\e[101m' #| Red     |
 GRN='\e[32m'; LGRN='\e[92m'; BGRN='\e[42m'; BLGRN='\e[102m' #| Green   |
-YLW='\e[33m'; LYLW='\e[93m'; BYLW='\e[43m'; BLYLW='\e[103m' #| Yelow   |
+YLW='\e[33m'; LYLW='\e[93m'; BYLW='\e[43m'; BLYLW='\e[103m' #| Yellow  |
 BLU='\e[34m'; LBLU='\e[94m'; BBLU='\e[44m'; BLBLU='\e[104m' #| Blue    |
 MGN='\e[35m'; LMGN='\e[95m'; BMGN='\e[45m'; BLMGN='\e[105m' #| Magenta |
 CYN='\e[36m'; LCYN='\e[96m'; BCYN='\e[46m'; BLCYN='\e[106m' #| Cyan    |
@@ -26,9 +25,8 @@ INV='\e[7m'   #Inverted                                                |
 COF='\e[?25l' #Cursor Off                                              |
 CON='\e[?25h' #Cursor On                                               |
 #----------------------------------------------------------------------+
-;; esac
 
-#start opt---------------------------------
+# start opt |-----------------------------------------------------------------------------------------------------------
 tillboss=100        #100
  bhealth=100        #100
  savetty=$(stty -g) #save terminal settings
@@ -48,7 +46,7 @@ tillboss=100        #100
        J=0
        K=0
 
-#messages---------------------------------------------------------------------------------------------------------
+# messages |------------------------------------------------------------------------------------------------------------
     help=("                  ^     "
 		  "                  ${RED}W${DEF}     "
 		  "${BLD}Control with:${DEF} < ${RED}A S D${DEF} > "
@@ -74,7 +72,7 @@ tillboss=100        #100
       "${GRN}  \ V  V /  | || |\  |_|${DEF}"
 "${DIM}${GRN}   \_/\_/  |___|_| \_(_)${DEF}")
 
-#sprites----------------------------------------------
+# sprites |-------------------------------------------------------------------------------------------------------------
   eraser="         "
 
    ammob=("${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
@@ -96,6 +94,8 @@ tillboss=100        #100
    lifep=("${RED}/V\ ${DEF}"
 	      "${RED}\ / ${DEF}"
 		  "${RED} V  ${DEF}")
+
+     gun=( - \= )
 
 	hero=("  "
 		  "__     "
@@ -136,8 +136,9 @@ tillboss=100        #100
           "${GRY}    ║     ${DEF}"
           "${GRY}    ║     ${DEF}")
 
-#functions--------------------------------------------
+# functions |-----------------------------------------------------------------------------------------------------------
 function sprites {		    #dynamic sprites
+
    alien=(" _${UND}${BLD}_${DEF}_"
 	      "(${UND}${small[$L]}${DEF})")
 
@@ -216,7 +217,7 @@ printf "${COF}"
 sleep 3
 clear
 
-#main game loop----------------------------------------------------------------------------------------------------------
+# main game loop |======================================================================================================
 while true; do
 
 	get_dimensions; sprites; line
@@ -240,8 +241,8 @@ while true; do
 	[ $life    -le 0 ] && mess lose
 
 	#timings
-	((L++)); [ $L -gt 3  ] && L=0   # hero's bullet
-	((J++)); [ $J -gt 5  ] && J=0   # boss' bullet
+	((L++)); [ $L -gt 3  ] && L=0   # sprites animation
+	((J++)); [ $J -gt 5  ] && J=0   # boss' bullet animation
 	((K++)); [ $K -gt 20 ] && K=0   # boss' fire rate
 	((Q++)); [ $Q -gt 6  ] && Q=0   # tree1(small) speed
 	((W++)); [ $W -gt 4  ] && W=0   # tree2(medium) speed
