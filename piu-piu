@@ -16,7 +16,7 @@
        D='\e[2m' #Dim
 
 #start opt---------------------------------
-tillboss=1        #100
+tillboss=100        #100
  bhealth=100        #100
  savetty=$(stty -g) #save terminal settings
  enumber=0
@@ -231,6 +231,9 @@ while true; do
 	((L++)); [ $L -gt 3  ] && L=0
 	((J++)); [ $J -gt 5  ] && J=0
 	((K++)); [ $K -gt 20 ] && K=0
+	((Q++)); [ $Q -gt 6  ] && Q=0
+	((W++)); [ $W -gt 4  ] && W=0
+	((E++)); [ $E -gt 2  ] && E=0
 
 	#move\check\print all flying to hero objects
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do read OX OY type <<< ${OBJ[$i]}; case $type in
@@ -294,7 +297,7 @@ while true; do
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
 						#move
-						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+                        [ ${Q} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 						#print
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree1[$p]}"; done
@@ -305,7 +308,7 @@ while true; do
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
 						#move
-						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+						[ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 						#print
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree2[$p]}"; done
@@ -316,7 +319,7 @@ while true; do
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
 						#move
-						((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+						[ ${E} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 						#print
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree3[$p]}"; done
