@@ -171,9 +171,8 @@ lineendy=$(( $endy - 2  ))
 function line { printf "\e[${lineendy};0H"; printf %.s- $(seq ${endx}); }
 
 function bye {
-	tput cnorm -- normal	#get cursor back
-	stty $savetty			#restore terminal settings
-	echo -e "$N"
+	stty ${savetty}			#restore terminal settings
+	printf "${CON}${DEF}"
 	clear
 	ls --color=auto
 	exit 0
@@ -212,8 +211,8 @@ function mess () {
 trap bye INT
 get_dimensions
 mess "help"
-stty -echo					#hide input
-tput civis -- invisible		#hide cursor
+stty -echo			#hide input
+printf "${COF}"
 sleep 3
 clear
 
@@ -241,12 +240,12 @@ while true; do
 	[ $life    -le 0 ] && mess lose
 
 	#timings
-	((L++)); [ $L -gt 3  ] && L=0
-	((J++)); [ $J -gt 5  ] && J=0
-	((K++)); [ $K -gt 20 ] && K=0
-	((Q++)); [ $Q -gt 6  ] && Q=0
-	((W++)); [ $W -gt 4  ] && W=0
-	((E++)); [ $E -gt 2  ] && E=0
+	((L++)); [ $L -gt 3  ] && L=0   # hero's bullet
+	((J++)); [ $J -gt 5  ] && J=0   # boss' bullet
+	((K++)); [ $K -gt 20 ] && K=0   # boss' fire rate
+	((Q++)); [ $Q -gt 6  ] && Q=0   # tree1(small) speed
+	((W++)); [ $W -gt 4  ] && W=0   # tree2(medium) speed
+	((E++)); [ $E -gt 2  ] && E=0   # tree3(big) speed
 
 	#move\check\print all flying to hero objects
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do read OX OY type <<< ${OBJ[$i]}; case $type in
