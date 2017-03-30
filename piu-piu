@@ -1,19 +1,32 @@
 #!/bin/bash
 
-#Color-------------------------------------
- MAGENTA='\e[35m'; LMAGENTA='\e[95m'
-   YELOW='\e[33m';   LYELOW='\e[93m'
-   LGRAY='\e[37m';    DGRAY='\e[90m'
-    BLUE='\e[34m';    LBLUE='\e[94m'
-    CYAN='\e[36m';    LCYAN='\e[96m'
-     GRN='\e[32m';     LGRN='\e[92m'
-     RED='\e[31m';     LRED='\e[91m'
-
-       N='\e[0m' #Default color and effects
-       B='\e[1m' #Bold\bright
-       U='\e[4m' #Underline
-       I='\e[7m' #Inverted
-       D='\e[2m' #Dim
+case ${TERM} in *term*)
+#                      Color picker
+#---------------------------+--------------------------------+---------+
+#        Text color         |       Background color         |         |
+#------------+--------------+--------------+-----------------+         |
+#    Base    |Lighter\Darker|    Base      |Lighter\Darker   |         |
+#------------+--------------+--------------+-----------------+         |
+RED='\e[31m'; LRED='\e[91m'; BRED='\e[41m'; BLRED='\e[101m' #| Red     |
+GRN='\e[32m'; LGRN='\e[92m'; BGRN='\e[42m'; BLGRN='\e[102m' #| Green   |
+YLW='\e[33m'; LYLW='\e[93m'; BYLW='\e[43m'; BLYLW='\e[103m' #| Yelow   |
+BLU='\e[34m'; LBLU='\e[94m'; BBLU='\e[44m'; BLBLU='\e[104m' #| Blue    |
+MGN='\e[35m'; LMGN='\e[95m'; BMGN='\e[45m'; BLMGN='\e[105m' #| Magenta |
+CYN='\e[36m'; LCYN='\e[96m'; BCYN='\e[46m'; BLCYN='\e[106m' #| Cyan    |
+GRY='\e[37m'; DGRY='\e[90m'; BGRY='\e[47m'; BDGRY='\e[100m' #| Gray    |
+#------------------------------------------------------------+---------+
+#Effects                                                               |
+#----------------------------------------------------------------------+
+DEF='\e[0m'   #Default color and effects                               |
+BLD='\e[1m'   #Bold\bright                                             |
+DIM='\e[2m'   #Dim\darken                                              |
+CUR='\e[3m'   #Italic fnt                                              |
+UND='\e[4m'   #Underline                                               |
+INV='\e[7m'   #Inverted                                                |
+COF='\e[?25l' #Cursor Off                                              |
+CON='\e[?25h' #Cursor On                                               |
+#----------------------------------------------------------------------+
+;; esac
 
 #start opt---------------------------------
 tillboss=100        #100
@@ -37,57 +50,57 @@ tillboss=100        #100
 
 #messages---------------------------------------------------------------------------------------------------------
     help=("                  ^     "
-		  "                  ${RED}W${N}     "
-		  "${B}Control with:${N} < ${RED}A S D${N} > "
+		  "                  ${RED}W${DEF}     "
+		  "${BLD}Control with:${DEF} < ${RED}A S D${DEF} > "
 		  "                  v     "
 		  "                        "
-		  "${B}Shoot with:${N}       ${YELOW}P${N} ${B}${LRED}-=${N}${B}${GRN}>${N} ")
+		  "${BLD}Shoot with:${DEF}       ${YLW}P${DEF} ${BLD}${LRED}-=${DEF}${BLD}${GRN}>${DEF} ")
 
     lose=("                            "
-"${B}${RED}  ____    _    __  __ _____ ${N}"
-   "${LRED} / ___|  / \  |  \/  | ____|${N}"
-   "${LRED}| | __  / _ \ | |\/| |  _|  ${N}"
-    "${RED}| |_\ \/ ___ \| |  | | |___ ${N}"
-"${D}${RED} \____/_/   \_\_|__|_|_____|${N}"
-"${B}${RED}  / _ \ \   / / ____|  _ \  ${N}"
-   "${LRED} | | | \ \ / /|  _| | |_) | ${N}"
-    "${RED} | |_| |\ V / | |___|  _ <  ${N}"
-"${D}${RED}  \___/  \_/  |_____|_| \_| ${N}")
+"${BLD}${RED}  ____    _    __  __ _____ ${DEF}"
+     "${LRED} / ___|  / \  |  \/  | ____|${DEF}"
+     "${LRED}| | __  / _ \ | |\/| |  _|  ${DEF}"
+      "${RED}| |_\ \/ ___ \| |  | | |___ ${DEF}"
+"${DIM}${RED} \____/_/   \_\_|__|_|_____|${DEF}"
+"${BLD}${RED}  / _ \ \   / / ____|  _ \  ${DEF}"
+     "${LRED} | | | \ \ / /|  _| | |_) | ${DEF}"
+      "${RED} | |_| |\ V / | |___|  _ <  ${DEF}"
+"${DIM}${RED}  \___/  \_/  |_____|_| \_| ${DEF}")
 
      win=("                        "
-"${B}${GRN}__        _____ _   _ _ ${N}"
-   "${LGRN}\ \      / /_ _| \ | | |${N}"
-   "${LGRN} \ \ /\ / / | ||  \| | |${N}"
-    "${GRN}  \ V  V /  | || |\  |_|${N}"
-"${D}${GRN}   \_/\_/  |___|_| \_(_)${N}")
+"${BLD}${GRN}__        _____ _   _ _ ${DEF}"
+     "${LGRN}\ \      / /_ _| \ | | |${DEF}"
+     "${LGRN} \ \ /\ / / | ||  \| | |${DEF}"
+      "${GRN}  \ V  V /  | || |\  |_|${DEF}"
+"${DIM}${GRN}   \_/\_/  |___|_| \_(_)${DEF}")
 
 #sprites----------------------------------------------
   eraser="         "
 
-   ammob=("${B}${LRED}-=${N}${GRN}>${N}"
-	      "${B}${LRED}-=${N}${GRN}>${N}"
-	      "${B}${LRED}-=${N}${GRN}>${N}")
+   ammob=("${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
+	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
+	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF}")
 
-   shoot=("${RED} -${N}${B}${GRN}>${N}"
-		  "${B}${LRED}-=${N}${GRN}>${N}"
-		  "${LRED}=-${N}${B}${GRN}>${N}"
-		  "${RED}- ${N}${GRN}>${N}")
+   shoot=("${RED} -${DEF}${BLD}${GRN}>${DEF}"
+		  "${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
+		  "${LRED}=-${DEF}${BLD}${GRN}>${DEF}"
+		  "${RED}- ${DEF}${GRN}>${DEF}")
 
-  bshoot=("${LYELOW}█▓▒░${N}"
-		  "${LYELOW}▓▒░▒${N}"
-		  "${LYELOW}▒░▒▓${N}"
-		  "${LYELOW}░▒▓█${N}"
-		  "${LYELOW}▒▓█▓${N}"
-		  "${LYELOW}▓█▓▒${N}")
+  bshoot=("${LYLW}█▓▒░${DEF}"
+		  "${LYLW}▓▒░▒${DEF}"
+		  "${LYLW}▒░▒▓${DEF}"
+		  "${LYLW}░▒▓█${DEF}"
+		  "${LYLW}▒▓█▓${DEF}"
+		  "${LYLW}▓█▓▒${DEF}")
 
-   lifep=("${RED}/V\ ${N}"
-	      "${RED}\ / ${N}"
-		  "${RED} V  ${N}")
+   lifep=("${RED}/V\ ${DEF}"
+	      "${RED}\ / ${DEF}"
+		  "${RED} V  ${DEF}")
 
 	hero=("  "
 		  "__     "
-		  "|${RED}★${N}〵____ "
-		  " \_| /${U}${B} °${N})-"
+		  "|${RED}★${DEF}〵____ "
+		  " \_| /${UND}${BLD} °${DEF})-"
 		  "   |/    "
 		  "     ")
 
@@ -101,37 +114,37 @@ tillboss=100        #100
 	 	  "  o"
 		  " o ")
 
-   tree1=(" _  "
-          "/ \ "
-          "\|/ "
-          " |  ")
+   tree1=("${DIM}${GRN} _  ${DEF}"
+          "${DIM}${GRN}/ \ ${DEF}"
+          "${DIM}${GRN}\|/ ${DEF}"
+          "${DGRY} | ${DEF} ")
 
-   tree2=(" _._  "
-          "/   \ "
-          "\ | / "
-          " -║/\ "
-          "  ║_/ "
-          "  ║   ")
+   tree2=("${GRN} _._  ${DEF}"
+          "${GRN}/   \ ${DEF}"
+          "${GRN}\ | / ${DEF}"
+          "${GRN} \`${DEF}${DIM}║${DEF}${GRN}/\ ${DEF}"
+          "${DIM}  ║${DEF}${GRN}_/ ${DEF}"
+          "${DIM}  ║   ${DEF}")
 
-   tree3=("   _._    "
-          "  /   \   "
-          " _\ | /   "
-          "/ \\║/ _  "
-          "\_\ ║ / \ "
-          "   \║ /_/ "
-          "    ║/    "
-          "    ║     "
-          "    ║     ")
+   tree3=("${LGRN}   _._    ${DEF}"
+          "${LGRN}  /   \   ${DEF}"
+          "${LGRN} _\ ${DEF}${GRY}|${DEF}${LGRN} /   ${DEF}"
+          "${LGRN}/  \`${DEF}${GRY}║${DEF}${LGRN}/ _  ${DEF}"
+          "${LGRN}\_${DEF}${GRY}\ ║ ${DEF}${LGRN}/ \ ${DEF}"
+          "${LGRN}   ${DEF}${GRY}\║ /${DEF}${LGRN}_/ ${DEF}"
+          "${GRY}    ║/    ${DEF}"
+          "${GRY}    ║     ${DEF}"
+          "${GRY}    ║     ${DEF}")
 
 #functions--------------------------------------------
 function sprites {		    #dynamic sprites
-   alien=(" _${U}${B}_${N}_"
-	      "(${U}${small[$L]}${N})")
+   alien=(" _${UND}${BLD}_${DEF}_"
+	      "(${UND}${small[$L]}${DEF})")
 
 bigalien=("      "
-		  "   _${U}_${N}_  "
+		  "   _${UND}_${DEF}_  "
 		  " _/${small[$((3 - $L))]}\_ "
-		  "(${U}${big[$L]}${N})"
+		  "(${UND}${big[$L]}${DEF})"
 		  "         ")
 }
 
@@ -372,7 +385,7 @@ while true; do
 		hp=$(( $hm * $bhealth / 100 ))
 		for (( i=0;    i<$hp;  i++  )); do bar="▒${bar}"; done
 		for (( i=$hp;  i<$hm;  i++  )); do bar="${bar} "; done
-		echo -e "\e[$(($endy - 1));1H ${B}BOSS: |${RED}$bar${N}${B}|${N}"
+		echo -e "\e[$(($endy - 1));1H ${BLD}BOSS: |${RED}$bar${DEF}${BLD}|${DEF}"
 
 		#boss move
 		[ $BY -lt $Y                                     ] && ((BY++))
@@ -403,6 +416,6 @@ while true; do
 	for (( i=0; i<${#hero[@]}; i++ )); do echo -e "\e[$(($Y + $i));${X}H ${hero[$i]} "; done
 
 	#print game status
-	echo -e "\e[0;0H${B}killed aliens: ${N}${CYAN}$frags${N}  ${B}Life: ${N}${CYAN}$life${N}  ${B}Ammo: ${N}${CYAN}$ammo${N} "
+	echo -e "\e[0;0H${BLD}killed aliens: ${DEF}${CYN}$frags${DEF}  ${BLD}Life: ${DEF}${CYN}$life${DEF}  ${BLD}Ammo: ${DEF}${CYN}$ammo${DEF} "
 
 done
