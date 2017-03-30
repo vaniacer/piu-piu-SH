@@ -40,6 +40,7 @@ tillboss=100        #100
      rnd=10
       BY=1
       BX=$(($(tput cols) - 11))
+       g=0
        X=1
        Y=1
        L=0
@@ -95,15 +96,6 @@ tillboss=100        #100
 	      "${RED}\ / ${DEF}"
 		  "${RED} V  ${DEF}")
 
-     gun=( - \= )
-
-	hero=("  "
-		  "__     "
-		  "|${RED}★${DEF}〵____ "
-		  " \_| /${UND}${BLD} °${DEF})-"
-		  "   |/    "
-		  "     ")
-
 	 big=(" O   O "
 		  "O   O  "
 		  "   O   "
@@ -113,6 +105,15 @@ tillboss=100        #100
 	 	  "   "
 	 	  "  o"
 		  " o ")
+
+#    gun=( - = ≡ = ); G=${gun[0]}
+
+	hero=("  "
+		  "__     "
+		  "|${RED}★${DEF}〵____ "
+		  " \_| /${UND}${BLD} °${DEF})="
+		  "   |/    "
+		  "     ")
 
    tree1=("${DIM}${GRN} _  ${DEF}"
           "${DIM}${GRN}/ \ ${DEF}"
@@ -147,6 +148,13 @@ bigalien=("      "
 		  " _/${small[$((3 - $L))]}\_ "
 		  "(${UND}${big[$L]}${DEF})"
 		  "         ")
+
+#	hero=("  "
+#		  "__     "
+#		  "|${RED}★${DEF}〵____ "
+#		  " \_| /${UND}${BLD} °${DEF})${G}"
+#		  "   |/    "
+#		  "     ")
 }
 
 function get_dimensions {
@@ -212,7 +220,7 @@ function mess () {
 trap bye INT
 get_dimensions
 mess "help"
-stty -echo			#hide input
+stty -echo			# hide input
 printf "${COF}"
 sleep 3
 clear
@@ -229,7 +237,7 @@ while true; do
 		"a") ((X--)); [ $X -lt 1         ] && X=1;;
 		"s") ((Y++)); [ $Y -gt $heroendy ] && Y=$heroendy;;
 		"d") ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
-		"p") [ $ammo -gt 0 ] && PIU+=("$HY $HX") && ((ammo--));;
+		"p") [ $ammo -gt 0 ] && { PIU+=("$HY $HX"); ((ammo--)); };; # G=${gun[$g]}; ((g++)); [ ${g} -gt 3 ] && g=0; };;
 
 	esac
 
