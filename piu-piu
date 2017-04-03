@@ -46,6 +46,7 @@ tillboss=100        #100
        L=0
        J=0
        K=0
+	   S=0
 
 # messages |------------------------------------------------------------------------------------------------------------
     help=("                  ^     "
@@ -137,6 +138,35 @@ tillboss=100        #100
           "${GRY}    ║     ${DEF}"
           "${GRY}    ║     ${DEF}")
 
+     Sun=(${YLW}'       ___ |       '${DEF}
+          ${YLW}'---````    \       '${DEF}
+          ${YLW}'           _`.     '${DEF}
+          ${YLW}'        ../   `..__'${DEF}
+          ${YLW}'     ../        /  '${DEF}
+          ${YLW}'    /          /   '${DEF}
+          ${YLW}'              /    '${DEF}
+          ${YLW}'              /    '${DEF}
+          ${YLW}'             /     '${DEF}
+          ${YLW}'_...---``  |       '${DEF}
+          ${YLW}'        _.-\       '${DEF}
+          ${YLW}'   _.--`    `.     '${DEF}
+          ${YLW}' -`          ,`..__'${DEF}
+          ${YLW}'           ,`     |'${DEF}
+          ${YLW}'         ,`       |'${DEF}
+          ${YLW}'       _`        | '${DEF}
+          ${YLW}'                 | '${DEF}
+          ${YLW}'                 | '${DEF}
+          ${YLW}'     _...--|       '${DEF}
+          ${YLW}'..--`      \       '${DEF}
+          ${YLW}'         .. `.     '${DEF}
+          ${YLW}'     _.-`     `..__'${DEF}
+          ${YLW}'  ..`         .`   '${DEF}
+          ${YLW}'             /     '${DEF}
+          ${YLW}'            /      '${DEF}
+          ${YLW}'          .`       '${DEF}
+          ${YLW}'                   '${DEF})
+		  SunN=${#Sun[@]}; SunC=9
+
 # functions |-----------------------------------------------------------------------------------------------------------
 function sprites {		    #dynamic sprites
 
@@ -175,6 +205,7 @@ tre2endy=$(( $endy - 8  ))
 tre3endx=$(( $endx - 10 ))
 tre3endy=$(( $endy - 11 ))
 lineendy=$(( $endy - 2  ))
+Sunsendx=$(( $endx - 19 ))
 }
 
 function line { printf "\e[${lineendy};0H"; printf %.s- $(seq ${endx}); }
@@ -255,6 +286,7 @@ while true; do
 	((Q++)); [ $Q -gt 6  ] && Q=0   # tree1(small) speed
 	((W++)); [ $W -gt 4  ] && W=0   # tree2(medium) speed
 	((E++)); [ $E -gt 2  ] && E=0   # tree3(big) speed
+	[ ${E} = 0 ] && { ((S+=${SunC})); [ $S -gt ${SunN}  ] && S=0; }   # Sun animation
 
 	#move\check\print all flying to hero objects
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do read OX OY type <<< ${OBJ[$i]}; case $type in
@@ -422,6 +454,9 @@ while true; do
 
 	#print hero
 	for (( i=0; i<${#hero[@]}; i++ )); do echo -e "\e[$(($Y + $i));${X}H ${hero[$i]} "; done
+
+	#print Sun
+	SY=1; for part in "${Sun[@]:$S:$SunC}"; do echo -e "\e[${SY};${Sunsendx}H ${part}"; ((SY++)); done
 
 	#print game status
 	echo -e "\e[0;0H${BLD}killed aliens: ${DEF}${CYN}$frags${DEF}  ${BLD}Life: ${DEF}${CYN}$life${DEF}  ${BLD}Ammo: ${DEF}${CYN}$ammo${DEF} "
