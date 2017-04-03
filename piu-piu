@@ -75,7 +75,7 @@ tillboss=100        #100
 "${DIM}${GRN}   \_/\_/  |___|_| \_(_)${DEF}")
 
 # sprites |-------------------------------------------------------------------------------------------------------------
-  eraser="         "
+  eraser="           "
 
    ammob=("${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
 	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
@@ -137,6 +137,18 @@ tillboss=100        #100
           "${GRY}    ║/    ${DEF}"
           "${GRY}    ║     ${DEF}"
           "${GRY}    ║     ${DEF}")
+
+  cloud1=(${DIM}${BLU}' ,-.,  '${DEF}
+          ${DIM}${BLU}'(    ) '${DEF}
+          ${DIM}${BLU}' `+-`  '${DEF})
+
+  cloud2=(${BLU}' ,-._.,  '${DEF}
+          ${BLU}'(      ) '${DEF}
+          ${BLU}' `-...`  '${DEF})
+
+  cloud3=(${LBLU}' ,`"`.-"`.  '${DEF}
+          ${LBLU}'(         ) '${DEF}
+          ${LBLU}' `--.....`  '${DEF})
 
      Sun=(${YLW}'       ___ |       '${DEF}
           ${YLW}'---````    \       '${DEF}
@@ -204,6 +216,9 @@ tre2endx=$(( $endx - 6  ))
 tre2endy=$(( $endy - 8  ))
 tre3endx=$(( $endx - 10 ))
 tre3endy=$(( $endy - 11 ))
+cld1endx=$(( $endx - 7  ))
+cld2endx=$(( $endx - 9  ))
+cld3endx=$(( $endx - 12 ))
 lineendy=$(( $endy - 2  ))
 Sunsendx=$(( $endx - 19 ))
 }
@@ -231,7 +246,7 @@ function remove_piu {
 }
 
 function mess () {
-	tput cnorm -- normal	#get cursor back
+	printf "${CON}"	#get cursor back
 	stty $savetty
 	clear
 	case $1 in
@@ -378,6 +393,39 @@ while true; do
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree3[$p]}"; done
 					fi;;
 
+		"cloud1")	er=${#cloud1[@]}
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj;
+					else
+						#move
+                        [ ${Q} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+
+						#print
+						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${cloud1[$p]}"; done
+					fi;;
+
+		"cloud2")	er=${#cloud2[@]}
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj;
+					else
+						#move
+                        [ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+
+						#print
+						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${cloud2[$p]}"; done
+					fi;;
+
+		"cloud3")	er=${#cloud3[@]}
+					#fly away
+					if [ $OX -lt 1 ]; then remove_obj;
+					else
+						#move
+                        [ ${E} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+
+						#print
+						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${cloud3[$p]}"; done
+					fi;;
+
 		"bullet")	er=1
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj;
@@ -445,6 +493,13 @@ while true; do
 		[ $enumber -lt $enmax ] && ((enumber++)) && OBJ+=("$enmyendx $(( (RANDOM % $enmyendy) + 3 )) alien")
 	fi
 
+    #add cloud
+    [ $((RANDOM % 60)) = 0 ] && { cloudtype=$((RANDOM % 3 + 1)); case ${cloudtype} in
+        1) OBJ+=("${cld1endx} $(( (RANDOM % 10) + 2 )) cloud1");;
+        2) OBJ+=("${cld2endx} $(( (RANDOM % 10) + 2 )) cloud2");;
+        3) OBJ+=("${cld3endx} $(( (RANDOM % 10) + 2 )) cloud3");;
+    esac; }
+
     #add tree
     [ $((RANDOM % 40)) = 0 ] && { treetype=$((RANDOM % 3 + 1)); case ${treetype} in
         1) OBJ+=("${tre1endx} ${tre1endy} tree1");;
@@ -452,11 +507,11 @@ while true; do
         3) OBJ+=("${tre3endx} ${tre3endy} tree3");;
     esac; }
 
-	#print hero
-	for (( i=0; i<${#hero[@]}; i++ )); do echo -e "\e[$(($Y + $i));${X}H ${hero[$i]} "; done
-
 	#print Sun
 	SY=1; for part in "${Sun[@]:$S:$SunC}"; do echo -e "\e[${SY};${Sunsendx}H ${part}"; ((SY++)); done
+
+	#print hero
+	for (( i=0; i<${#hero[@]}; i++ )); do echo -e "\e[$(($Y + $i));${X}H ${hero[$i]} "; done
 
 	#print game status
 	echo -e "\e[0;0H${BLD}killed aliens: ${DEF}${CYN}$frags${DEF}  ${BLD}Life: ${DEF}${CYN}$life${DEF}  ${BLD}Ammo: ${DEF}${CYN}$ammo${DEF} "
