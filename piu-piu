@@ -27,8 +27,8 @@ CON='\e[?25h' #Cursor On                                               |
 #----------------------------------------------------------------------+
 
 # start opt |-----------------------------------------------------------------------------------------------------------
-tillboss=100        #100
- bhealth=100        #100
+tillboss=100		#100
+ bhealth=100		#100
  savetty=$(stty -g) #save terminal settings
  enumber=0
  bonuses=("ammo" "life")
@@ -68,12 +68,23 @@ tillboss=100        #100
       "${RED} | |_| |\ V / | |___|  _ <  ${DEF}"
 "${DIM}${RED}  \___/  \_/  |_____|_| \_| ${DEF}")
 
-     win=("                        "
-"${BLD}${GRN}__        _____ _   _ _ ${DEF}"
-     "${LGRN}\ \      / /_ _| \ | | |${DEF}"
-     "${LGRN} \ \ /\ / / | ||  \| | |${DEF}"
-      "${GRN}  \ V  V /  | || |\  |_|${DEF}"
-"${DIM}${GRN}   \_/\_/  |___|_| \_(_)${DEF}")
+#     win=("                        "
+#"${BLD}${GRN}__        _____ _   _ _ ${DEF}"
+#     "${LGRN}\ \      / /_ _| \ | | |${DEF}"
+#     "${LGRN} \ \ /\ / / | ||  \| | |${DEF}"
+#      "${GRN}  \ V  V /  | || |\  |_|${DEF}"
+#"${DIM}${GRN}   \_/\_/  |___|_| \_(_)${DEF}")
+
+     win=('                           '
+${BLD}${GRN}'__        ______ _    _    '${DEF}
+     ${LGRN}'\ \      / /____| |  | |   '${DEF} 
+     ${LGRN}' \ \ /\ / /  _| | |  | |   '${DEF}
+      ${GRN}'  \ V  V /| |___| |__| |__ '${DEF}
+${DIM}${GRN}' __\_/\_/_|_____|____|____|'${DEF}
+${BLD}${GRN}'|  _ \ / _ \| \ | | ____| |'${DEF}
+     ${LGRN}'| | | | | | |  \| |  _| | |'${DEF}
+      ${GRN}'| |_| | |_| | |\  | |___|_|'${DEF}
+${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 
 # sprites |-------------------------------------------------------------------------------------------------------------
   eraser="           "
@@ -317,7 +328,7 @@ while true; do
 	#move\check\print all flying to hero objects
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do read OX OY type <<< ${OBJ[$i]}; case $type in
 
-		"alien")	er=${#alien[@]}; sn=
+	   "alien")		er=${#alien[@]}; sn=
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj; ((enumber--))
 					else
@@ -376,7 +387,7 @@ while true; do
 					#get by plane
 					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((life++)); remove_obj;; esac done;;
 
-		"tree1")	er=${#tree1[@]}
+	   "tree1")		er=${#tree1[@]}
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
@@ -387,7 +398,7 @@ while true; do
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree1[$p]}"; done
 					fi;;
 
-		"tree2")	er=${#tree2[@]}
+	   "tree2") 	er=${#tree2[@]}
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
@@ -398,7 +409,7 @@ while true; do
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree2[$p]}"; done
 					fi;;
 
-		"tree3")	er=${#tree3[@]}
+	   "tree3") 	er=${#tree3[@]}
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
@@ -409,7 +420,7 @@ while true; do
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${tree3[$p]}"; done
 					fi;;
 
-		"cloud1")	er=${#cloud1[@]}
+	  "cloud1") 	er=${#cloud1[@]}
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
@@ -420,7 +431,7 @@ while true; do
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${cloud1[$p]}"; done
 					fi;;
 
-		"cloud2")	er=${#cloud2[@]}
+	  "cloud2") 	er=${#cloud2[@]}
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
@@ -431,7 +442,7 @@ while true; do
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${cloud2[$p]}"; done
 					fi;;
 
-		"cloud3")	er=${#cloud3[@]}
+	  "cloud3") 	er=${#cloud3[@]}
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
@@ -442,7 +453,7 @@ while true; do
 						for (( p=0; p<${er}; p++ )); do echo -e "\e[$(($OY + $p));${OX}H${cloud3[$p]}"; done
 					fi;;
 
-		"bullet")	er=1
+	  "bullet") 	er=1
 					#fly away
 					if [ $OX -lt 1 ]; then remove_obj;
 					else
