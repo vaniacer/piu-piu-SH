@@ -40,6 +40,7 @@ tillboss=100        #100
      rnd=10
       BY=1
       BX=$(($(tput cols) - 11))
+	  BN=0
        g=0
        X=1
        Y=1
@@ -150,6 +151,16 @@ tillboss=100        #100
           ${LBLU}'(         ) '${DEF}
           ${LBLU}' `--.....`  '${DEF})
 
+    boom=(${LRED}'   .-. '${DEF}
+          ${LRED}'  (   )'${DEF}
+          ${LRED}'   `-` '${DEF}
+          ${RED}'  , - . '${DEF}
+          ${RED}' (     )'${DEF}
+          ${RED}'  . _ . '${DEF}
+          ${DIM}${RED}'   `  "  '${DEF}
+          ${DIM}${RED}'(       )'${DEF}
+          ${DIM}${RED}'  _ _ .  '${DEF}); boomN=${#boom[@]}; boomC=3
+
      Sun=(${YLW}'       ___ |       '${DEF}
           ${YLW}'---````    \       '${DEF}
           ${YLW}'           _`.     '${DEF}
@@ -176,8 +187,7 @@ tillboss=100        #100
           ${YLW}'             /     '${DEF}
           ${YLW}'            /      '${DEF}
           ${YLW}'          .`       '${DEF}
-          ${YLW}'                   '${DEF})
-		  SunN=${#Sun[@]}; SunC=9
+          ${YLW}'                   '${DEF}); SunN=${#Sun[@]}; SunC=9
 
 # functions |-----------------------------------------------------------------------------------------------------------
 function sprites {		    #dynamic sprites
@@ -301,7 +311,8 @@ while true; do
 	((Q++)); [ $Q -gt 6  ] && Q=0   # tree1(small) speed
 	((W++)); [ $W -gt 4  ] && W=0   # tree2(medium) speed
 	((E++)); [ $E -gt 2  ] && E=0   # tree3(big) speed
-	[ ${E} = 0 ] && { ((S+=${SunC})); [ $S -gt ${SunN}  ] && S=0; }   # Sun animation
+	[ ${E} = 0 ] && { ((S+=${SunC}));  [ $S -gt ${SunN}  ] && S=0; }   # Sun animation
+
 
 	#move\check\print all flying to hero objects
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do read OX OY type <<< ${OBJ[$i]}; case $type in
@@ -328,9 +339,14 @@ while true; do
 					NP=${#PIU[@]}; for (( p=0; p<$NP; p++ )); do for (( t=0; t<$er; t++ )); do case "$(($OY + 1)) $(($OX + $t))" in
 
 						"${PIU[$p]}")	[ $((RANDOM % $rnd)) -eq 0 ] && OBJ=("${OBJ[@]}" "$OX $OY ${bonuses[$((RANDOM % ${#bonuses[@]}))]}") #get bonus
-										((frags++));  ((enumber--)); remove_obj; remove_piu;;
+										((frags++));  ((enumber--)); remove_obj; remove_piu; OBJ+=("${OX} ${OY} boom");;
 
 					esac; done; done;;
+
+		"boom")		er=${boomC}
+					#print
+					for part in "${boom[@]:$B:$boomC}"; do echo -e "\e[${OY};${OX}H ${part}"; ((OY++)); done
+					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj; }; };;
 
 		"ammo")		er=${#ammob[@]}
 					#fly away
