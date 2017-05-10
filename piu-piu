@@ -342,7 +342,7 @@ while true; do
 					#hit by plane
 					for (( t=0; t<$er; t++ )); do case "$(($OY + 1)) $(($OX + $t))" in
 
-						"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj;;
+						"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj; OBJ+=("${OX} ${OY} boom");;
 
 					esac; done
 
