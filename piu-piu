@@ -77,7 +77,7 @@ ${DIM}${RED}'  \___/  \_/  |_____|_| \_| '${DEF})
 
      win=(  '                           '
 ${BLD}${GRN}'__        ______ _    _    '${DEF}
-     ${LGRN}'\ \      / /____| |  | |   '${DEF} 
+     ${LGRN}'\ \      / /____| |  | |   '${DEF}
      ${LGRN}' \ \ /\ / /  _| | |  | |   '${DEF}
       ${GRN}'  \ V  V /| |___| |__| |__ '${DEF}
 ${DIM}${GRN}' __\_/\_/_|_____|____|____|'${DEF}
@@ -128,27 +128,27 @@ ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 		  "   |/    "
 		  "     ")
 
-   tree1=("${DIM}${GRN} _  ${DEF}"
-          "${DIM}${GRN}/ \ ${DEF}"
-          "${DIM}${GRN}\|/ ${DEF}"
-          "${DGRY} | ${DEF} ")
+   tree1=(${DIM}${GRN}' _  '${DEF}
+          ${DIM}${GRN}'/ \ '${DEF}
+          ${DIM}${GRN}'\\'${DGRY}'|'${DIM}${GRN}'/ '${DEF}
+          ${DGRY}' | '${DEF})
 
-   tree2=("${GRN} _._  ${DEF}"
-          "${GRN}/   \ ${DEF}"
-          "${GRN}\ | / ${DEF}"
-          "${GRN} \`${DEF}${DIM}║${DEF}${GRN}/\ ${DEF}"
-          "${DIM}  ║${DEF}${GRN}_/ ${DEF}"
-          "${DIM}  ║   ${DEF}")
+   tree2=(${GRN}' _._  '${DEF}
+          ${GRN}'/   \ '${DEF}
+          ${GRN}'\\'${DEF}${DIM}' | '${DEF}${GRN}'/ '${DEF}
+          ${GRN}' \\'${DEF}${DIM}'║'${DEF}${GRN}'/\ '${DEF}
+          ${DIM}'  ║'${DEF}${GRN}'_/ '${DEF}
+          ${DIM}'  ║ '${DEF})
 
-   tree3=("${LGRN}   _._    ${DEF}"
-          "${LGRN}  /   \   ${DEF}"
-          "${LGRN} _\ ${DEF}${GRY}|${DEF}${LGRN} /   ${DEF}"
-          "${LGRN}/  \`${DEF}${GRY}║${DEF}${LGRN}/ _  ${DEF}"
-          "${LGRN}\_${DEF}${GRY}\ ║ ${DEF}${LGRN}/ \ ${DEF}"
-          "${LGRN}   ${DEF}${GRY}\║ /${DEF}${LGRN}_/ ${DEF}"
-          "${GRY}    ║/    ${DEF}"
-          "${GRY}    ║     ${DEF}"
-          "${GRY}    ║     ${DEF}")
+   tree3=(${LGRN}'   _._  '${DEF}
+          ${LGRN}'  /   \ '${DEF}
+          ${LGRN}' _\ '${DEF}${GRY}'|'${DEF}${LGRN}' / '${DEF}
+          ${LGRN}'/  \\'${DEF}${GRY}'║'${DEF}${LGRN}'/ _ '${DEF}
+          ${LGRN}'\_'${DEF}${GRY}'\\'${DEF}${LGRN}'/'${DEF}${GRY}'║ '${DEF}${LGRN}'/ \ '${DEF}
+          ${LGRN}'   '${DEF}${GRY}'\║ /'${DEF}${LGRN}'_/ '${DEF}
+          ${GRY}'    ║/ '${DEF}
+          ${GRY}'    ║ '${DEF}
+          ${GRY}'    ║ '${DEF})
 
   cloud1=(${DIM}${BLU}' ,-.,  '${DEF}
           ${DIM}${BLU}'(    ) '${DEF}
