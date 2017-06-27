@@ -27,7 +27,7 @@ CON='\e[?25h' #Cursor On                                               |
 #----------------------------------------------------------------------+
 
 # start opt |-----------------------------------------------------------------------------------------------------------
-tillboss=10		#100
+tillboss=100		#100
  bhealth=100		#100
  savetty=$(stty -g) #save terminal settings
  enumber=0
@@ -499,9 +499,9 @@ while true; do
 		[ $BY -eq $Y -a $K -eq 0 ] && OBJ+=("$(($BX - 4)) $(($BY + 3)) bullet")
 
 		#add enemy
-		[ $enumber -lt $enmax ] && ((enumber++)) && OBJ+=("$(($BX + 2)) $(($BY + 3)) alien")
+		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$(($BX + 2)) $(($BY + 3)) alien"); }
 	else
-		[ $enumber -lt $enmax ] && ((enumber++)) && OBJ+=("$enmyendx $(( (RANDOM % $enmyendy) + 3 )) alien")
+		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$enmyendx $(( (RANDOM % $enmyendy) + 3 )) alien"); }
 	fi
 
     #add cloud
