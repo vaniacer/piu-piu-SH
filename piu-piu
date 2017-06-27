@@ -36,13 +36,13 @@ tillboss=100		#100
  bhealth=100		#100
  savetty=$(stty -g) #save terminal settings
  enumber=0
- bonuses=("ammo" "life")
+ bonuses=("ammo" "life" "gunup")
   goback=false
    enmax=10
    frags=0
     life=3
     ammo=100
-     rnd=10
+     rnd=1 			#10
       BY=1
       BX=$(($(tput cols) - 11))
 	  BN=0
@@ -103,6 +103,8 @@ ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 		  "${LRED}=-${DEF}${BLD}${GRN}>${DEF}"
 		  "${RED}- ${DEF}${GRN}>${DEF}")
 
+     gun=( - = ≡ ); G=0
+
   bshoot=("${LYLW}█▓▒░${DEF}"
 		  "${LYLW}▓▒░▒${DEF}"
 		  "${LYLW}▒░▒▓${DEF}"
@@ -123,15 +125,6 @@ ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 	 	  "   "
 	 	  "  o"
 		  " o ")
-
-#    gun=( = ≡ ); G=${gun[0]}
-
-	hero=("  "
-		  "__     "
-		  "|${RED}★${DEF}〵____ "
-		  " \_| /${UND}${BLD} °${DEF})="
-		  "   |/    "
-		  "     ")
 
    tree1=(${DIM}${GRN}' _  '${DEF}
           ${DIM}${GRN}'/ \ '${DEF}
@@ -211,18 +204,25 @@ function sprites {		    #dynamic sprites
    alien=(" _${UND}${BLD}_${DEF}_"
 	      "(${UND}${small[$L]}${DEF})")
 
-bigalien=("      "
+bigalien=("      "~/
 		  "   _${UND}_${DEF}_  "
 		  " _/${small[$((3 - $L))]}\_ "
 		  "(${UND}${big[$L]}${DEF})"
 		  "         ")
 
-#	hero=("  "
-#		  "__     "
-#		  "|${RED}★${DEF}〵____ "
-#		  " \_| /${UND}${BLD} °${DEF})${G}"
-#		  "   |/    "
-#		  "     ")
+	hero=("  "
+		  "__     "
+		  "|${RED}★${DEF}〵____ "
+		  " \_| /${UND}${BLD} °${DEF})${DGRY}${gun[${G}]}${DEF}"
+		  "   |/    "
+		  "     ")
+
+	case ${G} in 0) gunup=("||${DGRY}--${DEF}"
+                           "||  "
+                           "||${DGRY}--${DEF}");;
+               1|2) gunup=("||${DGRY}--${DEF}"
+                           "||${DGRY}--${DEF}"
+                           "||${DGRY}--${DEF}");; esac
 }
 
 function get_dimensions {
@@ -308,8 +308,9 @@ while true; do
 		"a") ((X--)); [ $X -lt 1         ] && X=1;;
 		"s") ((Y++)); [ $Y -gt $heroendy ] && Y=$heroendy;;
 		"d") ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
-		"p") [ $ammo -gt 0 ] && { PIU+=("$HY $HX"); ((ammo--)); };; # G=${gun[$g]}; ((g++)); [ ${g} -gt 3 ] && g=0; };;
-
+		"p") [ $ammo -gt 0 ] && { case ${G} in 0) PIU+=("$HY $HX"); ((ammo--));;
+			                                   1) PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=2));;
+			                                   2) PIU+=("$HY $HX"); PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=3));; esac; };;
 	esac
 
 	#hero collide coordinates
@@ -369,6 +370,19 @@ while true; do
 
 					#get by plane
 					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj;; esac done;;
+
+		"gunup")	er=${#gunup[@]}
+					#fly away
+					[ $OX -lt 1 ] && { remove_obj; continue; }
+
+					#move
+					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
+
+					#print
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${gunup[$p]} "; done
+
+					#get by plane
+					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((G++)); [ ${G} -gt 2 ] && G=2; remove_obj;; esac done;;
 
 		"life")		er=${#lifep[@]}
 					#fly away
