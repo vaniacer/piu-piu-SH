@@ -1,6 +1,6 @@
 #!/bin/bash
-
-#                      Color picker
+#----------------------------------------------------------------------+
+#Color picker, usage: printf ${BLD}${CUR}${RED}${BBLU}"Some text"${DEF}|
 #---------------------------+--------------------------------+---------+
 #        Text color         |       Background color         |         |
 #------------+--------------+--------------+-----------------+         |
@@ -14,19 +14,24 @@ MGN='\e[35m'; LMGN='\e[95m'; BMGN='\e[45m'; BLMGN='\e[105m' #| Magenta |
 CYN='\e[36m'; LCYN='\e[96m'; BCYN='\e[46m'; BLCYN='\e[106m' #| Cyan    |
 GRY='\e[37m'; DGRY='\e[90m'; BGRY='\e[47m'; BDGRY='\e[100m' #| Gray    |
 #------------------------------------------------------------+---------+
-#Effects                                                               |
+# Effects                                                              |
 #----------------------------------------------------------------------+
 DEF='\e[0m'   #Default color and effects                               |
-BLD='\e[1m'   #Bold\bright                                             |
-DIM='\e[2m'   #Dim\darken                                              |
-CUR='\e[3m'   #Italic fnt                                              |
+BLD='\e[1m'   #Bold\brighter                                           |
+DIM='\e[2m'   #Dim\darker                                              |
+CUR='\e[3m'   #Italic font                                             |
 UND='\e[4m'   #Underline                                               |
 INV='\e[7m'   #Inverted                                                |
 COF='\e[?25l' #Cursor Off                                              |
 CON='\e[?25h' #Cursor On                                               |
 #----------------------------------------------------------------------+
-
-# start opt |-----------------------------------------------------------------------------------------------------------
+# Text positioning, usage: XY 10 10 "Some text"                        |
+XY   () { printf "\e[${2};${1}H${3}";   } #                            |
+#----------------------------------------------------------------------+
+# Line, usage: line - 10 | line -= 20 | line "word1 word2 " 20         |
+line () { printf %.s"${1}" $(seq ${2}); } #                            |
+#----------------------------------------------------------------------+
+# start opt |----------------------------------------------------------+
 tillboss=100		#100
  bhealth=100		#100
  savetty=$(stty -g) #save terminal settings
@@ -244,8 +249,6 @@ lineendy=$(( $endy - 2  ))
 Sunsendx=$(( $endx - 19 ))
 }
 
-function line { printf "\e[${lineendy};0H"; printf %.s- $(seq ${endx}); }
-
 function bye {
 	stty ${savetty}			#restore terminal settings
 	printf "${CON}${DEF}"
@@ -255,13 +258,13 @@ function bye {
 }
 
 function remove_obj {
-	for (( k=0; k<$er; k++ )); do printf "\e[$(($OY + $k));${OX}H$eraser"; done
+	for (( k=0; k<$er; k++ )); do XY ${OX} $(($OY + $k)) "$eraser"; done
 	unset OBJ[$i]; OBJ=("${OBJ[@]}"); NO=${#OBJ[@]}
 	((i--)); [ $i -lt 0 ] && i=0
 }
 
 function remove_piu {
-	printf "\e[$PY;${PX}H    "
+	XY ${PX} ${PY} "    "
 	unset PIU[$p]; PIU=("${PIU[@]}"); NP=${#PIU[@]}
 	((p--)); [ $p -lt 0 ] && p=0
 }
@@ -272,15 +275,15 @@ function mess () {
 	clear
 	case $1 in
 		 "win")	x=$(( $endx / 2 - ${#win} / 2 ))
-				for (( i=0; i<${#win[*]}; i++ ));  do printf "\e[$(( $endy / 2 - 5 + $i ));${x}H${win[$i]}";  done
-				printf "\e[${endy};0H"; exit 0;;
+				for (( i=0; i<${#win[*]}; i++ ));  do XY ${x} $(( $endy / 2 - 5 + $i )) "${win[$i]}";  done
+				XY 0 ${endy}; exit 0;;
 
 		"lose")	x=$(( $endx / 2 - ${#lose} / 2 ))
-				for (( i=0; i<${#lose[*]}; i++ )); do printf "\e[$(( $endy / 2 - 5 + $i ));${x}H${lose[$i]}"; done
-				printf "\e[${endy};0H"; exit 1;;
+				for (( i=0; i<${#lose[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${lose[$i]}"; done
+				XY 0 ${endy}; exit 1;;
 
 		"help")	x=$(( $endx / 2 - ${#help} / 2 ))
-				for (( i=0; i<${#help[*]}; i++ )); do printf "\e[$(( $endy / 2 - 5 + $i ));${x}H${help[$i]}"; done;;
+				for (( i=0; i<${#help[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${help[$i]}"; done;;
 	esac
 }
 
@@ -295,7 +298,8 @@ clear
 # main game loop |======================================================================================================
 while true; do
 
-	get_dimensions; sprites; line
+	get_dimensions; sprites
+	XY 0 ${lineendy}; line - ${endx}	#bottom line
 
 	#get keys
 	read -t0.01 -n1 input; case $input in
@@ -336,7 +340,7 @@ while true; do
 					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
 
 					#print
-					for (( p=0; p<${er}; p++ )); do printf "\e[$(($OY + $p));${OX}H${alien[$p]} "; done
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${alien[$p]} "; done
 
 					#hit by plane
 					for (( t=0; t<$er; t++ )); do case "$(($OY + 1)) $(($OX + $t))" in
@@ -361,7 +365,7 @@ while true; do
 					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
 
 					#print
-					for (( p=0; p<${er}; p++ )); do printf "\e[$(($OY + $p));${OX}H${ammob[$p]} "; done
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${ammob[$p]} "; done
 
 					#get by plane
 					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj;; esac done;;
@@ -374,7 +378,7 @@ while true; do
 					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
 
 					#print
-					for (( p=0; p<${er}; p++ )); do printf "\e[$(($OY + $p));${OX}H${lifep[$p]}"; done
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${lifep[$p]}"; done
 
 					#get by plane
 					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((life++)); remove_obj;; esac done;;
@@ -387,14 +391,14 @@ while true; do
 					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
 
 					#print
-					printf "\e[$OY;${OX}H${bshoot[$J]} "
+					XY ${OX} ${OY} "${bshoot[$J]} "
 
 					#hit plane
 					case "$OX $OY" in "$HX $HY") ((life--)); remove_obj;; esac;;
 
 		"boom")		er=${boomC}
 					#print
-					for part in "${boom[@]:$B:$boomC}"; do printf "\e[${OY};${OX}H ${part}"; ((OY++)); done
+					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
 					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj; }; };;
 
 	   "tree1")		er=${#tree1[@]}
@@ -405,7 +409,7 @@ while true; do
 					[ ${Q} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do printf "\e[$(($OY + $p));${OX}H${tree1[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree1[$p]}"; done;;
 
 	   "tree2") 	er=${#tree2[@]}
 					#fly away
@@ -415,7 +419,7 @@ while true; do
 					[ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do printf "\e[$(($OY + $p));${OX}H${tree2[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree2[$p]}"; done;;
 
 	   "tree3") 	er=${#tree3[@]}
 					#fly away
@@ -425,7 +429,7 @@ while true; do
 					[ ${E} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do printf "\e[$(($OY + $p));${OX}H${tree3[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree3[$p]}"; done;;
 
 	  "cloud1") 	er=${#cloud1[@]}
 					#fly away
@@ -435,7 +439,7 @@ while true; do
 					[ ${Q} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do printf "\e[$(($OY + $p));${OX}H${cloud1[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud1[$p]}"; done;;
 
 	  "cloud2") 	er=${#cloud2[@]}
 					#fly away
@@ -445,13 +449,13 @@ while true; do
 					[ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do printf "\e[$(($OY + $p));${OX}H${cloud2[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud2[$p]}"; done;;
 
 	  "cloud3") 	er=${#cloud3[@]}
 					
 					[ $OX -lt 1 ] && { remove_obj; continue; }												#fly away
 					[ ${E} =  0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }			#move
-					for (( p=0; p<${er}; p++ )); do printf "\e[$(($OY + $p));${OX}H${cloud3[$p]}"; done;;	#print
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud3[$p]}"; done;;	#print
 	esac; done
 
 	#move\check\print hero bullets
@@ -464,7 +468,7 @@ while true; do
 		((PX++)); [ $PX -gt $bullendx ] && PX=$bullendx; PIU[$p]="$PY $PX"
 
 		#print
-		printf "\e[$PY;${PX}H ${shoot[$L]}"
+		XY ${PX} ${PY} " ${shoot[$L]}"
 
 		#hit boss
 		[ $frags -ge $tillboss ] && for (( t=1; t<3; t++ )); do case "$PY $PX" in
@@ -484,7 +488,7 @@ while true; do
 		hp=$(( $hm * $bhealth / 100 ))
 		for (( i=0;    i<$hp;  i++  )); do bar="▒${bar}"; done
 		for (( i=$hp;  i<$hm;  i++  )); do bar="${bar} "; done
-		printf "\e[$(($endy - 1));1H ${BLD}BOSS: |${RED}$bar${DEF}${BLD}|${DEF}"
+		XY 1 $(($endy - 1)) " ${BLD}BOSS: |${RED}$bar${DEF}${BLD}|${DEF}"
 
 		#boss move
 		[ $BY -lt $Y                                     ] && ((BY++))
@@ -493,7 +497,7 @@ while true; do
 		[ $BX -lt $bossendx      -a "$goback" == "true"  ] && ((BX++)) || goback=false
 
 		#boss print
-		for (( i=0; i<${#bigalien[@]}; i++ )); do printf "\e[$(($BY + $i));${BX}H ${bigalien[$i]} "; done
+		for (( i=0; i<${#bigalien[@]}; i++ )); do XY ${BX} $(($BY + $i)) " ${bigalien[$i]} "; done
 
 		#boss fire
 		[ $BY -eq $Y -a $K -eq 0 ] && OBJ+=("$(($BX - 4)) $(($BY + 3)) bullet")
@@ -519,12 +523,12 @@ while true; do
     esac; }
 
 	#print Sun
-	SY=1; for part in "${Sun[@]:$S:$SunC}"; do printf "\e[${SY};${Sunsendx}H ${part}"; ((SY++)); done
+	SY=1; for part in "${Sun[@]:$S:$SunC}"; do XY ${Sunsendx} ${SY} " ${part}"; ((SY++)); done
 
 	#print hero
-	for (( i=0; i<${#hero[@]}; i++ )); do printf "\e[$(($Y + $i));${X}H ${hero[$i]} "; done
+	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $(($Y + $i)) " ${hero[$i]} "; done
 
 	#print game status
-	printf "\e[0;0H${BLD}killed aliens: ${DEF}${CYN}$frags${DEF}  ${BLD}Life: ${DEF}${CYN}$life${DEF}  ${BLD}Ammo: ${DEF}${CYN}$ammo${DEF} "
+	XY 0 0 "${BLD}killed aliens: ${DEF}${CYN}$frags${DEF}  ${BLD}Life: ${DEF}${CYN}$life${DEF}  ${BLD}Ammo: ${DEF}${CYN}$ammo${DEF} "
 
 done
