@@ -330,9 +330,9 @@ while true; do
 
 
 	#move\check\print all flying to hero objects
-	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do read OX OY type <<< ${OBJ[$i]}; case $type in
+	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do I=(${OBJ[$i]}); OX=${I[0]}; OY=${I[1]}; type=${I[2]}; case $type in
 
-	   "alien")		er=${#alien[@]}; sn=
+	   "alien")		er=${#alien[@]}
 					#move
 					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
 
