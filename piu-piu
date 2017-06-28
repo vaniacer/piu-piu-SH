@@ -46,7 +46,6 @@ tillboss=100		#100
       BY=1
       BX=$(($(tput cols) - 11))
 	  BN=0
-       g=0
        X=1
        Y=1
        L=0
@@ -92,7 +91,7 @@ ${BLD}${GRN}'|  _ \ / _ \| \ | | ____| |'${DEF}
 ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 
 # sprites |-------------------------------------------------------------------------------------------------------------
-  eraser="           "
+  eraser='           '
 
    ammob=("${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
 	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
@@ -258,9 +257,9 @@ function bye {
 }
 
 function remove_obj {
-	for (( k=0; k<$er; k++ )); do XY ${OX} $(($OY + $k)) "$eraser"; done
+	for (( k=0; k<$er; k++ )); do XY ${OX} $(($OY + $k)) "${eraser}"; done
 	unset OBJ[$i]; OBJ=("${OBJ[@]}"); NO=${#OBJ[@]}
-	((i--)); [ $i -lt 0 ] && i=0
+#	((i--)); [ $i -lt 0 ] && i=0
 }
 
 function remove_piu {
@@ -340,23 +339,24 @@ while true; do
 					#fly away
 					[ $OX -lt 1 ] && { remove_obj; ((enumber--)); continue; }
 
-					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${alien[$p]} "; done
-
 					#hit by plane
 					for (( t=0; t<$er; t++ )); do case "$(($OY + 1)) $(($OX + $t))" in
 
-						"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj; OBJ+=("${OX} ${OY} boom");;
+						"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj; OBJ+=("${OX} ${OY} boom"); continue;;
 
 					esac; done
 
 					#hit by bullet
-					NP=${#PIU[@]}; for (( p=0; p<$NP; p++ )); do for (( t=0; t<$er; t++ )); do case "$(($OY + 1)) $(($OX + $t))" in
+					NP=${#PIU[@]}; for (( p=0; p<${NP}; p++ )); do for (( t=0; t<$er; t++ )); do case "$(($OY + 1)) $(($OX + $t))" in
 
 						"${PIU[$p]}")	[ $((RANDOM % $rnd)) -eq 0 ] && OBJ+=("$OX $OY ${bonuses[$((RANDOM % ${#bonuses[@]}))]}") #get bonus
-										((frags++));  ((enumber--)); remove_obj; remove_piu; OBJ+=("${OX} ${OY} boom");;
+										((frags++));  ((enumber--)); remove_obj; remove_piu; OBJ+=("${OX} ${OY} boom"); continue;;
 
-					esac; done; done;;
+					esac; done; done
+
+					#print
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${alien[$p]} "; done
+					;;
 
 		"ammo")		er=${#ammob[@]}
 					#move
@@ -369,7 +369,8 @@ while true; do
 					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${ammob[$p]} "; done
 
 					#get by plane
-					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj;; esac done;;
+					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj; continue;; esac; done
+					;;
 
 		"gunup")	er=${#gunup[@]}
 					#move
@@ -382,7 +383,8 @@ while true; do
 					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${gunup[$p]} "; done
 
 					#get by plane
-					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((G++)); [ ${G} -gt 2 ] && G=2; remove_obj;; esac done;;
+					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((G++)); [ ${G} -gt 2 ] && G=2; remove_obj; continue;; esac; done
+					;;
 
 		"life")		er=${#lifep[@]}
 					#move
@@ -395,7 +397,8 @@ while true; do
 					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${lifep[$p]}"; done
 
 					#get by plane
-					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((life++)); remove_obj;; esac done;;
+					for (( t=0; t<$er; t++ )); do case "$(($OY + $t)) $OX" in "$HY $HX") ((life++)); remove_obj; continue;; esac; done
+					;;
 
 	  "bullet") 	er=1
 					#move
@@ -404,16 +407,18 @@ while true; do
 					#fly away
 					[ $OX -lt 1 ] && { remove_obj; continue; }
 
+					#hit plane
+					case "$OX $OY" in "$HX $HY") ((life--)); remove_obj; continue;; esac
+
 					#print
 					XY ${OX} ${OY} "${bshoot[$J]} "
-
-					#hit plane
-					case "$OX $OY" in "$HX $HY") ((life--)); remove_obj;; esac;;
+					;;
 
 		"boom")		er=${boomC}
 					#print
 					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
-					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj; }; };;
+					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj; }; }
+					;;
 
 	   "tree1")		er=${#tree1[@]}
 					#move
@@ -423,7 +428,8 @@ while true; do
 					[ $OX -lt 1 ] && { remove_obj; continue; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree1[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree1[$p]}"; done
+					;;
 
 	   "tree2") 	er=${#tree2[@]}
 					#move
@@ -433,7 +439,8 @@ while true; do
 					[ $OX -lt 1 ] && { remove_obj; continue; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree2[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree2[$p]}"; done
+					;;
 
 	   "tree3") 	er=${#tree3[@]}
 					#move
@@ -443,7 +450,8 @@ while true; do
 					[ $OX -lt 1 ] && { remove_obj; continue; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree3[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree3[$p]}"; done
+					;;
 
 	  "cloud1") 	er=${#cloud1[@]}
 					#move
@@ -453,7 +461,8 @@ while true; do
 					[ $OX -lt 1 ] && { remove_obj; continue; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud1[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud1[$p]}"; done
+					;;
 
 	  "cloud2") 	er=${#cloud2[@]}
 					#move
@@ -463,7 +472,8 @@ while true; do
 					[ $OX -lt 1 ] && { remove_obj; continue; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud2[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud2[$p]}"; done
+					;;
 
 	  "cloud3") 	er=${#cloud3[@]}
 					#move
@@ -473,7 +483,8 @@ while true; do
 					[ $OX -lt 1 ] && { remove_obj; continue; }
 
 					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud3[$p]}"; done;;
+					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud3[$p]}"; done
+					;;
 	esac; done
 
 	#move\check\print hero bullets
