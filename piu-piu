@@ -265,7 +265,7 @@ function remove_obj {
 function remove_piu {
 	XY ${PX} ${PY} "    "
 	unset PIU[$p]; PIU=("${PIU[@]}"); NP=${#PIU[@]}
-	((p--)); [ $p -lt 0 ] && p=0
+#	((p--)); [ $p -lt 0 ] && p=0
 }
 
 function mess () {
@@ -307,9 +307,10 @@ while true; do
 		"a") ((X--)); [ $X -lt 1         ] && X=1;;
 		"s") ((Y++)); [ $Y -gt $heroendy ] && Y=$heroendy;;
 		"d") ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
-		"p") [ $ammo -gt 0 ] && { case ${G} in 0) PIU+=("$HY $HX"); ((ammo--));;
-			                                   1) PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=2));;
-			                                   2) PIU+=("$HY $HX"); PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=3));; esac; };;
+		"p") [ $ammo -gt 0 ] && \
+				case ${G} in 0) PIU+=("$HY $HX"); ((ammo--));;
+                	         1) PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=2));;
+                	         2) PIU+=("$HY $HX"); PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=3));; esac;;
 	esac
 
 	#hero collide coordinates
@@ -320,12 +321,12 @@ while true; do
 	[ $life    -le 0 ] && mess lose
 
 	#timings
+	((K++)); [ $K -gt 20 ] && K=0   # boss' fire rate
 	((L++)); [ $L -gt 3  ] && L=0   # sprites animation
 	((J++)); [ $J -gt 5  ] && J=0   # boss' bullet animation
-	((K++)); [ $K -gt 20 ] && K=0   # boss' fire rate
-	((Q++)); [ $Q -gt 6  ] && Q=0   # tree1(small) speed
-	((W++)); [ $W -gt 4  ] && W=0   # tree2(medium) speed
-	((E++)); [ $E -gt 2  ] && E=0   # tree3(big) speed
+	((Q++)); [ $Q -gt 6  ] && Q=0   # tree1\cloud1(small)  speed
+	((W++)); [ $W -gt 4  ] && W=0   # tree2\cloud2(medium) speed
+	((E++)); [ $E -gt 2  ] && E=0   # tree3\cloud3(large)  speed
 	[ ${E} = 0 ] && { ((S+=${SunC}));  [ $S -gt ${SunN}  ] && S=0; }   # Sun animation
 
 
@@ -488,7 +489,7 @@ while true; do
 	esac; done
 
 	#move\check\print hero bullets
-	NP=${#PIU[@]}; for (( p=0; p<$NP; p++ )); do read PY PX <<< ${PIU[$p]}
+	NP=${#PIU[@]}; for (( p=0; p<${NP}; p++ )); do read PY PX <<< ${PIU[$p]}
 
 		#fly away
 		[ $PX -ge $bullendx ] && { remove_piu; continue; }
