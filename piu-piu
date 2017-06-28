@@ -417,7 +417,7 @@ while true; do
 
 	   "tree1")		er=${#tree1[@]}
 					#move
-					[ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+					[ ${Q} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 					#fly away
 					[ $OX -lt 1 ] && { remove_obj; continue; }
@@ -437,7 +437,7 @@ while true; do
 
 	   "tree3") 	er=${#tree3[@]}
 					#move
-					[ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+					[ ${E} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 					#fly away
 					[ $OX -lt 1 ] && { remove_obj; continue; }
@@ -447,7 +447,7 @@ while true; do
 
 	  "cloud1") 	er=${#cloud1[@]}
 					#move
-					[ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+					[ ${Q} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 					#fly away
 					[ $OX -lt 1 ] && { remove_obj; continue; }
@@ -467,7 +467,7 @@ while true; do
 
 	  "cloud3") 	er=${#cloud3[@]}
 					#move
-					[ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+					[ ${E} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
 
 					#fly away
 					[ $OX -lt 1 ] && { remove_obj; continue; }
