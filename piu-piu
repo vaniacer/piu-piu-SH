@@ -4,7 +4,7 @@
 #---------------------------+--------------------------------+---------+
 #        Text color         |       Background color         |         |
 #------------+--------------+--------------+-----------------+         |
-#    Base    |Lighter\Darker|    Base      |Lighter\Darker   |         |
+#    Base    |Lighter\Darker|    Base      | Lighter\Darker  |         |
 #------------+--------------+--------------+-----------------+         |
 RED='\e[31m'; LRED='\e[91m'; BRED='\e[41m'; BLRED='\e[101m' #| Red     |
 GRN='\e[32m'; LGRN='\e[92m'; BGRN='\e[42m'; BLGRN='\e[102m' #| Green   |
@@ -16,14 +16,14 @@ GRY='\e[37m'; DGRY='\e[90m'; BGRY='\e[47m'; BDGRY='\e[100m' #| Gray    |
 #------------------------------------------------------------+---------+
 # Effects                                                              |
 #----------------------------------------------------------------------+
-DEF='\e[0m'   #Default color and effects                               |
-BLD='\e[1m'   #Bold\brighter                                           |
-DIM='\e[2m'   #Dim\darker                                              |
-CUR='\e[3m'   #Italic font                                             |
-UND='\e[4m'   #Underline                                               |
-INV='\e[7m'   #Inverted                                                |
-COF='\e[?25l' #Cursor Off                                              |
-CON='\e[?25h' #Cursor On                                               |
+DEF='\e[0m'   # Default color and effects                              |
+BLD='\e[1m'   # Bold\brighter                                          |
+DIM='\e[2m'   # Dim\darker                                             |
+CUR='\e[3m'   # Italic font                                            |
+UND='\e[4m'   # Underline                                              |
+INV='\e[7m'   # Inverted                                               |
+COF='\e[?25l' # Cursor Off                                             |
+CON='\e[?25h' # Cursor On                                              |
 #----------------------------------------------------------------------+
 # Text positioning, usage: XY 10 10 "Some text"                        |
 XY   () { printf "\e[${2};${1}H${3}";   } #                            |
@@ -32,17 +32,17 @@ XY   () { printf "\e[${2};${1}H${3}";   } #                            |
 line () { printf %.s"${1}" $(seq ${2}); } #                            |
 #----------------------------------------------------------------------+
 # start opt |----------------------------------------------------------+
-tillboss=100		#100
- bhealth=100		#100
- savetty=$(stty -g) #save terminal settings
+tillboss=100		# 100
+ bhealth=100		# 100
+ savetty=$(stty -g) # save terminal settings
  enumber=0
- bonuses=("ammo" "life" "ammo" "gunup" "ammo")	#more ammo, less life ang gunup
+ bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# more ammo, less life ang gunup
   goback=false
    enmax=10
    frags=0
     life=3
     ammo=100
-     rnd=10			#10
+     rnd=10			# 10
       BY=1
       BX=$(($(tput cols) - 11))
 	  BN=0
@@ -53,7 +53,7 @@ tillboss=100		#100
        K=0
 	   S=0
 
-# messages |------------------------------------------------------------------------------------------------------------
+# messages |-------------------------------------------------------------------------------------------------------------
     help=("                  ^     "
 		  "                  ${RED}W${DEF}     "
 		  "${BLD}Control with:${DEF} < ${RED}A S D${DEF} > "
@@ -90,19 +90,23 @@ ${BLD}${GRN}'|  _ \ / _ \| \ | | ____| |'${DEF}
       ${GRN}'| |_| | |_| | |\  | |___|_|'${DEF}
 ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 
-# sprites |-------------------------------------------------------------------------------------------------------------
+# sprites |--------------------------------------------------------------------------------------------------------------
   eraser='           '
 
-   ammob=("${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
-	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
-	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF}")
+     gun=( - = ≡ ); G=0
+
+   ammob=("${BLD}${LRED}-=${DEF}${GRN}>${DEF} "
+	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF} "
+	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF} ")
+
+   lifep=("${RED}/V\ ${DEF} "
+	      "${RED}\ / ${DEF} "
+		  "${RED} V  ${DEF} ")
 
    shoot=("${RED} -${DEF}${BLD}${GRN}>${DEF}"
 		  "${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
 		  "${LRED}=-${DEF}${BLD}${GRN}>${DEF}"
 		  "${RED}- ${DEF}${GRN}>${DEF}")
-
-     gun=( - = ≡ ); G=0
 
   bshoot=("${LYLW}█▓▒░${DEF}"
 		  "${LYLW}▓▒░▒${DEF}"
@@ -111,19 +115,15 @@ ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 		  "${LYLW}▒▓█▓${DEF}"
 		  "${LYLW}▓█▓▒${DEF}")
 
-   lifep=("${RED}/V\ ${DEF}"
-	      "${RED}\ / ${DEF}"
-		  "${RED} V  ${DEF}")
+	 big=(${RED}' O   O '${DEF}
+		  ${RED}'O   O  '${DEF}
+		  ${RED}'   O   '${DEF}
+		  ${RED}'  O   O'${DEF})
 
-	 big=(" O   O "
-		  "O   O  "
-		  "   O   "
-		  "  O   O")
-
-   small=("o  "
-	 	  "   "
-	 	  "  o"
-		  " o ")
+   small=(${YLW}'o  '${DEF}
+	 	  ${YLW}'   '${DEF}
+	 	  ${YLW}'  o'${DEF}
+		  ${YLW}' o '${DEF})
 
    tree1=(${DIM}${GRN}' _  '${DEF}
           ${DIM}${GRN}'/ \ '${DEF}
@@ -197,17 +197,21 @@ ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
           ${YLW}'          .`       '${DEF}
           ${YLW}'                   '${DEF}); SunN=${#Sun[@]}; SunC=9
 
-# functions |-----------------------------------------------------------------------------------------------------------
-function sprites {		    #dynamic sprites
+# functions |------------------------------------------------------------------------------------------------------------
+function sprites { # dynamic sprites
 
-   alien=(" _${UND}${BLD}_${DEF}_"
-	      "(${UND}${small[$L]}${DEF})")
+   bfire=("${bshoot[$J]} ")
 
-bigalien=("      "~/
+   alien=(" _${UND}${BLD}_${DEF}_ "
+	      "(${small[$L]}${DEF}) "
+		  ' `¯´ ')
+
+    boss=("      "
 		  "   _${UND}_${DEF}_  "
 		  " _/${small[$((3 - $L))]}\_ "
-		  "(${UND}${big[$L]}${DEF})"
-		  "         ")
+		  "(${big[$L]}${DEF}) "
+		  ' `¯¯¯¯¯´ '
+		  '         ')
 
 	hero=("  "
 		  "__     "
@@ -216,12 +220,12 @@ bigalien=("      "~/
 		  "   |/    "
 		  "     ")
 
-	case ${G} in 0) gunup=("||${DGRY}--${DEF}"
-                           "||  "
-                           "||${DGRY}--${DEF}");;
-               1|2) gunup=("||${DGRY}--${DEF}"
-                           "||${DGRY}--${DEF}"
-                           "||${DGRY}--${DEF}");; esac
+	case ${G} in 0) gunup=("||${DGRY}--${DEF} "
+                           "|| "
+                           "||${DGRY}--${DEF} ");;
+                 *) gunup=("||${DGRY}--${DEF} "
+                           "||${DGRY}--${DEF} "
+                           "||${DGRY}--${DEF} ");; esac
 }
 
 function get_dimensions {
@@ -249,27 +253,59 @@ Sunsendx=$(( $endx - 19 ))
 }
 
 function bye {
-	stty ${savetty}			#restore terminal settings
+	stty ${savetty} # restore terminal settings
 	printf "${CON}${DEF}"
-	clear
-	ls --color=auto
+	clear; ls --color=auto
 	exit 0
 }
 
 function remove_obj {
 	for (( k=0; k<$er; k++ )); do XY ${OX} $(($OY + $k)) "${eraser}"; done
 	unset OBJ[$i]; OBJ=("${OBJ[@]}"); NO=${#OBJ[@]}
-#	((i--)); [ $i -lt 0 ] && i=0
 }
 
 function remove_piu {
 	XY ${PX} ${PY} "    "
 	unset PIU[$p]; PIU=("${PIU[@]}"); NP=${#PIU[@]}
-#	((p--)); [ $p -lt 0 ] && p=0
+}
+
+function mover () { er=${#sprite[@]}
+	# move
+	[ ${1} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+
+	# fly away
+	[ $OX -lt 1 ] && {
+		remove_obj
+		case ${type} in "alien") ((enumber--));; esac
+		continue
+	}
+
+	for (( p=0; p<${er}; p++ )); do
+		# print
+		XY ${OX} $(($OY + $p)) "${sprite[$p]}"
+
+		# collisions
+		case ${type} in
+			"life"  ) case "$(($OY + $p)) $OX" in "$HY $HX") ((life++))   ; remove_obj; break;; esac;;
+			"ammo"  ) case "$(($OY + $p)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj; break;; esac;;
+			"gunup" ) case "$(($OY + $p)) $OX" in "$HY $HX") ((G++))      ; remove_obj; break;; esac;;
+			"bullet") case "$OX $OY"           in "$HX $HY") ((life--))   ; remove_obj; break;; esac;;
+			"alien" ) NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do case "$(($OY + 1)) $(($OX + $p))" in # hit by bullet
+
+							"${PIU[$t]}")	[ $((RANDOM % $rnd)) -eq 0 ] && OBJ+=("$OX $OY ${bonuses[$((RANDOM % ${#bonuses[@]}))]}") # get bonus
+											((frags++));  ((enumber--)); remove_obj; remove_piu; OBJ+=("${OX} ${OY} boom"); break;;
+					  esac; done
+
+					  # hit by plane
+					  case "$(($OY + 1)) $(($OX + $p))" in
+						"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj; OBJ+=("${OX} ${OY} boom"); break;;
+					  esac;;
+		esac
+	done
 }
 
 function mess () {
-	printf "${CON}"	#get cursor back
+	printf "${CON}"	# get cursor back
 	stty $savetty
 	clear
 	case $1 in
@@ -289,18 +325,18 @@ function mess () {
 trap bye INT
 get_dimensions
 mess "help"
-stty -echo			# hide input
+stty -echo # hide input
 printf "${COF}"
 sleep 3
 clear
 
-# main game loop |======================================================================================================
+# main game loop |=======================================================================================================
 while true; do
 
 	get_dimensions; sprites
-	XY 0 ${lineendy}; line - ${endx}	#bottom line
+	XY 0 ${lineendy}; line - ${endx} # bottom line
 
-	#get keys
+	# get keys |---------------------------------------------------------------------------------------------------------
 	read -t0.01 -n1 input; case $input in
 
 		"w") ((Y--)); [ $Y -lt 1         ] && Y=1;;
@@ -313,14 +349,14 @@ while true; do
                 	         2) PIU+=("$HY $HX"); PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=3));; esac;;
 	esac
 
-	#hero collide coordinates
+	# hero collide coordinates
 	HX=$(($X + 9)); HY=$(($Y + 3))
 
-	#check win\lose
+	# check win\lose
 	[ $bhealth -le 0 ] && mess win
 	[ $life    -le 0 ] && mess lose
 
-	#timings
+	# timings |----------------------------------------------------------------------------------------------------------
 	((K++)); [ $K -gt 20 ] && K=0   # boss' fire rate
 	((L++)); [ $L -gt 3  ] && L=0   # sprites animation
 	((J++)); [ $J -gt 5  ] && J=0   # boss' bullet animation
@@ -329,183 +365,46 @@ while true; do
 	((E++)); [ $E -gt 2  ] && E=0   # tree3\cloud3(large)  speed
 	[ ${E} = 0 ] && { ((S+=${SunC}));  [ $S -gt ${SunN}  ] && S=0; }   # Sun animation
 
-
-	#move\check\print all flying to hero objects
+	# move\check\print all flying to hero objects |----------------------------------------------------------------------
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; type=${OI[2]}; case $type in
 
-	   "alien")		er=${#alien[@]}; NP=${#PIU[@]}
-					#move
-					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
-
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; ((enumber--)); continue; }
-
-					for (( t=0; t<${er}; t++ )); do
-						#print
-						XY ${OX} $(($OY + $t)) "${alien[$t]} "
-
-						#hit by plane
-						case "$(($OY + 1)) $(($OX + $t))" in
-							"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj; OBJ+=("${OX} ${OY} boom"); break;;
-						esac
-
-						#hit by bullet
-						for (( p=0; p<${NP}; p++ )); do case "$(($OY + 1)) $(($OX + $t))" in
-
-								"${PIU[$p]}")	[ $((RANDOM % $rnd)) -eq 0 ] && OBJ+=("$OX $OY ${bonuses[$((RANDOM % ${#bonuses[@]}))]}") #get bonus
-												((frags++));  ((enumber--)); remove_obj; remove_piu; OBJ+=("${OX} ${OY} boom"); break;;
-						esac; done
-					done
-					;;
-
-		"ammo")		er=${#ammob[@]}
-					#move
-					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
-
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
-
-					for (( t=0; t<${er}; t++ )); do
-						#print
-						XY ${OX} $(($OY + $t)) "${ammob[$t]} "
-
-						#get by plane
-						case "$(($OY + $t)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj; break;; esac
-					done
-					;;
-
-		"gunup")	er=${#gunup[@]}
-					#move
-					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
-
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
-					
-					for (( t=0; t<${er}; t++ )); do
-						#print
-						XY ${OX} $(($OY + $t)) "${gunup[$t]} "
-
-						#get by plane
-						case "$(($OY + $t)) $OX" in "$HY $HX") ((G++)); [ ${G} -gt 2 ] && G=2; remove_obj; break;; esac
-					done
-					;;
-
-		"life")		er=${#lifep[@]}
-					#move
-					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
-
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
-					
-					for (( t=0; t<$er; t++ )); do
-						#print
-						XY ${OX} $(($OY + $t)) "${lifep[$t]}"
-
-						#get by plane
-						case "$(($OY + $t)) $OX" in "$HY $HX") ((life++)); remove_obj; break;; esac
-					done
-					;;
-
-	  "bullet") 	er=1
-					#move
-					((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"
-
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
-
-					#hit plane
-					case "$OX $OY" in "$HX $HY") ((life--)); remove_obj; continue;; esac
-
-					#print
-					XY ${OX} ${OY} "${bshoot[$J]} "
-					;;
-
 		"boom")		er=${boomC}
-					#print
+					# it's not moving print static
 					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
 					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj; }; }
 					;;
 
-	   "tree1")		er=${#tree1[@]}
-					#move
-					[ ${Q} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+	   "alien")		sprite=("${alien[@]}");  mover 0;;
 
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
+	  "bullet") 	sprite=("${bfire[@]}");  mover 0;;
 
-					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree1[$p]}"; done
-					;;
+		"ammo")		sprite=("${ammob[@]}");  mover 0;;
+		"life")		sprite=("${lifep[@]}");  mover 0;;
+	   "gunup")		sprite=("${gunup[@]}");  mover 0;;
 
-	   "tree2") 	er=${#tree2[@]}
-					#move
-					[ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+	   "tree1")		sprite=("${tree1[@]}");  mover ${Q};;
+	   "tree2") 	sprite=("${tree2[@]}");  mover ${W};;
+	   "tree3") 	sprite=("${tree3[@]}");  mover ${E};;
 
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
+	  "cloud1") 	sprite=("${cloud1[@]}"); mover ${Q};;
+	  "cloud2") 	sprite=("${cloud2[@]}"); mover ${W};;
+	  "cloud3") 	sprite=("${cloud3[@]}"); mover ${E};;
 
-					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree2[$p]}"; done
-					;;
-
-	   "tree3") 	er=${#tree3[@]}
-					#move
-					[ ${E} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
-
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
-
-					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${tree3[$p]}"; done
-					;;
-
-	  "cloud1") 	er=${#cloud1[@]}
-					#move
-					[ ${Q} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
-
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
-
-					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud1[$p]}"; done
-					;;
-
-	  "cloud2") 	er=${#cloud2[@]}
-					#move
-					[ ${W} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
-
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
-
-					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud2[$p]}"; done
-					;;
-
-	  "cloud3") 	er=${#cloud3[@]}
-					#move
-					[ ${E} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
-
-					#fly away
-					[ $OX -lt 1 ] && { remove_obj; continue; }
-
-					#print
-					for (( p=0; p<${er}; p++ )); do XY ${OX} $(($OY + $p)) "${cloud3[$p]}"; done
-					;;
 	esac; done
 
-	#move\check\print hero bullets
+	# move\check\print hero bullets |------------------------------------------------------------------------------------
 	NP=${#PIU[@]}; for (( p=0; p<${NP}; p++ )); do PI=(${PIU[$p]}); PY=${PI[0]}; PX=${PI[1]}
 
-		#move
+		# move
 		((PX++)); [ $PX -gt $bullendx ] && PX=$bullendx; PIU[$p]="$PY $PX"
 
-		#fly away
+		# fly away
 		[ $PX -ge $bullendx ] && { remove_piu; continue; }
 
-		#print
+		# print
 		XY ${PX} ${PY} " ${shoot[$L]}"
 
-		#hit boss
+		# hit boss
 		[ $frags -ge $tillboss ] && for (( t=1; t<3; t++ )); do case "$PY $PX" in
 
 			"$(($BY + $t)) $BX"         ) ((bhealth--)); remove_piu;;
@@ -515,9 +414,9 @@ while true; do
 
 	done
 
-	#BOSS
+	# BOSS |-------------------------------------------------------------------------------------------------------------
 	if [ $frags -ge $tillboss ]; then
-		#health
+		# health
 		bar=
 		hm=$(( $endx - 10 ))
 		hp=$(( $hm * $bhealth / 100 ))
@@ -525,45 +424,45 @@ while true; do
 		for (( i=$hp;  i<$hm;  i++  )); do bar="${bar} "; done
 		XY 1 $(($endy - 1)) " ${BLD}BOSS: |${RED}$bar${DEF}${BLD}|${DEF}"
 
-		#boss move
+		# boss move
 		[ $BY -lt $Y                                     ] && ((BY++))
 		[ $BY -gt $Y                                     ] && ((BY--))
 		[ $BX -gt $(($endx / 2)) -a "$goback" == "false" ] && ((BX--)) || goback=true
 		[ $BX -lt $bossendx      -a "$goback" == "true"  ] && ((BX++)) || goback=false
 
-		#boss print
-		for (( i=0; i<${#bigalien[@]}; i++ )); do XY ${BX} $(($BY + $i)) " ${bigalien[$i]} "; done
+		# boss print
+		for (( i=0; i<${#boss[@]}; i++ )); do XY ${BX} $(($BY + $i)) " ${boss[$i]} "; done
 
-		#boss fire
+		# boss fire
 		[ $BY -eq $Y -a $K -eq 0 ] && OBJ+=("$(($BX - 4)) $(($BY + 3)) bullet")
 
-		#add enemy
+		# add enemy
 		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$(($BX + 2)) $(($BY + 3)) alien"); }
 	else
 		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$enmyendx $(( (RANDOM % $enmyendy) + 3 )) alien"); }
 	fi
 
-    #add cloud
+    # add cloud |--------------------------------------------------------------------------------------------------------
     [ $((RANDOM % 60)) = 0 ] && { cloudtype=$((RANDOM % 3 + 1)); case ${cloudtype} in
         1) OBJ+=("${cld1endx} $(( (RANDOM % 10) + 2 )) cloud1");;
         2) OBJ+=("${cld2endx} $(( (RANDOM % 10) + 2 )) cloud2");;
         3) OBJ+=("${cld3endx} $(( (RANDOM % 10) + 2 )) cloud3");;
     esac; }
 
-    #add tree
+    # add tree |---------------------------------------------------------------------------------------------------------
     [ $((RANDOM % 40)) = 0 ] && { treetype=$((RANDOM % 3 + 1)); case ${treetype} in
         1) OBJ+=("${tre1endx} ${tre1endy} tree1");;
         2) OBJ+=("${tre2endx} ${tre2endy} tree2");;
         3) OBJ+=("${tre3endx} ${tre3endy} tree3");;
     esac; }
 
-	#print Sun
+	# print Sun |--------------------------------------------------------------------------------------------------------
 	SY=1; for part in "${Sun[@]:$S:$SunC}"; do XY ${Sunsendx} ${SY} " ${part}"; ((SY++)); done
 
-	#print hero
+	# print hero |-------------------------------------------------------------------------------------------------------
 	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $(($Y + $i)) " ${hero[$i]} "; done
 
-	#print game status
-	XY 0 0 "${BLD}killed aliens: ${DEF}${CYN}$frags${DEF}  ${BLD}Life: ${DEF}${CYN}$life${DEF}  ${BLD}Ammo: ${DEF}${CYN}$ammo${DEF} "
+	# print game status |------------------------------------------------------------------------------------------------
+	XY 0 0 "${BLD}killed aliens: ${DEF}${CYN}${frags}${DEF}  ${BLD}Life: ${DEF}${CYN}${life}${DEF}  ${BLD}Ammo: ${DEF}${CYN}${ammo}${DEF} "
 
 done
