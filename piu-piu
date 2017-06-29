@@ -333,7 +333,7 @@ clear
 while true; do
 
 	get_dimensions; sprites
-	XY 0 ${lineendy}; line - ${endx} # bottom line
+	XY 0 ${lineendy} ${DIM}${GRN}; line - ${endx}; printf "${DEF}" # bottom line
 
 	# get keys |---------------------------------------------------------------------------------------------------------
 	read -t0.01 -n1 input; case $input in
