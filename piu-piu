@@ -256,17 +256,33 @@ function bye {
 	stty ${savetty} # restore terminal settings
 	printf "${CON}${DEF}"
 	clear; ls --color=auto
-	exit 0
+	exit $1
 }
 
-function remove_obj {
+function remove_obj () {
 	for (( k=0; k<$er; k++ )); do XY ${OX} $(($OY + $k)) "${eraser}"; done
-	unset OBJ[$i]; OBJ=("${OBJ[@]}"); NO=${#OBJ[@]}
+	unset OBJ[$1]; OBJ=("${OBJ[@]}"); NO=${#OBJ[@]}
 }
 
-function remove_piu {
+function remove_piu () {
 	XY ${PX} ${PY} "    "
-	unset PIU[$p]; PIU=("${PIU[@]}"); NP=${#PIU[@]}
+	unset PIU[$1]; PIU=("${PIU[@]}"); NP=${#PIU[@]}
+}
+
+function mess () {
+	clear
+	case $1 in
+		 "win")	x=$(( $endx / 2 - ${#win} / 2 ))
+				for (( i=0; i<${#win[*]}; i++ ));  do XY ${x} $(( $endy / 2 - 5 + $i )) "${win[$i]}";  done
+				XY 0 ${endy}; sleep 3; bye 0;;
+
+		"lose")	x=$(( $endx / 2 - ${#lose} / 2 ))
+				for (( i=0; i<${#lose[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${lose[$i]}"; done
+				XY 0 ${endy}; sleep 3; bye 1;;
+
+		"help")	x=$(( $endx / 2 - ${#help} / 2 ))
+				for (( i=0; i<${#help[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${help[$i]}"; done;;
+	esac
 }
 
 function mover () { er=${#sprite[@]}
@@ -275,7 +291,7 @@ function mover () { er=${#sprite[@]}
 
 	# fly away
 	[ $OX -lt 1 ] && {
-		remove_obj
+		remove_obj ${i}
 		case ${type} in "alien") ((enumber--));; esac
 		continue
 	}
@@ -286,40 +302,23 @@ function mover () { er=${#sprite[@]}
 
 		# collisions
 		case ${type} in
-			"life"  ) case "$(($OY + $p)) $OX" in "$HY $HX") ((life++))   ; remove_obj; break;; esac;;
-			"ammo"  ) case "$(($OY + $p)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj; break;; esac;;
-			"gunup" ) case "$(($OY + $p)) $OX" in "$HY $HX") ((G++))      ; remove_obj; break;; esac;;
-			"bullet") case "$OX $OY"           in "$HX $HY") ((life--))   ; remove_obj; break;; esac;;
-			"alien" ) NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do case "$(($OY + 1)) $(($OX + $p))" in # hit by bullet
+			"life"  )	case "$(($OY + $p)) $OX" in "$HY $HX") ((life++))   ; remove_obj ${i}; break;; esac;;
+			"ammo"  )	case "$(($OY + $p)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj ${i}; break;; esac;;
+			"gunup" )	case "$(($OY + $p)) $OX" in "$HY $HX") ((G++))      ; remove_obj ${i}; break;; esac;;
+			"bullet")	case "$OX $OY"           in "$HX $HY") ((life--))   ; remove_obj ${i}; break;; esac;;
+			"alien" )	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do case "$(($OY + 1)) $(($OX + $p))" in # hit by bullet
 
 							"${PIU[$t]}")	[ $((RANDOM % $rnd)) -eq 0 ] && OBJ+=("$OX $OY ${bonuses[$((RANDOM % ${#bonuses[@]}))]}") # get bonus
-											((frags++));  ((enumber--)); remove_obj; remove_piu; OBJ+=("${OX} ${OY} boom"); break;;
-					  esac; done
+											((frags++));  ((enumber--)); remove_obj ${i}; remove_piu ${t}; OBJ+=("${OX} ${OY} boom"); break;;
+						esac; done
 
-					  # hit by plane
-					  case "$(($OY + 1)) $(($OX + $p))" in
-						"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj; OBJ+=("${OX} ${OY} boom"); break;;
-					  esac;;
+						# hit by plane
+						case "$(($OY + 1)) $(($OX + $p))" in
+							"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj ${i}; OBJ+=("${OX} ${OY} boom"); break;;
+						esac;;
 		esac
+
 	done
-}
-
-function mess () {
-	printf "${CON}"	# get cursor back
-	stty $savetty
-	clear
-	case $1 in
-		 "win")	x=$(( $endx / 2 - ${#win} / 2 ))
-				for (( i=0; i<${#win[*]}; i++ ));  do XY ${x} $(( $endy / 2 - 5 + $i )) "${win[$i]}";  done
-				XY 0 ${endy}; exit 0;;
-
-		"lose")	x=$(( $endx / 2 - ${#lose} / 2 ))
-				for (( i=0; i<${#lose[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${lose[$i]}"; done
-				XY 0 ${endy}; exit 1;;
-
-		"help")	x=$(( $endx / 2 - ${#help} / 2 ))
-				for (( i=0; i<${#help[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${help[$i]}"; done;;
-	esac
 }
 
 trap bye INT
@@ -365,54 +364,54 @@ while true; do
 	((E++)); [ $E -gt 2  ] && E=0   # tree3\cloud3(large)  speed
 	[ ${E} = 0 ] && { ((S+=${SunC}));  [ $S -gt ${SunN}  ] && S=0; }   # Sun animation
 
-	# move\check\print all flying to hero objects |----------------------------------------------------------------------
-	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; type=${OI[2]}; case $type in
-
-		"boom")		er=${boomC}
-					# it's not moving print static
-					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
-					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj; }; }
-					;;
-
-	   "alien")		sprite=("${alien[@]}");  mover 0;;
-
-	  "bullet") 	sprite=("${bfire[@]}");  mover 0;;
-
-		"ammo")		sprite=("${ammob[@]}");  mover 0;;
-		"life")		sprite=("${lifep[@]}");  mover 0;;
-	   "gunup")		sprite=("${gunup[@]}");  mover 0;;
-
-	   "tree1")		sprite=("${tree1[@]}");  mover ${Q};;
-	   "tree2") 	sprite=("${tree2[@]}");  mover ${W};;
-	   "tree3") 	sprite=("${tree3[@]}");  mover ${E};;
-
-	  "cloud1") 	sprite=("${cloud1[@]}"); mover ${Q};;
-	  "cloud2") 	sprite=("${cloud2[@]}"); mover ${W};;
-	  "cloud3") 	sprite=("${cloud3[@]}"); mover ${E};;
-
-	esac; done
-
 	# move\check\print hero bullets |------------------------------------------------------------------------------------
-	NP=${#PIU[@]}; for (( p=0; p<${NP}; p++ )); do PI=(${PIU[$p]}); PY=${PI[0]}; PX=${PI[1]}
+	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PY=${PI[0]}; PX=${PI[1]}
 
 		# move
-		((PX++)); [ $PX -gt $bullendx ] && PX=$bullendx; PIU[$p]="$PY $PX"
+		((PX++)); [ $PX -gt $bullendx ] && PX=$bullendx; PIU[$t]="$PY $PX"
 
 		# fly away
-		[ $PX -ge $bullendx ] && { remove_piu; continue; }
+		[ $PX -ge $bullendx ] && { remove_piu ${t}; continue; }
 
 		# print
 		XY ${PX} ${PY} " ${shoot[$L]}"
 
 		# hit boss
-		[ $frags -ge $tillboss ] && for (( t=1; t<3; t++ )); do case "$PY $PX" in
+		[ $frags -ge $tillboss ] && for (( p=1; p<3; p++ )); do case "$PY $PX" in
 
-			"$(($BY + $t)) $BX"         ) ((bhealth--)); remove_piu;;
-			"$(($BY + $t)) $(($BX + 1))") ((bhealth--)); remove_piu;;
+			"$(($BY + $p)) $BX"         ) ((bhealth--)); remove_piu ${t};;
+			"$(($BY + $p)) $(($BX + 1))") ((bhealth--)); remove_piu ${t};;
 
 		esac; done
 
 	done
+
+	# move\check\print all flying to hero objects |----------------------------------------------------------------------
+	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; type=${OI[2]}; case $type in
+
+		"boom"  )	er=${boomC}
+					# it's not moving print static
+					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
+					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj ${i}; }; }
+					;;
+
+		"alien" )	sprite=("${alien[@]}");  mover 0;;
+
+		"bfire" )	sprite=("${bfire[@]}");  mover 0;;
+
+		"ammo"  )	sprite=("${ammob[@]}");  mover 0;;
+		"life"  )	sprite=("${lifep[@]}");  mover 0;;
+		"gunup" )	sprite=("${gunup[@]}");  mover 0;;
+
+		"tree1" )	sprite=("${tree1[@]}");  mover ${Q};;
+		"tree2" )	sprite=("${tree2[@]}");  mover ${W};;
+		"tree3" )	sprite=("${tree3[@]}");  mover ${E};;
+
+		"cloud1")	sprite=("${cloud1[@]}"); mover ${Q};;
+		"cloud2")	sprite=("${cloud2[@]}"); mover ${W};;
+		"cloud3")	sprite=("${cloud3[@]}"); mover ${E};;
+
+	esac; done
 
 	# BOSS |-------------------------------------------------------------------------------------------------------------
 	if [ $frags -ge $tillboss ]; then
@@ -434,7 +433,7 @@ while true; do
 		for (( i=0; i<${#boss[@]}; i++ )); do XY ${BX} $(($BY + $i)) " ${boss[$i]} "; done
 
 		# boss fire
-		[ $BY -eq $Y -a $K -eq 0 ] && OBJ+=("$(($BX - 4)) $(($BY + 3)) bullet")
+		[ $BY -eq $Y -a $K -eq 0 ] && OBJ+=("$(($BX - 4)) $(($BY + 3)) bfire")
 
 		# add enemy
 		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$(($BX + 2)) $(($BY + 3)) alien"); }
