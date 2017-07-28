@@ -239,6 +239,7 @@ enmyendx=$(( $endx - 5  ))
 enmyendy=$(( $endy - 7  ))
 bossendx=$(( $endx - 11 ))
 bossendy=$(( $endy - 6  ))
+bosshbar=$(( $endx - 10 ))
 tre1endx=$(( $endx - 4  ))
 tre1endy=$(( $endy - 6  ))
 tre2endx=$(( $endx - 6  ))
@@ -269,19 +270,17 @@ function remove_piu () {
 	unset PIU[$1]; PIU=("${PIU[@]}"); NP=${#PIU[@]}
 }
 
-function mess () {
-	clear
+function mess () { clear
+
+	function print {
+		x=$[$endx / 2 - ${#sprite} / 2]
+		for (( i=0; i<${#sprite[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${sprite[$i]}"; done
+	}
+
 	case $1 in
-		 "win")	x=$(( $endx / 2 - ${#win} / 2 ))
-				for (( i=0; i<${#win[*]}; i++ ));  do XY ${x} $(( $endy / 2 - 5 + $i )) "${win[$i]}";  done
-				XY 0 ${endy}; sleep 3; bye 0;;
-
-		"lose")	x=$(( $endx / 2 - ${#lose} / 2 ))
-				for (( i=0; i<${#lose[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${lose[$i]}"; done
-				XY 0 ${endy}; sleep 3; bye 1;;
-
-		"help")	x=$(( $endx / 2 - ${#help} / 2 ))
-				for (( i=0; i<${#help[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${help[$i]}"; done;;
+		"win" )	sprite=("${win[@]}") ; print; XY 0 ${endy}; sleep 3; bye 0;;
+		"lose")	sprite=("${lose[@]}"); print; XY 0 ${endy}; sleep 3; bye 1;;
+		"help")	sprite=("${help[@]}"); print;;
 	esac
 }
 
@@ -333,7 +332,6 @@ clear
 while true; do
 
 	get_dimensions; sprites
-	XY 0 ${lineendy} ${DIM}${GRN}; line - ${endx}; printf "${DEF}" # bottom line
 
 	# get keys |---------------------------------------------------------------------------------------------------------
 	read -t0.01 -n1 input; case $input in
@@ -390,7 +388,7 @@ while true; do
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; type=${OI[2]}; case $type in
 
 		"boom"  )	er=${boomC}
-					# it's not moving print static
+					# it's not moving, print in place
 					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
 					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj ${i}; }; }
 					;;
@@ -415,13 +413,11 @@ while true; do
 
 	# BOSS |-------------------------------------------------------------------------------------------------------------
 	if [ $frags -ge $tillboss ]; then
-		# health
-		bar=
-		hm=$(( $endx - 10 ))
-		hp=$(( $hm * $bhealth / 100 ))
-		for (( i=0;    i<$hp;  i++  )); do bar="▒${bar}"; done
-		for (( i=$hp;  i<$hm;  i++  )); do bar="${bar} "; done
-		XY 1 $(($endy - 1)) " ${BLD}BOSS: |${RED}$bar${DEF}${BLD}|${DEF}"
+		# health bar
+		bar=; hp=$(( $bosshbar * $bhealth / 100 ))
+		for (( i=0  ; i<$hp; i++ )); do bar="▒${bar}"; done
+		for (( i=$hp; i<$hm; i++ )); do bar="${bar} "; done
+		XY 1 $(($endy - 1)) " ${BLD}BOSS: |${RED}${bar}${DEF}${BLD}|${DEF}"
 
 		# boss move
 		[ $BY -lt $Y                                     ] && ((BY++))
@@ -460,6 +456,9 @@ while true; do
 
 	# print hero |-------------------------------------------------------------------------------------------------------
 	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $(($Y + $i)) " ${hero[$i]} "; done
+
+	# bottom line |------------------------------------------------------------------------------------------------------
+	XY 0 ${lineendy} ${DIM}${GRN}; line - ${endx}; printf "${DEF}"
 
 	# print game status |------------------------------------------------------------------------------------------------
 	XY 0 0 "${BLD}killed aliens: ${DEF}${CYN}${frags}${DEF}  ${BLD}Life: ${DEF}${CYN}${life}${DEF}  ${BLD}Ammo: ${DEF}${CYN}${ammo}${DEF} "
