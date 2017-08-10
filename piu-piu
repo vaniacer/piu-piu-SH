@@ -31,7 +31,8 @@ XY   () { printf "\e[${2};${1}H${3}";   } #                            |
 # Line, usage: line - 10 | line -= 20 | line "word1 word2 " 20         |
 line () { printf %.s"${1}" $(seq ${2}); } #                            |
 #----------------------------------------------------------------------+
-# start opt |----------------------------------------------------------+
+
+# Start opt |----------------------------------------------------------+
 tillboss=100		# 100
  bhealth=100		# 100
  savetty=$(stty -g) # save terminal settings
@@ -53,7 +54,7 @@ tillboss=100		# 100
        K=0
 	   S=0
 
-# messages |-------------------------------------------------------------------------------------------------------------
+# Messages |-------------------------------------------------------------------------------------------------------------
     help=("                  ^     "
 		  "                  ${RED}W${DEF}     "
 		  "${BLD}Control with:${DEF} < ${RED}A S D${DEF} > "
@@ -90,7 +91,7 @@ ${BLD}${GRN}'|  _ \ / _ \| \ | | ____| |'${DEF}
       ${GRN}'| |_| | |_| | |\  | |___|_|'${DEF}
 ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 
-# sprites |--------------------------------------------------------------------------------------------------------------
+# Sprites |--------------------------------------------------------------------------------------------------------------
   eraser='           '
 
      gun=( - = ≡ ); G=0
@@ -197,7 +198,7 @@ ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
           ${YLW}'          .`       '${DEF}
           ${YLW}'                   '${DEF}); SunN=${#Sun[@]}; SunC=9
 
-# functions |------------------------------------------------------------------------------------------------------------
+# Functions |------------------------------------------------------------------------------------------------------------
 function sprites { # dynamic sprites
 
    bfire=("${bshoot[$J]} ")
@@ -253,7 +254,7 @@ lineendy=$(( $endy - 2  ))
 Sunsendx=$(( $endx - 19 ))
 }
 
-function bye {
+function bye () {
 	stty ${savetty} # restore terminal settings
 	printf "${CON}${DEF}"
 	clear; ls --color=auto
@@ -328,13 +329,13 @@ printf "${COF}"
 sleep 3
 clear
 
-# main game loop |=======================================================================================================
+# Main game loop |=======================================================================================================
 while true; do
 
 	get_dimensions; sprites
 
-	# get keys |---------------------------------------------------------------------------------------------------------
-	read -t0.01 -n1 input; case $input in
+	# Get keys |---------------------------------------------------------------------------------------------------------
+	read -t0.0001 -n1 input; case $input in
 
 		"w") ((Y--)); [ $Y -lt 1         ] && Y=1;;
 		"a") ((X--)); [ $X -lt 1         ] && X=1;;
@@ -346,14 +347,14 @@ while true; do
                 	         2) PIU+=("$HY $HX"); PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=3));; esac;;
 	esac
 
-	# hero collide coordinates
+	# Hero collide coordinates
 	HX=$(($X + 9)); HY=$(($Y + 3))
 
-	# check win\lose
+	# Check win\lose
 	[ $bhealth -le 0 ] && mess win
 	[ $life    -le 0 ] && mess lose
 
-	# timings |----------------------------------------------------------------------------------------------------------
+	# Timings |----------------------------------------------------------------------------------------------------------
 	((K++)); [ $K -gt 20 ] && K=0   # boss' fire rate
 	((L++)); [ $L -gt 3  ] && L=0   # sprites animation
 	((J++)); [ $J -gt 5  ] && J=0   # boss' bullet animation
@@ -362,19 +363,19 @@ while true; do
 	((E++)); [ $E -gt 2  ] && E=0   # tree3\cloud3(large)  speed
 	[ ${E} = 0 ] && { ((S+=${SunC}));  [ $S -gt ${SunN}  ] && S=0; }   # Sun animation
 
-	# move\check\print hero bullets |------------------------------------------------------------------------------------
+	# Move\check\print hero bullets |------------------------------------------------------------------------------------
 	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PY=${PI[0]}; PX=${PI[1]}
 
-		# move
+		# Move
 		((PX++)); [ $PX -gt $bullendx ] && PX=$bullendx; PIU[$t]="$PY $PX"
 
-		# fly away
+		# Fly away
 		[ $PX -ge $bullendx ] && { remove_piu ${t}; continue; }
 
 		# print
 		XY ${PX} ${PY} " ${shoot[$L]}"
 
-		# hit boss
+		# Hit boss
 		[ $frags -ge $tillboss ] && for (( p=1; p<3; p++ )); do case "$PY $PX" in
 
 			"$(($BY + $p)) $BX"         ) ((bhealth--)); remove_piu ${t};;
@@ -384,11 +385,11 @@ while true; do
 
 	done
 
-	# move\check\print all flying to hero objects |----------------------------------------------------------------------
+	# Move\check\print all flying to hero objects |----------------------------------------------------------------------
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; type=${OI[2]}; case $type in
 
 		"boom"  )	er=${boomC}
-					# it's not moving, print in place
+					# It's not moving, print in place
 					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
 					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj ${i}; }; }
 					;;
@@ -413,54 +414,54 @@ while true; do
 
 	# BOSS |-------------------------------------------------------------------------------------------------------------
 	if [ $frags -ge $tillboss ]; then
-		# health bar
+		# Health bar
 		bar=; hp=$(( $bosshbar * $bhealth / 100 ))
 		for (( i=0  ; i<$hp; i++ )); do bar="▒${bar}"; done
 		for (( i=$hp; i<$hm; i++ )); do bar="${bar} "; done
 		XY 1 $(($endy - 1)) " ${BLD}BOSS: |${RED}${bar}${DEF}${BLD}|${DEF}"
 
-		# boss move
+		# Boss move
 		[ $BY -lt $Y                                     ] && ((BY++))
 		[ $BY -gt $Y                                     ] && ((BY--))
 		[ $BX -gt $(($endx / 2)) -a "$goback" == "false" ] && ((BX--)) || goback=true
 		[ $BX -lt $bossendx      -a "$goback" == "true"  ] && ((BX++)) || goback=false
 
-		# boss print
+		# Boss print
 		for (( i=0; i<${#boss[@]}; i++ )); do XY ${BX} $(($BY + $i)) " ${boss[$i]} "; done
 
-		# boss fire
+		# Boss fire
 		[ $BY -eq $Y -a $K -eq 0 ] && OBJ+=("$(($BX - 4)) $(($BY + 3)) bfire")
 
-		# add enemy
+		# Add enemy
 		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$(($BX + 2)) $(($BY + 3)) alien"); }
 	else
 		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$enmyendx $(( (RANDOM % $enmyendy) + 3 )) alien"); }
 	fi
 
-    # add cloud |--------------------------------------------------------------------------------------------------------
+    # Add cloud |--------------------------------------------------------------------------------------------------------
     [ $((RANDOM % 60)) = 0 ] && { cloudtype=$((RANDOM % 3 + 1)); case ${cloudtype} in
         1) OBJ+=("${cld1endx} $(( (RANDOM % 10) + 2 )) cloud1");;
         2) OBJ+=("${cld2endx} $(( (RANDOM % 10) + 2 )) cloud2");;
         3) OBJ+=("${cld3endx} $(( (RANDOM % 10) + 2 )) cloud3");;
     esac; }
 
-    # add tree |---------------------------------------------------------------------------------------------------------
+    # Add tree |---------------------------------------------------------------------------------------------------------
     [ $((RANDOM % 40)) = 0 ] && { treetype=$((RANDOM % 3 + 1)); case ${treetype} in
         1) OBJ+=("${tre1endx} ${tre1endy} tree1");;
         2) OBJ+=("${tre2endx} ${tre2endy} tree2");;
         3) OBJ+=("${tre3endx} ${tre3endy} tree3");;
     esac; }
 
-	# print Sun |--------------------------------------------------------------------------------------------------------
+	# Print Sun |--------------------------------------------------------------------------------------------------------
 	SY=1; for part in "${Sun[@]:$S:$SunC}"; do XY ${Sunsendx} ${SY} " ${part}"; ((SY++)); done
 
-	# print hero |-------------------------------------------------------------------------------------------------------
+	# Print hero |-------------------------------------------------------------------------------------------------------
 	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $(($Y + $i)) " ${hero[$i]} "; done
 
-	# bottom line |------------------------------------------------------------------------------------------------------
+	# Bottom line |------------------------------------------------------------------------------------------------------
 	XY 0 ${lineendy} ${DIM}${GRN}; line - ${endx}; printf "${DEF}"
 
-	# print game status |------------------------------------------------------------------------------------------------
+	# Print game status |------------------------------------------------------------------------------------------------
 	XY 0 0 "${BLD}killed aliens: ${DEF}${CYN}${frags}${DEF}  ${BLD}Life: ${DEF}${CYN}${life}${DEF}  ${BLD}Ammo: ${DEF}${CYN}${ammo}${DEF} "
 
 done
