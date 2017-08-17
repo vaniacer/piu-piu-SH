@@ -268,7 +268,7 @@ function remove_obj () {
 
 function remove_piu () {
 	XY ${PX} ${PY} "    "
-	unset PIU[$1]; PIU=("${PIU[@]}"); NP=${#PIU[@]}
+	unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--)); [ ${NP} -lt 0 ] && NP=0
 }
 
 function mess () { clear
