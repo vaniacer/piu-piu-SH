@@ -414,9 +414,9 @@ while true; do
 	# BOSS |-------------------------------------------------------------------------------------------------------------
 	if [ $frags -ge $tillboss ]; then
 		# Health bar
-		bar=; hp=$(( $bosshbar * $bhealth / 100 ))
-		for (( i=0  ; i<$hp; i++ )); do bar="▒${bar}"; done
-		for (( i=$hp; i<$hm; i++ )); do bar="${bar} "; done
+		bar=; hp=$(( $bosshbar * $bhealth / 100 )); hm=$(( $endx - 10 ))
+		for (( i=0  ; i<${hp}; i++ )); do bar="▒${bar}"; done
+		for (( i=$hp; i<${hm}; i++ )); do bar="${bar} "; done
 		XY 1 $(($endy - 1)) " ${BLD}BOSS: |${RED}${bar}${DEF}${BLD}|${DEF}"
 
 		# Boss move
