@@ -35,7 +35,6 @@ line () { printf %.s"${1}" $(seq ${2}); } #                            |
 # Start opt |----------------------------------------------------------+
 tillboss=100		# 100
  bhealth=100		# 100
- savetty=$(stty -g) # save terminal settings
  enumber=0
  bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# more ammo, less life ang gunup
   goback=false
@@ -255,7 +254,7 @@ Sunsendx=$(( $endx - 19 ))
 }
 
 function bye () {
-	stty ${savetty} # restore terminal settings
+	stty echo
 	printf "${CON}${DEF}"
 	clear; ls --color=auto
 	exit $1
@@ -263,12 +262,12 @@ function bye () {
 
 function remove_obj () {
 	for (( k=0; k<$er; k++ )); do XY ${OX} $(($OY + $k)) "${eraser}"; done
-	unset OBJ[$1]; OBJ=("${OBJ[@]}"); NO=${#OBJ[@]}
+	unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--))
 }
 
 function remove_piu () {
 	XY ${PX} ${PY} "    "
-	unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--)); [ ${NP} -lt 0 ] && NP=0
+	unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--))
 }
 
 function mess () { clear
@@ -306,7 +305,7 @@ function mover () { er=${#sprite[@]}
 			"ammo"  )	case "$(($OY + $p)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj ${i}; break;; esac;;
 			"gunup" )	case "$(($OY + $p)) $OX" in "$HY $HX") ((G++))      ; remove_obj ${i}; break;; esac;;
 			"bfire" )	case "$OY $OX"           in "$HY $HX") ((life--))   ; remove_obj ${i}; break;; esac;;
-			"alien" )	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do case "$(($OY + 1)) $(($OX + $p))" in # hit by bullet
+			"alien" )	for (( t=0; t<${NP}; t++ )); do case "$(($OY + 1)) $(($OX + $p))" in # hit by bullet
 
 							"${PIU[$t]}")	[ $((RANDOM % $rnd)) -eq 0 ] && OBJ+=("$OX $OY ${bonuses[$((RANDOM % ${#bonuses[@]}))]}") # get bonus
 											((frags++));  ((enumber--)); remove_obj ${i}; remove_piu ${t}; OBJ+=("${OX} ${OY} boom"); break;;
@@ -324,7 +323,7 @@ function mover () { er=${#sprite[@]}
 trap bye INT
 get_dimensions
 mess "help"
-stty -echo # hide input
+stty -echo
 printf "${COF}"
 sleep 3
 clear
@@ -367,10 +366,10 @@ while true; do
 	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PY=${PI[0]}; PX=${PI[1]}
 
 		# Move
-		((PX++)); [ $PX -gt $bullendx ] && PX=$bullendx; PIU[$t]="$PY $PX"
+		((PX++))
 
 		# Fly away
-		[ $PX -ge $bullendx ] && { remove_piu ${t}; continue; }
+		[ $PX -ge $bullendx ] && { remove_piu ${t}; continue; } || { PIU[$t]="$PY $PX"; }
 
 		# print
 		XY ${PX} ${PY} " ${shoot[$L]}"
