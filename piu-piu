@@ -292,7 +292,6 @@ function mover () { er=${#sprite[@]}
 	[ $OX -lt 1 ] && {
 		remove_obj ${i}
 		case ${type} in "alien") ((enumber--));; esac
-		continue
 	}
 
 	for (( p=0; p<${er}; p++ )); do
