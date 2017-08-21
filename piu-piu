@@ -432,6 +432,14 @@ while true; do
 		# Boss fire
 		[ $BY -eq $Y -a $K -eq 0 ] && OBJ+=("$(($BX - 4)) $(($BY + 3)) bfire")
 
+		# Collide with plane
+		for (( p=2; p<4; p++ )); do case "$HY $HX" in
+
+			"$(($BY + $p)) $BX"         ) ((bhealth-=10)); ((life--));;
+			"$(($BY + $p)) $(($BX + 1))") ((bhealth-=10)); ((life--));;
+
+		esac; done
+
 		# Add enemy
 		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$(($BX + 2)) $(($BY + 3)) alien"); }
 	else
