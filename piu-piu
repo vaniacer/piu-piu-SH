@@ -334,13 +334,13 @@ while true; do
 	get_dimensions; sprites
 
 	# Get keys |---------------------------------------------------------------------------------------------------------
-	read -t0.0001 -n1 input; case $input in
+	read -t0.0001 -n1 input; input=${input:0:1}; case $input in
 
-		"w") ((Y--)); [ $Y -lt 1         ] && Y=1;;
-		"a") ((X--)); [ $X -lt 1         ] && X=1;;
-		"s") ((Y++)); [ $Y -gt $heroendy ] && Y=$heroendy;;
-		"d") ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
-		"p") [ $ammo -gt 0 ] && \
+		'w'|'W') ((Y--)); [ $Y -lt 1         ] && Y=1;;
+		'a'|'A') ((X--)); [ $X -lt 1         ] && X=1;;
+		's'|'S') ((Y++)); [ $Y -gt $heroendy ] && Y=$heroendy;;
+		'd'|'D') ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
+		'p'|'P') [ $ammo -gt 0 ] && \
 				case ${G} in 0) PIU+=("$HY $HX"); ((ammo--));;
                 	         1) PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=2));;
                 	         2) PIU+=("$HY $HX"); PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX");((ammo-=3));; esac;;
