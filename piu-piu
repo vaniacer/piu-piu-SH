@@ -376,7 +376,7 @@ while true; do
 		XY ${PX} ${PY} " ${shoot[$L]}"
 
 		# Hit boss
-		[ $frags -ge $tillboss ] && for (( p=1; p<3; p++ )); do case "$PY $PX" in
+		[ $frags -ge $tillboss ] && for (( p=2; p<4; p++ )); do case "$PY $PX" in
 
 			"$(($BY + $p)) $BX"         ) ((bhealth--)); remove_piu ${t};;
 			"$(($BY + $p)) $(($BX + 1))") ((bhealth--)); remove_piu ${t};;
