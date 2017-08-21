@@ -230,8 +230,11 @@ function sprites { # dynamic sprites
 }
 
 function get_dimensions {
-	endx=$( tput cols  )
-	endy=$( tput lines )
+	size=($(stty size))
+	endx=${size[1]}
+	endy=${size[0]}
+#	endx=$( tput cols  )
+#	endy=$( tput lines )
 
 bullendx=$(( $endx - 4  ))
 heroendx=$(( $endx - 12 ))
