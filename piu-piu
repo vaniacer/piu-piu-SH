@@ -1,260 +1,379 @@
 #!/bin/bash
-#----------------------------------------------------------------------+
-#Color picker, usage: printf ${BLD}${CUR}${RED}${BBLU}"Some text"${DEF}|
-#---------------------------+--------------------------------+---------+
-#        Text color         |       Background color         |         |
-#------------+--------------+--------------+-----------------+         |
-#    Base    |Lighter\Darker|    Base      | Lighter\Darker  |         |
-#------------+--------------+--------------+-----------------+         |
-RED='\e[31m'; LRED='\e[91m'; BRED='\e[41m'; BLRED='\e[101m' #| Red     |
-GRN='\e[32m'; LGRN='\e[92m'; BGRN='\e[42m'; BLGRN='\e[102m' #| Green   |
-YLW='\e[33m'; LYLW='\e[93m'; BYLW='\e[43m'; BLYLW='\e[103m' #| Yellow  |
-BLU='\e[34m'; LBLU='\e[94m'; BBLU='\e[44m'; BLBLU='\e[104m' #| Blue    |
-MGN='\e[35m'; LMGN='\e[95m'; BMGN='\e[45m'; BLMGN='\e[105m' #| Magenta |
-CYN='\e[36m'; LCYN='\e[96m'; BCYN='\e[46m'; BLCYN='\e[106m' #| Cyan    |
-GRY='\e[37m'; DGRY='\e[90m'; BGRY='\e[47m'; BDGRY='\e[100m' #| Gray    |
-#------------------------------------------------------------+---------+
-# Effects                                                              |
-#----------------------------------------------------------------------+
-DEF='\e[0m'   # Default color and effects                              |
-BLD='\e[1m'   # Bold\brighter                                          |
-DIM='\e[2m'   # Dim\darker                                             |
-CUR='\e[3m'   # Italic font                                            |
-UND='\e[4m'   # Underline                                              |
-INV='\e[7m'   # Inverted                                               |
-COF='\e[?25l' # Cursor Off                                             |
-CON='\e[?25h' # Cursor On                                              |
-#----------------------------------------------------------------------+
-# Text positioning, usage: XY 10 10 "Some text"                        |
-XY   () { printf "\e[${2};${1}H${3}";   } #                            |
-#----------------------------------------------------------------------+
-# Line, usage: line - 10 | line -= 20 | line "word1 word2 " 20         |
-line () { printf %.s"${1}" $(seq ${2}); } #                            |
-#----------------------------------------------------------------------+
+#--------------------------------------------------------------------+
+#Color picker, usage: printf ${BLD}${CUR}${RED}${BBLU}"Hello!)"${DEF}|
+#-------------------------+--------------------------------+---------+
+#       Text color        |       Background color         |         |
+#-----------+-------------+--------------+-----------------+         |
+# Base color|Lighter shade| Base color   | Lighter shade   |         |
+#-----------+-------------+--------------+-----------------+         |
+BLK='\e[30m'; blk='\e[90m'; BBLK='\e[40m'; bblk='\e[100m' #| Black   |
+RED='\e[31m'; red='\e[91m'; BRED='\e[41m'; bred='\e[101m' #| Red     |
+GRN='\e[32m'; grn='\e[92m'; BGRN='\e[42m'; bgrn='\e[102m' #| Green   |
+YLW='\e[33m'; ylw='\e[93m'; BYLW='\e[43m'; bylw='\e[103m' #| Yellow  |
+BLU='\e[34m'; blu='\e[94m'; BBLU='\e[44m'; bblu='\e[104m' #| Blue    |
+MGN='\e[35m'; mgn='\e[95m'; BMGN='\e[45m'; bmgn='\e[105m' #| Magenta |
+CYN='\e[36m'; cyn='\e[96m'; BCYN='\e[46m'; bcyn='\e[106m' #| Cyan    |
+WHT='\e[37m'; wht='\e[97m'; BWHT='\e[47m'; bwht='\e[107m' #| White   |
+#----------------------------------------------------------+---------+
+# Effects                                                            |
+#--------------------------------------------------------------------+
+DEF='\e[0m'   #Default color and effects                             |
+BLD='\e[1m'   #Bold\brighter                                         |
+DIM='\e[2m'   #Dim\darker                                            |
+CUR='\e[3m'   #Italic font                                           |
+UND='\e[4m'   #Underline                                             |
+INV='\e[7m'   #Inverted                                              |
+COF='\e[?25l' #Cursor Off                                            |
+CON='\e[?25h' #Cursor On                                             |
+#--------------------------------------------------------------------+
+# Text positioning, usage: XY 10 10 "Hello World!"                   |
+XY   () { printf "\e[${2};${1}H${3}";   } #                          |
+#--------------------------------------------------------------------+
+# Print line, usage: line - 10 | line -= 20 | line "Hello World!" 20 |
+line () { printf %.s"${1}" $(seq ${2}); } #                          |
+#--------------------------------------------------------------------+
 
-# Start opt |----------------------------------------------------------+
-tillboss=100		# 100
- bhealth=100		# 100
- enumber=0
- bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# more ammo, less life ang gunup
-  goback=false
-   enmax=10
-   frags=0
-    life=3
-    ammo=100
-     rnd=10			# 10
-      BY=1
-      BX=$(($(tput cols) - 11))
-	  BN=0
-       X=1
-       Y=1
-       L=0
-       J=0
-       K=0
-	   S=0
-	   G=0			# gun
+#--------------------------{ Start opt }-----------------------------+
+    tillboss=100		# 100
+     bhealth=100		# 100
+     enumber=0
+     bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# more ammo, less life ang gunup
+      goback=false
+       enmax=10
+       frags=0
+        life=3
+        ammo=100
+         rnd=10			# 10
+          BY=$[$(tput lines) / 2]
+          BX=$(tput cols)
+	      BN=0
+          BC=0
+           X=1
+           Y=1
+           L=0
+           J=0
+           K=0
+	       S=0
+	       G=0			# gun
 
-# Messages |-------------------------------------------------------------------------------------------------------------
-    help=("                  ^     "
-		  "                  ${RED}W${DEF}     "
-		  "${BLD}Control with:${DEF} < ${RED}A S D${DEF} > "
-		  "                  v     "
-		  "                        "
-		  "${BLD}Shoot with:${DEF}       ${YLW}P${DEF} ${BLD}${LRED}-=${DEF}${BLD}${GRN}>${DEF} ")
+#------------------------{ Messages }------------------------------------------------------------------------------------
+        help=("                  ^     "
+		      "                  ${RED}W${DEF}     "
+		      "${BLD}Control with:${DEF} < ${RED}A S D${DEF} > "
+		      "                  v     "
+		      "                        "
+		      "${BLD}Shoot with:${DEF}       ${YLW}P${DEF} ${BLD}${red}-=${DEF}${BLD}${GRN}>${DEF} ")
 
-    lose=(  '                            '
-${BLD}${RED}'  ____    _    __  __ _____ '${DEF}
-     ${LRED}' / ___|  / \  |  \/  | ____|'${DEF}
-     ${LRED}'| | __  / _ \ | |\/| |  _|  '${DEF}
-      ${RED}'| |_\ \/ ___ \| |  | | |___ '${DEF}
-${DIM}${RED}' \____/_/   \_\_|__|_|_____|'${DEF}
-${BLD}${RED}'  / _ \ \   / / ____|  _ \  '${DEF}
-     ${LRED}' | | | \ \ / /|  _| | |_) | '${DEF}
-      ${RED}' | |_| |\ V / | |___|  _ <  '${DEF}
-${DIM}${RED}'  \___/  \_/  |_____|_| \_| '${DEF})
+        lose=('                            '
+  ${BLD}${red}'  ____    _    __  __ _____ '${DEF}
+        ${red}' / ___|  / \  |  \/  | ____|'${DEF}
+        ${red}'| | __  / _ \ | |\/| |  _|  '${DEF}
+        ${RED}'| |_\ \/ ___ \| |  | | |___ '${DEF}
+  ${DIM}${RED}' \____/_/   \_\_|__|_|_____|'${DEF}
+  ${BLD}${red}'  / _ \ \   / / ____|  _ \  '${DEF}
+        ${red}' | | | \ \ / /|  _| | |_) | '${DEF}
+        ${RED}' | |_| |\ V / | |___|  _ <  '${DEF}
+  ${DIM}${RED}'  \___/  \_/  |_____|_| \_| '${DEF})
 
-#     win=("                        "
-#"${BLD}${GRN}__        _____ _   _ _ ${DEF}"
-#     "${LGRN}\ \      / /_ _| \ | | |${DEF}"
-#     "${LGRN} \ \ /\ / / | ||  \| | |${DEF}"
-#      "${GRN}  \ V  V /  | || |\  |_|${DEF}"
-#"${DIM}${GRN}   \_/\_/  |___|_| \_(_)${DEF}")
+         win=('                           '
+  ${BLD}${grn}'__        ______ _    _    '${DEF}
+        ${grn}'\ \      / /____| |  | |   '${DEF}
+        ${grn}' \ \ /\ / /  _| | |  | |   '${DEF}
+        ${GRN}'  \ V  V /| |___| |__| |__ '${DEF}
+  ${DIM}${GRN}' __\_/\_/_|_____|____|____|'${DEF}
+  ${BLD}${grn}'|  _ \ / _ \| \ | | ____| |'${DEF}
+        ${grn}'| | | | | | |  \| |  _| | |'${DEF}
+        ${GRN}'| |_| | |_| | |\  | |___|_|'${DEF}
+  ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 
-     win=(  '                           '
-${BLD}${GRN}'__        ______ _    _    '${DEF}
-     ${LGRN}'\ \      / /____| |  | |   '${DEF}
-     ${LGRN}' \ \ /\ / /  _| | |  | |   '${DEF}
-      ${GRN}'  \ V  V /| |___| |__| |__ '${DEF}
-${DIM}${GRN}' __\_/\_/_|_____|____|____|'${DEF}
-${BLD}${GRN}'|  _ \ / _ \| \ | | ____| |'${DEF}
-     ${LGRN}'| | | | | | |  \| |  _| | |'${DEF}
-      ${GRN}'| |_| | |_| | |\  | |___|_|'${DEF}
-${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
+#------------------------{ Sprites }-------------------------------------------------------------------------------------
+      eraser='           '
 
-# Sprites |--------------------------------------------------------------------------------------------------------------
-  eraser='           '
+         gun=( - = ≡ )
 
-     gun=( - = ≡ )
+       ammob=("${BLD}${red}-=${DEF}${GRN}>${DEF} "
+              "${BLD}${red}-=${DEF}${GRN}>${DEF} "
+              "${BLD}${red}-=${DEF}${GRN}>${DEF} ")
 
-   ammob=("${BLD}${LRED}-=${DEF}${GRN}>${DEF} "
-	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF} "
-	      "${BLD}${LRED}-=${DEF}${GRN}>${DEF} ")
+       lifep=("${RED}/V\ ${DEF} "
+              "${RED}\ / ${DEF} "
+              "${RED} V  ${DEF} ")
 
-   lifep=("${RED}/V\ ${DEF} "
-	      "${RED}\ / ${DEF} "
-		  "${RED} V  ${DEF} ")
+       shoot=("${RED} -${DEF}${BLD}${GRN}>${DEF}"
+              "${BLD}${red}-=${DEF}${GRN}>${DEF}"
+              "${red}=-${DEF}${BLD}${GRN}>${DEF}"
+              "${RED}- ${DEF}${GRN}>${DEF}")
 
-   shoot=("${RED} -${DEF}${BLD}${GRN}>${DEF}"
-		  "${BLD}${LRED}-=${DEF}${GRN}>${DEF}"
-		  "${LRED}=-${DEF}${BLD}${GRN}>${DEF}"
-		  "${RED}- ${DEF}${GRN}>${DEF}")
+      bshoot=("${ylw}█▓▒░${DEF}"
+              "${ylw}▓▒░▒${DEF}"
+              "${ylw}▒░▒▓${DEF}"
+              "${ylw}░▒▓█${DEF}"
+              "${ylw}▒▓█▓${DEF}"
+              "${ylw}▓█▓▒${DEF}")
 
-  bshoot=("${LYLW}█▓▒░${DEF}"
-		  "${LYLW}▓▒░▒${DEF}"
-		  "${LYLW}▒░▒▓${DEF}"
-		  "${LYLW}░▒▓█${DEF}"
-		  "${LYLW}▒▓█▓${DEF}"
-		  "${LYLW}▓█▓▒${DEF}")
+#------------------------{ Cycle slow }----------------------------------------------------------------------------------
+         big=(' O   O '
+		      'O   O  '
+              '   O   '
+              '  O   O')
 
-	 big=(${RED}' O   O '${DEF}
-		  ${RED}'O   O  '${DEF}
-		  ${RED}'   O   '${DEF}
-		  ${RED}'  O   O'${DEF})
+       small=('o  '
+              '   '
+              '  o'
+              ' o ')
 
-   small=(${YLW}'o  '${DEF}
-	 	  ${YLW}'   '${DEF}
-	 	  ${YLW}'  o'${DEF}
-		  ${YLW}' o '${DEF})
+#------------------------{ Cycle fast }----------------------------------------------------------------------------------
+        big2=(${RED}' O   O '${DEF}
+		      ${RED}'O   O  '${DEF}
+              ${RED}"   ${BLD}O   "${DEF}
+              ${RED}'  O   O'${DEF})
 
-   tree1=(${DIM}${GRN}' _  '${DEF}
-          ${DIM}${GRN}'/ \ '${DEF}
-          ${DIM}${GRN}'\\'${DGRY}'|'${DIM}${GRN}'/ '${DEF}
-          ${DGRY}' | '${DEF})
+      small2=(${YLW}'o  '${DEF}
+              ${YLW}'   '${DEF}
+              ${YLW}'  o'${DEF}
+              ${YLW}" ${BLD}o "${DEF})
 
-   tree2=(${GRN}' _._  '${DEF}
-          ${GRN}'/   \ '${DEF}
-          ${GRN}'\\'${DEF}${DIM}' | '${DEF}${GRN}'/ '${DEF}
-          ${GRN}' \\'${DEF}${DIM}'║'${DEF}${GRN}'/\ '${DEF}
-          ${DIM}'  ║'${DEF}${GRN}'_/ '${DEF}
-          ${DIM}'  ║ '${DEF})
+#------------------------{ Trees slow }----------------------------------------------------------------------------------
+       tree1=(' _ '
+              '/ \ '
+              '\|/ '
+              ' | ')
 
-   tree3=(${LGRN}'   _._  '${DEF}
-          ${LGRN}'  /   \ '${DEF}
-          ${LGRN}' _\ '${DEF}${GRY}'|'${DEF}${LGRN}' / '${DEF}
-          ${LGRN}'/  \\'${DEF}${GRY}'║'${DEF}${LGRN}'/ _ '${DEF}
-          ${LGRN}'\_'${DEF}${GRY}'\\'${DEF}${LGRN}'/'${DEF}${GRY}'║ '${DEF}${LGRN}'/ \ '${DEF}
-          ${LGRN}'   '${DEF}${GRY}'\║ /'${DEF}${LGRN}'_/ '${DEF}
-          ${GRY}'    ║/ '${DEF}
-          ${GRY}'    ║ '${DEF}
-          ${GRY}'    ║ '${DEF})
+ tree1_color=("${DIM}${GRN} ${DIM}${GRN} ${DEF}"
+              "${DIM}${GRN} ${DIM}${GRN} ${DIM}${GRN} ${DEF}"
+              "${DIM}${GRN}    ${blk}    ${DIM}${GRN} ${DEF}"
+              "   ${DEF}       ${blk}    ${DEF}")
 
-  cloud1=(${DIM}${BLU}' ,-.,  '${DEF}
-          ${DIM}${BLU}'(    ) '${DEF}
-          ${DIM}${BLU}' `+-`  '${DEF})
+       tree2=(' _._ '
+              '/   \ '
+              '\ | / '
+              ' \║/\ '
+              '  ║_/ '
+              '  ║ ')
 
-  cloud2=(${BLU}' ,-._.,  '${DEF}
-          ${BLU}'(      ) '${DEF}
-          ${BLU}' `-...`  '${DEF})
+ tree2_color=("${GRN} ${GRN}    ${GRN}       ${GRN}    ${DEF}"
+              "${GRN} ${GRN}    ${GRN}       ${GRN}    ${GRN} ${DEF}"
+              "${GRN} ${GRN} ${DEF}${DIM} ${DEF}${GRN} ${GRN} ${DEF}"
+              "${DEF} ${GRN} ${DEF}${DIM} ${DEF}${GRN} ${GRN} ${DEF}"
+              "${DEF} ${DEF} ${DEF}${DIM} ${DEF}${GRN} ${GRN} ${DEF}"
+              "${DEF} ${DEF} ${DEF}${DIM} ${DEF}${GRN} ${DEF}")
 
-  cloud3=(${LBLU}' ,`"`.-"`.  '${DEF}
-          ${LBLU}'(         ) '${DEF}
-          ${LBLU}' `--.....`  '${DEF})
+       tree3=('   _._ '
+              '  /   \ '
+              ' _\ | / '
+              '/  \║/__ '
+              '\_\/║/  \ '
+              '   \║|/_/ '
+              '    ║/ '
+              '    ║ '
+              '    ║ ')
 
-    boom=(${LRED}'   .-. '${DEF}
-          ${LRED}'  (   )'${DEF}
-          ${LRED}'   `-` '${DEF}
-          ${RED}'  , - . '${DEF}
-          ${RED}' (     )'${DEF}
-          ${RED}'  . _ . '${DEF}
-          ${DIM}${RED}'   `  "  '${DEF}
-          ${DIM}${RED}'(       )'${DEF}
-          ${DIM}${RED}'  _ _ .  '${DEF}); boomN=${#boom[@]}; boomC=3
+ tree3_color=("${DEF} ${DEF} ${DEF} ${grn} ${grn} ${grn} ${DEF}"
+              "${DEF} ${DEF} ${grn} ${DEF} ${DEF} ${DEF} ${grn} ${DEF}"
+              "${DEF} ${grn} ${grn} ${DEF} ${WHT} ${DEF} ${grn} ${DEF}"
+              "${grn} ${DEF} ${DEF} ${grn} ${WHT} ${grn} ${grn} ${grn} ${DEF}"
+              "${grn} ${grn} ${WHT} ${grn} ${WHT} ${grn} ${DEF} ${DEF} ${grn} ${DEF}"
+              "${DEF} ${DEF} ${DEF} ${WHT} ${WHT} ${grn} ${WHT} ${grn} ${grn} ${DEF}"
+              "${DEF} ${DEF} ${DEF} ${DEF} ${WHT} ${WHT} ${DEF}"
+              "${DEF} ${DEF} ${DEF} ${DEF} ${WHT} ${DEF}"
+              "${DEF} ${DEF} ${DEF} ${DEF} ${WHT} ${DEF}")
 
-     Sun=(${YLW}'       ___ |       '${DEF}
-          ${YLW}'---````    \       '${DEF}
-          ${YLW}'           _`.     '${DEF}
-          ${YLW}'        ../   `..__'${DEF}
-          ${YLW}'     ../        /  '${DEF}
-          ${YLW}'    /          /   '${DEF}
-          ${YLW}'              /    '${DEF}
-          ${YLW}'              /    '${DEF}
-          ${YLW}'             /     '${DEF}
-          ${YLW}'_...---``  |       '${DEF}
-          ${YLW}'        _.-\       '${DEF}
-          ${YLW}'   _.--`    `.     '${DEF}
-          ${YLW}' -`          ,`..__'${DEF}
-          ${YLW}'           ,`     |'${DEF}
-          ${YLW}'         ,`       |'${DEF}
-          ${YLW}'       _`        | '${DEF}
-          ${YLW}'                 | '${DEF}
-          ${YLW}'                 | '${DEF}
-          ${YLW}'     _...--|       '${DEF}
-          ${YLW}'..--`      \       '${DEF}
-          ${YLW}'         .. `.     '${DEF}
-          ${YLW}'     _.-`     `..__'${DEF}
-          ${YLW}'  ..`         .`   '${DEF}
-          ${YLW}'             /     '${DEF}
-          ${YLW}'            /      '${DEF}
-          ${YLW}'          .`       '${DEF}
-          ${YLW}'                   '${DEF}); SunN=${#Sun[@]}; SunC=9
+#------------------------{ Trees fast }----------------------------------------------------------------------------------
+      tree12=(${DIM}${GRN}' _  '${DEF}
+              ${DIM}${GRN}'/ \ '${DEF}
+              ${DIM}${GRN}'\\'${blk}'|'${DIM}${GRN}'/ '${DEF}
+              ${blk}' | '${DEF})
 
-# Functions |------------------------------------------------------------------------------------------------------------
+      tree22=(${GRN}' _._  '${DEF}
+              ${GRN}'/   \ '${DEF}
+              ${GRN}'\\'${DEF}${DIM}' | '${DEF}${GRN}'/ '${DEF}
+              ${GRN}' \\'${DEF}${DIM}'║'${DEF}${GRN}'/\ '${DEF}
+              ${DIM}'  ║'${DEF}${GRN}'_/ '${DEF}
+              ${DIM}'  ║ '${DEF})
+
+      tree32=(${grn}'   _._ '${DEF}
+              ${grn}'  /   \ '${DEF}
+              ${grn}' _\ '${WHT}'|'${grn}' / '${DEF}
+              ${grn}'/  \\'${WHT}'║'${grn}'/__ '${DEF}
+              ${grn}'\_'${WHT}'\\'${grn}'/'${WHT}'║'${grn}'/  \ '${DEF}
+              ${WHT}'   \║'${grn}'|'${WHT}'/'${grn}'_/ '${DEF}
+              ${WHT}'    ║/ '${DEF}
+              ${WHT}'    ║ '${DEF}
+              ${WHT}'    ║ '${DEF})
+
+#------------------------{ Clouds slow }---------------------------------------------------------------------------------
+      cloud1=(' ,-., '
+              '(    ) '
+              ' `+-` ')
+
+cloud1_color=("   ${DEF}    ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU}    ${DEF}"
+              "${DIM}${BLU}    ${DEF}       ${DEF}       ${DEF}       ${DEF}    ${DIM}${BLU}"
+              "   ${DEF}    ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU}    ${DEF}")
+
+      cloud2=(' ,-._., '
+              '(      ) '
+              ' `-...` ')
+
+cloud2_color=("${DEF} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${DEF}"
+              "${BLU} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${BLU} ${DEF}"
+              "${DEF} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${DEF}")
+
+      cloud3=(' ,`"`.-"`. '
+              '(         ) '
+              ' `--.....` ')
+
+cloud3_color=("${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${DEF}"
+              "${blu} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${blu} ${DEF}" 
+              "${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${DEF}")
+
+#------------------------{ Clouds fast }---------------------------------------------------------------------------------
+     cloud12=(${DIM}${BLU}' ,-.,  '${DEF}
+              ${DIM}${BLU}'(    ) '${DEF}
+              ${DIM}${BLU}' `+-`  '${DEF})
+
+     cloud22=(${BLU}' ,-._.,  '${DEF}
+              ${BLU}'(      ) '${DEF}
+              ${BLU}' `-...`  '${DEF})
+
+     cloud32=(${blu}' ,`"`.-"`.  '${DEF}
+              ${blu}'(         ) '${DEF}
+              ${blu}' `--.....`  '${DEF})
+
+#------------------------------------------------------------------------------------------------------------------------
+
+       alien=(' ___ '
+	          '(   ) '
+		      ' `¯´ ')
+
+ alien_color=("${DEF} ${DEF} ${BLD}${UND} ${DEF} ${DEF}"
+              "${DEF} ${YLW}    ${YLW}    ${YLW} ${DEF} ${DEF}"
+              "${DEF} ${DEF}    ${DEF}    ${DEF} ${DEF}")
+
+        boss=('         '
+              '     ___   '
+              '   _/   \_  '
+              '  /       \  '
+              ' (         ) '
+              '  `¯¯---¯¯´  '
+              '            ')
+
+  boss_color=("${DEF}" #                                 center point
+              "${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${BLD}${UND} ${DEF}       ${DEF}"
+              "${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${YLW} ${BLD}${YLW} ${DEF}${YLW} ${DEF}"
+              "${DEF} ${DEF} ${DEF} ${RED} ${RED} ${RED} ${BLD}${RED} ${DEF}${RED} ${RED} ${RED} ${DEF}"
+              "${DEF} ${DEF} ${DEF} ${CYN} ${CYN} ${CYN} ${BLD}${CYN} ${DEF}${CYN} ${CYN} ${CYN} ${DEF}"
+              "${DEF}")
+
+        boom=(${red}'   .-. '${DEF}
+              ${red}'  (   )'${DEF}
+              ${red}'   `-` '${DEF}
+              ${RED}'  , - . '${DEF}
+              ${RED}' (     )'${DEF}
+              ${RED}'  . _ . '${DEF}
+        ${DIM}${RED}'   `  "  '${DEF}
+        ${DIM}${RED}'(       )'${DEF}
+        ${DIM}${RED}'  _ _ .  '${DEF}); boomN=${#boom[@]}; boomC=3
+
+         Sun=(${YLW}'       ___ |       '${DEF}
+              ${YLW}'---````    \       '${DEF}
+              ${YLW}'           _`.     '${DEF}
+              ${YLW}'        ../   `..__'${DEF}
+              ${YLW}'     ../        /  '${DEF}
+              ${YLW}'    /          /   '${DEF}
+              ${YLW}'              /    '${DEF}
+              ${YLW}'              /    '${DEF}
+              ${YLW}'             /     '${DEF}
+              ${YLW}'_...---``  |       '${DEF}
+              ${YLW}'        _.-\       '${DEF}
+              ${YLW}'   _.--`    `.     '${DEF}
+              ${YLW}' -`          ,`..__'${DEF}
+              ${YLW}'           ,`     |'${DEF}
+              ${YLW}'         ,`       |'${DEF}
+              ${YLW}'       _`        | '${DEF}
+              ${YLW}'                 | '${DEF}
+              ${YLW}'                 | '${DEF}
+              ${YLW}'     _...--|       '${DEF}
+              ${YLW}'..--`      \       '${DEF}
+              ${YLW}'         .. `.     '${DEF}
+              ${YLW}'     _.-`     `..__'${DEF}
+              ${YLW}'  ..`         .`   '${DEF}
+              ${YLW}'             /     '${DEF}
+              ${YLW}'            /      '${DEF}
+              ${YLW}'          .`       '${DEF}
+              ${YLW}'                   '${DEF}); SunN=${#Sun[@]}; SunC=9
+
+#------------------------{ Functions }-----------------------------------------------------------------------------------
 function sprites { # dynamic sprites
 
-   bfire=("${bshoot[$J]} ")
+       bfire=("${bshoot[$J]} ")
 
-   alien=(" _${UND}${BLD}_${DEF}_ "
-	      "(${small[$L]}${DEF}) "
-		  ' `¯´ ')
+       alien=(' ___ '
+              "(${small[$L]}) "
+		      ' `¯´ ')
 
-    boss=("      "
-		  "   _${UND}_${DEF}_  "
-		  " _/${small[$((3 - $L))]}\_ "
-		  "(${big[$L]}${DEF}) "
-		  ' `¯¯¯¯¯´ '
-		  '         ')
+      alien2=(" _${UND}${BLD}_${DEF}_ "
+              "(${YLW}${small[$L]}${DEF}) "
+		      ' `¯´ ')
 
-	hero=("  "
-		  "__     "
-		  "|${RED}★${DEF}〵____ "
-		  " \_| /${UND}${BLD} °${DEF})${DGRY}${gun[${G}]}${DEF}"
-		  "   |/    "
-		  "     ")
+        boss=('         '
+              '     ___   '
+              "   _/${small[$[3 - $L]]}\_  "
+              "  /${big[$L]}\  "
+              " ( ${big[$[3 - $L]]} ) "
+              '  `¯¯---¯¯´  '
+              '            ')
 
-	case ${G} in 0) gunup=("||${DGRY}--${DEF} "
-                           "|| "
-                           "||${DGRY}--${DEF} ");;
-                 *) gunup=("||${DGRY}--${DEF} "
-                           "||${DGRY}--${DEF} "
-                           "||${DGRY}--${DEF} ");; esac
+       boss2=('         '
+              '     ___   '
+              "   _/${small2[$[3 - $L]]}\_  "
+              "  /${big2[$L]}\  "
+              " ( ${big2[$[3 - $L]]} ) "
+              '  `¯¯---¯¯´  '
+              '            ')
+
+        hero=('  '
+              '__     '
+              "|${RED}★${DEF}〵____ "
+              " \_| /${UND}${BLD} °${DEF})${DWHT}${gun[${G}]}${DEF}"
+              '   |/    '
+              '     ')
+
+	case ${G} in
+
+	0) gunup=("||${DWHT}--${DEF} "
+              "|| "
+              "||${DWHT}--${DEF} ");;
+
+	*) gunup=("||${DWHT}--${DEF} "
+              "||${DWHT}--${DEF} "
+              "||${DWHT}--${DEF} ");; esac
 }
 
 function get_dimensions {
+#	endx=$( tput cols  )
+#	endy=$( tput lines )
 	size=($(stty size))
 	endx=${size[1]}
 	endy=${size[0]}
-#	endx=$( tput cols  )
-#	endy=$( tput lines )
-
-bullendx=$(( $endx - 4  ))
-heroendx=$(( $endx - 12 ))
-heroendy=$(( $endy - 7  ))
-enmyendx=$(( $endx - 5  ))
-enmyendy=$(( $endy - 7  ))
-bossendx=$(( $endx - 11 ))
-bossendy=$(( $endy - 6  ))
-bosshbar=$(( $endx - 10 ))
-tre1endx=$(( $endx - 4  ))
-tre1endy=$(( $endy - 6  ))
-tre2endx=$(( $endx - 6  ))
-tre2endy=$(( $endy - 8  ))
-tre3endx=$(( $endx - 10 ))
-tre3endy=$(( $endy - 11 ))
-cld1endx=$(( $endx - 7  ))
-cld2endx=$(( $endx - 9  ))
-cld3endx=$(( $endx - 12 ))
-lineendy=$(( $endy - 2  ))
-Sunsendx=$(( $endx - 19 ))
+bullendx=$[$endx - 4 ]
+heroendx=$[$endx - 12]
+heroendy=$[$endy - 7 ]
+enmyendx=$[$endx - 5 ]
+enmyendy=$[$endy - 7 ]
+bossendx=$[$endx - 11]
+bossendy=$[$endy - 6 ]
+bosshbar=$[$endx - 10]
+tre1endx=$[$endx - 4 ]
+tre1endy=$[$endy - 6 ]
+tre2endx=$[$endx - 6 ]
+tre2endy=$[$endy - 8 ]
+tre3endx=$[$endx - 10]
+tre3endy=$[$endy - 11]
+cld1endx=$[$endx - 7 ]
+cld2endx=$[$endx - 9 ]
+cld3endx=$[$endx - 12]
+lineendy=$[$endy - 2 ]
+Sunsendx=$[$endx - 19]
 }
 
 function bye () {
@@ -264,10 +383,9 @@ function bye () {
 	exit $1
 }
 
-function remove_obj () {
-	for (( k=0; k<$er; k++ )); do XY ${OX} $(($OY + $k)) "${eraser}"; done
-	unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--))
-}
+function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--)); }
+
+function erase_obj  () { remove_obj $1; for (( k=0; k<$er; k++ )); do XY ${OX} $[$OY + $k] "${eraser}"; done; }
 
 function remove_piu () {
 	XY ${PX} ${PY} "    "
@@ -278,7 +396,7 @@ function mess () { clear
 
 	function print {
 		x=$[$endx / 2 - ${#sprite} / 2]
-		for (( i=0; i<${#sprite[*]}; i++ )); do XY ${x} $(( $endy / 2 - 5 + $i )) "${sprite[$i]}"; done
+		for (( i=0; i<${#sprite[*]}; i++ )); do XY ${x} $[$endy / 2 - 5 + $i] "${sprite[$i]}"; done
 	}
 
 	case $1 in
@@ -288,36 +406,49 @@ function mess () { clear
 	esac
 }
 
-function mover () { er=${#sprite[@]}
+function mover () { er=$2; width=$3
+
 	# move
-	[ ${1} = 0 ] && { ((OX--)); [ $OX -lt 0 ] && OX=0; OBJ[$i]="$OX $OY $type"; }
+	[ ${1} = 0 ] && { ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type"; }
 
 	# fly away
-	[ $OX -lt 1 ] && {
-		remove_obj ${i}
-		case ${type} in "alien") ((enumber--));; esac
-		return
-	}
+	case ${type} in
+
+		'alien'|'tree'[1-3]|'cloud'[1-3]) [ $OX -lt -$width ] && { remove_obj ${i}; case ${type} in "alien") ((enumber--));; esac; return; };;
+									*   ) [ $OX -lt  1      ] && { erase_obj  ${i}; case ${type} in "alien") ((enumber--));; esac; return; };;
+	esac
 
 	for (( p=0; p<${er}; p++ )); do
+
 		# print
-		XY ${OX} $(($OY + $p)) "${sprite[$p]}"
+		case ${type} in
+
+			'alien'|'tree'[1-3]|'cloud'[1-3])
+				color=(${sprite_color[$p]}); YY=$[$OY+${p}]; [ $OX -gt 1 ] \
+					&& { [ $cuter -lt $width ] \
+								&& { for (( k=0; k<${cuter}; k++ )); do x=$[$k+$OX]; XY $x $YY "${color[$k]}${sprite[$p]:$k:1}"; done; } \
+								|| { XY ${OX} $[$OY + $p] "${sprite_fast[$p]}"; }; } \
+					|| { for (( k=1; k<${width}; k++ )); do x=$[$k-$OX]; XY $k $YY "${color[$x]}${sprite[$p]:$x}"  ; done; };;
+
+			*) XY ${OX} $[$OY + $p] "${sprite[$p]}";;
+
+		esac
 
 		# collisions
 		case ${type} in
-			"gunup" )	case "$(($OY + $p)) $OX" in "$HY $HX") [ ${G} -lt 2 ] && ((G++)); remove_obj ${i}; break;; esac;;
-			"life"  )	case "$(($OY + $p)) $OX" in "$HY $HX") ((life++))   ; remove_obj ${i}; break;; esac;;
-			"ammo"  )	case "$(($OY + $p)) $OX" in "$HY $HX") ((ammo+=100)); remove_obj ${i}; break;; esac;;
-			"bfire" )	case "$OY $OX"           in "$HY $HX") ((life--))   ; remove_obj ${i}; break;; esac;;
-			"alien" )	for (( t=0; t<${NP}; t++ )); do case "$(($OY + 1)) $(($OX + $p))" in # hit by bullet
+			"gunup" )	case "$[$OY + $p] $OX" in "$HY $HX") [ ${G} -lt 2 ] && ((G++)); erase_obj ${i}; break;; esac;;
+			"life"  )	case "$[$OY + $p] $OX" in "$HY $HX") ((life++))   ; erase_obj ${i}; break;; esac;;
+			"ammo"  )	case "$[$OY + $p] $OX" in "$HY $HX") ((ammo+=100)); erase_obj ${i}; break;; esac;;
+			"bfire" )	case "$OY $OX"         in "$HY $HX") ((life--))   ; erase_obj ${i}; break;; esac;;
+			"alien" )	for (( t=0; t<${NP}; t++ )); do case "$[$OY + 1] $[$OX + $p]" in # hit by bullet
 
-							"${PIU[$t]}")	[ $((RANDOM % $rnd)) -eq 0 ] && OBJ+=("$OX $OY ${bonuses[$((RANDOM % ${#bonuses[@]}))]}") # get bonus
-											((frags++));  ((enumber--)); remove_obj ${i}; remove_piu ${t}; OBJ+=("${OX} ${OY} boom"); break;;
+							"${PIU[$t]}")	[ $[RANDOM % $rnd] -eq 0 ] && OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}") # get bonus
+											((frags++));  ((enumber--)); remove_obj ${i}; remove_piu ${t}; OBJ+=("${OX} ${OY} 0 boom"); break;;
 						esac; done
 
 						# hit by plane
-						case "$(($OY + 1)) $(($OX + $p))" in
-							"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj ${i}; OBJ+=("${OX} ${OY} boom"); break;;
+						case "$[$OY + 1] $[$OX + $p]" in
+							"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj ${i}; OBJ+=("${OX} ${OY} 0 boom"); break;;
 						esac;;
 		esac
 
@@ -332,13 +463,13 @@ printf "${COF}"
 sleep 3
 clear
 
-# Main game loop |=======================================================================================================
+#================================================{ Main game loop }======================================================
 while true; do
 
 	get_dimensions; sprites
 
-	# Get keys |---------------------------------------------------------------------------------------------------------
-	read -t0.0001 -n1 input; input=${input:0:1}; case $input in
+	#-{ Get keys }-------------------------------------------------------------------------------------------------------
+	read -t0.0001 -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
 		'w'|'W') ((Y--)); [ $Y -lt 1         ] && Y=1;;
 		'a'|'A') ((X--)); [ $X -lt 1         ] && X=1;;
@@ -346,8 +477,8 @@ while true; do
 		'd'|'D') ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
 		'p'|'P') [ $ammo -gt 0 ] && \
 				 case ${G} in 0) PIU+=("$HY $HX"); ((ammo--));;
-                	          1) PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX"); ((ammo-=2));;
-                	          2) PIU+=("$(($HY + 1)) $HX"); PIU+=("$(($HY - 1)) $HX"); PIU+=("$HY $HX"); ((ammo-=3));; esac;;
+                	          1) PIU+=("$[$HY + 1] $HX"); PIU+=("$[$HY - 1] $HX"); ((ammo-=2));;
+                	          2) PIU+=("$[$HY + 1] $HX"); PIU+=("$[$HY - 1] $HX"); PIU+=("$HY $HX"); ((ammo-=3));; esac;;
 	esac
 
 	# Hero collide coordinates
@@ -357,7 +488,7 @@ while true; do
 	[ $bhealth -le 0 ] && mess win
 	[ $life    -le 0 ] && mess lose
 
-	# Timings |----------------------------------------------------------------------------------------------------------
+	#-{ Timings }--------------------------------------------------------------------------------------------------------
 	((K++)); [ $K -gt 20 ] && K=0   # boss' fire rate
 	((L++)); [ $L -gt 3  ] && L=0   # sprites animation
 	((J++)); [ $J -gt 5  ] && J=0   # boss' bullet animation
@@ -366,7 +497,10 @@ while true; do
 	((E++)); [ $E -gt 2  ] && E=0   # tree3\cloud3(large)  speed
 	[ ${E} = 0 ] && { ((S+=${SunC}));  [ $S -gt ${SunN}  ] && S=0; }   # Sun animation
 
-	# Move\check\print hero bullets |------------------------------------------------------------------------------------
+	#-{ Print Sun }------------------------------------------------------------------------------------------------------
+	SY=1; for part in "${Sun[@]:$S:$SunC}"; do XY ${Sunsendx} ${SY} " ${part}"; ((SY++)); done
+
+	#-{ Move\check\print hero bullets }----------------------------------------------------------------------------------
 	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PY=${PI[0]}; PX=${PI[1]}
 
 		# Move
@@ -379,100 +513,104 @@ while true; do
 		XY ${PX} ${PY} " ${shoot[$L]}"
 
 		# Hit boss
-		[ $frags -ge $tillboss ] && for (( p=2; p<4; p++ )); do case "$PY $PX" in
+		[ $frags -ge $tillboss ] && for (( p=2; p<5; p++ )); do case "$PY $PX" in
 
-			"$(($BY + $p)) $BX"         ) ((bhealth--)); remove_piu ${t};;
-			"$(($BY + $p)) $(($BX + 1))") ((bhealth--)); remove_piu ${t};;
+			"$[$BY + $p] $BX"|"$[$BY + $p] $[$BX + 1]") ((bhealth--)); remove_piu ${t};;
 
 		esac; done
 
 	done
 
-	# Move\check\print all flying to hero objects |----------------------------------------------------------------------
-	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; type=${OI[2]}; case $type in
+	#-{ Move\check\print all flying to hero objects }--------------------------------------------------------------------
+	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
+
+		"tree1" )	sprite=("${tree1[@]}");  sprite_color=("${tree1_color[@]}");  sprite_fast=("${tree12[@]}");  mover $Q 4 4 ;;
+		"tree2" )	sprite=("${tree2[@]}");  sprite_color=("${tree2_color[@]}");  sprite_fast=("${tree22[@]}");  mover $W 6 6 ;;
+		"tree3" )	sprite=("${tree3[@]}");  sprite_color=("${tree3_color[@]}");  sprite_fast=("${tree32[@]}");  mover $E 9 10;;
+
+		"cloud1")	sprite=("${cloud1[@]}"); sprite_color=("${cloud1_color[@]}"); sprite_fast=("${cloud12[@]}"); mover $Q 3 7 ;;
+		"cloud2")	sprite=("${cloud2[@]}"); sprite_color=("${cloud2_color[@]}"); sprite_fast=("${cloud22[@]}"); mover $W 3 9 ;;
+		"cloud3")	sprite=("${cloud3[@]}"); sprite_color=("${cloud3_color[@]}"); sprite_fast=("${cloud32[@]}"); mover $E 3 12;;
+
+		"alien" )	sprite=("${alien[@]}");  sprite_color=("${alien_color[@]}");  sprite_fast=("${alien2[@]}");  mover  0 3 5 ;;
+
+		"bfire" )	sprite=("${bfire[@]}");  mover 0 6 4;;
+
+		"ammo"  )	sprite=("${ammob[@]}");  mover 0 3 4;;
+		"life"  )	sprite=("${lifep[@]}");  mover 0 3 4;;
+		"gunup" )	sprite=("${gunup[@]}");  mover 0 3 4;;
 
 		"boom"  )	er=${boomC}
 					# It's not moving, print in place
 					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
-					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; remove_obj ${i}; }; }
+					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; erase_obj ${i}; }; }
 					;;
-
-		"alien" )	sprite=("${alien[@]}");  mover 0;;
-
-		"bfire" )	sprite=("${bfire[@]}");  mover 0;;
-
-		"ammo"  )	sprite=("${ammob[@]}");  mover 0;;
-		"life"  )	sprite=("${lifep[@]}");  mover 0;;
-		"gunup" )	sprite=("${gunup[@]}");  mover 0;;
-
-		"tree1" )	sprite=("${tree1[@]}");  mover ${Q};;
-		"tree2" )	sprite=("${tree2[@]}");  mover ${W};;
-		"tree3" )	sprite=("${tree3[@]}");  mover ${E};;
-
-		"cloud1")	sprite=("${cloud1[@]}"); mover ${Q};;
-		"cloud2")	sprite=("${cloud2[@]}"); mover ${W};;
-		"cloud3")	sprite=("${cloud3[@]}"); mover ${E};;
-
 	esac; done
 
-	# BOSS |-------------------------------------------------------------------------------------------------------------
+	#-{ BOSS }-----------------------------------------------------------------------------------------------------------
 	if [ $frags -ge $tillboss ]; then
 		# Health bar
-		bar=; hp=$(( $bosshbar * $bhealth / 100 )); hm=$(( $endx - 10 ))
+		bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
 		for (( i=0  ; i<${hp}; i++ )); do bar="▒${bar}"; done
 		for (( i=$hp; i<${hm}; i++ )); do bar="${bar} "; done
-		XY 1 $(($endy - 1)) " ${BLD}BOSS: |${RED}${bar}${DEF}${BLD}|${DEF}"
+		XY 1 $[$endy - 1] " ${BLD}BOSS: |${RED}${bar}${DEF}${BLD}|${DEF}"
+
+		YY=$[$Y-1]
 
 		# Boss move
-		[ $BY -lt $Y                                     ] && ((BY++))
-		[ $BY -gt $Y                                     ] && ((BY--))
-		[ $BX -gt $(($endx / 2)) -a "$goback" == "false" ] && ((BX--)) || goback=true
-		[ $BX -lt $bossendx      -a "$goback" == "true"  ] && ((BX++)) || goback=false
+		[ $BY -lt $YY                                  ] && ((BY++))
+		[ $BY -gt $YY                                  ] && ((BY--))
+		[ $BX -gt $[$endx / 2] -a "$goback" == "false" ] && ((BX--)) || goback=true
+		[ $BX -lt $bossendx    -a "$goback" == "true"  ] && ((BX++)) || goback=false
 
+		((BC++))
 		# Boss print
-		for (( i=0; i<${#boss[@]}; i++ )); do XY ${BX} $(($BY + $i)) " ${boss[$i]} "; done
+		for (( i=0; i<7; i++ )); do
+
+			[ $BC -lt 13 ] \
+				&& { color=(${boss_color[$i]})
+					 for (( k=0; k<$BC; k++ )); do x=$[$k+$BX]; XY $[$k+$BX] $[$BY + $i] "${color[$k]}${boss[$i]:$k:1}"; done; } \
+				|| { XY ${BX} $[$BY + $i] "${boss2[$i]}"; }
+
+		done
 
 		# Boss fire
-		[ $BY -eq $Y -a $K -eq 0 ] && OBJ+=("$(($BX - 4)) $(($BY + 3)) bfire")
+		[ $BY -eq $YY -a $K -eq 0 ] && OBJ+=("$[$BX - 4] $[$BY + 4] 0 bfire")
 
 		# Collide with plane
-		for (( p=2; p<4; p++ )); do case "$HY $HX" in
+		for (( p=2; p<5; p++ )); do case "$HY $HX" in
 
-			"$(($BY + $p)) $BX"         ) ((bhealth-=10)); ((life--));;
-			"$(($BY + $p)) $(($BX + 1))") ((bhealth-=10)); ((life--));;
+			"$[$BY + $p] $BX"|"$[$BY + $p] $[$BX + 1]") ((bhealth-=10)); ((life--));;
 
 		esac; done
 
 		# Add enemy
-		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$(($BX + 2)) $(($BY + 3)) alien"); }
+		[ $enumber -lt $enmax -a $J -eq 0 ] && { ((enumber++)); OBJ+=("$[$BX + 2] $[$BY + 3] 0 alien"); }
 	else
-		[ $enumber -lt $enmax ] && { ((enumber++)); OBJ+=("$enmyendx $(( (RANDOM % $enmyendy) + 3 )) alien"); }
+		[ $enumber -lt $enmax -a $J -eq 0 ] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
 	fi
 
-    # Add cloud |--------------------------------------------------------------------------------------------------------
-    [ $((RANDOM % 60)) = 0 ] && { cloudtype=$((RANDOM % 3 + 1)); case ${cloudtype} in
-        1) OBJ+=("${cld1endx} $(( (RANDOM % 10) + 2 )) cloud1");;
-        2) OBJ+=("${cld2endx} $(( (RANDOM % 10) + 2 )) cloud2");;
-        3) OBJ+=("${cld3endx} $(( (RANDOM % 10) + 2 )) cloud3");;
+    #-{ Add cloud }------------------------------------------------------------------------------------------------------
+    [ $[RANDOM % 100] = 0 ] && { cloudtype=$[RANDOM % 3 + 1]; case ${cloudtype} in
+        1) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud1");;
+        2) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud2");;
+        3) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud3");;
     esac; }
 
-    # Add tree |---------------------------------------------------------------------------------------------------------
-    [ $((RANDOM % 40)) = 0 ] && { treetype=$((RANDOM % 3 + 1)); case ${treetype} in
-        1) OBJ+=("${tre1endx} ${tre1endy} tree1");;
-        2) OBJ+=("${tre2endx} ${tre2endy} tree2");;
-        3) OBJ+=("${tre3endx} ${tre3endy} tree3");;
+    #-{ Add tree }-------------------------------------------------------------------------------------------------------
+    [ $[RANDOM % 100] = 0 ] && { treetype=$[RANDOM % 3 + 1]; case ${treetype} in
+        1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
+        2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
+        3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
     esac; }
 
-	# Print Sun |--------------------------------------------------------------------------------------------------------
-	SY=1; for part in "${Sun[@]:$S:$SunC}"; do XY ${Sunsendx} ${SY} " ${part}"; ((SY++)); done
+	#-{ Print hero }-----------------------------------------------------------------------------------------------------
+	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $[$Y + $i] " ${hero[$i]} "; done
 
-	# Print hero |-------------------------------------------------------------------------------------------------------
-	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $(($Y + $i)) " ${hero[$i]} "; done
-
-	# Bottom line |------------------------------------------------------------------------------------------------------
+	#-{ Bottom line }----------------------------------------------------------------------------------------------------
 	XY 0 ${lineendy} ${DIM}${GRN}; line - ${endx}; printf "${DEF}"
 
-	# Print game status |------------------------------------------------------------------------------------------------
+	#-{ Print game status }----------------------------------------------------------------------------------------------
 	XY 0 0 "${BLD}killed aliens: ${DEF}${CYN}${frags}${DEF}  ${BLD}Life: ${DEF}${CYN}${life}${DEF}  ${BLD}Ammo: ${DEF}${CYN}${ammo}${DEF} "
 
 done
