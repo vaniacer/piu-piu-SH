@@ -477,8 +477,8 @@ while true; do
 		'd'|'D') ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
 		'p'|'P') [ $ammo -gt 0 ] && \
 				 case ${G} in 0) PIU+=("$HY $HX"); ((ammo--));;
-                	          1) PIU+=("$[$HY + 1] $HX"); PIU+=("$[$HY - 1] $HX"); ((ammo-=2));;
-                	          2) PIU+=("$[$HY + 1] $HX"); PIU+=("$[$HY - 1] $HX"); PIU+=("$HY $HX"); ((ammo-=3));; esac;;
+                	          1) PIU+=("$[$HY+1] $HX"); PIU+=("$[$HY-1] $HX"); ((ammo-=2));;
+                	          2) PIU+=("$[$HY+1] $HX"); PIU+=("$[$HY-1] $HX"); PIU+=("$HY $[$HX+1]"); ((ammo-=3));; esac;;
 	esac
 
 	# Hero collide coordinates
