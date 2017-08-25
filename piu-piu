@@ -43,7 +43,7 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
        frags=0
         life=3
         ammo=100
-         rnd=10			# 10
+         rnd=1			# 10
           BY=$[$(tput lines) / 2]
           BX=$(tput cols)
 	      BN=0
@@ -89,7 +89,7 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
 #------------------------{ Sprites }-------------------------------------------------------------------------------------
       eraser='           '
 
-         gun=( - = ≡ )
+         gun=(- = ≡ ≣ ≣)
 
        ammob=("${BLD}${red}-=${DEF}${GRN}>${DEF} "
               "${BLD}${red}-=${DEF}${GRN}>${DEF} "
@@ -345,13 +345,21 @@ function sprites { # dynamic sprites
 
 	case ${G} in
 
-	0) gunup=("||${DWHT}--${DEF} "
-              "|| "
-              "||${DWHT}--${DEF} ");;
+	0) gunup=("${BLD}||${blk}--${DEF} "
+              "${BLD}||${DEF} "
+              "${BLD}||${DWHT}--${DEF} ");;
 
-	*) gunup=("||${DWHT}--${DEF} "
-              "||${DWHT}--${DEF} "
-              "||${DWHT}--${DEF} ");; esac
+	1) gunup=("${BLD}||${blk}--${DEF} "
+              "${BLD}||${blk}--${DEF} "
+              "${BLD}||${blk}--${DEF} ");;
+
+	2) gunup=("${BLD}||${blk}==${DEF} "
+              "${BLD}||${DEF} "
+              "${BLD}||${blk}==${DEF} ");;
+
+	*) gunup=("${BLD}||${blk}==${DEF} "
+              "${BLD}||${blk}--${DEF} "
+              "${BLD}||${blk}==${DEF} ");; esac
 }
 
 function get_dimensions {
@@ -432,7 +440,7 @@ function mover () { er=$2; width=$3
 
 		# collisions
 		case ${type} in
-			"gunup" )	case "$[$OY + $p] $OX" in "$HY $HX") [ ${G} -lt 2 ] && ((G++)); erase_obj ${i}; break;; esac;;
+			"gunup" )	case "$[$OY + $p] $OX" in "$HY $HX") [ ${G} -lt 4 ] && ((G++)); erase_obj ${i}; break;; esac;;
 			"life"  )	case "$[$OY + $p] $OX" in "$HY $HX") ((life++))   ; erase_obj ${i}; break;; esac;;
 			"ammo"  )	case "$[$OY + $p] $OX" in "$HY $HX") ((ammo+=100)); erase_obj ${i}; break;; esac;;
 			"bfire" )	case "$OY $OX"         in "$HY $HX") ((life--))   ; erase_obj ${i}; break;; esac;;
@@ -473,8 +481,10 @@ while true; do
 		'd'|'D') ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
 		'p'|'P') [ $ammo -gt 0 ] && \
 				 case ${G} in 0) PIU+=("$HY $HX"); ((ammo--));;
-                	          1) PIU+=("$[$HY+1] $HX"); PIU+=("$[$HY-1] $HX"); ((ammo-=2));;
-                	          2) PIU+=("$[$HY+1] $HX"); PIU+=("$[$HY-1] $HX"); PIU+=("$HY $[$HX+1]"); ((ammo-=3));; esac;;
+                	          1) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX"); ((ammo-=2));;
+                	          2) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX" "$HY $[$HX+1]"); ((ammo-=3));;
+                              3) PIU+=("$[$HY+1] $[$HX+1]" "$[$HY-1] $[$HX+1]" "$[$HY+2] $HX" "$[$HY-2] $HX"); ((ammo-=4));;
+                              4) PIU+=("$[$HY+1] $[$HX+1]" "$[$HY-1] $[$HX+1]" "$[$HY+2] $HX" "$[$HY-2] $HX" "$HY $[$HX+2]"); ((ammo-=5));; esac;;
 	esac
 
 	# Hero collide coordinates
