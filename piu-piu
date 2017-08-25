@@ -34,7 +34,7 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
 #--------------------------------------------------------------------+
 
 #--------------------------{ Start opt }-----------------------------+
-    tillboss=1		# 100
+    tillboss=100		# 100
      bhealth=100		# 100
      enumber=0
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# more ammo, less life ang gunup
