@@ -339,7 +339,7 @@ function sprites { # dynamic sprites
         hero=('  '
               '__     '
               "|${RED}★${DEF}〵____ "
-              " \_| /${UND}${BLD} °${DEF})${DWHT}${gun[${G}]}${DEF}"
+              " \_| /${UND}${BLD} °${DEF})${BLD}${blk}${gun[${G}]}${DEF}"
               '   |/    '
               '     ')
 
