@@ -34,7 +34,7 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
 #--------------------------------------------------------------------+
 
 #--------------------------{ Start opt }-----------------------------+
-    tillboss=100		# 100
+    tillboss=1		# 100
      bhealth=100		# 100
      enumber=0
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# more ammo, less life ang gunup
@@ -45,16 +45,16 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
         ammo=100
          rnd=10			# 10
           BY=$[$(tput lines) / 2]
-          BX=$(tput cols)
-	      BN=0
+          BX=$[$(tput  cols) + 1]
+          BN=0
           BC=0
            X=1
            Y=1
            L=0
            J=0
            K=0
-	       S=0
-	       G=0			# gun
+           S=0
+           G=0			# gun
 
 #------------------------{ Messages }------------------------------------------------------------------------------------
         help=("                  ^     "
@@ -246,8 +246,8 @@ cloud3_color=("${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${
 
 #------------------------{ Aliens slow }---------------------------------------------------------------------------------
        alien=(' ___ '
-	          '(   ) '
-		      ' `¯´ ')
+              '(   ) '
+              ' `¯´ ')
 
  alien_color=("${DEF} ${DEF} ${BLD}${UND} ${DEF} ${DEF}"
               "${DEF} ${YLW}    ${YLW}    ${YLW} ${DEF} ${DEF}"
@@ -363,9 +363,9 @@ function sprites { # dynamic sprites
 }
 
 function get_dimensions {
-	size=($(stty size))
-	endx=${size[1]}
-	endy=${size[0]}
+    size=($(stty size))
+    endx=${size[1]}
+    endy=${size[0]}
 bullendx=$[$endx - 4 ]
 heroendx=$[$endx - 12]
 heroendy=$[$endy - 7 ]
@@ -530,11 +530,11 @@ while true; do
 	#-{ Move\check\print all flying to hero objects }--------------------------------------------------------------------
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
 
-       #--------------------------------------------------------------------------------------------------------------------------------+
-       #                                          Composite sprites(fast\slow)                                                          |
-       #----------+------------------------+-------------------------------------+------------------------------+-----+-----+-----+-----+
-       # OBJ type | slow sprite            |   slow sprite's color table         |     fast sprite              |func.|timer|lines|width|
-       #----------+------------------------+-------------------------------------+------------------------------+-----+-----+-----+-----+   
+       #------------------------------------------------------------------------------------------------------------------------------------------+
+       #                                          Composite sprites(fast\slow)                                                                    |
+       #----------+------------------------+-------------------------------------+------------------------------+-----+-----+-----+-----+---------+
+       # OBJ type | slow sprite            |   slow sprite's color table         |     fast sprite              |func.|timer|lines|width| comment |
+       #----------+------------------------+-------------------------------------+------------------------------+-----+-----+-----+-----+---------+   
 		"tree1" )	sprite=("${tree1[@]}") ; sprite_color=("${tree1_color[@]}") ; sprite_fast=("${tree12[@]}") ; mover   $Q    4     4 ;; #
 		"tree2" )	sprite=("${tree2[@]}") ; sprite_color=("${tree2_color[@]}") ; sprite_fast=("${tree22[@]}") ; mover   $W    6     6 ;; # Trees
 		"tree3" )	sprite=("${tree3[@]}") ; sprite_color=("${tree3_color[@]}") ; sprite_fast=("${tree32[@]}") ; mover   $E    9     10;; #
@@ -544,18 +544,18 @@ while true; do
 		"cloud3")	sprite=("${cloud3[@]}"); sprite_color=("${cloud3_color[@]}"); sprite_fast=("${cloud32[@]}"); mover   $E    3     12;; #
 
 		"alien" )	sprite=("${alien[@]}") ; sprite_color=("${alien_color[@]}") ; sprite_fast=("${alien2[@]}") ; mover   0     3     5 ;; # Aliens
-       #-----------------------------------------------------------+
-       #                   Fast only sprites                       |
-       #----------+------------------------+-----+-----+-----+-----+
-       # OBJ type |         sprite         |func.|timer|lines|width|
-       #----------+------------------------+-----+-----+-----+-----+
+       #-------------------------------------------------------------------------------+
+       #                   Fast only sprites                                           |
+       #----------+------------------------+-----+-----+-----+-----+-------------------+
+       # OBJ type |         sprite         |func.|timer|lines|width|      comment      |
+       #----------+------------------------+-----+-----+-----+-----+-------------------+
 		"bfire" )	sprite=("${bfire[@]}"); mover   0     6     4;; # Boss' plasma shot
 
 		"ammo"  )	sprite=("${ammob[@]}"); mover   0     3     4;; # Ammo bonus
 		"life"  )	sprite=("${lifep[@]}"); mover   0     3     4;; # Life bonus
 		"gunup" )	sprite=("${gunup[@]}"); mover   0     3     4;; # Gun powerup bonus
 
-        # Enemy explosion it's not moving, print in place
+        # Enemy explosion, not moving, print in place
 		"boom"  )	er=${boomC}
 					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
 					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; erase_obj ${i}; }; }
@@ -563,7 +563,7 @@ while true; do
 	esac; done
 
 	#-{ BOSS }-----------------------------------------------------------------------------------------------------------
-	if [ $frags -ge $tillboss ]; then
+	[ $frags -ge $tillboss ] && {
 		# Health bar
 		bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
 		for (( i=0  ; i<${hp}; i++ )); do bar="▒${bar}"; done
@@ -601,9 +601,9 @@ while true; do
 
 		# Add enemy
 		[ $enumber -lt $enmax -a $J -eq 0 ] && { ((enumber++)); OBJ+=("$[$BX + 2] $[$BY + 3] 0 alien"); }
-	else
+	} || {
 		[ $enumber -lt $enmax -a $J -eq 0 ] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
-	fi
+	}
 
     #-{ Add cloud }------------------------------------------------------------------------------------------------------
     [ $[RANDOM % 100] = 0 ] && { cloudtype=$[RANDOM % 3 + 1]; case ${cloudtype} in
