@@ -355,28 +355,19 @@ function sprites { # dynamic sprites
 }
 
 function get_dimensions {
-#	endx=$( tput cols  )
-#	endy=$( tput lines )
 	size=($(stty size))
 	endx=${size[1]}
 	endy=${size[0]}
 bullendx=$[$endx - 4 ]
 heroendx=$[$endx - 12]
 heroendy=$[$endy - 7 ]
-enmyendx=$[$endx - 5 ]
 enmyendy=$[$endy - 7 ]
 bossendx=$[$endx - 11]
 bossendy=$[$endy - 6 ]
 bosshbar=$[$endx - 10]
-tre1endx=$[$endx - 4 ]
 tre1endy=$[$endy - 6 ]
-tre2endx=$[$endx - 6 ]
 tre2endy=$[$endy - 8 ]
-tre3endx=$[$endx - 10]
 tre3endy=$[$endy - 11]
-cld1endx=$[$endx - 7 ]
-cld2endx=$[$endx - 9 ]
-cld3endx=$[$endx - 12]
 lineendy=$[$endy - 2 ]
 Sunsendx=$[$endx - 19]
 }
