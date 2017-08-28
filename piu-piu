@@ -186,12 +186,12 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
               "${DEF} ${DEF} ${DEF} ${DEF} ${WHT} ${DEF}")
 
 #------------------------{ Trees fast }----------------------------------------------------------------------------------
-      tree12=( 1${DIM}${GRN}'_  '${DEF}
+      tree12=( 1${DIM}${GRN}'_ '${DEF}
               0${DIM}${GRN}'/ \ '${DEF}
               0${DIM}${GRN}'\\'${blk}'|'${DIM}${GRN}'/ '${DEF}
-              1${blk}'| '${DEF})
+                     1${blk}'| '${DEF})
 
-      tree22=( 1${GRN}'_._  '${DEF}
+      tree22=( 1${GRN}'_._ '${DEF}
               0${GRN}'/   \ '${DEF}
               0${GRN}'\\'${DEF}${DIM}' | '${DEF}${GRN}'/ '${DEF}
                1${GRN}'\\'${DEF}${DIM}'║'${DEF}${GRN}'/\ '${DEF}
@@ -214,7 +214,7 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
               1' `+-` ')
 
 cloud1_color=("   ${DEF}    ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU}    ${DEF}"
-              "${DIM}${BLU}    ${DEF}       ${DEF}       ${DEF}       ${DEF}    ${DIM}${BLU}"
+              "${DIM}${BLU}    ${DEF}       ${DEF}       ${DEF}       ${DEF}    ${DIM}${BLU} ${DEF}"
               "   ${DEF}    ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU}    ${DEF}")
 
       cloud2=(1' ,-._., '
@@ -234,17 +234,17 @@ cloud3_color=("${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${
               "${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${DEF}")
 
 #------------------------{ Clouds fast }---------------------------------------------------------------------------------
-     cloud12=( 1${DIM}${BLU}',-.,  '${DEF}
+     cloud12=( 1${DIM}${BLU}',-., '${DEF}
               0${DIM}${BLU}'(    ) '${DEF}
-               1${DIM}${BLU}'`+-`  '${DEF})
+               1${DIM}${BLU}'`+-` '${DEF})
 
-     cloud22=( 1${BLU}',-._.,  '${DEF}
+     cloud22=( 1${BLU}',-._., '${DEF}
               0${BLU}'(      ) '${DEF}
-               1${BLU}'`-...`  '${DEF})
+               1${BLU}'`-...` '${DEF})
 
-     cloud32=( 1${blu}',`"`.-"`.  '${DEF}
+     cloud32=( 1${blu}',`"`.-"`. '${DEF}
               0${blu}'(         ) '${DEF}
-               1${blu}'`--.....`  '${DEF})
+               1${blu}'`--.....` '${DEF})
 
 #------------------------{ Aliens slow }---------------------------------------------------------------------------------
        alien=(1' ___ '
