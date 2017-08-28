@@ -271,43 +271,47 @@ cloud3_color=("${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${
               "${DEF}")
 
 #------------------------{ Animations }---------------------------------------------------------------------------------
-        boom=(${red}'   .-. '${DEF}
-              ${red}'  (   )'${DEF}
-              ${red}'   `-` '${DEF}
-              ${RED}'  , - . '${DEF}
-              ${RED}' (     )'${DEF}
-              ${RED}'  . _ . '${DEF}
-        ${DIM}${RED}'   `  "  '${DEF}
-        ${DIM}${RED}'(       )'${DEF}
-        ${DIM}${RED}'  _ _ .  '${DEF}); boomN=${#boom[@]}; boomC=3
+        boom=(  3${red}'.-.'${DEF}
+               2${red}'(   )'${DEF}
+                3${red}'`-`'${DEF}
 
-         Sun=(${YLW}'       ___ |       '${DEF}
-              ${YLW}'---````    \       '${DEF}
-              ${YLW}'           _`.     '${DEF}
-              ${YLW}'        ../   `..__'${DEF}
-              ${YLW}'     ../        /  '${DEF}
-              ${YLW}'    /          /   '${DEF}
-              ${YLW}'              /    '${DEF}
-              ${YLW}'              /    '${DEF}
-              ${YLW}'             /     '${DEF}
-              ${YLW}'_...---``  |       '${DEF}
-              ${YLW}'        _.-\       '${DEF}
-              ${YLW}'   _.--`    `.     '${DEF}
-              ${YLW}' -`          ,`..__'${DEF}
-              ${YLW}'           ,`     |'${DEF}
-              ${YLW}'         ,`       |'${DEF}
-              ${YLW}'       _`        | '${DEF}
-              ${YLW}'                 | '${DEF}
-              ${YLW}'                 | '${DEF}
-              ${YLW}'     _...--|       '${DEF}
-              ${YLW}'..--`      \       '${DEF}
-              ${YLW}'         .. `.     '${DEF}
-              ${YLW}'     _.-`     `..__'${DEF}
-              ${YLW}'  ..`         .`   '${DEF}
-              ${YLW}'             /     '${DEF}
-              ${YLW}'            /      '${DEF}
-              ${YLW}'          .`       '${DEF}
-              ${YLW}'                   '${DEF}); SunN=${#Sun[@]}; SunC=9
+               2${RED}', - .'${DEF}
+              1${RED}'(     )'${DEF}
+               2${RED}'. _ .'${DEF}
+
+          3${DIM}${RED}'`  "'${DEF}
+       0${DIM}${RED}'(       )'${DEF}
+         2${DIM}${RED}'_ _ .'${DEF}); boomN=${#boom[@]}; boomC=3
+
+         Sun=(${DEF}${YLW}'       ___ |       '${DEF}
+              ${DEF}${YLW}'---````    \       '${DEF}
+              ${DEF}${YLW}'           _`.     '${DEF}
+              ${BLD}${YLW}'        ../   `..__'${DEF}
+              ${DEF}${YLW}'     ../        /  '${DEF}
+              ${DEF}${YLW}'    /          /   '${DEF}
+              ${BLD}${YLW}'              /    '${DEF}
+              ${DEF}${YLW}'              /    '${DEF}
+              ${DEF}${YLW}'             /     '${DEF}
+
+              ${DEF}${YLW}'_...---``  |       '${DEF}
+              ${BLD}${YLW}'        _.-\       '${DEF}
+              ${DEF}${YLW}'   _.--`    `.     '${DEF}
+              ${DEF}${YLW}' -`          ,`..__'${DEF}
+              ${BLD}${YLW}'           ,`     |'${DEF}
+              ${DEF}${YLW}'         ,`       |'${DEF}
+              ${DEF}${YLW}'       _`        | '${DEF}
+              ${BLD}${YLW}'                 | '${DEF}
+              ${DEF}${YLW}'                 | '${DEF}
+
+              ${BLD}${YLW}'     _...--|       '${DEF}
+              ${DEF}${YLW}'..--`      \       '${DEF}
+              ${BLD}${YLW}'         .. `.     '${DEF}
+              ${DEF}${YLW}'     _.-`     `..__'${DEF}
+              ${DEF}${YLW}'  ..`         .`   '${DEF}
+              ${BLD}${YLW}'             /     '${DEF}
+              ${DEF}${YLW}'            /      '${DEF}
+              ${BLD}${YLW}'          .`       '${DEF}
+              ${DEF}${YLW}'         `         '${DEF}); SunN=${#Sun[@]}; SunC=9
 
 #------------------------{ Functions }-----------------------------------------------------------------------------------
 function sprites { # dynamic sprites
@@ -429,15 +433,16 @@ function mover () { er=$2; width=$3
 		# print
 		case ${type} in
 
-			'alien'|'tree'[1-3]|'cloud'[1-3])
-				color=(${sprite_color[$p]}); YY=$[$OY+${p}]; stp=${sprite[$p]:0:1}; spr=${sprite[$p]:1}; [ $OX -gt 1 ] \
-					&& { [ $cuter -lt $width ] \
-								&& { for (( k=0; k<${cuter}; k++ )); do [ $k -ge $stp ] \
-										&& { XY $[$k+$OX] $YY "${color[$k]}${spr:$k:1}"; } \
-										|| { :; }; done; } \
-								|| { stp=${sprite_fast[$p]:0:1}; spr=${sprite_fast[$p]:1}; XY $[${OX} + $stp] $[$OY + $p] "${spr}"; }; } \
-					|| { for (( k=1; k<${width}; k++ )); do x=$[$k-$OX]; XY $k $YY "${color[$x]}${spr:$x}"  ; done; };;
+			# some magic 4 composite(slow\fast) sprites
+			'alien'|'tree'[1-3]|'cloud'[1-3]) color=(${sprite_color[$p]}); YY=$[$OY+${p}]; stp=${sprite[$p]:0:1}; spr=${sprite[$p]:1}
 
+				[ $OX -gt 1 ] && { [ $cuter -lt $width ] && { for (( k=0; k<${cuter}; k++ )); do [ $k -ge $stp ]  \
+																&& { XY $[$k+$OX] $YY "${color[$k]}${spr:$k:1}"; } \
+																|| { :; }; done; } \
+														 || { stp=${sprite_fast[$p]:0:1}; spr=${sprite_fast[$p]:1}; XY $[${OX} + $stp] $[$OY + $p] "${spr}"; }; } \
+                              || { for (( k=1; k<${width}; k++ )); do x=$[$k-$OX]; XY $k $YY "${color[$x]}${spr:$x}"; done; };;
+
+			# simple command 4 fast only sprites
 			*) XY ${OX} $[$OY + $p] "${sprite[$p]}";;
 
 		esac
@@ -561,7 +566,7 @@ while true; do
 
         # Enemy explosion, not moving, print in place
 		"boom"  )	er=${boomC}
-					for part in "${boom[@]:$B:$boomC}"; do XY ${OX} ${OY} " ${part}"; ((OY++)); done
+					for part in "${boom[@]:$B:$boomC}"; do stp=${part:0:1}; spr=${part:1}; XY $[${OX} + $stp] ${OY} "${spr}"; ((OY++)); done
 					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; erase_obj ${i}; }; }
 					;;
 	esac; done
@@ -586,10 +591,9 @@ while true; do
 		# Boss print
 		for (( i=0; i<7; i++ )); do
 
-			stp=${boss[$i]:0:1}; spr=${boss[$i]:1}
+			stp=${boss[$i]:0:1}; spr=${boss[$i]:1}; color=(${boss_color[$i]})
 			[ $BC -lt 13 ] \
-				&& { color=(${boss_color[$i]})
-					 for (( k=0; k<$BC; k++ )); do [ $k -ge $stp ] \
+				&& { for (( k=0; k<$BC; k++ )); do [ $k -ge $stp ] \
 						&& { XY $[$k+$BX] $[$BY + $i] "${color[$k]}${spr:$k:1}"; } \
 						|| { :; }; done; } \
 				|| { stp=${boss2[$i]:0:1}; spr=${boss2[$i]:1}; XY $[${BX} + $stp] $[$BY + $i] "${spr}"; }
