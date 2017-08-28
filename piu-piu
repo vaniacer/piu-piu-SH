@@ -44,6 +44,7 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
         life=3
         ammo=100
          rnd=10			# 10
+         spd=0.0001
           BY=$[$(tput lines) / 2]
           BX=$[$(tput  cols) + 1]
           BN=0
@@ -140,22 +141,22 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
               ${YLW}" ${BLD}o "${DEF})
 
 #------------------------{ Trees slow }----------------------------------------------------------------------------------
-       tree1=(' _ '
-              '/ \ '
-              '\|/ '
-              ' | ')
+       tree1=(1' _ '
+              0'/ \ '
+              0'\|/ '
+              1' | ')
 
  tree1_color=("${DIM}${GRN} ${DIM}${GRN} ${DEF}"
               "${DIM}${GRN} ${DIM}${GRN} ${DIM}${GRN} ${DEF}"
               "${DIM}${GRN}    ${blk}    ${DIM}${GRN} ${DEF}"
               "   ${DEF}       ${blk}    ${DEF}")
 
-       tree2=(' _._ '
-              '/   \ '
-              '\ | / '
-              ' \║/\ '
-              '  ║_/ '
-              '  ║ ')
+       tree2=(1' _._ '
+              0'/   \ '
+              0'\ | / '
+              1' \║/\ '
+              2'  ║_/ '
+              2'  ║ ')
 
  tree2_color=("${GRN} ${GRN}    ${GRN}       ${GRN}    ${DEF}"
               "${GRN} ${GRN}    ${GRN}       ${GRN}    ${GRN} ${DEF}"
@@ -164,15 +165,15 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
               "${DEF} ${DEF} ${DEF}${DIM} ${DEF}${GRN} ${GRN} ${DEF}"
               "${DEF} ${DEF} ${DEF}${DIM} ${DEF}${GRN} ${DEF}")
 
-       tree3=('   _._ '
-              '  /   \ '
-              ' _\ | / '
-              '/  \║/__ '
-              '\_\/║/  \ '
-              '   \║|/_/ '
-              '    ║/ '
-              '    ║ '
-              '    ║ ')
+       tree3=(3'   _._ '
+              2'  /   \ '
+              1' _\ | / '
+              0'/  \║/__ '
+              0'\_\/║/  \ '
+              3'   \║|/_/ '
+              4'    ║/ '
+              4'    ║ '
+              4'    ║ ')
 
  tree3_color=("${DEF} ${DEF} ${DEF} ${grn} ${grn} ${grn} ${DEF}"
               "${DEF} ${DEF} ${grn} ${DEF} ${DEF} ${DEF} ${grn} ${DEF}"
@@ -185,82 +186,82 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
               "${DEF} ${DEF} ${DEF} ${DEF} ${WHT} ${DEF}")
 
 #------------------------{ Trees fast }----------------------------------------------------------------------------------
-      tree12=(${DIM}${GRN}' _  '${DEF}
-              ${DIM}${GRN}'/ \ '${DEF}
-              ${DIM}${GRN}'\\'${blk}'|'${DIM}${GRN}'/ '${DEF}
-              ${blk}' | '${DEF})
+      tree12=( 1${DIM}${GRN}'_  '${DEF}
+              0${DIM}${GRN}'/ \ '${DEF}
+              0${DIM}${GRN}'\\'${blk}'|'${DIM}${GRN}'/ '${DEF}
+              1${blk}'| '${DEF})
 
-      tree22=(${GRN}' _._  '${DEF}
-              ${GRN}'/   \ '${DEF}
-              ${GRN}'\\'${DEF}${DIM}' | '${DEF}${GRN}'/ '${DEF}
-              ${GRN}' \\'${DEF}${DIM}'║'${DEF}${GRN}'/\ '${DEF}
-              ${DIM}'  ║'${DEF}${GRN}'_/ '${DEF}
-              ${DIM}'  ║ '${DEF})
+      tree22=( 1${GRN}'_._  '${DEF}
+              0${GRN}'/   \ '${DEF}
+              0${GRN}'\\'${DEF}${DIM}' | '${DEF}${GRN}'/ '${DEF}
+               1${GRN}'\\'${DEF}${DIM}'║'${DEF}${GRN}'/\ '${DEF}
+                2${DIM}'║'${DEF}${GRN}'_/ '${DEF}
+                2${DIM}'║ '${DEF})
 
-      tree32=(${grn}'   _._ '${DEF}
-              ${grn}'  /   \ '${DEF}
-              ${grn}' _\ '${WHT}'|'${grn}' / '${DEF}
-              ${grn}'/  \\'${WHT}'║'${grn}'/__ '${DEF}
-              ${grn}'\_'${WHT}'\\'${grn}'/'${WHT}'║'${grn}'/  \ '${DEF}
-              ${WHT}'   \║'${grn}'|'${WHT}'/'${grn}'_/ '${DEF}
-              ${WHT}'    ║/ '${DEF}
-              ${WHT}'    ║ '${DEF}
-              ${WHT}'    ║ '${DEF})
+      tree32=(   3${grn}'_._ '${DEF}
+                2${grn}'/   \ '${DEF}
+               1${grn}'_\ '${WHT}'|'${grn}' / '${DEF}
+              0${grn}'/  \\'${WHT}'║'${grn}'/__ '${DEF}
+              0${grn}'\_'${WHT}'\\'${grn}'/'${WHT}'║'${grn}'/  \ '${DEF}
+                 3${WHT}'\║'${grn}'|'${WHT}'/'${grn}'_/ '${DEF}
+                  4${WHT}'║/ '${DEF}
+                  4${WHT}'║ '${DEF}
+                  4${WHT}'║ '${DEF})
 
 #------------------------{ Clouds slow }---------------------------------------------------------------------------------
-      cloud1=(' ,-., '
-              '(    ) '
-              ' `+-` ')
+      cloud1=(1' ,-., '
+              0'(    ) '
+              1' `+-` ')
 
 cloud1_color=("   ${DEF}    ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU}    ${DEF}"
               "${DIM}${BLU}    ${DEF}       ${DEF}       ${DEF}       ${DEF}    ${DIM}${BLU}"
               "   ${DEF}    ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU}    ${DEF}")
 
-      cloud2=(' ,-._., '
-              '(      ) '
-              ' `-...` ')
+      cloud2=(1' ,-._., '
+              0'(      ) '
+              1' `-...` ')
 
 cloud2_color=("${DEF} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${DEF}"
               "${BLU} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${BLU} ${DEF}"
               "${DEF} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${DEF}")
 
-      cloud3=(' ,`"`.-"`. '
-              '(         ) '
-              ' `--.....` ')
+      cloud3=(1' ,`"`.-"`. '
+              0'(         ) '
+              1' `--.....` ')
 
 cloud3_color=("${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${DEF}"
               "${blu} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${blu} ${DEF}" 
               "${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${DEF}")
 
 #------------------------{ Clouds fast }---------------------------------------------------------------------------------
-     cloud12=(${DIM}${BLU}' ,-.,  '${DEF}
-              ${DIM}${BLU}'(    ) '${DEF}
-              ${DIM}${BLU}' `+-`  '${DEF})
+     cloud12=( 1${DIM}${BLU}',-.,  '${DEF}
+              0${DIM}${BLU}'(    ) '${DEF}
+               1${DIM}${BLU}'`+-`  '${DEF})
 
-     cloud22=(${BLU}' ,-._.,  '${DEF}
-              ${BLU}'(      ) '${DEF}
-              ${BLU}' `-...`  '${DEF})
+     cloud22=( 1${BLU}',-._.,  '${DEF}
+              0${BLU}'(      ) '${DEF}
+               1${BLU}'`-...`  '${DEF})
 
-     cloud32=(${blu}' ,`"`.-"`.  '${DEF}
-              ${blu}'(         ) '${DEF}
-              ${blu}' `--.....`  '${DEF})
+     cloud32=( 1${blu}',`"`.-"`.  '${DEF}
+              0${blu}'(         ) '${DEF}
+               1${blu}'`--.....`  '${DEF})
 
 #------------------------{ Aliens slow }---------------------------------------------------------------------------------
-       alien=(' ___ '
-              '(   ) '
-              ' `¯´ ')
+       alien=(1' ___ '
+              0'(   ) '
+              1' `¯´ ')
 
  alien_color=("${DEF} ${DEF} ${BLD}${UND} ${DEF} ${DEF}"
               "${DEF} ${YLW}    ${YLW}    ${YLW} ${DEF} ${DEF}"
               "${DEF} ${DEF}    ${DEF}    ${DEF} ${DEF}")
 
-        boss=('         '
-              '     ___   '
-              '   _/   \_  '
-              '  /       \  '
-              ' (         ) '
-              '  `¯¯---¯¯´  '
-              '            ')
+        boss=(4'         '
+              2'     ___   '
+              1'   _/   \_  '
+              0'  /       \  '
+              0' (         ) '
+              0'  `¯¯---¯¯´  '
+              1'            ')
 
   boss_color=("${DEF}" #                                 center point
               "${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${BLD}${UND} ${DEF}       ${DEF}"
@@ -313,29 +314,29 @@ function sprites { # dynamic sprites
 
        bfire=("${bshoot[$J]} ")
 
-       alien=(' ___ '
-              "(${small[$L]}) "
-		      ' `¯´ ')
+       alien=(1' ___ '
+              0"(${small[$L]}) "
+		      1' `¯´ ')
 
-      alien2=(" _${UND}${BLD}_${DEF}_ "
-              "(${YLW}${small[$L]}${DEF}) "
-		      ' `¯´ ')
+      alien2=( 1"_${UND}${BLD}_${DEF}_ "
+              0"(${YLW}${small[$L]}${DEF}) "
+		       1'`¯´ ')
 
-        boss=('         '
-              '     ___   '
-              "   _/${small[$[3 - $L]]}\_  "
-              "  /${big[$L]}\  "
-              " ( ${big[$[3 - $L]]} ) "
-              '  `¯¯---¯¯´  '
-              '            ')
+        boss=(4'         '
+              2'     ___   '
+              1"   _/${small[$[3 - $L]]}\_  "
+              0"  /${big[$L]}\  "
+              0" ( ${big[$L]} ) "
+              0'  `¯¯---¯¯´  '
+              1'            ')
 
-       boss2=('         '
-              '     ___   '
-              "   _/${small2[$[3 - $L]]}\_  "
-              "  /${big2[$L]}\  "
-              " ( ${big3[$L]} ) "
-              '  `¯¯---¯¯´  '
-              '            ')
+       boss2=(    4'     '
+                2'   ___   '
+               1"  _/${small2[$[3 - $L]]}\_  "
+              0"  /${big2[$L]}\  "
+              0" ( ${big3[$L]} ) "
+              0'  `¯¯---¯¯´  '
+               1'           ')
 
         hero=('  '
               '__     '
@@ -429,11 +430,13 @@ function mover () { er=$2; width=$3
 		case ${type} in
 
 			'alien'|'tree'[1-3]|'cloud'[1-3])
-				color=(${sprite_color[$p]}); YY=$[$OY+${p}]; [ $OX -gt 1 ] \
+				color=(${sprite_color[$p]}); YY=$[$OY+${p}]; stp=${sprite[$p]:0:1}; spr=${sprite[$p]:1}; [ $OX -gt 1 ] \
 					&& { [ $cuter -lt $width ] \
-								&& { for (( k=0; k<${cuter}; k++ )); do x=$[$k+$OX]; XY $x $YY "${color[$k]}${sprite[$p]:$k:1}"; done; } \
-								|| { XY ${OX} $[$OY + $p] "${sprite_fast[$p]}"; }; } \
-					|| { for (( k=1; k<${width}; k++ )); do x=$[$k-$OX]; XY $k $YY "${color[$x]}${sprite[$p]:$x}"  ; done; };;
+								&& { for (( k=0; k<${cuter}; k++ )); do [ $k -ge $stp ] \
+										&& { XY $[$k+$OX] $YY "${color[$k]}${spr:$k:1}"; } \
+										|| { :; }; done; } \
+								|| { stp=${sprite_fast[$p]:0:1}; spr=${sprite_fast[$p]:1}; XY $[${OX} + $stp] $[$OY + $p] "${spr}"; }; } \
+					|| { for (( k=1; k<${width}; k++ )); do x=$[$k-$OX]; XY $k $YY "${color[$x]}${spr:$x}"  ; done; };;
 
 			*) XY ${OX} $[$OY + $p] "${sprite[$p]}";;
 
@@ -474,7 +477,7 @@ while true; do
 	get_dimensions; sprites
 
 	#-{ Get keys }-------------------------------------------------------------------------------------------------------
-	read -t0.0001 -n1 input 2> /dev/null; input=${input:0:1}; case $input in
+	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
 		'w'|'W') ((Y--)); [ $Y -lt 1         ] && Y=1;;
 		'a'|'A') ((X--)); [ $X -lt 1         ] && X=1;;
@@ -583,10 +586,13 @@ while true; do
 		# Boss print
 		for (( i=0; i<7; i++ )); do
 
+			stp=${boss[$i]:0:1}; spr=${boss[$i]:1}
 			[ $BC -lt 13 ] \
 				&& { color=(${boss_color[$i]})
-					 for (( k=0; k<$BC; k++ )); do x=$[$k+$BX]; XY $[$k+$BX] $[$BY + $i] "${color[$k]}${boss[$i]:$k:1}"; done; } \
-				|| { XY ${BX} $[$BY + $i] "${boss2[$i]}"; }
+					 for (( k=0; k<$BC; k++ )); do [ $k -ge $stp ] \
+						&& { XY $[$k+$BX] $[$BY + $i] "${color[$k]}${spr:$k:1}"; } \
+						|| { :; }; done; } \
+				|| { stp=${boss2[$i]:0:1}; spr=${boss2[$i]:1}; XY $[${BX} + $stp] $[$BY + $i] "${spr}"; }
 
 		done
 
