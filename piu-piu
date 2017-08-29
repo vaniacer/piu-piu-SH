@@ -540,31 +540,31 @@ while true; do
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
 
        #------------------------------------------------------------------------------------------------------------------------------------------+
-       #                                          Composite sprites(fast\slow)                                                                    |
-       #----------+------------------------+-------------------------------------+------------------------------+-----+-----+-----+-----+---------+
-       # OBJ type | slow sprite            |   slow sprite's color table         |     fast sprite              |func.|timer|lines|width| comment |
-       #----------+------------------------+-------------------------------------+------------------------------+-----+-----+-----+-----+---------+   
-		"tree1" )	sprite=("${tree1[@]}") ; sprite_color=("${tree1_color[@]}") ; sprite_fast=("${tree12[@]}") ; mover   $Q    4     4 ;; #
-		"tree2" )	sprite=("${tree2[@]}") ; sprite_color=("${tree2_color[@]}") ; sprite_fast=("${tree22[@]}") ; mover   $W    6     6 ;; # Trees
-		"tree3" )	sprite=("${tree3[@]}") ; sprite_color=("${tree3_color[@]}") ; sprite_fast=("${tree32[@]}") ; mover   $E    9     10;; #
+       #                                      Composite sprites(fast\slow)                                                                        |
+       #----------+------------------------+------------------------------------+------------------------------+------+-----+-----+-----+---------+
+       # OBJ type | slow sprite            |   slow sprite's color table        |     fast sprite              |func. |timer|lines|width| comment |
+       #----------+------------------------+------------------------------------+------------------------------+------+-----+-----+-----+---------+   
+		"tree1" )	sprite=("${tree1[@]}") ; sprite_color=("${tree1_color[@]}") ; sprite_fast=("${tree12[@]}") ; mover   $Q    4     4  ;; #
+		"tree2" )	sprite=("${tree2[@]}") ; sprite_color=("${tree2_color[@]}") ; sprite_fast=("${tree22[@]}") ; mover   $W    6     6  ;; # Trees
+		"tree3" )	sprite=("${tree3[@]}") ; sprite_color=("${tree3_color[@]}") ; sprite_fast=("${tree32[@]}") ; mover   $E    9     10 ;; #
 
-		"cloud1")	sprite=("${cloud1[@]}"); sprite_color=("${cloud1_color[@]}"); sprite_fast=("${cloud12[@]}"); mover   $Q    3     7 ;; #
-		"cloud2")	sprite=("${cloud2[@]}"); sprite_color=("${cloud2_color[@]}"); sprite_fast=("${cloud22[@]}"); mover   $W    3     9 ;; # Clouds
-		"cloud3")	sprite=("${cloud3[@]}"); sprite_color=("${cloud3_color[@]}"); sprite_fast=("${cloud32[@]}"); mover   $E    3     12;; #
+		"cloud1")	sprite=("${cloud1[@]}"); sprite_color=("${cloud1_color[@]}"); sprite_fast=("${cloud12[@]}"); mover   $Q    3     7  ;; #
+		"cloud2")	sprite=("${cloud2[@]}"); sprite_color=("${cloud2_color[@]}"); sprite_fast=("${cloud22[@]}"); mover   $W    3     9  ;; # Clouds
+		"cloud3")	sprite=("${cloud3[@]}"); sprite_color=("${cloud3_color[@]}"); sprite_fast=("${cloud32[@]}"); mover   $E    3     12 ;; #
 
-		"alien" )	sprite=("${alien[@]}") ; sprite_color=("${alien_color[@]}") ; sprite_fast=("${alien2[@]}") ; mover   0     3     5 ;; # Aliens
-       #-------------------------------------------------------------------------------+
-       #                   Fast only sprites                                           |
-       #----------+------------------------+-----+-----+-----+-----+-------------------+
-       # OBJ type |         sprite         |func.|timer|lines|width|      comment      |
-       #----------+------------------------+-----+-----+-----+-----+-------------------+
-		"bfire" )	sprite=("${bfire[@]}"); mover   0     6     4;; # Boss' plasma shot
+		"alien" )	sprite=("${alien[@]}") ; sprite_color=("${alien_color[@]}") ; sprite_fast=("${alien2[@]}") ; mover    0    3     5  ;; # Aliens
+       #---------------------------------------------------------------------------------+
+       #               Fast only sprites                                                 |
+       #----------+------------------------+------+-----+-----+-----+--------------------+
+       # OBJ type |         sprite         |func. |timer|lines|width|      comment       |
+       #----------+------------------------+------+-----+-----+-----+--------------------+
+		"bfire" )	sprite=("${bfire[@]}") ; mover   0     6     4  ;; # Boss' plasma shot
 
-		"ammo"  )	sprite=("${ammob[@]}"); mover   0     3     4;; # Ammo bonus
-		"life"  )	sprite=("${lifep[@]}"); mover   0     3     4;; # Life bonus
-		"gunup" )	sprite=("${gunup[@]}"); mover   0     3     4;; # Gun powerup bonus
+		"ammo"  )	sprite=("${ammob[@]}") ; mover   0     3     4  ;; # Ammo bonus
+		"life"  )	sprite=("${lifep[@]}") ; mover   0     3     4  ;; # Life bonus
+		"gunup" )	sprite=("${gunup[@]}") ; mover   0     3     4  ;; # Gun powerup bonus
 
-        # Enemy explosion, not moving, print in place
+        # Enemy explosions, not moving, print in place
 		"boom"  )	er=${boomC}
 					for part in "${boom[@]:$B:$boomC}"; do stp=${part:0:1}; spr=${part:1}; XY $[${OX} + $stp] ${OY} "${spr}"; ((OY++)); done
 					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; erase_obj ${i}; }; }
