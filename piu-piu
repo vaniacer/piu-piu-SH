@@ -33,29 +33,29 @@ XY   () { printf "\e[${2};${1}H${3}";   } #                          |
 line () { printf %.s"${1}" $(seq ${2}); } #                          |
 #--------------------------------------------------------------------+
 
-#--------------------------{ Start opt }-----------------------------+
-    tillboss=100		# 100
-     bhealth=100		# 100
-     enumber=0
-     bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# more ammo, less life ang gunup
-      goback=false
-       enmax=10
-       frags=0
-        life=3
-        ammo=100
-         rnd=10			# 10
-         spd=0.0001
-          BY=$[$(tput lines) / 2]
-          BX=$[$(tput  cols) + 1]
-          BN=0
-          BC=0
-           X=1
-           Y=1
-           L=0
-           J=0
-           K=0
-           S=0
-           G=0			# gun 0-4
+#------------------------{ Start opt }------------------------{ description }----------{ def. value }-------------------
+    tillboss=100									# frags needed to fight with boss	(100)
+     bhealth=100									# boss' health						(100)
+     enumber=0										# current enemy counter				(0)
+     bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# bonuses, more ammo, less life ang gunup
+      goback=false									# need 4 boss movement
+       enmax=10										# max number of akiens				(10)
+       frags=0										# frags counter						(0)
+        life=3										# life counter						(3)
+        ammo=100									# ammo counter						(100)
+         rnd=10										# random seed 4 bonuses				(10)
+         spd=0.0001									# game\read speed					(0.0001)
+          BY=$[$(tput lines) / 2]					# boss start Y
+          BX=$[$(tput  cols) + 1]					# boss start X
+          BC=0										# boss' sprite cutter
+           X=1										# hero X							(1)
+           Y=1										# hero Y							(1)
+           L=0										# sprites animation counter
+           J=0										# boss' bullet animation counter
+           K=0										# boss' fire rate counter
+           S=0										# Sun animation counter
+           G=0										# gun 								(0)(max 4)
+           Q=0										# intro animation counter
 
 [ -e piu.conf ] && . piu.conf
 #------------------------{ Messages }------------------------------------------------------------------------------------
@@ -313,6 +313,43 @@ cloud3_color=("${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${
               ${BLD}${YLW}'          .`       '${DEF}
               ${DEF}${YLW}'         `         '${DEF}); SunN=${#Sun[@]}; SunC=9
 
+#------------------------{ Intro }--------------------------------------------------------------------------------------
+           D=$DEF; C1=$BLU; C2=$RED; C3=$YLW; C4=$red; C5=$BLD$YLW; C6=$BLD$GRN; C7=$blu; C8=$BLD$RED
+
+				#   ░   ░░░ ░░     ░  ░░      ░░  ░░ ░
+				# ░   ░  ▒██████ ░▒██████ ▒██░  ▒██
+				#   ░ ░░▒▓██ ▒▓██ ▓▓▓██▓ ▒▓██ ░▒▓██░░ ░
+				#░ ░ ░░▒▓██ ▒▓██ ▒▒▒▓██ ░▒▓██░ ▒▓██░
+				#      ▒▓██████░ ░▒▓██ ░▒▓██ ░▒▓██░░ ░ ░
+				#  ░  ▒▓██▓▓▓▓  ░ ▒▓██░ ▒▓██░░▒▓██ ░
+				#   ▒▓████▒▒▒░ ░ ▓██████ ▒▓██████░░ ░
+				#░ ░▒▓▓▓▓ ░ ░░▒▓▓▓▓▓▓ ░ ▒▓▓▓▓▓░
+				# ░ ▒▒ ░ ░ ░ ░▒▒▒▒▒▒ ░ ░░▒▒▒▒░  ░
+
+         piu=(	"$C1   " "░  "    " ░░"    "░ ░" "░  " "   " "░  " "░░ " "   " "  ░" "░  " "░░ " "░$D  " "   "
+				"$C1 ░ " "  ░" "  $C2▒" "$C3███" "███" " $C1░$C2▒" "$C3███" "███" " $C2▒$C3█" "█$C1░ " " $C2▒$C3█" "█$D  " "   " "   "
+				"$C1   " "░ ░" "░$C2▒$C4▓" "$C3██ " "$C2▒$C4▓$C3█" "█ $C4▓" "▓▓$C3█" "█$C4▓ " "$C1▒$C4▓$C3█" "█ $C1░" "$C2▒$C4▓$C3█" "█$C1░░" " ░$D " "   "
+				"$C1░ ░" " ░░" "$C2▒$C4▓$C3█" "█ $C2▒" "$C4▓$C3██" " $C2▒▒" "▒$C4▓$C3█" "█ $C2░" "▒$C4▓$C3█" "█$C1░ " "$C2▒$C4▓$C3█" "█$C1░$D " "   " "   "
+				"$C1   " "   " "$C2▒$C4▓$C5█" "███" "██$C1░" " ░$C2▒" "$C4▓$C3██" " $C1░$C2▒" "$C4▓$C3██" " $C1░$C2▒" "$C4▓$C3██" "$C1░░ " "░ ░$D" "   "
+				"$C1  ░" "  $C2▒" "$C4▓$C3██" "$C4▓▓▓" "▓  " "$C1░ $C2▒" "$C4▓$C3██" "$C1░ $C2▒" "$C4▓$C3██" "$C1░░$C2▒" "$C4▓$C3██" " $C1░$D " "   " "   "
+				"$C2   " "▒$C4▓$C3█" "███" "$C2▒▒▒" "$C1░ ░" " $C4▓$C3█" "███" "██ " "$C1▒$C4▓$C3█" "███" "██$C1░" "░ ░$D" "   " "   "
+				"$C1░ ░" "$C2▒$C4▓▓" "▓▓ " "$C1░ ░" "░$C2▒$C4▓" "▓▓▓" "▓▓ " "$C1░ $C2▒" "$C4▓▓▓" "▓▓$C1░$D" "   " "   " "   " "   "
+				"$C1 ░ " "▒▒ " "░ ░" " ░ " "░▒▒" "▒▒▒" "▒ ░" " ░░" "▒▒▒" "▒░ " " ░ " "   " "   " "$D   "); piuN=${#piu[*]}; piuC=14
+
+				#          ░░ ▒▒███░
+				#     ░░░ ▒████ ▒▓███░
+				# ░ ▒████▒▓▓▓▓ ░░▒▓▓███ ░░ ░
+				#░ ▒▓▓▓▓ ▒████░▒▓███░░
+				# ▒ ▒▒  ▒▓▓▓▓▒▓███░
+				#    ░░░ ▒▒▒ ░░▒▒░
+
+         arr=(	"   " "   " "   " "   " " $C7░░" " $C2▒▒" "$C6███" "$C7░$D  " ""    ""
+				"   " "   " "  $C7░" "░░ " "$C2▒$C8██" "██ " "$C7▒$C3▓$C6█" "██$C7░$D" ""    ""
+				"   " " $C7░ " "▒$C8██" "██$D$C2▒" "$C3▓▓▓" "▓ $C7░" "░$C7▒$C3▓" "▓$C6██" "█ $C7░" "░ ░$D"
+				"   " "$C7░ $C2▒" "$C3▓▓▓" "▓ $C2▒" "$C8███" "█$D$C7░$C2▒" "$C3▓$C6██" "█$C7░░$D" "   " ""
+				"   " " $C7▒ " "▒▒ " " $C2▒$C3▓" "▓▓▓" "$C7▒$C3▓$C6█" "██$C7░$D" "   " ""    ""
+				"   " "   " " $C7░░" "░ ▒" "▒▒ " "░░▒" "▒░$D " "   " ""    ""); arrN=${#arr[*]}; arrC=10
+
 #------------------------{ Functions }-----------------------------------------------------------------------------------
 function sprites { # dynamic sprites
 
@@ -416,6 +453,53 @@ function mess () { clear
 	esac
 }
 
+function left () { N=$1; C=$2
+
+		# move
+		[ $OX -ge $end ] && {
+
+			((OX-=3)); [ $cuter -ne $C ] && ((cuter++))
+
+			for ((j=0; j<$N; j+=$C)); do
+
+				line=("${sprite[@]:$j:$cuter}"); YY=$[$OY+$j/$C]; spr=
+				for part in "${line[@]}"; do spr+="${part}"; done; XY $OX $YY "${spr}"
+
+			done; OBJ[$i]="$OX $OY $cuter $end $type $pause"
+		} || { remove_obj $i; ((Q++)); OBJ+=("${scenario[$Q]}"); }
+}
+
+function right () { N=$1; C=$2
+
+		# move
+		[ $OX -le $end ] && {
+
+			[ $cuter -ne $C ] && ((cuter++)) || ((OX+=3))
+
+			for ((j=0; j<$N; j+=$C)); do
+
+				line=("${sprite[@]:$j:$C}"); YY=$[$OY+$j/$C]; spr=
+				for ((k=$[$C-$cuter]; k<$C; k++)); do spr+="${line[k]}"; done; XY $OX $YY "${spr}"
+
+			done; OBJ[$i]="$OX $OY $cuter $end $type $pause"
+		} || { remove_obj $i; ((Q++)); OBJ+=("${scenario[$Q]}"); }
+}
+
+function intro {
+	while true; do sleep 0.01; NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do 
+		OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; end=${OI[3]}; type=${OI[4]}
+
+		case $type in
+			#----------+---------------------+-------+-----+-----+-------+
+			# OBJ type |        sprite       | func. |items|width|comment|
+			#----------+---------------------+-------+-----+-----+-------+
+			"arr" )		sprite=("${arr[@]}") ; right  $arrN $arrC;; #
+			"piu" )		sprite=("${piu[@]}") ; left   $piuN $piuC;; #
+			"end" )		                      return             ;; #
+
+	esac; done; done
+}
+
 function mover () { er=$2; width=$3
 
 	# move
@@ -468,13 +552,15 @@ function mover () { er=$2; width=$3
 	done
 }
 
-trap bye INT
+trap bye INT; stty -echo; printf "${COF}"
 get_dimensions
-mess "help"
-stty -echo
-printf "${COF}"
-sleep 3
-clear
+
+    scenario=(	"$[$endx+1]    5 0     $[endx/2-34] piu"
+				"$[$endx+1]    5 0     $[endx/2+2]  piu"
+				"-2           14 0     $[endx/2-16] arr"
+				"0             0 0     0            end"); OBJ=("${scenario[$Q]}")
+
+clear; intro; sleep 1; mess "help"; sleep 3; clear
 
 #================================================{ Main game loop }======================================================
 while true; do
