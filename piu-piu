@@ -33,7 +33,7 @@ XY   () { printf "\e[${2};${1}H${3}";   } #                          |
 line () { printf %.s"${1}" $(seq ${2}); } #                          |
 #--------------------------------------------------------------------+
 
-#------------------------{ Start opt }------------------------{ description }----------{ def. value }-------------------
+#------------------------{ Start opt }------------------------{ description }----------{ def. values }------------------
     tillboss=100									# frags needed to fight with boss	(100)
      bhealth=100									# boss' health						(100)
      enumber=0										# current enemy counter				(0)
@@ -59,12 +59,12 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
 
 [ -e piu.conf ] && . piu.conf
 #------------------------{ Messages }------------------------------------------------------------------------------------
-        help=("                  ^     "
-		      "                  ${RED}W${DEF}     "
-		      "${BLD}Control with:${DEF} < ${RED}A S D${DEF} > "
-		      "                  v     "
-		      "                        "
-		      "${BLD}Shoot with:${DEF}       ${YLW}P${DEF} ${BLD}${red}-=${DEF}${BLD}${GRN}>${DEF} ")
+        help=(                  '                   ^     '
+		                  "                   ${RED}W${DEF}     "
+		      "${BLD}Control with:${DEF}  < ${RED}A S D${DEF} > "
+		                        '                   v     '
+		      ''
+		      "${BLD}Shoot\select with:${DEF} ${YLW}P ${BLD}${red}-=${GRN}>${DEF} ")
 
         lose=('                            '
   ${BLD}${red}'  ____    _    __  __ _____ '${DEF}
@@ -379,12 +379,19 @@ function sprites { # dynamic sprites
               0'  `¯¯---¯¯´  '
                1'           ')
 
-        hero=('  '
-              '__     '
-              "|${RED}★${DEF}〵____ "
-              " \_| /${UND}${BLD} °${DEF})${BLD}${blk}${gun[${G}]}${DEF}"
-              '   |/    '
-              '     ')
+		hero=(${DEF}'  '
+                 $HC'__     '${DEF}
+                 $HC"|${SC}${HS}${HC}〵____ "${DEF}
+                 $HC" \_| /${UND} °${DEF}${HC})${BLD}${blk}-${DEF}"
+                 $HC'   |/    '${DEF}
+                 $HC'     '${DEF})
+
+#        hero=('  '
+#              '__     '
+#              "|${RED}★${DEF}〵____ "
+#              " \_| /${UND}${BLD} °${DEF})${BLD}${blk}${gun[${G}]}${DEF}"
+#              '   |/    '
+#              '     ')
 
 	case ${G} in
 
@@ -429,6 +436,8 @@ function bye () {
 	clear; ls --color=auto
 	exit $1
 }
+
+function default { HC=${DEF}; SC=${RED}; HS=★; 	}
 
 function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--)); }
 
@@ -486,6 +495,14 @@ function right () { N=$1; C=$2
 }
 
 function intro {
+
+	get_dimensions
+	# Scenario 4 intro
+    scenario=(	"$[$endx+1]    5 0     $[endx/2-34] piu"
+				"$[$endx+1]    5 0     $[endx/2+2]  piu"
+				"-2           14 0     $[endx/2-16] arr"
+				"0             0 0     0            end"); OBJ=("${scenario[$Q]}")
+
 	while true; do sleep 0.01; NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do 
 		OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; end=${OI[3]}; type=${OI[4]}
 
@@ -498,6 +515,109 @@ function intro {
 			"end" )		                      return             ;; #
 
 	esac; done; done
+}
+
+function configure {
+
+  hero_color=(${BLK} ${RED} ${GRN} ${YLW} ${BLU} ${MGN} ${CYN} ${WHT}); HCN=${#hero_color[*]}; HCI=0;
+  star_color=(${BLK} ${RED} ${GRN} ${YLW} ${BLU} ${MGN} ${CYN} ${WHT}); SCN=${#star_color[*]}; SCI=0;
+   hero_star=(★ ✙ ✠ ✡ ✣ ✦ ✧ ✩ ☘ ☠ ☢ ☣)                           ; HSN=${#hero_star[*]};  HSI=0;
+        menu=( 'hero' 'star' 'symbol' 'apply' 'back' )                ; menuN=${#menu[*]};     menuI=$[$menuN-1]
+        selL='>'; selR='<'; selN=' '
+
+	function back { menu=( 'start' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}; }
+
+	function deselect {
+		selectedAP=${DEF}  ; selectedBK=${DEF}
+		selectedHCL=${selN}; selectedHCR=${selN}
+		selectedSCL=${selN}; selectedSCR=${selN}
+		selectedHSL=${selN}; selectedHSR=${selN}
+	}
+
+	while true; do get_dimensions
+
+		hero=(${DEF}'  '
+                 $HC'__     '${DEF}
+                 $HC"|${SC}${HS}${HC}〵____ "${DEF}
+                 $HC" \_| /${UND} °${DEF}${HC})${BLD}${blk}-${DEF}"
+                 $HC'   |/    '${DEF}
+                 $HC'     '${DEF})
+
+		#-{ Get keys }-------------------------------------------------------------------------------------------------------
+		read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
+
+			's'|'S') ((menuI++)); [ $menuI -gt $[$menuN-1] ] && menuI=$[$menuN-1];;
+			'w'|'W') ((menuI--)); [ $menuI -lt 0           ] && menuI=0;;
+			'd'|'D') case ${menu[$menuI]}	in	'hero'  ) ((HCI++)); [ $HCI -gt $[$HCN-1] ] && HCI=$[$HCN-1];;
+												'star'  ) ((SCI++)); [ $SCI -gt $[$SCN-1] ] && SCI=$[$SCN-1];;
+												'symbol') ((HSI++)); [ $HSI -gt $[$HSN-1] ] && HSI=$[$HSN-1];; esac;;
+
+			'a'|'A')  case ${menu[$menuI]}	in	'hero'  ) ((HCI--)); [ $HCI -lt 0 ] && HCI=0;;
+												'star'  ) ((SCI--)); [ $SCI -lt 0 ] && SCI=0;;
+												'symbol') ((HSI--)); [ $HSI -lt 0 ] && HSI=0;; esac;;
+
+			'p'|'P') case ${menu[$menuI]}	in	'hero'  ) HC=${hero_color[$HCI]};;
+												'star'  ) SC=${star_color[$SCI]};;
+												'symbol') HS=${hero_star[$HSI]} ;;
+												'apply' )          back; clear; return;;
+												'back'  ) default; back; clear; return;; esac;;
+		esac
+
+		#----------------------------------{ Print hero }----------------------------------
+		for (( i=0; i<${#hero[@]}; i++ )); do XY $[$endx/2-4] $[5+$i] " ${hero[$i]} "; done
+
+		#----------------------------------{ Print controls }-------------------------------------------------------------
+		for ((i=0; i<${HCN}; i++ )); do [ $i -eq $HCI ] && selectedHC=${BLD} || selectedHC=${DEF}
+										XY $[$endx/2 - 4 + $i*3] $[$endy/2]   "$selectedHC${hero_color[$i]}██${DEF}"; done
+		for ((i=0; i<${SCN}; i++ )); do [ $i -eq $SCI ] && selectedSC=${BLD} || selectedSC=${DEF}; SL=; SR=
+										XY $[$endx/2 - 4 + $i*3] $[$endy/2+2] "$selectedSC${star_color[$i]}██${DEF}"; done
+		for ((i=0; i<${HSN}; i++ )); do [ $i -eq $HSI ] && selectedHS=${BLD}${RED} || selectedHS=${DEF}; SL=; SR=
+										XY $[$endx/2 - 8 + $i*3] $[$endy/2+4] "$selectedHS${hero_star[$i]} ${DEF}"  ; done
+
+		case ${menu[$menuI]} in 'apply' )	deselect; selectedAP=${BLD}${RED};;
+								'back'  )	deselect; selectedBK=${BLD}${RED};;
+								'hero'  )	deselect; selectedHCL=${selL}; selectedHCR=${selR};;
+								'star'  )	deselect; selectedSCL=${selL}; selectedSCR=${selR};;
+								'symbol')	deselect; selectedHSL=${selL}; selectedHSR=${selR};;
+								*       )	deselect;;esac
+
+		XY $[$endx/2 - 2] $[$endy/2+6] "${selectedAP}apply${DEF}"
+		XY $[$endx/2 - 2] $[$endy/2+8] "${selectedBK}back${DEF}"
+
+		XY $[$endx/2 - 18] $[$endy/2]   "${selectedHCL} Hero color: "  ; XY $[$endx/2 + 20] $[$endy/2]   "${selectedHCR}"
+		XY $[$endx/2 - 20] $[$endy/2+2] "${selectedSCL} Symbol color: "; XY $[$endx/2 + 20] $[$endy/2+2] "${selectedSCR}"
+		XY $[$endx/2 - 24] $[$endy/2+4] "${selectedHSL} Hero symbol: " ; XY $[$endx/2 + 28] $[$endy/2+4] "${selectedHSR}"
+
+	done
+
+}
+
+function main_menu {
+
+	intro
+	menu=( 'start' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}
+	while true; do get_dimensions
+
+		#-{ Get keys }-------------------------------------------------------------------------------------------------------
+		read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
+
+			's'|'S') ((menuI++)); [ $menuI -gt $[$menuN-1] ] && menuI=$[$menuN-1];;
+			'w'|'W') ((menuI--)); [ $menuI -lt 0      ] && menuI=0;;
+			'd'|'D') menuI=$[$menuN-1];;
+			'a'|'A') menuI=0;;
+			'p'|'P') case ${menu[$menuI]}  in 	'start') return;;
+												'conf' ) clear ;  configure;;
+												'exit' ) bye   ;; esac;;
+		esac
+
+		for ((i=0; i<$menuN; i++)); do
+
+			[ $i -eq $menuI ] && selected=${BLD}${RED} || selected=${DEF}
+			XY $[$endx / 2 - ${#menu[$i]} / 2] $[$endy - 6 + $i] " $selected${menu[$i]}${DEF} "
+
+		done
+
+	done
 }
 
 function mover () { er=$2; width=$3
@@ -552,15 +672,8 @@ function mover () { er=$2; width=$3
 	done
 }
 
-trap bye INT; stty -echo; printf "${COF}"
-get_dimensions
-
-    scenario=(	"$[$endx+1]    5 0     $[endx/2-34] piu"
-				"$[$endx+1]    5 0     $[endx/2+2]  piu"
-				"-2           14 0     $[endx/2-16] arr"
-				"0             0 0     0            end"); OBJ=("${scenario[$Q]}")
-
-clear; intro; sleep 1; mess "help"; sleep 3; clear
+trap bye INT; stty -echo; printf "${COF}"; get_dimensions; default
+clear; mess "help"; sleep 2; clear; main_menu; clear
 
 #================================================{ Main game loop }======================================================
 while true; do
