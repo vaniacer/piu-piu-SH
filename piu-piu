@@ -55,7 +55,6 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
            K=0										# boss' fire rate counter
            S=0										# Sun animation counter
            G=0										# gun 								(0)(max 4)
-           Q=0										# intro animation counter
 
 [ -e piu.conf ] && . piu.conf
 #------------------------{ Messages }------------------------------------------------------------------------------------
@@ -496,14 +495,14 @@ function right () { N=$1; C=$2
 
 function intro {
 
-	get_dimensions
+	get_dimensions; Q=0
 	# Scenario 4 intro
     scenario=(	"$[$endx+1]    5 0     $[endx/2-34] piu"
 				"$[$endx+1]    5 0     $[endx/2+2]  piu"
 				"-2           14 0     $[endx/2-16] arr"
 				"0             0 0     0            end"); OBJ=("${scenario[$Q]}")
 
-	while true; do sleep 0.01; NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do 
+	while true; do sleep 0.005; NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do
 		OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; end=${OI[3]}; type=${OI[4]}
 
 		case $type in
@@ -599,14 +598,14 @@ function main_menu {
 	while true; do get_dimensions
 
 		#-{ Get keys }-------------------------------------------------------------------------------------------------------
-		read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
+		read -t0.005 -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
 			's'|'S') ((menuI++)); [ $menuI -gt $[$menuN-1] ] && menuI=$[$menuN-1];;
 			'w'|'W') ((menuI--)); [ $menuI -lt 0      ] && menuI=0;;
 			'd'|'D') menuI=$[$menuN-1];;
 			'a'|'A') menuI=0;;
-			'p'|'P') case ${menu[$menuI]}  in 	'start') return;;
-												'conf' ) clear ;  configure;;
+			'p'|'P') case ${menu[$menuI]} 	in	'start') return;;
+												'conf' ) clear ;  configure && intro;;
 												'exit' ) bye   ;; esac;;
 		esac
 
@@ -616,7 +615,6 @@ function main_menu {
 			XY $[$endx / 2 - ${#menu[$i]} / 2] $[$endy - 6 + $i] " $selected${menu[$i]}${DEF} "
 
 		done
-
 	done
 }
 
