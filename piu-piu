@@ -520,20 +520,12 @@ function configure {
 	function   back   { menu=( 'start' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}; }
 
 	function deselect {
-		selectedAP=${DEF}  ; selectedBK=${DEF}
 		selectedHCL=${selN}; selectedHCR=${selN}
 		selectedSCL=${selN}; selectedSCR=${selN}
 		selectedHSL=${selN}; selectedHSR=${selN}
-	}
+		selectedAP=${DEF}  ; selectedBK=${DEF}; }
 
-	while true; do get_dimensions
-
-		hero=(${DEF}'  '
-                 $HC'__     '${DEF}
-           ${DIM}$HC"|${DEF}${SC}${HS}${HC}${BLD}〵${DEF}${HC}____ "${DEF}
-           ${DIM}$HC" \_| ${BLD}${HC}/${DIM}${UND} °${DEF}${HC}${BLD})${blk}-${DEF}"
-           ${DIM}$HC"   |${BLD}/    "${DEF}
-                 $HC'     '${DEF})
+	while true; do get_dimensions; sprites
 
 		#-{ Get keys }-------------------------------------------------------------------------------------------------------
 		read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
