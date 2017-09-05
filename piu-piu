@@ -56,7 +56,7 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
            S=0										# Sun animation counter
            G=0										# gun 										(0)(max 4)
 
-[ -e piu.conf ] && . piu.conf
+[ -e piu.conf ] && . piu.conf						# load start conf from file
 #------------------------{ Messages }-----------------------------------------------------------------------------------
         help=(                  '                   ^     '
 		                  "                   ${RED}W${DEF}     "
@@ -513,7 +513,7 @@ function configure {
 
   hero_color=(${BLK} ${RED} ${GRN} ${YLW} ${BLU} ${MGN} ${CYN} ${WHT}); HCN=${#hero_color[*]}; HCI=0;
   star_color=(${BLK} ${RED} ${GRN} ${YLW} ${BLU} ${MGN} ${CYN} ${WHT}); SCN=${#star_color[*]}; SCI=0;
-   hero_star=(★ ✙ ✠ ✡ ✣ ✦ ✧ ✩ ☘ ☠ ☢ ☣)                           ; HSN=${#hero_star[*]};  HSI=0;
+   hero_star=(★ ☭ ✚ ✙ ✠ ✡ ✦ ✧ ✩ ✪ ☘ ☠ ☢ ☣ ☯ ❃ ❂ ❁ ✿ ❀ ✣ ♣ ♠ ♥ ♦ ❤ ● ☻ ♀ ♂); HSI=0; HSN=${#hero_star[*]}
         menu=( 'hero' 'star' 'symbol' 'apply' 'back' )                ; menuN=${#menu[*]};     menuI=$[$menuN-1]
         selL='>'; selR='<'; selN=' '
 
@@ -555,8 +555,10 @@ function configure {
 										XY $[$endx/2 - 4 + $i*3] $[$endy/2]   "$selectedHC${hero_color[$i]}██${DEF}"; done
 		for ((i=0; i<${SCN}; i++ )); do [ $i -eq $SCI ] && selectedSC=${BLD} || selectedSC=${DEF}; SL=; SR=
 										XY $[$endx/2 - 4 + $i*3] $[$endy/2+2] "$selectedSC${star_color[$i]}██${DEF}"; done
-		for ((i=0; i<${HSN}; i++ )); do [ $i -eq $HSI ] && selectedHS=${BLD}${RED} || selectedHS=${DEF}; SL=; SR=
-										XY $[$endx/2 - 8 + $i*3] $[$endy/2+4] "$selectedHS${hero_star[$i]} ${DEF}"  ; done
+		for ((i=0; i<$[${HSN}/2]; i++ )); do [ $i -eq $HSI ] && selectedHS=${BLD}${RED} || selectedHS=${DEF}; SL=; SR=
+										XY $[$endx/2 - 15 + $i*3] $[$endy/2+4] "$selectedHS${hero_star[$i]} ${DEF}" ; done
+		for ((i=$[${HSN}/2]; i<${HSN}; i++ )); do [ $i -eq $HSI ] && selectedHS=${BLD}${RED} || selectedHS=${DEF}; SL=; SR=
+										XY $[$endx/2 - 60 + $i*3] $[$endy/2+5] "$selectedHS${hero_star[$i]} ${DEF}" ; done
 
 		case ${menu[$menuI]} in 'apply' )	deselect; selectedAP=${BLD}${RED};;
 								'back'  )	deselect; selectedBK=${BLD}${RED};;
@@ -565,12 +567,12 @@ function configure {
 								'symbol')	deselect; selectedHSL=${selL}; selectedHSR=${selR};;
 								*       )	deselect;;esac
 
-		XY $[$endx/2 - 2] $[$endy/2+6] "${selectedAP}apply${DEF}"
-		XY $[$endx/2 - 2] $[$endy/2+8] "${selectedBK}back${DEF}"
-
 		XY $[$endx/2 - 18] $[$endy/2]   "${selectedHCL} Hero color: "  ; XY $[$endx/2 + 20] $[$endy/2]   "${selectedHCR}"
 		XY $[$endx/2 - 20] $[$endy/2+2] "${selectedSCL} Symbol color: "; XY $[$endx/2 + 20] $[$endy/2+2] "${selectedSCR}"
-		XY $[$endx/2 - 24] $[$endy/2+4] "${selectedHSL} Hero symbol: " ; XY $[$endx/2 + 28] $[$endy/2+4] "${selectedHSR}"
+		XY $[$endx/2 - 30] $[$endy/2+4] "${selectedHSL} Hero symbol: " ; XY $[$endx/2 + 30] $[$endy/2+4] "${selectedHSR}"
+
+		XY $[$endx/2 - 2] $[$endy/2+7] "${selectedAP}apply${DEF}"
+		XY $[$endx/2 - 2] $[$endy/2+9] "${selectedBK}back${DEF}"
 
 	done
 
