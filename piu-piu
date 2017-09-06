@@ -106,7 +106,8 @@ esac
          gun=(- = ≡ ≣ 𝄚)
 
 #       grass=(─ ┴ ─ ┬ ─ ╥ ─ ╨ ─ ┼ ─ ╫ ─) # grass types
-       grass=(' ' │ ' ' ║ ' ') # grass types
+       grass=(' ' │ ' ' ║ ' ' █ ' ' ▓ ' ' ▒ ' ' ░) # grass types
+#       grass=(' ' │ ' ' ║ ' ') # grass types
 #       grass=(─ ┴ ─ ╨ ─) # grass types
 
        ammob=("${BLD}${red}-=${SKY}${GRN}>${SKY} "
