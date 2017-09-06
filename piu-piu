@@ -105,7 +105,9 @@ esac
 
          gun=(- = ≡ ≣ 𝄚)
 
-       grass=(─ ┴ ─ ┬ ─ ╥ ─ ╨ ─ ┼ ─ ╫ ─) # grass types
+#       grass=(─ ┴ ─ ┬ ─ ╥ ─ ╨ ─ ┼ ─ ╫ ─) # grass types
+       grass=(' ' │ ' ' ║ ' ') # grass types
+#       grass=(─ ┴ ─ ╨ ─) # grass types
 
        ammob=("${BLD}${red}-=${SKY}${GRN}>${SKY} "
               "${BLD}${red}-=${SKY}${GRN}>${SKY} "
@@ -878,6 +880,6 @@ while true; do
 	XY 1 $lineendy "${LND}${land:$[1-$LX]:$endx}"; [ $LX -lt  -$[$LN/2]  ] && LX=-1 || ((LX--))
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
-	XY 0 0 "${SKY}${BLD}killed aliens: ${SKY}${CYN}${frags}${SKY}  ${BLD}Life: ${SKY}${CYN}${life}${SKY}  ${BLD}Ammo: ${SKY}${CYN}${ammo}${SKY} "
+	XY 0 0 "${SKY}${BLK}killed aliens: ${SKY}${RED}${frags}${SKY}  ${BLK}Life: ${SKY}${RED}${life}${SKY}  ${BLK}Ammo: ${SKY}${RED}${ammo}${SKY} "
 
 done
