@@ -40,14 +40,19 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# bonuses, more ammo, less life ang gunup
       goback=false									# need 4 boss movement
        enmax=10										# max number of akiens						(10)
+       month=$(date +'%m')							# get current month
        frags=0										# frags counter								(0)
         life=3										# life counter								(3)
         ammo=100									# ammo counter								(100)
          rnd=10										# random seed 4 bonuses						(10)
          spd=0.0001									# game\read speed							(0.0001)
+          DHC=${BLK}								# default hero color
+          DSC=${RED}								# default symbol color
+          DHS=★										# default symbol
           BY=$[$(tput lines) / 2]					# boss start Y
           BX=$[$(tput  cols) + 1]					# boss start X
           BC=0										# boss' sprite cutter
+          LX=1										# grass X counter
            X=1										# hero X									(1)
            Y=1										# hero Y									(1)
            L=0										# sprites animation counter
@@ -88,29 +93,39 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
   ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 
 #------------------------{ Sprites }-------------------------------------------------------------------------------------
+case $month in	0[1-5]|12)	SKY=${DEF}${bwht}
+							LND=${DEF}${BLD}${WHT}${BWHT};; # winter & early spring
+				0[6-8]   )	SKY=${DEF}${BBLU}
+							LND=${DEF}${DIM}${GRN}${BGRN};; # late spring & summer
+				09|1[0-1])	SKY=${DEF}${bblu}
+							LND=${DEF}${DIM}${YLW}${BYLW};; # autumn
+esac
+
       eraser='           '
 
          gun=(- = ≡ ≣ 𝄚)
 
-       ammob=("${BLD}${red}-=${DEF}${GRN}>${DEF} "
-              "${BLD}${red}-=${DEF}${GRN}>${DEF} "
-              "${BLD}${red}-=${DEF}${GRN}>${DEF} ")
+       grass=(─ ┴ ─ ┬ ─ ╥ ─ ╨ ─ ┼ ─ ╫ ─) # grass types
 
-       lifep=("${RED}/V\ ${DEF} "
-              "${RED}\ / ${DEF} "
-              "${RED} V  ${DEF} ")
+       ammob=("${BLD}${red}-=${SKY}${GRN}>${SKY} "
+              "${BLD}${red}-=${SKY}${GRN}>${SKY} "
+              "${BLD}${red}-=${SKY}${GRN}>${SKY} ")
 
-       shoot=("${RED} -${DEF}${BLD}${GRN}>${DEF}"
-              "${BLD}${red}-=${DEF}${GRN}>${DEF}"
-              "${red}=-${DEF}${BLD}${GRN}>${DEF}"
-              "${RED}- ${DEF}${GRN}>${DEF}")
+       lifep=("${RED}/V\ ${SKY} "
+              "${RED}\ / ${SKY} "
+              "${RED} V  ${SKY} ")
 
-      bshoot=("${ylw}█▓▒░${DEF}"
-              "${ylw}▓▒░▒${DEF}"
-              "${ylw}▒░▒▓${DEF}"
-              "${ylw}░▒▓█${DEF}"
-              "${ylw}▒▓█▓${DEF}"
-              "${ylw}▓█▓▒${DEF}")
+       shoot=("${RED} -${SKY}${BLD}${GRN}>${SKY}"
+              "${BLD}${red}-=${SKY}${GRN}>${SKY}"
+              "${red}=-${SKY}${BLD}${GRN}>${SKY}"
+              "${RED}- ${SKY}${GRN}>${SKY}")
+
+      bshoot=("${ylw}█▓▒░${SKY}"
+              "${ylw}▓▒░▒${SKY}"
+              "${ylw}▒░▒▓${SKY}"
+              "${ylw}░▒▓█${SKY}"
+              "${ylw}▒▓█▓${SKY}"
+              "${ylw}▓█▓▒${SKY}")
 
 #------------------------{ Cycle slow }----------------------------------------------------------------------------------
          big=(' O   O '
@@ -124,31 +139,93 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
               ' o ')
 
 #------------------------{ Cycle fast }----------------------------------------------------------------------------------
-        big2=(${RED}' O   O '${DEF}
-		      ${RED}'O   O  '${DEF}
-              ${RED}"   ${BLD}O   "${DEF}
-              ${RED}'  O   O'${DEF})
+        big2=(${RED}' O   O '${SKY}
+		      ${RED}'O   O  '${SKY}
+              ${RED}"   ${BLD}O   "${SKY}
+              ${RED}'  O   O'${SKY})
 
-        big3=(${CYN}'  O   O'${DEF}
-              ${CYN}"   ${BLD}O   "${DEF}
-		      ${CYN}'O   O  '${DEF}
-              ${CYN}' O   O '${DEF})
+        big3=(${CYN}'  O   O'${SKY}
+              ${CYN}"   ${BLD}O   "${SKY}
+		      ${CYN}'O   O  '${SKY}
+              ${CYN}' O   O '${SKY})
 
-      small2=(${YLW}'o  '${DEF}
-              ${YLW}'   '${DEF}
-              ${YLW}'  o'${DEF}
-              ${YLW}" ${BLD}o "${DEF})
+      small2=(${YLW}'o  '${SKY}
+              ${YLW}'   '${SKY}
+              ${YLW}'  o'${SKY}
+              ${YLW}" ${BLD}o "${SKY})
 
-#------------------------{ Trees slow }----------------------------------------------------------------------------------
+#------------------------{ Clouds }--------------------------------------------------------------------------------------
+      cloud1=(1' ,-., '
+              0'(    ) '
+              1' `+-` ')
+
+	case $month in	0[1-5]|12) CLR=${DIM}${CYN};; # winter & early spring
+					0[6-8]   ) CLR=${DIM}${WHT};; # late spring & summer
+					09|1[0-1]) CLR=${blk}      ;; # autumn
+	esac
+
+cloud1_color=(${SKY}"${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${SKY}"
+              ${SKY}"${CLR} ${SKY} ${SKY} ${SKY} ${SKY} ${CLR} ${SKY}"
+              ${SKY}"${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${SKY}")
+
+     cloud12=( 1${CLR}',-., '${SKY}
+              0${CLR}'(    ) '${SKY}
+               1${CLR}'`+-` '${SKY})
+
+      cloud2=(1' ,-._., '
+              0'(      ) '
+              1' `-...` ')
+
+	case $month in	0[1-5]|12) CLR=${CYN};; # winter & early spring
+					0[6-8]   ) CLR=${WHT};; # late spring & summer
+					09|1[0-1]) CLR=${BLK};; # autumn
+	esac
+
+cloud2_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${SKY}"
+              "${CLR} ${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${CLR} ${SKY}"
+              "${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${SKY}")
+
+     cloud22=( 1${CLR}',-._., '${SKY}
+              0${CLR}'(      ) '${SKY}
+               1${CLR}'`-...` '${SKY})
+
+      cloud3=(1' ,-"`.-"`. '
+              0'(         ) '
+              1' `--.....` ')
+
+	case $month in	0[1-5]|12) CLR=${BLD}${CYN};; # winter & early spring
+					0[6-8]   ) CLR=${BLD}${WHT};; # late spring & summer
+					09|1[0-1]) CLR=${DIM}${BLK};; # autumn
+	esac
+
+cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${SKY}"
+              "${CLR} ${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${CLR} ${SKY}" 
+              "${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${SKY}")
+
+     cloud32=( 1${CLR}',`"`.-"`. '${SKY}
+              0${CLR}'(         ) '${SKY}
+               1${CLR}'`--.....` '${SKY})
+
+#------------------------{ Trees }---------------------------------------------------------------------------------------
        tree1=(1' _ '
               0'/ \ '
               0'\|/ '
               1' | ')
 
- tree1_color=("${DIM}${GRN} ${DIM}${GRN} ${DEF}"
-              "${DIM}${GRN} ${DIM}${GRN} ${DIM}${GRN} ${DEF}"
-              "${DIM}${GRN}    ${blk}    ${DIM}${GRN} ${DEF}"
-              "   ${DEF}       ${blk}    ${DEF}")
+	case $month in	0[1-5]|12) CLR=${DIM}${WHT};; # winter & early spring
+					0[6-8]   ) CLR=${DIM}${GRN};; # late spring & summer
+					09|1[0-1]) CLR=${DIM}${YLW};; # autumn
+	esac
+
+ tree1_color=("${CLR}    ${CLR}    ${SKY}"
+              "${CLR}    ${CLR}    ${CLR} ${SKY}"
+              "${CLR} ${SKY}${DIM} ${CLR} ${SKY}"
+              "${SKY} ${SKY}${DIM} ${SKY}")
+
+      tree12=( 1${CLR}'_  '${SKY}
+              0${CLR}'/ \ '${SKY}
+              0${CLR}'\\'${SKY}${DIM}'|'${CLR}'/ '${SKY}
+         1${SKY}${DIM}'| '${SKY})
 
        tree2=(1' _._ '
               0'/   \ '
@@ -157,12 +234,24 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
               2'  ║_/ '
               2'  ║ ')
 
- tree2_color=("${GRN} ${GRN}    ${GRN}       ${GRN}    ${DEF}"
-              "${GRN} ${GRN}    ${GRN}       ${GRN}    ${GRN} ${DEF}"
-              "${GRN} ${GRN} ${DEF}${DIM} ${DEF}${GRN} ${GRN} ${DEF}"
-              "${DEF} ${GRN} ${DEF}${DIM} ${DEF}${GRN} ${GRN} ${DEF}"
-              "${DEF} ${DEF} ${DEF}${DIM} ${DEF}${GRN} ${GRN} ${DEF}"
-              "${DEF} ${DEF} ${DEF}${DIM} ${DEF}${GRN} ${DEF}")
+	case $month in	0[1-5]|12) CLR=${WHT};; # winter & early spring
+					0[6-8]   ) CLR=${GRN};; # late spring & summer
+					09|1[0-1]) CLR=${YLW};; # autumn
+	esac
+
+ tree2_color=("${CLR} ${CLR} ${CLR}    ${CLR}    ${SKY}"
+              "${CLR} ${CLR} ${CLR}    ${CLR}    ${CLR} ${SKY}"
+              "${CLR} ${CLR} ${blk} ${SKY}${CLR} ${CLR} ${SKY}"
+              "${SKY} ${CLR} ${blk} ${SKY}${CLR} ${CLR} ${SKY}"
+              "${SKY} ${SKY} ${blk} ${SKY}${CLR} ${CLR} ${SKY}"
+              "${SKY} ${SKY} ${blk} ${SKY}${CLR} ${SKY}")
+
+      tree22=( 1${CLR}'_._  '${SKY}
+              0${CLR}'/   \ '${SKY}
+              0${CLR}'\\'${blk}' | '${SKY}${CLR}'/ '${SKY}
+               1${CLR}'\\'${blk}'║'${SKY}${CLR}'/\ '${SKY}
+                2${blk}'║'${CLR}'_/ '${SKY}
+                2${blk}'║ '${SKY})
 
        tree3=(3'   _._ '
               2'  /   \ '
@@ -174,85 +263,40 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
               4'    ║ '
               4'    ║ ')
 
- tree3_color=("${DEF} ${DEF} ${DEF} ${grn} ${grn} ${grn} ${DEF}"
-              "${DEF} ${DEF} ${grn} ${DEF} ${DEF} ${DEF} ${grn} ${DEF}"
-              "${DEF} ${grn} ${grn} ${DEF} ${WHT} ${DEF} ${grn} ${DEF}"
-              "${grn} ${DEF} ${DEF} ${grn} ${WHT} ${grn} ${grn} ${grn} ${DEF}"
-              "${grn} ${grn} ${WHT} ${grn} ${WHT} ${grn} ${DEF} ${DEF} ${grn} ${DEF}"
-              "${DEF} ${DEF} ${DEF} ${WHT} ${WHT} ${grn} ${WHT} ${grn} ${grn} ${DEF}"
-              "${DEF} ${DEF} ${DEF} ${DEF} ${WHT} ${WHT} ${DEF}"
-              "${DEF} ${DEF} ${DEF} ${DEF} ${WHT} ${DEF}"
-              "${DEF} ${DEF} ${DEF} ${DEF} ${WHT} ${DEF}")
+	case $month in	0[1-5]|12) CLR=${cyn};; # winter & early spring
+					0[6-8]   ) CLR=${grn};; # late spring & summer
+					09|1[0-1]) CLR=${ylw};; # autumn
+	esac
 
-#------------------------{ Trees fast }----------------------------------------------------------------------------------
-      tree12=( 1${DIM}${GRN}'_ '${DEF}
-              0${DIM}${GRN}'/ \ '${DEF}
-              0${DIM}${GRN}'\\'${blk}'|'${DIM}${GRN}'/ '${DEF}
-                     1${blk}'| '${DEF})
+ tree3_color=("${SKY} ${SKY}    ${SKY}       ${CLR}      ${CLR}        ${CLR}       ${SKY}"
+              "${SKY} ${SKY}    ${CLR}       ${SKY}      ${SKY}        ${SKY}       ${CLR}    ${SKY}"
+              "${SKY} ${CLR}    ${CLR}       ${SKY}    ${SKY}${BLK}    ${SKY}       ${CLR}    ${SKY}"
+              "${CLR} ${SKY}    ${SKY}       ${CLR}    ${SKY}${BLK}    ${CLR}       ${CLR}    ${CLR} ${SKY}"
+              "${CLR} ${CLR} ${SKY}${BLK}    ${CLR}    ${SKY}${BLK}    ${CLR}       ${SKY}    ${SKY} ${CLR} ${SKY}"
+              "${SKY} ${SKY}    ${SKY}    ${SKY}${BLK} ${SKY}${BLK}    ${CLR}    ${SKY}${BLK} ${CLR} ${CLR} ${SKY}"
+              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK} ${SKY}${BLK}    ${SKY}"
+              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK} ${SKY}"
+              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK} ${SKY}")
 
-      tree22=( 1${GRN}'_._ '${DEF}
-              0${GRN}'/   \ '${DEF}
-              0${GRN}'\\'${DEF}${DIM}' | '${DEF}${GRN}'/ '${DEF}
-               1${GRN}'\\'${DEF}${DIM}'║'${DEF}${GRN}'/\ '${DEF}
-                2${DIM}'║'${DEF}${GRN}'_/ '${DEF}
-                2${DIM}'║ '${DEF})
 
-      tree32=(   3${grn}'_._ '${DEF}
-                2${grn}'/   \ '${DEF}
-               1${grn}'_\ '${WHT}'|'${grn}' / '${DEF}
-              0${grn}'/  \\'${WHT}'║'${grn}'/__ '${DEF}
-              0${grn}'\_'${WHT}'\\'${grn}'/'${WHT}'║'${grn}'/  \ '${DEF}
-                 3${WHT}'\║'${grn}'|'${WHT}'/'${grn}'_/ '${DEF}
-                  4${WHT}'║/ '${DEF}
-                  4${WHT}'║ '${DEF}
-                  4${WHT}'║ '${DEF})
-
-#------------------------{ Clouds slow }---------------------------------------------------------------------------------
-      cloud1=(1' ,-., '
-              0'(    ) '
-              1' `+-` ')
-
-cloud1_color=("   ${DEF}    ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU}    ${DEF}"
-              "${DIM}${BLU}    ${DEF}       ${DEF}       ${DEF}       ${DEF}    ${DIM}${BLU} ${DEF}"
-              "   ${DEF}    ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU} ${DIM}${BLU}    ${DEF}")
-
-      cloud2=(1' ,-._., '
-              0'(      ) '
-              1' `-...` ')
-
-cloud2_color=("${DEF} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${DEF}"
-              "${BLU} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${BLU} ${DEF}"
-              "${DEF} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${BLU} ${DEF}")
-
-      cloud3=(1' ,`"`.-"`. '
-              0'(         ) '
-              1' `--.....` ')
-
-cloud3_color=("${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${DEF}"
-              "${blu} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${blu} ${DEF}" 
-              "${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${DEF}")
-
-#------------------------{ Clouds fast }---------------------------------------------------------------------------------
-     cloud12=( 1${DIM}${BLU}',-., '${DEF}
-              0${DIM}${BLU}'(    ) '${DEF}
-               1${DIM}${BLU}'`+-` '${DEF})
-
-     cloud22=( 1${BLU}',-._., '${DEF}
-              0${BLU}'(      ) '${DEF}
-               1${BLU}'`-...` '${DEF})
-
-     cloud32=( 1${blu}',`"`.-"`. '${DEF}
-              0${blu}'(         ) '${DEF}
-               1${blu}'`--.....` '${DEF})
+      tree32=(   3${CLR}'_._ '${SKY}
+                2${CLR}'/   \ '${SKY}
+               1${CLR}'_\ '${SKY}${BLK}'|'${CLR}' / '${SKY}
+              0${CLR}'/  \\'${SKY}${BLK}'║'${CLR}'/__ '${SKY}
+              0${CLR}'\_'${SKY}${BLK}'\\'${CLR}'/'${SKY}${BLK}'║'${CLR}'/  \ '${SKY}
+                 3${BLK}'\║'${CLR}'|'${SKY}${BLK}'/'${CLR}'_/ '${SKY}
+                  4${BLK}'║/ '${SKY}
+                  4${BLK}'║ '${SKY}
+                  4${BLK}'║ '${SKY})
 
 #------------------------{ Aliens slow }---------------------------------------------------------------------------------
        alien=(1' ___ '
               0'(   ) '
               1' `¯´ ')
 
- alien_color=("${DEF} ${DEF} ${BLD}${UND} ${DEF} ${DEF}"
-              "${DEF} ${YLW}    ${YLW}    ${YLW} ${DEF} ${DEF}"
-              "${DEF} ${DEF}    ${DEF}    ${DEF} ${DEF}")
+ alien_color=("${SKY} ${BLK} ${BLD}${BLK}${UND} ${SKY}${BLK} ${SKY}"
+              "${BLK} ${YLW}       ${YLW}          ${YLW}    ${BLK} ${SKY}"
+              "${SKY} ${BLK}       ${BLK}          ${BLK}    ${SKY}")
 
         boss=(4'         '
               2'     ___   '
@@ -262,55 +306,55 @@ cloud3_color=("${DEF} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${blu} ${
               0'  `¯¯---¯¯´  '
               1'            ')
 
-  boss_color=("${DEF}" #                                 center point
-              "${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${BLD}${UND} ${DEF}       ${DEF}"
-              "${DEF} ${DEF} ${DEF} ${DEF} ${DEF} ${YLW} ${BLD}${YLW} ${DEF}${YLW} ${DEF}"
-              "${DEF} ${DEF} ${DEF} ${RED} ${RED} ${RED} ${BLD}${RED} ${DEF}${RED} ${RED} ${RED} ${DEF}"
-              "${DEF} ${DEF} ${DEF} ${CYN} ${CYN} ${CYN} ${BLD}${CYN} ${DEF}${CYN} ${CYN} ${CYN} ${DEF}"
-              "${DEF}")
+  boss_color=("${SKY}" #                                    center point
+              "${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${BLK} ${BLD}${BLK}${UND}    ${BLK}    ${SKY}"
+              "${SKY} ${SKY} ${SKY} ${BLK} ${BLK} ${YLW}    ${BLD}${YLW}    ${SKY}${YLW} ${BLK} ${BLK} ${SKY}"
+              "${SKY} ${SKY} ${BLK} ${RED} ${RED} ${RED}    ${BLD}${RED}    ${SKY}${RED} ${RED} ${RED} ${BLK} ${SKY}"
+              "${SKY} ${BLK} ${SKY} ${CYN} ${CYN} ${CYN}    ${BLD}${CYN}    ${SKY}${CYN} ${CYN} ${CYN} ${SKY} ${BLK} ${SKY}"
+              "${SKY} ${BLK} ${BLK} ${BLK} ${BLK} ${BLK}       ${BLK}          ${BLK}    ${BLK} ${BLK} ${BLK} ${SKY}")
 
 #------------------------{ Animations }---------------------------------------------------------------------------------
-        boom=(  3${red}'.-.'${DEF}
-               2${red}'(   )'${DEF}
-                3${red}'`-`'${DEF}
+        boom=(  3${red}'.-.'${SKY}
+               2${red}'(   )'${SKY}
+                3${red}'`-`'${SKY}
 
-               2${RED}', - .'${DEF}
-              1${RED}'(     )'${DEF}
-               2${RED}'. _ .'${DEF}
+               2${RED}', - .'${SKY}
+              1${RED}'(     )'${SKY}
+               2${RED}'. _ .'${SKY}
 
-          3${DIM}${RED}'`  "'${DEF}
-       0${DIM}${RED}'(       )'${DEF}
-         2${DIM}${RED}'_ _ .'${DEF}); boomN=${#boom[@]}; boomC=3
+          3${DIM}${RED}'`  "'${SKY}
+       0${DIM}${RED}'(       )'${SKY}
+         2${DIM}${RED}'_ _ .'${SKY}); boomN=${#boom[@]}; boomC=3
 
-         Sun=(${DEF}${YLW}'       ___ |       '${DEF}
-              ${DEF}${YLW}'---````    \       '${DEF}
-              ${DEF}${YLW}'           _`.     '${DEF}
-              ${BLD}${YLW}'        ../   `..__'${DEF}
-              ${DEF}${YLW}'     ../        /  '${DEF}
-              ${DEF}${YLW}'    /          /   '${DEF}
-              ${BLD}${YLW}'              /    '${DEF}
-              ${DEF}${YLW}'              /    '${DEF}
-              ${DEF}${YLW}'             /     '${DEF}
+         Sun=(${SKY}${YLW}'       ___ |       '${SKY}
+              ${SKY}${YLW}'---````    \       '${SKY}
+              ${SKY}${YLW}'           _`.     '${SKY}
+              ${BLD}${YLW}'        ../   `..__'${SKY}
+              ${SKY}${YLW}'     ../        /  '${SKY}
+              ${SKY}${YLW}'    /          /   '${SKY}
+              ${BLD}${YLW}'              /    '${SKY}
+              ${SKY}${YLW}'              /    '${SKY}
+              ${SKY}${YLW}'             /     '${SKY}
 
-              ${DEF}${YLW}'_...---``  |       '${DEF}
-              ${BLD}${YLW}'        _.-\       '${DEF}
-              ${DEF}${YLW}'   _.--`    `.     '${DEF}
-              ${DEF}${YLW}' -`          ,`..__'${DEF}
-              ${BLD}${YLW}'           ,`     |'${DEF}
-              ${DEF}${YLW}'         ,`       |'${DEF}
-              ${DEF}${YLW}'       _`        | '${DEF}
-              ${BLD}${YLW}'                 | '${DEF}
-              ${DEF}${YLW}'                 | '${DEF}
+              ${SKY}${YLW}'_...---``  |       '${SKY}
+              ${BLD}${YLW}'        _.-\       '${SKY}
+              ${SKY}${YLW}'   _.--`    `.     '${SKY}
+              ${SKY}${YLW}' -`          ,`..__'${SKY}
+              ${BLD}${YLW}'           ,`     |'${SKY}
+              ${SKY}${YLW}'         ,`       |'${SKY}
+              ${SKY}${YLW}'       _`        | '${SKY}
+              ${BLD}${YLW}'                 | '${SKY}
+              ${SKY}${YLW}'                 | '${SKY}
 
-              ${BLD}${YLW}'     _...--|       '${DEF}
-              ${DEF}${YLW}'..--`      \       '${DEF}
-              ${BLD}${YLW}'         .. `.     '${DEF}
-              ${DEF}${YLW}'     _.-`     `..__'${DEF}
-              ${DEF}${YLW}'  ..`         .`   '${DEF}
-              ${BLD}${YLW}'             /     '${DEF}
-              ${DEF}${YLW}'            /      '${DEF}
-              ${BLD}${YLW}'          .`       '${DEF}
-              ${DEF}${YLW}'         `         '${DEF}); SunN=${#Sun[@]}; SunC=9
+              ${BLD}${YLW}'     _...--|       '${SKY}
+              ${SKY}${YLW}'..--`      \       '${SKY}
+              ${BLD}${YLW}'         .. `.     '${SKY}
+              ${SKY}${YLW}'     _.-`     `..__'${SKY}
+              ${SKY}${YLW}'  ..`         .`   '${SKY}
+              ${BLD}${YLW}'             /     '${SKY}
+              ${SKY}${YLW}'            /      '${SKY}
+              ${BLD}${YLW}'          .`       '${SKY}
+              ${SKY}${YLW}'         `         '${SKY}); SunN=${#Sun[@]}; SunC=9
 
 #------------------------{ Intro }--------------------------------------------------------------------------------------
            D=$DEF; C1=$BLU; C2=$RED; C3=$YLW; C4=$red; C5=$BLD$YLW; C6=$BLD$GRN; C7=$blu; C8=$BLD$RED
@@ -358,9 +402,9 @@ function sprites { # dynamic sprites
               0"(${small[$L]}) "
 		      1' `¯´ ')
 
-      alien2=( 1"_${UND}${BLD}_${DEF}_ "
-              0"(${YLW}${small[$L]}${DEF}) "
-		       1'`¯´ ')
+      alien2=( 1"${BLK}_${UND}${BLD}_${SKY}${BLK}_ "
+              0"${BLK}(${YLW}${small[$L]}${BLK})${SKY} "
+		       1${BLK}'`¯´ ')
 
         boss=(4'         '
               2'     ___   '
@@ -370,38 +414,38 @@ function sprites { # dynamic sprites
               0'  `¯¯---¯¯´  '
               1'            ')
 
-       boss2=(    4'     '
-                2'   ___   '
-               1"  _/${small2[$[3 - $L]]}\_  "
-              0"  /${big2[$L]}\  "
-              0" ( ${big3[$L]} ) "
-              0'  `¯¯---¯¯´  '
+       boss2=(4${SKY}'     '
+                2"   ${BLK}_${BLD}${UND}_${SKY}${BLK}_${SKY}   "
+               1"  ${BLK}_/${small2[$[3 - $L]]}${BLK}\_${SKY}  "
+              0"  ${BLK}/${big2[$L]}"${BLK}'\\'"${SKY}  "
+              0" ${BLK}( ${big3[$L]} ${BLK})${SKY} "
+              0"  ${BLK}"'`¯¯---¯¯´  '
                1'           ')
 
-		hero=(${DEF}'  '
-                 $HC'__     '${DEF}
-           ${DIM}$HC"|${DEF}${SC}${HS}${HC}${BLD}〵${DEF}${HC}____ "${DEF}
-           ${DIM}$HC" \_| ${BLD}${HC}/${DIM}${UND} °${DEF}${HC}${BLD})${blk}-${DEF}"
-           ${DIM}$HC"   |${BLD}/    "${DEF}
-                 $HC'     '${DEF})
+		hero=(${SKY}'  '
+                 $HC'__     '${SKY}
+           ${DIM}$HC"|${SKY}${SC}${HS}${HC}${BLD}〵${SKY}${HC}____ "${SKY}
+           ${DIM}$HC" \_| ${BLD}${HC}/${DIM}${UND} °${SKY}${HC}${BLD})${blk}-${SKY}"
+           ${DIM}$HC"   |${BLD}/    "${SKY}
+                 $HC'     '${SKY})
 
 	case ${G} in
 
-	0) gunup=("${BLD}||${blk}--${DEF} "
-              "${BLD}||${DEF} "
-              "${BLD}||${DWHT}--${DEF} ");;
+	0) gunup=("${BLK}||${blk}--${SKY} "
+              "${BLK}||${SKY} "
+              "${BLK}||${DWHT}--${SKY} ");;
 
-	1) gunup=("${BLD}||${blk}--${DEF} "
-              "${BLD}||${blk}--${DEF} "
-              "${BLD}||${blk}--${DEF} ");;
+	1) gunup=("${BLK}||${blk}--${SKY} "
+              "${BLK}||${blk}--${SKY} "
+              "${BLK}||${blk}--${SKY} ");;
 
-	2) gunup=("${BLD}||${blk}==${DEF} "
-              "${BLD}||${DEF} "
-              "${BLD}||${blk}==${DEF} ");;
+	2) gunup=("${BLK}||${blk}==${SKY} "
+              "${BLK}||${SKY} "
+              "${BLK}||${blk}==${SKY} ");;
 
-	*) gunup=("${BLD}||${blk}==${DEF} "
-              "${BLD}||${blk}--${DEF} "
-              "${BLD}||${blk}==${DEF} ");; esac
+	*) gunup=("${BLK}||${blk}==${SKY} "
+              "${BLK}||${blk}--${SKY} "
+              "${BLK}||${blk}==${SKY} ");; esac
 }
 
 function get_dimensions {
@@ -429,7 +473,7 @@ function bye () {
 	exit $1
 }
 
-function default { HC=${WHT}; SC=${RED}; HS=★; 	}
+function default { HC=${DHC}; SC=${DSC}; HS=${DHS}; 	}
 
 function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--)); }
 
@@ -440,7 +484,7 @@ function remove_piu () {
 	unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--))
 }
 
-function mess () { clear
+function mess () { XY 1 1 ${DEF}; clear
 
 	function print {
 		x=$[$endx / 2 - ${#sprite} / 2]
@@ -525,7 +569,13 @@ function configure {
 		selectedHSL=${selN}; selectedHSR=${selN}
 		selectedAP=${DEF}  ; selectedBK=${DEF}; }
 
-	while true; do get_dimensions; sprites
+	while true; do get_dimensions
+
+		hero=(${SKY}$HC'__        '${SKY}
+              ${DIM}$HC"|${SKY}${SC}${HS}${HC}${BLD}〵${SKY}${HC}____  "${SKY}
+              ${DIM}$HC" \_| ${BLD}${HC}/${DIM}${UND} °${SKY}${HC}${BLD})${blk}-${SKY}"
+              ${DIM}$HC"   |${BLD}/     "${SKY}
+                    $HC'          '${SKY})
 
 		#-{ Get keys }-------------------------------------------------------------------------------------------------------
 		read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
@@ -548,7 +598,7 @@ function configure {
 		esac
 
 		#----------------------------------{ Print hero }----------------------------------
-		for (( i=0; i<${#hero[@]}; i++ )); do XY $[$endx/2-4] $[5+$i] " ${hero[$i]} "; done
+		for (( i=0; i<${#hero[@]}; i++ )); do XY $[$endx/2-4] $[5+$i] "${SKY} ${hero[$i]} "; done
 
 		#----------------------------------{ Print controls }-------------------------------------------------------------
 		for ((i=0; i<${HCN}; i++ )); do [ $i -eq $HCI ] && selectedHC=${BLD} || selectedHC=${DEF}
@@ -660,6 +710,13 @@ function mover () { er=$2; width=$3
 trap bye INT; stty -echo; printf "${COF}"; get_dimensions; default
 clear; mess "help"; sleep 2; clear; main_menu; clear
 
+#-{ Generate grass }-----------------------------------------------------------------------------------------------------
+for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
+
+#-{ Fill screen }--------------------------------------------------------------------------------------------------------
+for ((i=0;         i<$lineendy; i++)); do line ${SKY}' ' $endx; done
+for ((i=$lineendy; i<$endy;     i++)); do line ${LND}' ' $endx; done
+
 #================================================{ Main game loop }======================================================
 while true; do
 
@@ -761,7 +818,7 @@ while true; do
 		bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
 		for (( i=0  ; i<${hp}; i++ )); do bar="▒${bar}"; done
 		for (( i=$hp; i<${hm}; i++ )); do bar="${bar} "; done
-		XY 1 $[$endy - 1] " ${BLD}BOSS: |${RED}${bar}${DEF}${BLD}|${DEF}"
+		XY 1 $[$endy - 1] "${LND} ${BLD}${RED}BOSS: ${LND}${BLD}|${RED}${bar}${DEF}${LND}${BLD}|${LND}"
 
 		YY=$[$Y-1]
 
@@ -817,10 +874,10 @@ while true; do
 	#-{ Print hero }-----------------------------------------------------------------------------------------------------
 	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $[$Y + $i] " ${hero[$i]} "; done
 
-	#-{ Bottom line }----------------------------------------------------------------------------------------------------
-	XY 0 ${lineendy} ${DIM}${GRN}; line - ${endx}; printf "${DEF}"
+	#-{ Print moving land }----------------------------------------------------------------------------------------------
+	XY 1 $lineendy "${LND}${land:$[1-$LX]:$endx}"; [ $LX -lt  -$[$LN/2]  ] && LX=-1 || ((LX--))
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
-	XY 0 0 "${BLD}killed aliens: ${DEF}${CYN}${frags}${DEF}  ${BLD}Life: ${DEF}${CYN}${life}${DEF}  ${BLD}Ammo: ${DEF}${CYN}${ammo}${DEF} "
+	XY 0 0 "${SKY}${BLD}killed aliens: ${SKY}${CYN}${frags}${SKY}  ${BLD}Life: ${SKY}${CYN}${life}${SKY}  ${BLD}Ammo: ${SKY}${CYN}${ammo}${SKY} "
 
 done
