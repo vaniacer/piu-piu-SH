@@ -93,9 +93,9 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
   ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 
 #------------------------{ Sprites }-------------------------------------------------------------------------------------
-case $month in	0[1-5]|12)	SKY=${DEF}${bwht}
+case $month in	0[1-4]|12)	SKY=${DEF}${bwht}
 							LND=${DEF}${BLD}${WHT}${BWHT};; # winter & early spring
-				0[6-8]   )	SKY=${DEF}${BBLU}
+				0[5-8]   )	SKY=${DEF}${BBLU}
 							LND=${DEF}${DIM}${GRN}${BGRN};; # late spring & summer
 				09|1[0-1])	SKY=${DEF}${bblu}
 							LND=${DEF}${DIM}${YLW}${BYLW};; # autumn
@@ -105,10 +105,7 @@ esac
 
          gun=(- = ≡ ≣ 𝄚)
 
-#       grass=(─ ┴ ─ ┬ ─ ╥ ─ ╨ ─ ┼ ─ ╫ ─) # grass types
-       grass=(' ' │ ' ' ║ ' ' █ ' ' ▓ ' ' ▒ ' ' ░) # grass types
-#       grass=(' ' │ ' ' ║ ' ') # grass types
-#       grass=(─ ┴ ─ ╨ ─) # grass types
+       grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █) # grass types
 
        ammob=("${BLD}${red}-=${SKY}${GRN}>${SKY} "
               "${BLD}${red}-=${SKY}${GRN}>${SKY} "
