@@ -413,8 +413,8 @@ function sprites { # dynamic sprites
               0"(${small[$L]}) "
 		      1' `¯´ ')
 
-         CM1=${DIM}${BLK}; CM2=${DIM}${BLK}${UND}; CM3=${SKY}${BLK}
-      alien2=( 1"${CM1}_${CM2}_${CM3}_ "
+         CM1=${DIM}${BLK}; CM2=${SKY}${BLK}
+      alien2=( 1"${CM1}_${UND}_${CM2}_ "
               0"${CM1}(${red}${small[$L]}${CM1})${SKY} "
 		       1${CM1}'`¯´ '${SKY})
 
@@ -427,19 +427,22 @@ function sprites { # dynamic sprites
               1'            ')
 
        boss2=(4${SKY}'     '
-                2"   ${CM1}_${CM2}_${CM3}_${SKY}   "
+                2"   ${CM1}_${UND}_${CM2}_${SKY}   "
                1"  ${CM1}_/${small2[$[3 - $L]]}${CM1}\_${SKY}  "
               0"  ${CM1}/${big2[$L]}"${CM1}'\\'"${SKY}  "
               0" ${CM1}( ${big3[$L]} ${CM1})${SKY} "
               0"  ${CM1}"'`¯¯---¯¯´  '
                1'           ')
 
-		hero=(${SKY}'  '
-                 $HC'__     '${SKY}
-           ${DIM}$HC"|${SKY}${SC}${HS}${HC}${BLD}〵${SKY}${HC}____ "${SKY}
-           ${DIM}$HC" \_| ${BLD}${HC}/${DIM}${UND} °${SKY}${HC}${BLD})${blk}-${SKY}"
-           ${DIM}$HC"   |${BLD}/    "${SKY}
-                 $HC'     '${SKY})
+         CM4=${DIM}$HC; CM5=${SKY}${HC}; CM6=${BLD}${HC}; CM7=${SKY}${SC}${HS}${HC}${BLD}
+         CM8=${DIM}${UND}; CM9=${SKY}${HC}${BLD}
+
+		hero=(${SKY}'    '
+              ${CM5}' __      '${SKY}
+              ${CM4}" |${CM7}〵${CM5}____  "${SKY}
+              ${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}-${SKY} "
+              ${CM4}"    |${BLD}/     "${SKY}
+              ${SKY}'       ')
 
 	case ${G} in
 
@@ -491,10 +494,7 @@ function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--)); }
 
 function erase_obj  () { remove_obj $1; for (( k=0; k<$er; k++ )); do XY ${OX} $[$OY + $k] "${eraser}"; done; }
 
-function remove_piu () {
-	XY ${PX} ${PY} "    "
-	unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--))
-}
+function remove_piu () { XY ${PX} ${PY} "${SKY}    "; unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--)); }
 
 function mess () { XY 1 1 ${DEF}; clear
 
@@ -884,7 +884,7 @@ while true; do
     esac; }
 
 	#-{ Print hero }-----------------------------------------------------------------------------------------------------
-	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $[$Y + $i] " ${hero[$i]} "; done
+	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $[$Y + $i] "${hero[$i]}"; done
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
 	XY 1 $lineendy "${LND}${land:$[1-$LX]:$endx}"; [ $LX -lt  -$[$LN/2]  ] && LX=-1 || ((LX--))
