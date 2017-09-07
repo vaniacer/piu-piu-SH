@@ -870,14 +870,10 @@ while true; do
 	}
 
     #-{ Add cloud }------------------------------------------------------------------------------------------------------
-    [ $[RANDOM % 100] = 0 ] && { cloudtype=$[RANDOM % 3 + 1]; case ${cloudtype} in
-        1) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud1");;
-        2) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud2");;
-        3) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud3");;
-    esac; }
+    [ $[RANDOM % 100] = 0 ] && OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]")
 
     #-{ Add tree }-------------------------------------------------------------------------------------------------------
-    [ $[RANDOM % 100] = 0 ] && { treetype=$[RANDOM % 3 + 1]; case ${treetype} in
+    [ $[RANDOM % 20] = 0 ] && { treetype=$[RANDOM % 3 + 1]; case ${treetype} in
         1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
         2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
         3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
