@@ -93,12 +93,14 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
   ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
 
 #------------------------{ Sprites }-------------------------------------------------------------------------------------
-case $month in	0[1-4]|12)	SKY=${DEF}${bwht}
-							LND=${DEF}${BLD}${WHT}${BWHT};; # winter & early spring
-				0[5-8]   )	SKY=${DEF}${BBLU}
-							LND=${DEF}${DIM}${GRN}${BGRN};; # late spring & summer
-				09|1[0-1])	SKY=${DEF}${bblu}
-							LND=${DEF}${DIM}${YLW}${BYLW};; # autumn
+case $month in	0[1-4]|12)	SKY=${DEF}${bwht}				# winter & early spring sky
+							LND=${DEF}${BLD}${WHT}${BWHT};; # winter & early spring land
+
+				0[5-8]   )	SKY=${DEF}${bcyn}				# late spring & summer sky
+							LND=${DEF}${DIM}${GRN}${bgrn};; # late spring & summer land
+
+				09|1[0-1])	SKY=${DEF}${BCYN}				# autumn sky
+							LND=${DEF}${DIM}${YLW}${BGRN};; # autumn land
 esac
 
       eraser='           '
@@ -263,9 +265,9 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
               4'    ║ '
               4'    ║ ')
 
-	case $month in	0[1-5]|12) CLR=${cyn};; # winter & early spring
-					0[6-8]   ) CLR=${grn};; # late spring & summer
-					09|1[0-1]) CLR=${ylw};; # autumn
+	case $month in	0[1-5]|12) CLR=${cyn}      ;; # winter & early spring
+					0[6-8]   ) CLR=${BLD}${GRN};; # late spring & summer
+					09|1[0-1]) CLR=${DIM}${red};; # autumn
 	esac
 
  tree3_color=("${SKY} ${SKY}    ${SKY}       ${CLR}      ${CLR}        ${CLR}       ${SKY}"
@@ -275,8 +277,8 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
               "${CLR} ${CLR} ${SKY}${BLK}    ${CLR}    ${SKY}${BLK}    ${CLR}       ${SKY}    ${SKY} ${CLR} ${SKY}"
               "${SKY} ${SKY}    ${SKY}    ${SKY}${BLK} ${SKY}${BLK}    ${CLR}    ${SKY}${BLK} ${CLR} ${CLR} ${SKY}"
               "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK} ${SKY}${BLK}    ${SKY}"
-              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK} ${SKY}"
-              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK} ${SKY}")
+              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK}    ${SKY}"
+              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK}    ${SKY}")
 
 
       tree32=(   3${CLR}'_._ '${SKY}
