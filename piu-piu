@@ -873,7 +873,7 @@ while true; do
     [ $[RANDOM % 100] = 0 ] && OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]")
 
     #-{ Add tree }-------------------------------------------------------------------------------------------------------
-    [ $[RANDOM % 20] = 0 ] && { treetype=$[RANDOM % 3 + 1]; case ${treetype} in
+    [ $[RANDOM % 100] = 0 ] && { treetype=$[RANDOM % 3 + 1]; case ${treetype} in
         1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
         2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
         3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
