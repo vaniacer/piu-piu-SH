@@ -103,7 +103,7 @@ case $month in	0[1-4]|12)	SKY=${DEF}${bwht}				# winter & early spring sky
 							LND=${DEF}${DIM}${YLW}${BGRN};; # autumn land
 esac
 
-      eraser='           '
+      eraser=${SKY}'           '
 
          gun=(- = ≡ ≣ 𝄚)
 
@@ -146,10 +146,10 @@ esac
               ${RED}"   ${BLD}O   "${SKY}
               ${RED}'  O   O'${SKY})
 
-        big3=(${CYN}'  O   O'${SKY}
-              ${CYN}"   ${BLD}O   "${SKY}
-		      ${CYN}'O   O  '${SKY}
-              ${CYN}' O   O '${SKY})
+        big3=(${BLU}'  O   O'${SKY}
+              ${BLU}"   ${BLD}O   "${SKY}
+		      ${BLU}'O   O  '${SKY}
+              ${BLU}' O   O '${SKY})
 
       small2=(${YLW}'o  '${SKY}
               ${YLW}'   '${SKY}
@@ -296,9 +296,11 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
               0'(   ) '
               1' `¯´ ')
 
- alien_color=("${SKY} ${BLK} ${BLD}${BLK}${UND} ${SKY}${BLK} ${SKY}"
-              "${BLK} ${YLW}       ${YLW}          ${YLW}    ${BLK} ${SKY}"
-              "${SKY} ${BLK}       ${BLK}          ${BLK}    ${SKY}")
+         CM1=${DIM}${BLK}; CM2=${DIM}${BLK}${UND}; CM3=${SKY}${BLK}; CM4=${SKY}${BLU}
+         CM5=${BLD}${YLW}; CM6=${BLD}${RED}; CM7=${BLD}${BLU}; CM8=${SKY}${YLW}; CM9=${SKY}${RED}
+ alien_color=("${SKY} ${CM1} ${CM2} ${CM3} ${SKY}"
+              "${CM1} ${red} ${red} ${red} ${CM1} ${SKY}"
+              "${SKY} ${CM1} ${CM1} ${CM1} ${SKY}")
 
         boss=(4'         '
               2'     ___   '
@@ -308,12 +310,12 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
               0'  `¯¯---¯¯´  '
               1'            ')
 
-  boss_color=("${SKY}" #                                    center point
-              "${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${BLK} ${BLD}${BLK}${UND}    ${BLK}    ${SKY}"
-              "${SKY} ${SKY} ${SKY} ${BLK} ${BLK} ${YLW}    ${BLD}${YLW}    ${SKY}${YLW} ${BLK} ${BLK} ${SKY}"
-              "${SKY} ${SKY} ${BLK} ${RED} ${RED} ${RED}    ${BLD}${RED}    ${SKY}${RED} ${RED} ${RED} ${BLK} ${SKY}"
-              "${SKY} ${BLK} ${SKY} ${CYN} ${CYN} ${CYN}    ${BLD}${CYN}    ${SKY}${CYN} ${CYN} ${CYN} ${SKY} ${BLK} ${SKY}"
-              "${SKY} ${BLK} ${BLK} ${BLK} ${BLK} ${BLK}       ${BLK}          ${BLK}    ${BLK} ${BLK} ${BLK} ${SKY}")
+  boss_color=("${SKY}" #                               enter point
+              "${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${CM1} ${CM2} ${CM1} ${SKY}"
+              "${SKY} ${SKY} ${SKY} ${CM1} ${CM1} ${YLW} ${CM5} ${CM8} ${CM1} ${CM1} ${SKY}"
+              "${SKY} ${SKY} ${CM1} ${RED} ${RED} ${RED} ${CM6} ${CM9} ${RED} ${RED} ${CM1} ${SKY}"
+              "${SKY} ${CM1} ${SKY} ${BLU} ${BLU} ${BLU} ${CM7} ${CM4} ${BLU} ${BLU} ${SKY} ${CM1} ${SKY}"
+              "${SKY} ${CM1} ${CM1} ${CM1} ${CM1} ${CM1} ${CM1} ${CM1} ${CM1} ${CM1} ${CM1} ${SKY}")
 
 #------------------------{ Animations }---------------------------------------------------------------------------------
         boom=(  3${red}'.-.'${SKY}
@@ -404,9 +406,10 @@ function sprites { # dynamic sprites
               0"(${small[$L]}) "
 		      1' `¯´ ')
 
-      alien2=( 1"${BLK}_${UND}${BLD}_${SKY}${BLK}_ "
-              0"${BLK}(${YLW}${small[$L]}${BLK})${SKY} "
-		       1${BLK}'`¯´ ')
+         CM1=${DIM}${BLK}; CM2=${DIM}${BLK}${UND}; CM3=${SKY}${BLK}
+      alien2=( 1"${CM1}_${CM2}_${CM3}_ "
+              0"${CM1}(${red}${small[$L]}${CM1})${SKY} "
+		       1${CM1}'`¯´ '${SKY})
 
         boss=(4'         '
               2'     ___   '
@@ -417,11 +420,11 @@ function sprites { # dynamic sprites
               1'            ')
 
        boss2=(4${SKY}'     '
-                2"   ${BLK}_${BLD}${UND}_${SKY}${BLK}_${SKY}   "
-               1"  ${BLK}_/${small2[$[3 - $L]]}${BLK}\_${SKY}  "
-              0"  ${BLK}/${big2[$L]}"${BLK}'\\'"${SKY}  "
-              0" ${BLK}( ${big3[$L]} ${BLK})${SKY} "
-              0"  ${BLK}"'`¯¯---¯¯´  '
+                2"   ${CM1}_${CM2}_${CM3}_${SKY}   "
+               1"  ${CM1}_/${small2[$[3 - $L]]}${CM1}\_${SKY}  "
+              0"  ${CM1}/${big2[$L]}"${CM1}'\\'"${SKY}  "
+              0" ${CM1}( ${big3[$L]} ${CM1})${SKY} "
+              0"  ${CM1}"'`¯¯---¯¯´  '
                1'           ')
 
 		hero=(${SKY}'  '
@@ -818,9 +821,9 @@ while true; do
 	[ $frags -ge $tillboss ] && {
 		# Health bar
 		bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
-		for (( i=0  ; i<${hp}; i++ )); do bar="▒${bar}"; done
+		for (( i=0  ; i<${hp}; i++ )); do bar="█${bar}"; done
 		for (( i=$hp; i<${hm}; i++ )); do bar="${bar} "; done
-		XY 1 $[$endy - 1] "${LND} ${BLD}${RED}BOSS: ${LND}${BLD}|${RED}${bar}${DEF}${LND}${BLD}|${LND}"
+		XY 1 $[$endy - 1] "${LND} ${BLD}${RED}BOSS: ${LND}${BLD}|${BLD}${RED}${bar}${LND}${BLD}|${LND}"
 
 		YY=$[$Y-1]
 
