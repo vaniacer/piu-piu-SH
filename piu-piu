@@ -219,15 +219,17 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
 					09|1[0-1]) CLR=${DIM}${YLW};; # autumn
 	esac
 
- tree1_color=("${CLR}    ${CLR}    ${SKY}"
-              "${CLR}    ${CLR}    ${CLR} ${SKY}"
-              "${CLR} ${SKY}${DIM} ${CLR} ${SKY}"
-              "${SKY} ${SKY}${DIM} ${SKY}")
+         CM1=${SKY}${DIM}
+
+ tree1_color=("${CLR} ${CLR} ${SKY}"
+              "${CLR} ${CLR} ${CLR} ${SKY}"
+              "${CLR} ${CM1} ${CLR} ${SKY}"
+              "${SKY} ${CM1} ${SKY}")
 
       tree12=( 1${CLR}'_  '${SKY}
               0${CLR}'/ \ '${SKY}
-              0${CLR}'\\'${SKY}${DIM}'|'${CLR}'/ '${SKY}
-         1${SKY}${DIM}'| '${SKY})
+              0${CLR}'\\'${CM1}'|'${CLR}'/ '${SKY}
+               1${CM1}'| '${SKY})
 
        tree2=(1' _._ '
               0'/   \ '
@@ -241,17 +243,19 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
 					09|1[0-1]) CLR=${YLW};; # autumn
 	esac
 
- tree2_color=("${CLR} ${CLR} ${CLR}    ${CLR}    ${SKY}"
-              "${CLR} ${CLR} ${CLR}    ${CLR}    ${CLR} ${SKY}"
-              "${CLR} ${CLR} ${blk} ${SKY}${CLR} ${CLR} ${SKY}"
-              "${SKY} ${CLR} ${blk} ${SKY}${CLR} ${CLR} ${SKY}"
-              "${SKY} ${SKY} ${blk} ${SKY}${CLR} ${CLR} ${SKY}"
-              "${SKY} ${SKY} ${blk} ${SKY}${CLR} ${SKY}")
+         CM1=${SKY}${CLR}
+
+ tree2_color=("${CLR} ${CLR} ${CLR} ${CLR} ${SKY}"
+              "${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${SKY}"
+              "${CLR} ${CLR} ${blk} ${CM1} ${CLR} ${SKY}"
+              "${SKY} ${CLR} ${blk} ${CM1} ${CLR} ${SKY}"
+              "${SKY} ${SKY} ${blk} ${CM1} ${CLR} ${SKY}"
+              "${SKY} ${SKY} ${blk} ${CM1} ${SKY}")
 
       tree22=( 1${CLR}'_._  '${SKY}
               0${CLR}'/   \ '${SKY}
-              0${CLR}'\\'${blk}' | '${SKY}${CLR}'/ '${SKY}
-               1${CLR}'\\'${blk}'║'${SKY}${CLR}'/\ '${SKY}
+              0${CLR}'\\'${blk}' | '${CM1}'/ '${SKY}
+               1${CLR}'\\'${blk}'║'${CM1}'/\ '${SKY}
                 2${blk}'║'${CLR}'_/ '${SKY}
                 2${blk}'║ '${SKY})
 
@@ -270,23 +274,25 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
 					09|1[0-1]) CLR=${DIM}${red};; # autumn
 	esac
 
- tree3_color=("${SKY} ${SKY}    ${SKY}       ${CLR}      ${CLR}        ${CLR}       ${SKY}"
-              "${SKY} ${SKY}    ${CLR}       ${SKY}      ${SKY}        ${SKY}       ${CLR}    ${SKY}"
-              "${SKY} ${CLR}    ${CLR}       ${SKY}    ${SKY}${BLK}    ${SKY}       ${CLR}    ${SKY}"
-              "${CLR} ${SKY}    ${SKY}       ${CLR}    ${SKY}${BLK}    ${CLR}       ${CLR}    ${CLR} ${SKY}"
-              "${CLR} ${CLR} ${SKY}${BLK}    ${CLR}    ${SKY}${BLK}    ${CLR}       ${SKY}    ${SKY} ${CLR} ${SKY}"
-              "${SKY} ${SKY}    ${SKY}    ${SKY}${BLK} ${SKY}${BLK}    ${CLR}    ${SKY}${BLK} ${CLR} ${CLR} ${SKY}"
-              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK} ${SKY}${BLK}    ${SKY}"
-              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK}    ${SKY}"
-              "${SKY} ${SKY}    ${SKY}       ${SKY}    ${SKY}${BLK}    ${SKY}")
+         CM1=${SKY}${BLK}
+
+ tree3_color=("${SKY} ${SKY} ${SKY} ${CLR} ${CLR} ${CLR} ${SKY}"
+              "${SKY} ${SKY} ${CLR} ${SKY} ${SKY} ${SKY} ${CLR} ${SKY}"
+              "${SKY} ${CLR} ${CLR} ${SKY} ${CM1} ${SKY} ${CLR} ${SKY}"
+              "${CLR} ${SKY} ${SKY} ${CLR} ${CM1} ${CLR} ${CLR} ${CLR} ${SKY}"
+              "${CLR} ${CLR} ${CM1} ${CLR} ${CM1} ${CLR} ${SKY} ${SKY} ${CLR} ${SKY}"
+              "${SKY} ${SKY} ${SKY} ${CM1} ${CM1} ${CLR} ${CM1} ${CLR} ${CLR} ${SKY}"
+              "${SKY} ${SKY} ${SKY} ${SKY} ${CM1} ${CM1} ${SKY}"
+              "${SKY} ${SKY} ${SKY} ${SKY} ${CM1} ${SKY}"
+              "${SKY} ${SKY} ${SKY} ${SKY} ${CM1} ${SKY}")
 
 
       tree32=(   3${CLR}'_._ '${SKY}
                 2${CLR}'/   \ '${SKY}
-               1${CLR}'_\ '${SKY}${BLK}'|'${CLR}' / '${SKY}
-              0${CLR}'/  \\'${SKY}${BLK}'║'${CLR}'/__ '${SKY}
-              0${CLR}'\_'${SKY}${BLK}'\\'${CLR}'/'${SKY}${BLK}'║'${CLR}'/  \ '${SKY}
-                 3${BLK}'\║'${CLR}'|'${SKY}${BLK}'/'${CLR}'_/ '${SKY}
+               1${CLR}'_\ '${CM1}'|'${CLR}' / '${SKY}
+              0${CLR}'/  \\'${CM1}'║'${CLR}'/__ '${SKY}
+              0${CLR}'\_'${CM1}'\\'${CLR}'/'${CM1}'║'${CLR}'/  \ '${SKY}
+                 3${BLK}'\║'${CLR}'|'${CM1}'/'${CLR}'_/ '${SKY}
                   4${BLK}'║/ '${SKY}
                   4${BLK}'║ '${SKY}
                   4${BLK}'║ '${SKY})
@@ -298,6 +304,7 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
 
          CM1=${DIM}${BLK}; CM2=${DIM}${BLK}${UND}; CM3=${SKY}${BLK}; CM4=${SKY}${BLU}
          CM5=${BLD}${YLW}; CM6=${BLD}${RED}; CM7=${BLD}${BLU}; CM8=${SKY}${YLW}; CM9=${SKY}${RED}
+
  alien_color=("${SKY} ${CM1} ${CM2} ${CM3} ${SKY}"
               "${CM1} ${red} ${red} ${red} ${CM1} ${SKY}"
               "${SKY} ${CM1} ${CM1} ${CM1} ${SKY}")
@@ -310,7 +317,7 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
               0'  `¯¯---¯¯´  '
               1'            ')
 
-  boss_color=("${SKY}" #                               enter point
+  boss_color=("${SKY}" #                              center point
               "${SKY} ${SKY} ${SKY} ${SKY} ${SKY} ${CM1} ${CM2} ${CM1} ${SKY}"
               "${SKY} ${SKY} ${SKY} ${CM1} ${CM1} ${YLW} ${CM5} ${CM8} ${CM1} ${CM1} ${SKY}"
               "${SKY} ${SKY} ${CM1} ${RED} ${RED} ${RED} ${CM6} ${CM9} ${RED} ${RED} ${CM1} ${SKY}"
