@@ -161,8 +161,8 @@ esac
               0'(    ) '
               1' `+-` ')
 
-	case $month in	0[1-5]|12) CLR=${DIM}${CYN};; # winter & early spring
-					0[6-8]   ) CLR=${DIM}${WHT};; # late spring & summer
+	case $month in	0[1-4]|12) CLR=${DIM}${CYN};; # winter & early spring
+					0[5-8]   ) CLR=${DIM}${WHT};; # late spring & summer
 					09|1[0-1]) CLR=${blk}      ;; # autumn
 	esac
 
@@ -178,8 +178,8 @@ cloud1_color=(${SKY}"${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${SKY}"
               0'(      ) '
               1' `-...` ')
 
-	case $month in	0[1-5]|12) CLR=${CYN};; # winter & early spring
-					0[6-8]   ) CLR=${WHT};; # late spring & summer
+	case $month in	0[1-4]|12) CLR=${CYN};; # winter & early spring
+					0[5-8]   ) CLR=${WHT};; # late spring & summer
 					09|1[0-1]) CLR=${BLK};; # autumn
 	esac
 
@@ -195,8 +195,8 @@ cloud2_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${SKY}"
               0'(         ) '
               1' `--.....` ')
 
-	case $month in	0[1-5]|12) CLR=${BLD}${CYN};; # winter & early spring
-					0[6-8]   ) CLR=${BLD}${WHT};; # late spring & summer
+	case $month in	0[1-4]|12) CLR=${BLD}${CYN};; # winter & early spring
+					0[5-8]   ) CLR=${BLD}${WHT};; # late spring & summer
 					09|1[0-1]) CLR=${DIM}${BLK};; # autumn
 	esac
 
@@ -214,8 +214,8 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
               0'\|/ '
               1' | ')
 
-	case $month in	0[1-5]|12) CLR=${DIM}${WHT};; # winter & early spring
-					0[6-8]   ) CLR=${DIM}${GRN};; # late spring & summer
+	case $month in	0[1-4]|12) CLR=${DIM}${WHT};; # winter & early spring
+					0[5-8]   ) CLR=${DIM}${GRN};; # late spring & summer
 					09|1[0-1]) CLR=${DIM}${YLW};; # autumn
 	esac
 
@@ -238,8 +238,8 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
               2'  ║_/ '
               2'  ║ ')
 
-	case $month in	0[1-5]|12) CLR=${WHT};; # winter & early spring
-					0[6-8]   ) CLR=${GRN};; # late spring & summer
+	case $month in	0[1-4]|12) CLR=${WHT};; # winter & early spring
+					0[5-8]   ) CLR=${GRN};; # late spring & summer
 					09|1[0-1]) CLR=${YLW};; # autumn
 	esac
 
@@ -269,8 +269,8 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
               4'    ║ '
               4'    ║ ')
 
-	case $month in	0[1-5]|12) CLR=${cyn}      ;; # winter & early spring
-					0[6-8]   ) CLR=${BLD}${GRN};; # late spring & summer
+	case $month in	0[1-4]|12) CLR=${cyn}      ;; # winter & early spring
+					0[5-8]   ) CLR=${BLD}${GRN};; # late spring & summer
 					09|1[0-1]) CLR=${DIM}${red};; # autumn
 	esac
 
@@ -397,10 +397,10 @@ cloud3_color=("${SKY} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${CLR} ${
 				# ▒ ▒▒  ▒▓▓▓▓▒▓███░
 				#    ░░░ ▒▒▒ ░░▒▒░
 
-         arr=(	"   " "   " "   " "   " " $C7░░" " $C2▒▒" "$C6███" "$C7░$D  " ""    ""
+         arr=(	"   " "   " "   " "   " " $C7░░" " $C3▒▒" "$C6███" "$C7░$D  " ""    ""
 				"   " "   " "  $C7░" "░░ " "$C2▒$C8██" "██ " "$C7▒$C3▓$C6█" "██$C7░$D" ""    ""
 				"   " " $C7░ " "▒$C8██" "██$D$C2▒" "$C3▓▓▓" "▓ $C7░" "░$C7▒$C3▓" "▓$C6██" "█ $C7░" "░ ░$D"
-				"   " "$C7░ $C2▒" "$C3▓▓▓" "▓ $C2▒" "$C8███" "█$D$C7░$C2▒" "$C3▓$C6██" "█$C7░░$D" "   " ""
+				"   " "$C7░ $C2▒" "$C3▓▓▓" "▓ $C2▒" "$C8███" "█$D$C7░$C3▒" "$C3▓$C6██" "█$C7░░$D" "   " ""
 				"   " " $C7▒ " "▒▒ " " $C2▒$C3▓" "▓▓▓" "$C7▒$C3▓$C6█" "██$C7░$D" "   " ""    ""
 				"   " "   " " $C7░░" "░ ▒" "▒▒ " "░░▒" "▒░$D " "   " ""    ""); arrN=${#arr[*]}; arrC=10
 
@@ -545,11 +545,16 @@ function right () { N=$1; C=$2
 function intro {
 
 	get_dimensions; Q=0
-	# Scenario 4 intro
-    scenario=(	"$[$endx+1]    5 0     $[endx/2-34] piu"
-				"$[$endx+1]    5 0     $[endx/2+2]  piu"
-				"-2           14 0     $[endx/2-16] arr"
-				"0             0 0     0            end"); OBJ=("${scenario[$Q]}")
+
+    scenario=( # Scenario 4 intro
+	#----------+-------+-----+------------+----+
+	# start X  |start Y|cuter|    end X   |type|
+	#----------+-------+-----+------------+----+
+	"$[$endx+1]   3       0   $[endx/2-34] piu"
+	"$[$endx+1]   3       0   $[endx/2+2]  piu"
+	"-2           12      0   $[endx/2-16] arr"
+    "0            0       0   0            end"); OBJ=("${scenario[$Q]}")
+
 
 	while true; do sleep 0.005; NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do
 		OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; end=${OI[3]}; type=${OI[4]}
@@ -643,7 +648,7 @@ function configure {
 function main_menu {
 
 	intro
-	menu=( 'start' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}
+	menu=( 'start' 'conf ' 'exit ' ); menuI=0; menuN=${#menu[*]}
 	while true; do get_dimensions
 
 		#-{ Get keys }-------------------------------------------------------------------------------------------------------
@@ -654,14 +659,14 @@ function main_menu {
 			'd'|'D') menuI=$[$menuN-1];;
 			'a'|'A') menuI=0;;
 			'p'|'P') case ${menu[$menuI]} 	in	'start') return;;
-												'conf' ) clear ;  configure && intro;;
-												'exit' ) bye   ;; esac;;
+												'conf ') clear ;  configure && intro;;
+												'exit ') bye   ;; esac;;
 		esac
 
 		for ((i=0; i<$menuN; i++)); do
 
 			[ $i -eq $menuI ] && selected=${BLD}${RED} || selected=${DEF}
-			XY $[$endx / 2 - ${#menu[$i]} / 2] $[$endy - 6 + $i] " $selected${menu[$i]}${DEF} "
+			XY $[$endx / 2 - ${#menu[$i]}] $[$endy - 5 + $i] " $selected${menu[$i]}${DEF} "
 
 		done
 	done
