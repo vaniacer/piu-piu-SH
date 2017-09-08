@@ -578,7 +578,7 @@ function configure {
         menu=( 'hero' 'star' 'symbol' 'apply' 'back' )                ; menuN=${#menu[*]};     menuI=$[$menuN-1]
         selL='>'; selR='<'; selN=' '
 
-	function   back   { menu=( 'start' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}; }
+	function   back   { menu=( 'start' 'conf ' 'exit ' ); menuI=0; menuN=${#menu[*]}; }
 
 	function deselect {
 		selectedHCL=${selN}; selectedHCR=${selN}
