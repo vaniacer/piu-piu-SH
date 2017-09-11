@@ -705,13 +705,13 @@ function mover () { er=$2; width=$3
 
 		# collisions
 		case ${type} in
-			"gunup" )	case "$[$OY + $p] $OX" in "$HY $HX") [ ${G} -lt 5 ] && ((G++)); erase_obj ${i}; break;; esac;;
+			"gunup" )	case "$[$OY + $p] $OX" in "$HY $HX") [[ ${G} -lt 5 ]] && ((G++)); erase_obj ${i}; break;; esac;;
 			"life"  )	case "$[$OY + $p] $OX" in "$HY $HX") ((life++))   ; erase_obj ${i}; break;; esac;;
 			"ammo"  )	case "$[$OY + $p] $OX" in "$HY $HX") ((ammo+=100)); erase_obj ${i}; break;; esac;;
 			"bfire" )	case "$OY $OX"         in "$HY $HX") ((life--))   ; erase_obj ${i}; break;; esac;;
 			"alien" )	for (( t=0; t<${NP}; t++ )); do case "$[$OY + 1] $[$OX + $p]" in # hit by bullet
 
-							"${PIU[$t]}")	[ $[RANDOM % $rnd] -eq 0 ] && OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}") # get bonus
+							"${PIU[$t]}")	case $[RANDOM % $rnd] in 0) OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}");; esac # get bonus
 											((frags++));  ((enumber--)); remove_obj ${i}; remove_piu ${t}; OBJ+=("${OX} ${OY} 0 boom"); break;;
 						esac; done
 
@@ -742,11 +742,11 @@ while true; do
 	#-{ Get keys }-------------------------------------------------------------------------------------------------------
 	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
-		'w'|'W')	((Y--)); [[ $Y -lt 1         ]] && Y=1;;
-		'a'|'A')	((X--)); [[ $X -lt 1         ]] && X=1;;
-		's'|'S')	((Y++)); [[ $Y -gt $heroendy ]] && Y=$heroendy;;
-		'd'|'D')	((X++)); [[ $X -gt $heroendx ]] && X=$heroendx;;
-		'p'|'P')	[ $ammo -ge $G ] && { case ${G} in
+		'w'|'W')	[[ $Y    -gt 1         ]] && ((Y--));;
+		'a'|'A')	[[ $X    -gt 1         ]] && ((X--));;
+		's'|'S')	[[ $Y    -lt $heroendy ]] && ((Y++));;
+		'd'|'D')	[[ $X    -lt $heroendx ]] && ((X++));;
+		'p'|'P')	[[ $ammo -ge $G        ]] && { case ${G} in
 						1) PIU+=("$HY $HX");;
 						2) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX");;
 						3) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX" "$HY $[$HX+1]");;
@@ -759,8 +759,8 @@ while true; do
 	HX=$(($X + 9)); HY=$(($Y + 3))
 
 	# Check win\lose
-	[[ $bhealth -le 0 ]] && mess win
-	[[ $life    -le 0 ]] && mess lose
+	case $bhealth in 0|-*) mess win ;; esac
+	case $life    in 0|-*) mess lose;; esac
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
 	((K++)); [[ $K -gt 20 ]] && K=0   # boss' fire rate
@@ -781,13 +781,13 @@ while true; do
 		((PX++))
 
 		# Fly away
-		[ $PX -ge $bullendx ] && { remove_piu ${t}; continue; } || { PIU[$t]="$PY $PX"; }
+		[[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PY $PX"; }
 
 		# print
 		XY ${PX} ${PY} " ${shoot[$L]}"
 
 		# Hit boss
-		[ $frags -ge $tillboss ] && for (( p=2; p<5; p++ )); do case "$PY $PX" in
+		[[ $frags -ge $tillboss ]] && for (( p=2; p<5; p++ )); do case "$PY $PX" in
 
 			"$[$BY + $p] $BX"|"$[$BY + $p] $[$BX + 1]") ((bhealth--)); remove_piu ${t};;
 
@@ -841,10 +841,10 @@ while true; do
 		YY=$[$Y-1]
 
 		# Boss move
-		[[ $BY -lt $YY                                   ]] && ((BY++))
-		[[ $BY -gt $YY                                   ]] && ((BY--))
-		[[ $BX -gt $[$endx / 2] && "$goback" -eq "false" ]] && ((BX--)) || goback=true
-		[[ $BX -lt $bossendx    && "$goback" -eq "true"  ]] && ((BX++)) || goback=false
+		[[ $BY -lt $YY                               ]] && ((BY++))
+		[[ $BY -gt $YY                               ]] && ((BY--))
+		[[ $BX -gt $[$endx / 2] && $goback = 'false' ]] && ((BX--)) || goback=true
+		[[ $BX -lt $bossendx    && $goback = 'true'  ]] && ((BX++)) || goback=false
 
 		((BC++))
 		# Boss print
@@ -876,14 +876,14 @@ while true; do
 	}
 
     #-{ Add cloud }------------------------------------------------------------------------------------------------------
-    [[ $[RANDOM % 100] = 0 ]] && OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]")
+    case $[RANDOM % 100] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
 
     #-{ Add tree }-------------------------------------------------------------------------------------------------------
-    [[ $[RANDOM % 100] = 0 ]] && { treetype=$[RANDOM % 3 + 1]; case ${treetype} in
+    case $[RANDOM % 100] in 0) case $[RANDOM % 3 + 1] in
         1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
         2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
         3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
-    esac; }
+    esac;; esac
 
 	#-{ Print hero }-----------------------------------------------------------------------------------------------------
 	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $[$Y + $i] "${hero[$i]}"; done
