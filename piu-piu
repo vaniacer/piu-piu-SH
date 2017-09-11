@@ -654,8 +654,8 @@ function main_menu {
 		#-{ Get keys }-------------------------------------------------------------------------------------------------------
 		read -t0.005 -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
-			's'|'S') ((menuI++)); [ $menuI -gt $[$menuN-1] ] && menuI=$[$menuN-1];;
-			'w'|'W') ((menuI--)); [ $menuI -lt 0      ] && menuI=0;;
+			's'|'S') ((menuI++)); [[ $menuI -gt $[$menuN-1] ]] && menuI=$[$menuN-1];;
+			'w'|'W') ((menuI--)); [[ $menuI -lt 0           ]] && menuI=0;;
 			'd'|'D') menuI=$[$menuN-1];;
 			'a'|'A') menuI=0;;
 			'p'|'P') case ${menu[$menuI]} 	in	'start') return;;
@@ -665,7 +665,7 @@ function main_menu {
 
 		for ((i=0; i<$menuN; i++)); do
 
-			[ $i -eq $menuI ] && selected=${BLD}${RED} || selected=${DEF}
+			[[ $i -eq $menuI ]] && selected=${BLD}${RED} || selected=${DEF}
 			XY $[$endx / 2 - ${#menu[$i]}] $[$endy - 5 + $i] " $selected${menu[$i]}${DEF} "
 
 		done
@@ -675,13 +675,13 @@ function main_menu {
 function mover () { er=$2; width=$3
 
 	# move
-	[ ${1} = 0 ] && { ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type"; }
+	[[ ${1} = 0 ]] && { ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type"; }
 
 	# fly away
 	case ${type} in
 
-		'alien'|'tree'[1-3]|'cloud'[1-3]) [ $OX -lt -$width ] && { remove_obj ${i}; case ${type} in "alien") ((enumber--));; esac; return; };;
-									*   ) [ $OX -lt  1      ] && { erase_obj  ${i}; case ${type} in "alien") ((enumber--));; esac; return; };;
+		'alien'|'tree'[1-3]|'cloud'[1-3]) [[ $OX -lt -$width ]] && { remove_obj ${i}; case ${type} in "alien") ((enumber--));; esac; return; };;
+									*   ) [[ $OX -lt  1      ]] && { erase_obj  ${i}; case ${type} in "alien") ((enumber--));; esac; return; };;
 	esac
 
 	for (( p=0; p<${er}; p++ )); do
@@ -692,7 +692,7 @@ function mover () { er=$2; width=$3
 			# some magic 4 composite(slow\fast) sprites
 			'alien'|'tree'[1-3]|'cloud'[1-3]) color=(${sprite_color[$p]}); YY=$[$OY+${p}]; stp=${sprite[$p]:0:1}; spr=${sprite[$p]:1}
 
-				[ $OX -gt 1 ] && { [ $cuter -lt $width ] && { for (( k=0; k<${cuter}; k++ )); do [ $k -ge $stp ]  \
+				[[ $OX -gt 1 ]] && { [[ $cuter -lt $width ]] && { for (( k=0; k<${cuter}; k++ )); do [[ $k -ge $stp ]]  \
 																&& { XY $[$k+$OX] $YY "${color[$k]}${spr:$k:1}"; } \
 																|| { :; }; done; } \
 														 || { stp=${sprite_fast[$p]:0:1}; spr=${sprite_fast[$p]:1}; XY $[${OX} + $stp] $[$OY + $p] "${spr}"; }; } \
@@ -742,10 +742,10 @@ while true; do
 	#-{ Get keys }-------------------------------------------------------------------------------------------------------
 	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
-		'w'|'W')	((Y--)); [ $Y -lt 1         ] && Y=1;;
-		'a'|'A')	((X--)); [ $X -lt 1         ] && X=1;;
-		's'|'S')	((Y++)); [ $Y -gt $heroendy ] && Y=$heroendy;;
-		'd'|'D')	((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
+		'w'|'W')	((Y--)); [[ $Y -lt 1         ]] && Y=1;;
+		'a'|'A')	((X--)); [[ $X -lt 1         ]] && X=1;;
+		's'|'S')	((Y++)); [[ $Y -gt $heroendy ]] && Y=$heroendy;;
+		'd'|'D')	((X++)); [[ $X -gt $heroendx ]] && X=$heroendx;;
 		'p'|'P')	[ $ammo -ge $G ] && { case ${G} in
 						1) PIU+=("$HY $HX");;
 						2) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX");;
@@ -759,17 +759,17 @@ while true; do
 	HX=$(($X + 9)); HY=$(($Y + 3))
 
 	# Check win\lose
-	[ $bhealth -le 0 ] && mess win
-	[ $life    -le 0 ] && mess lose
+	[[ $bhealth -le 0 ]] && mess win
+	[[ $life    -le 0 ]] && mess lose
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
-	((K++)); [ $K -gt 20 ] && K=0   # boss' fire rate
-	((L++)); [ $L -gt 3  ] && L=0   # sprites animation
-	((J++)); [ $J -gt 5  ] && J=0   # boss' bullet animation
-	((Q++)); [ $Q -gt 6  ] && Q=0   # tree1\cloud1(small)  speed
-	((W++)); [ $W -gt 4  ] && W=0   # tree2\cloud2(medium) speed
-	((E++)); [ $E -gt 2  ] && E=0   # tree3\cloud3(large)  speed
-	[ ${E} = 0 ] && { ((S+=${SunC}));  [ $S -gt ${SunN}  ] && S=0; }   # Sun animation
+	((K++)); [[ $K -gt 20 ]] && K=0   # boss' fire rate
+	((L++)); [[ $L -gt 3  ]] && L=0   # sprites animation
+	((J++)); [[ $J -gt 5  ]] && J=0   # boss' bullet animation
+	((Q++)); [[ $Q -gt 6  ]] && Q=0   # tree1\cloud1(small)  speed
+	((W++)); [[ $W -gt 4  ]] && W=0   # tree2\cloud2(medium) speed
+	((E++)); [[ $E -gt 2  ]] && E=0   # tree3\cloud3(large)  speed
+	[[ ${E} = 0 ]] && { ((S+=${SunC}));  [[ $S -gt ${SunN} ]] && S=0; }   # Sun animation
 
 	#-{ Print Sun }------------------------------------------------------------------------------------------------------
 	SY=1; for part in "${Sun[@]:$S:$SunC}"; do XY ${Sunsendx} ${SY} " ${part}"; ((SY++)); done
@@ -826,12 +826,12 @@ while true; do
         # Enemy explosions, not moving, print in place
 		"boom"  )	er=${boomC}
 					for part in "${boom[@]:$B:$boomC}"; do stp=${part:0:1}; spr=${part:1}; XY $[${OX} + $stp] ${OY} "${spr}"; ((OY++)); done
-					[ ${E} = 0 ] && { ((B+=${boomC})); [ $B -gt ${boomN} ] && { B=0; erase_obj ${i}; }; }
+					[ ${E} = 0 ] && { ((B+=${boomC})); [[ $B -gt ${boomN} ]] && { B=0; erase_obj ${i}; }; }
 					;;
 	esac; done
 
 	#-{ BOSS }-----------------------------------------------------------------------------------------------------------
-	[ $frags -ge $tillboss ] && {
+	[[ $frags -ge $tillboss ]] && {
 		# Health bar
 		bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
 		for (( i=0  ; i<${hp}; i++ )); do bar="█${bar}"; done
@@ -841,18 +841,18 @@ while true; do
 		YY=$[$Y-1]
 
 		# Boss move
-		[ $BY -lt $YY                                  ] && ((BY++))
-		[ $BY -gt $YY                                  ] && ((BY--))
-		[ $BX -gt $[$endx / 2] -a "$goback" == "false" ] && ((BX--)) || goback=true
-		[ $BX -lt $bossendx    -a "$goback" == "true"  ] && ((BX++)) || goback=false
+		[[ $BY -lt $YY                                   ]] && ((BY++))
+		[[ $BY -gt $YY                                   ]] && ((BY--))
+		[[ $BX -gt $[$endx / 2] && "$goback" -eq "false" ]] && ((BX--)) || goback=true
+		[[ $BX -lt $bossendx    && "$goback" -eq "true"  ]] && ((BX++)) || goback=false
 
 		((BC++))
 		# Boss print
 		for (( i=0; i<7; i++ )); do
 
 			stp=${boss[$i]:0:1}; spr=${boss[$i]:1}; color=(${boss_color[$i]})
-			[ $BC -lt 13 ] \
-				&& { for (( k=0; k<$BC; k++ )); do [ $k -ge $stp ] \
+			[[ $BC -lt 13 ]] \
+				&& { for (( k=0; k<$BC; k++ )); do [[ $k -ge $stp ]] \
 						&& { XY $[$k+$BX] $[$BY + $i] "${color[$k]}${spr:$k:1}"; } \
 						|| { :; }; done; } \
 				|| { stp=${boss2[$i]:0:1}; spr=${boss2[$i]:1}; XY $[${BX} + $stp] $[$BY + $i] "${spr}"; }
@@ -860,7 +860,7 @@ while true; do
 		done
 
 		# Boss fire
-		[ $BY -eq $YY -a $K -eq 0 ] && OBJ+=("$[$BX - 4] $[$BY + 4] 0 bfire")
+		[[ $BY -eq $YY && $K -eq 0 ]] && OBJ+=("$[$BX - 4] $[$BY + 4] 0 bfire")
 
 		# Collide with plane
 		for (( p=2; p<5; p++ )); do case "$HY $HX" in
@@ -870,16 +870,16 @@ while true; do
 		esac; done
 
 		# Add enemy
-		[ $enumber -lt $enmax -a $J -eq 0 ] && { ((enumber++)); OBJ+=("$[$BX + 2] $[$BY + 3] 0 alien"); }
+		 [[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$[$BX + 2] $[$BY + 3] 0 alien"); }
 	} || {
-		[ $enumber -lt $enmax -a $J -eq 0 ] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
+		 [[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
 	}
 
     #-{ Add cloud }------------------------------------------------------------------------------------------------------
-    [ $[RANDOM % 100] = 0 ] && OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]")
+    [[ $[RANDOM % 100] = 0 ]] && OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]")
 
     #-{ Add tree }-------------------------------------------------------------------------------------------------------
-    [ $[RANDOM % 100] = 0 ] && { treetype=$[RANDOM % 3 + 1]; case ${treetype} in
+    [[ $[RANDOM % 100] = 0 ]] && { treetype=$[RANDOM % 3 + 1]; case ${treetype} in
         1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
         2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
         3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
