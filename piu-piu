@@ -888,7 +888,7 @@ while true; do
 	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $[$Y + $i] "${hero[$i]}"; done
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
-	XY 1 $lineendy "${LND}${land:$[1-$LX]:$endx}"; [ $LX -lt  -$[$LN/2]  ] && LX=-1 || ((LX--))
+	XY 1 $lineendy "${LND}${land:$[1-$LX]:$endx}"; [ $LX -lt  -$[$LN/2]  ] && LX=-1 || ((LX--)); XY 1 $endy "${LND}$(line ' ' $endx)"
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
 	XY 0 0 "${SKY}${BLK}killed aliens: ${SKY}${RED}${frags}${SKY}  ${BLK}Life: ${SKY}${RED}${life}${SKY}  ${BLK}Ammo: ${SKY}${RED}${ammo}${SKY} "
