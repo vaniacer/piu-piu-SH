@@ -742,16 +742,17 @@ while true; do
 	#-{ Get keys }-------------------------------------------------------------------------------------------------------
 	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
-		'w'|'W') ((Y--)); [ $Y -lt 1         ] && Y=1;;
-		'a'|'A') ((X--)); [ $X -lt 1         ] && X=1;;
-		's'|'S') ((Y++)); [ $Y -gt $heroendy ] && Y=$heroendy;;
-		'd'|'D') ((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
-		'p'|'P') [ $ammo -ge $G ] && \
-				 case ${G} in 1) PIU+=("$HY $HX"); ((ammo--));;
-                	          2) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX"); ((ammo-=2));;
-                	          3) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX" "$HY $[$HX+1]"); ((ammo-=3));;
-                              4) PIU+=("$[$HY+1] $[$HX+1]" "$[$HY-1] $[$HX+1]" "$[$HY+2] $HX" "$[$HY-2] $HX"); ((ammo-=4));;
-                              5) PIU+=("$[$HY+1] $[$HX+1]" "$[$HY-1] $[$HX+1]" "$[$HY+2] $HX" "$[$HY-2] $HX" "$HY $[$HX+2]"); ((ammo-=5));; esac;;
+		'w'|'W')	((Y--)); [ $Y -lt 1         ] && Y=1;;
+		'a'|'A')	((X--)); [ $X -lt 1         ] && X=1;;
+		's'|'S')	((Y++)); [ $Y -gt $heroendy ] && Y=$heroendy;;
+		'd'|'D')	((X++)); [ $X -gt $heroendx ] && X=$heroendx;;
+		'p'|'P')	[ $ammo -ge $G ] && { case ${G} in
+						1) PIU+=("$HY $HX");;
+						2) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX");;
+						3) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX" "$HY $[$HX+1]");;
+						4) PIU+=("$[$HY+1] $[$HX+1]" "$[$HY-1] $[$HX+1]" "$[$HY+2] $HX" "$[$HY-2] $HX");;
+						5) PIU+=("$[$HY+1] $[$HX+1]" "$[$HY-1] $[$HX+1]" "$[$HY+2] $HX" "$[$HY-2] $HX" "$HY $[$HX+2]");;
+					esac; ((ammo-=$G)); };;
 	esac
 
 	# Hero collide coordinates
