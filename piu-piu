@@ -908,7 +908,7 @@ while true; do
 	XY 1 $lineendy "${LND}${land:$[1-$LX]:$endx}"; [ $LX -lt  -$[$LN/2]  ] && LX=-1 || ((LX--)); XY 1 $endy "${LND}$(line ' ' $endx)"
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
-	XY 1 0 "$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
-	XY 1 $endy "$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL "
+	XY 2 0 "$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
+	XY 2 $endy "$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL "
 
 done
