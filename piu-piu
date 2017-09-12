@@ -34,6 +34,7 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
 #--------------------------------------------------------------------+
 
 #------------------------{ Start opt }------------------------{ description }--------------{ def. values }--------------
+  background=true									# background objects visibility				(true)
     tillboss=100									# frags needed to fight with boss			(100)
      bhealth=100									# boss' health								(100)
      enumber=0										# current enemy counter						(0)
@@ -779,13 +780,13 @@ while true; do
 	case $life    in 0|-*) mess lose;; esac
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
-	((K++)); [[ $K -gt 20 ]] && K=0   # boss' fire rate
-	((L++)); [[ $L -gt 3  ]] && L=0   # sprites animation
-	((J++)); [[ $J -gt 5  ]] && J=0   # boss' bullet animation
-	((Q++)); [[ $Q -gt 6  ]] && Q=0   # tree1\cloud1(small)  speed
-	((W++)); [[ $W -gt 4  ]] && W=0   # tree2\cloud2(medium) speed
-	((E++)); [[ $E -gt 2  ]] && E=0   # tree3\cloud3(large)  speed
-	[[ ${E} = 0 ]] && { ((S+=${SunC}));  [[ $S -gt ${SunN} ]] && S=0; }   # Sun animation
+	[[ $K -ge 20 ]] && K=0 || ((K++))  # boss' fire rate
+	[[ $L -ge 3  ]] && L=0 || ((L++))  # sprites animation
+	[[ $J -ge 5  ]] && J=0 || ((J++))  # boss' bullet animation
+	[[ $Q -ge 6  ]] && Q=0 || ((Q++))  # tree1\cloud1(small)  speed
+	[[ $W -ge 4  ]] && W=0 || ((W++))  # tree2\cloud2(medium) speed
+	[[ $E -ge 2  ]] && E=0 || ((E++))  # tree3\cloud3(large)  speed
+	[[ ${E} = 0  ]] && { ((S+=${SunC}));  [[ $S -gt ${SunN} ]] && S=0; }   # Sun animation
 
 	#-{ Print Sun }------------------------------------------------------------------------------------------------------
 	SY=1; for part in "${Sun[@]:$S:$SunC}"; do XY $Sunsendx $SY "$SKY$part"; ((SY++)); done
@@ -852,7 +853,7 @@ while true; do
 		bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
 		for (( i=0  ; i<${hp}; i++ )); do bar="█${bar}"; done
 		for (( i=$hp; i<${hm}; i++ )); do bar="${bar} "; done
-		XY 1 $[$endy - 1] "${LND} ${BLD}${RED}BOSS: ${LND}${BLD}|${BLD}${RED}${bar}${LND}${BLD}|${LND}"
+		XY 1 $[$endy - 1] "${LND} ${BLD}${RED}BOSS: ${LND}${BLK}|${BLD}${RED}${bar}${LND}${BLK}|${LND}"
 
 		YY=$[$Y-1]
 
@@ -891,15 +892,17 @@ while true; do
 		 [[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
 	}
 
-    #-{ Add cloud }------------------------------------------------------------------------------------------------------
-    case $[RANDOM % 100] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
+	case $background in true)
+		#-{ Add cloud }--------------------------------------------------------------------------------------------------
+		case $[RANDOM % 100] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
 
-    #-{ Add tree }-------------------------------------------------------------------------------------------------------
-    case $[RANDOM % 100] in 0) case $[RANDOM % 3 + 1] in
-        1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
-        2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
-        3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
-    esac;; esac
+		#-{ Add tree }---------------------------------------------------------------------------------------------------
+		case $[RANDOM % 100] in 0) case $[RANDOM % 3 + 1] in
+		    1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
+		    2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
+		    3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
+		esac;; esac;;
+	esac
 
 	#-{ Print hero }-----------------------------------------------------------------------------------------------------
 	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $[$Y + $i] "${hero[$i]}"; done
