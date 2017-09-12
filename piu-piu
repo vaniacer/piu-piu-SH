@@ -681,8 +681,8 @@ function fps_counter {
 		FPS=$FPSC
 		[[ $FPS -gt $FPSM ]] && FPSM=$FPS
 		[[ $FPS -lt $FPSL ]] && FPSL=$FPS
-		FPSC=0
 		sec=$(date +'%s')
+		FPSC=0
 	} || ((FPSC++))
 
 }
@@ -752,7 +752,8 @@ for ((i=$lineendy; i<$endy;     i++)); do line ${LND}' ' $endx; done; sec=$(date
 #================================================{ Main game loop }======================================================
 while true; do
 
-	get_dimensions; sprites; fps_counter
+#	get_dimensions; 
+	sprites; fps_counter
 
 	#-{ Get keys }-------------------------------------------------------------------------------------------------------
 	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
@@ -891,14 +892,14 @@ while true; do
 	}
 
     #-{ Add cloud }------------------------------------------------------------------------------------------------------
-#    case $[RANDOM % 100] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
+    case $[RANDOM % 100] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
 
     #-{ Add tree }-------------------------------------------------------------------------------------------------------
-#    case $[RANDOM % 100] in 0) case $[RANDOM % 3 + 1] in
-#        1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
-#        2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
-#        3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
-#    esac;; esac
+    case $[RANDOM % 100] in 0) case $[RANDOM % 3 + 1] in
+        1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
+        2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
+        3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
+    esac;; esac
 
 	#-{ Print hero }-----------------------------------------------------------------------------------------------------
 	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $[$Y + $i] "${hero[$i]}"; done
