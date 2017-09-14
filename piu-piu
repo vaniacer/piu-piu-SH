@@ -38,6 +38,7 @@ line () { #                                                          |
     fi; } #                                                          |
 #--------------------------------------------------------------------+
 
+function start_opt {
 #------------------------{ Start opt }------------------------{ description }--------------{ def. values }--------------
   background=true									# background objects visibility				(true)
     tillboss=100									# frags needed to fight with boss			(100)
@@ -55,9 +56,11 @@ line () { #                                                          |
         FPSC=0										# FPS counter								(0)
          rnd=10										# random seed 4 bonuses						(10)
          spd=0.0001									# game\read speed							(0.0001)
-          DHC=${BLK}								# default hero color
-          DSC=${RED}								# default symbol color
-          DHS=★										# default symbol
+         DHC=${BLK}									# default hero color
+         DSC=${RED}									# default symbol color
+         DHS=★										# default symbol
+         OBJ=()										# start obj array
+         PIU=()										# start piu array
           BY=$[$(tput lines) / 2]					# boss start Y
           BX=$[$(tput  cols) + 1]					# boss start X
           BC=0										# boss' sprite cutter
@@ -71,6 +74,7 @@ line () { #                                                          |
            G=1										# gun 										(1)(max 5)
 
 [ -e piu.conf ] && . piu.conf						# load start conf from file
+}; start_opt
 #------------------------{ Messages }-----------------------------------------------------------------------------------
         help=(                  '                   ^     '
 		                  "                   ${RED}W${DEF}     "
@@ -126,10 +130,10 @@ esac
               "${RED}\ / ${SKY} "
               "${RED} V  ${SKY} ")
 
-       shoot=("${RED} -${SKY}${BLD}${GRN}>${SKY}"
+       shoot=("$SKY ${RED}-${SKY}${BLD}${GRN}>${SKY}"
               "${BLD}${red}-=${SKY}${GRN}>${SKY}"
               "${red}=-${SKY}${BLD}${GRN}>${SKY}"
-              "${RED}- ${SKY}${GRN}>${SKY}")
+              "${RED}-${SKY} ${GRN}>${SKY}")
 
       bshoot=("${ylw}█▓▒░${SKY}"
               "${ylw}▓▒░▒${SKY}"
@@ -513,8 +517,8 @@ function mess () { XY 1 1 ${DEF}; clear
 	}
 
 	case $1 in
-		"win" )	sprite=("${win[@]}") ; print; XY 0 ${endy}; sleep 3; bye 0;;
-		"lose")	sprite=("${lose[@]}"); print; XY 0 ${endy}; sleep 3; bye 1;;
+		"win" )	sprite=("${win[@]}") ; print; XY 0 ${endy}; sleep 3; clear; start_opt; main_menu; fill_screen;;
+		"lose")	sprite=("${lose[@]}"); print; XY 0 ${endy}; sleep 3; clear; start_opt; main_menu; fill_screen;;
 		"help")	sprite=("${help[@]}"); print;;
 	esac
 }
@@ -667,7 +671,7 @@ function main_menu {
 			'w'|'W') ((menuI--)); [[ $menuI -lt 0           ]] && menuI=0;;
 			'd'|'D') menuI=$[$menuN-1];;
 			'a'|'A') menuI=0;;
-			'p'|'P') case ${menu[$menuI]} 	in	'start') return;;
+			'p'|'P') case ${menu[$menuI]}	in	'start') return;;
 												'conf ') clear ;  configure && intro;;
 												'exit ') bye   ;; esac;;
 		esac
@@ -692,7 +696,6 @@ function fps_counter {
 		sec=$cur_sec
 		FPSC=0
 	} || ((FPSC++))
-
 }
 
 function mover () { er=$2; width=$3
@@ -732,15 +735,15 @@ function mover () { er=$2; width=$3
 			"life"  )	case "$[$OY + $p] $OX" in "$HY $HX") ((life++))   ; erase_obj ${i}; break;; esac;;
 			"ammo"  )	case "$[$OY + $p] $OX" in "$HY $HX") ((ammo+=100)); erase_obj ${i}; break;; esac;;
 			"bfire" )	case "$OY $OX"         in "$HY $HX") ((life--))   ; erase_obj ${i}; break;; esac;;
-			"alien" )	for (( t=0; t<${NP}; t++ )); do case "$[$OY + 1] $[$OX + $p]" in # hit by bullet
+			"alien" )	for (( t=0; t<${NP}; t++ )); do case "$[$OX + $p] $[$OY + 1]" in # hit by bullet
 
 							"${PIU[$t]}")	case $[RANDOM % $rnd] in 0) OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}");; esac # get bonus
 											((frags++));  ((enumber--)); remove_obj ${i}; remove_piu ${t}; OBJ+=("${OX} ${OY} 0 boom"); break;;
 						esac; done
 
 						# hit by plane
-						case "$[$OY + 1] $[$OX + $p]" in
-							"$HY $HX") ((life--)); ((frags++)); ((enumber--)); remove_obj ${i}; OBJ+=("${OX} ${OY} 0 boom"); break;;
+						case "$[$OX + $p] $[$OY + 1]" in
+							"$HX $HY") ((life--)); ((frags++)); ((enumber--)); remove_obj ${i}; OBJ+=("${OX} ${OY} 0 boom"); break;;
 						esac;;
 		esac
 
@@ -753,9 +756,11 @@ clear; mess "help"; sleep 2; clear; main_menu; clear
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
-#-{ Fill screen }--------------------------------------------------------------------------------------------------------
-for ((i=0;         i<$lineendy; i++)); do line ${SKY}' ' $endx; done
-for ((i=$lineendy; i<$endy;     i++)); do line ${LND}' ' $endx; done; sec=$(date +'%s') # timer for FPS counter
+function fill_screen {
+	#-{ Fill screen }----------------------------------------------------------------------------------------------------
+	for ((i=0;         i<$lineendy; i++)); do line ${SKY}' ' $endx; done
+	for ((i=$lineendy; i<$endy;     i++)); do line ${LND}' ' $endx; done; sec=$(date +'%s') # timer for FPS counter
+}; fill_screen
 
 #================================================{ Main game loop }======================================================
 while true; do
@@ -771,11 +776,11 @@ while true; do
 		's'|'S')	[[ $Y    -lt $heroendy ]] && ((Y++));;
 		'd'|'D')	[[ $X    -lt $heroendx ]] && ((X++));;
 		'p'|'P')	[[ $ammo -ge $G        ]] && { case ${G} in
-						1) PIU+=("$HY $HX");;
-						2) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX");;
-						3) PIU+=("$[$HY+1] $HX" "$[$HY-1] $HX" "$HY $[$HX+1]");;
-						4) PIU+=("$[$HY+1] $[$HX+1]" "$[$HY-1] $[$HX+1]" "$[$HY+2] $HX" "$[$HY-2] $HX");;
-						5) PIU+=("$[$HY+1] $[$HX+1]" "$[$HY-1] $[$HX+1]" "$[$HY+2] $HX" "$[$HY-2] $HX" "$HY $[$HX+2]");;
+						1) PIU+=("$HX $HY");;
+						2) PIU+=("$HX $[$HY+1]" "$HX $[$HY-1]");;
+						3) PIU+=("$HX $[$HY+1]" "$HX $[$HY-1]" "$[$HX+1] $HY");;
+						4) PIU+=("$[$HX+1] $[$HY+1]" "$[$HX+1] $[$HY-1]" "$HX $[$HY+2]" "$HX $[$HY-2]");;
+						5) PIU+=("$[$HX+1] $[$HY+1]" "$[$HX+1] $[$HY-1]" "$HX $[$HY+2]" "$HX $[$HY-2]" "$[$HX+2] $HY");;
 					esac; ((ammo-=$G)); };;
 	esac
 
@@ -783,37 +788,37 @@ while true; do
 	HX=$(($X + 9)); HY=$(($Y + 3))
 
 	# Check win\lose
-	case $bhealth in 0|-*) mess win ;; esac
-	case $life    in 0|-*) mess lose;; esac
+	[[ $bhealth -le 0 ]] && mess win
+	[[ $life    -le 0 ]] && mess lose
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
-	[[ $K -ge 20 ]] && K=0 || ((K++))  # boss' fire rate
-	[[ $L -ge 3  ]] && L=0 || ((L++))  # sprites animation
-	[[ $J -ge 5  ]] && J=0 || ((J++))  # boss' bullet animation
-	[[ $Q -ge 6  ]] && Q=0 || ((Q++))  # tree1\cloud1(small)  speed
-	[[ $W -ge 4  ]] && W=0 || ((W++))  # tree2\cloud2(medium) speed
-	[[ $E -ge 2  ]] && E=0 || ((E++))  # tree3\cloud3(large)  speed
-	[[ ${E} = 0  ]] && { ((S+=${SunC}));  [[ $S -gt ${SunN} ]] && S=0; }   # Sun animation
+	[[ $K -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
+	[[ $L -ge 3  ]] && L=0 || ((L++))	# sprites animation
+	[[ $J -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
+	[[ $Q -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
+	[[ $W -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
+	[[ $E -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
+	[[ $E -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
 
 	#-{ Print Sun }------------------------------------------------------------------------------------------------------
 	SY=1; for part in "${Sun[@]:$S:$SunC}"; do XY $Sunsendx $SY "$SKY$part"; ((SY++)); done
 
 	#-{ Move\check\print hero bullets }----------------------------------------------------------------------------------
-	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PY=${PI[0]}; PX=${PI[1]}
+	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}
 
 		# Move
 		((PX++))
 
 		# Fly away
-		[[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PY $PX"; }
+		[[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY"; }
 
 		# print
-		XY ${PX} ${PY} "$SKY ${shoot[$L]}"
+		XY $PX $PY "$SKY ${shoot[$L]}"
 
 		# Hit boss
-		[[ $frags -ge $tillboss ]] && for (( p=2; p<5; p++ )); do case "$PY $PX" in
+		[[ $frags -ge $tillboss ]] && for (( p=2; p<5; p++ )); do case "$PX $PY" in
 
-			"$[$BY + $p] $BX"|"$[$BY + $p] $[$BX + 1]") ((bhealth--)); remove_piu ${t};;
+			"$BX $[$BY + $p]"|"$[$BX + 1] $[$BY + $p]") ((bhealth--)); remove_piu ${t};;
 
 		esac; done
 
