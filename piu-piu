@@ -683,11 +683,13 @@ function main_menu {
 
 function fps_counter {
 
-	[[ $(date +'%s') -gt $sec ]] && {
+	#Needs bash 4.2
+	printf -v cur_sec '%(%s)T\n' -1
+	[[ $cur_sec -gt $sec ]] && {
 		FPS=$FPSC
 		[[ $FPS -gt $FPSM ]] && FPSM=$FPS
 		[[ $FPS -lt $FPSL ]] && FPSL=$FPS
-		sec=$(date +'%s')
+		sec=$cur_sec
 		FPSC=0
 	} || ((FPSC++))
 
