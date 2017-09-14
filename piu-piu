@@ -920,3 +920,5 @@ while true; do
 	XY 2 $endy "$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL "
 
 done
+
+# vim: ts=4
