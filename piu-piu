@@ -448,7 +448,7 @@ function sprites { # dynamic sprites
 		hero=(${SKY}'    '
               ${CM5}' __      '${SKY}
               ${CM4}" |${CM7}〵${CM5}____  "${SKY}
-              ${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${BLD}${gun[$G]}${SKY} "
+              ${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G]}${SKY} "
               ${CM4}"    |${BLD}/     "${SKY}
               ${SKY}'       ')
 
@@ -743,7 +743,7 @@ function mover () { er=$2; width=$3
 	done
 }
 
-trap bye INT; stty -echo; printf "${COF}"; get_dimensions; default
+trap bye INT; trap : ALRM; stty -echo; printf "${COF}"; get_dimensions; default
 clear; mess "help"; sleep 2; clear; main_menu; clear
 
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
@@ -751,9 +751,9 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
 function fill_screen {
 	#-{ Fill screen }----------------------------------------------------------------------------------------------------
-	for ((i=0;         i<$lineendy; i++)); do line ${SKY}' ' $endx; done
-	for ((i=$lineendy; i<$endy;     i++)); do line ${LND}' ' $endx; done; sec=$(date +'%s') # timer for FPS counter
-}; fill_screen
+	for ((i=0;         i<$lineendy; i++)); do printf "${SKY}%${endx}s"; done
+	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
+}; fill_screen; sec=$(date +'%s') # timer for FPS counter
 
 #================================================{ Main game loop }======================================================
 while true; do
@@ -913,7 +913,7 @@ while true; do
 	for (( i=0; i<${#hero[@]}; i++ )); do XY ${X} $[$Y + $i] "${hero[$i]}"; done
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
-	XY 1 $lineendy "${LND}${land:$[1-$LX]:$endx}"; [ $LX -lt  -$[$LN/2]  ] && LX=-1 || ((LX--)); XY 1 $endy "${LND}$(line ' ' $endx)"
+	XY 1 $lineendy "${LND}${land:$[1-$LX]:$endx}"; [ $LX -lt  -$[$LN/2]  ] && LX=-1 || ((LX--)); XY 1 $endy "${LND}%${endx}s"
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
 	XY 2 0 "$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
