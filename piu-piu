@@ -51,9 +51,9 @@ function start_opt {
         FPSC=0										# FPS counter								(0)
          rnd=10										# random seed 4 bonuses						(10)
          spd=0.0001									# game\read speed							(0.0001)
-         DHC=${BLK}									# default hero color
-         DSC=${RED}									# default symbol color
-         DHS=★										# default symbol
+         DHC=${BLK}									# default hero color						($BLK)
+         DSC=${RED}									# default symbol color						($red)
+         DHS=★										# default symbol							(★)
          OBJ=()										# start obj array
          PIU=()										# start piu array
           BY=$[$(tput lines) / 2]					# boss start Y
@@ -113,7 +113,7 @@ esac
 
       eraser=${SKY}'           '
 
-         gun=(- = ≡ ≣ 𝄚)
+         gun=(- - = ≡ ≣ 𝄚)
 
        grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █) # grass types
 
@@ -448,7 +448,7 @@ function sprites { # dynamic sprites
 		hero=(${SKY}'    '
               ${CM5}' __      '${SKY}
               ${CM4}" |${CM7}〵${CM5}____  "${SKY}
-              ${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}-${SKY} "
+              ${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${BLD}${gun[$G]}${SKY} "
               ${CM4}"    |${BLD}/     "${SKY}
               ${SKY}'       ')
 
