@@ -30,7 +30,12 @@ CON='\e[?25h' #Cursor On                                             |
 XY   () { printf "\e[${2};${1}H${3}";   } #                          |
 #--------------------------------------------------------------------+
 # Print line, usage: line - 10 | line -= 20 | line "Hello World!" 20 |
-line () { printf %.s"${1}" $(seq ${2}); } #                          |
+line () { #                                                          |
+    if [ "${1}" = ' ' ]; then #                                      |
+        printf "%${2}s" #                                            |
+    else #                                                           |
+        printf %.s"${1}" $(seq "${2}") #                             |
+    fi; } #                                                          |
 #--------------------------------------------------------------------+
 
 function start_opt {
@@ -680,13 +685,15 @@ function main_menu {
 	done
 }
 
-function fps_counter { sec2=$(date +'%s')
+function fps_counter {
 
-	[[ $sec2 -gt $sec ]] && {
+	#Needs bash 4.2
+	printf -v cur_sec '%(%s)T\n' -1
+	[[ $cur_sec -gt $sec ]] && {
 		FPS=$FPSC
 		[[ $FPS -gt $FPSM ]] && FPSM=$FPS
 		[[ $FPS -lt $FPSL ]] && FPSL=$FPS
-		sec=$sec2
+		sec=$cur_sec
 		FPSC=0
 	} || ((FPSC++))
 }
