@@ -549,6 +549,8 @@ function sprite_boss {
               " ( ${big[$L]} ) "
               '  `¯¯---¯¯´  '
               '            ')
+
+	((cuter++)); OBJ[$i]="$OX $OY $cuter $type"
 }
 
 #------------------------{ Animations }---------------------------------------------------------------------------------
@@ -949,18 +951,26 @@ function mover () { timer=$1
 		 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo+=100)); return;;
 		 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life++))   ; return;;
 		'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life--))   ; return;;
+		 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life--)); ((bhealth-=10)); return;;
 	esac
 
 	# alien's collisions with pius
-	case $type in 'alien')
+	case $type in 'alien'| 'boss')
 
 		for (( t=0; t<${NP}; t++ )); do
 
 			case "${PIU[$t]}" in # hit by bullet
 
-				"${target[0]}"| ${target[1]})
-					case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}") ;; esac # get bonus
-					((frags++));  ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
+				"${target[0]}"| "${target[1]}"| "${target[2]}")
+
+					case $type in
+
+						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}") ;; esac # get bonus
+								 ((frags++));  ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
+
+						'boss') remove_piu $t; ((bhealth--)); continue;;
+						
+					esac
 
 			esac
 
