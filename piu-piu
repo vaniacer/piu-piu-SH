@@ -36,6 +36,7 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
 function start_opt {
 #------------------------{ Start opt }------------------------{ description }--------------{ def. values }--------------
   background=true									# background objects visibility				(true)
+    bossborn=										# boss starter
     tillboss=100									# frags needed to fight with boss			(100)
      bhealth=100									# boss' health								(100)
      enumber=0										# current enemy counter						(0)
@@ -520,8 +521,11 @@ function sprite_boss {
        hight=$bossH
        width=$bossW
        color=("${boss_color[@]}")
-	  target=("$[$OX+5] $[$OY+2]" "$[$OX+3] $[$OY+3]" "$[$OX+2] $[$OY+4]")
-          EX=$[$OX+2]; EY=$[$OY+5]
+	  target=("$[$OX+4] $[$OY+2]" "$[$OX+3] $[$OY+3]" "$[$OX+1] $[$OY+4]"
+              "$[$OX+5] $[$OY+2]" "$[$OX+3] $[$OY+3]" "$[$OX+2] $[$OY+4]")
+
+          EX=$[$OX+2]
+          EY=$[$OY+5]; [[ $EY -gt $enmyendy ]] && EY=$enmyendy
           YY=$[$Y-1]
 
 		# Boss fire
@@ -618,35 +622,35 @@ function sprite_boom {
 
 function sprite_Sun {
 
-         Sun=("\e[1;${Sunsendx}H"$SKY$YLW'       ___ |       '
-              "\e[2;${Sunsendx}H"$SKY$YLW'---````    \       '
-              "\e[3;${Sunsendx}H"$SKY$YLW'           _`.     '
-          "\e[4;${Sunsendx}H"$SKY$BLD$YLW'        ../   `..__'
-              "\e[5;${Sunsendx}H"$SKY$YLW'     ../        /  '
-              "\e[6;${Sunsendx}H"$SKY$YLW'    /          /   '
-          "\e[7;${Sunsendx}H"$SKY$BLD$YLW'              /    '
-              "\e[8;${Sunsendx}H"$SKY$YLW'              /    '
-              "\e[9;${Sunsendx}H"$SKY$YLW'             /     '
+         Sun=("\e[1;${Sunsendx}H$SKY$YLW"'       ___ |       '
+              "\e[2;${Sunsendx}H$SKY$YLW"'---````    \       '
+              "\e[3;${Sunsendx}H$SKY$YLW"'           _`.     '
+          "\e[4;${Sunsendx}H$SKY$BLD$YLW"'        ../   `..__'
+              "\e[5;${Sunsendx}H$SKY$YLW"'     ../        /  '
+              "\e[6;${Sunsendx}H$SKY$YLW"'    /          /   '
+          "\e[7;${Sunsendx}H$SKY$BLD$YLW"'              /    '
+              "\e[8;${Sunsendx}H$SKY$YLW"'              /    '
+              "\e[9;${Sunsendx}H$SKY$YLW"'             /     '
 
-              "\e[1;${Sunsendx}H"$SKY$YLW'_...---``  |       '
-          "\e[2;${Sunsendx}H"$SKY$BLD$YLW'        _.-\       '
-              "\e[3;${Sunsendx}H"$SKY$YLW'   _.--`    `.     '
-              "\e[4;${Sunsendx}H"$SKY$YLW' -`          ,`..__'
-          "\e[5;${Sunsendx}H"$SKY$BLD$YLW'           ,`     |'
-              "\e[6;${Sunsendx}H"$SKY$YLW'         ,`       |'
-              "\e[7;${Sunsendx}H"$SKY$YLW'       _`        | '
-          "\e[8;${Sunsendx}H"$SKY$BLD$YLW'                 | '
-              "\e[9;${Sunsendx}H"$SKY$YLW'                 | '
+              "\e[1;${Sunsendx}H$SKY$YLW"'_...---``  |       '
+          "\e[2;${Sunsendx}H$SKY$BLD$YLW"'        _.-\       '
+              "\e[3;${Sunsendx}H$SKY$YLW"'   _.--`    `.     '
+              "\e[4;${Sunsendx}H$SKY$YLW"' -`          ,`..__'
+          "\e[5;${Sunsendx}H$SKY$BLD$YLW"'           ,`     |'
+              "\e[6;${Sunsendx}H$SKY$YLW"'         ,`       |'
+              "\e[7;${Sunsendx}H$SKY$YLW"'       _`        | '
+          "\e[8;${Sunsendx}H$SKY$BLD$YLW"'                 | '
+              "\e[9;${Sunsendx}H$SKY$YLW"'                 | '
 
-          "\e[1;${Sunsendx}H"$SKY$BLD$YLW'     _...--|       '
-              "\e[2;${Sunsendx}H"$SKY$YLW'..--`      \       '
-          "\e[3;${Sunsendx}H"$SKY$BLD$YLW'         .. `.     '
-              "\e[4;${Sunsendx}H"$SKY$YLW'     _.-`     `..__'
-              "\e[5;${Sunsendx}H"$SKY$YLW'  ..`         .`   '
-          "\e[6;${Sunsendx}H"$SKY$BLD$YLW'             /     '
-              "\e[7;${Sunsendx}H"$SKY$YLW'            /      '
-          "\e[8;${Sunsendx}H"$SKY$BLD$YLW'          .`       '
-              "\e[9;${Sunsendx}H"$SKY$YLW'         `         ')
+          "\e[1;${Sunsendx}H$SKY$BLD$YLW"'     _...--|       '
+              "\e[2;${Sunsendx}H$SKY$YLW"'..--`      \       '
+          "\e[3;${Sunsendx}H$SKY$BLD$YLW"'         .. `.     '
+              "\e[4;${Sunsendx}H$SKY$YLW"'     _.-`     `..__'
+              "\e[5;${Sunsendx}H$SKY$YLW"'  ..`         .`   '
+          "\e[6;${Sunsendx}H$SKY$BLD$YLW"'             /     '
+              "\e[7;${Sunsendx}H$SKY$YLW"'            /      '
+          "\e[8;${Sunsendx}H$SKY$BLD$YLW"'          .`       '
+              "\e[9;${Sunsendx}H$SKY$YLW"'         `         ')
 
     [[ $Q -eq 0 ]] && printf "${Sun[*]:$S:$SunC}"
 }
@@ -758,8 +762,8 @@ function mess () { XY 1 1 ${DEF}; clear
 	}
 
 	case $1 in
-		"win" )	sprite=("${win[@]}") ; print; XY 0 ${endy}; sleep 3; clear; start_opt; main_menu; fill_screen;;
-		"lose")	sprite=("${lose[@]}"); print; XY 0 ${endy}; sleep 3; clear; start_opt; main_menu; fill_screen;;
+		"win" )	sprite=("${win[@]}") ; print; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
+		"lose")	sprite=("${lose[@]}"); print; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
 		"help")	sprite=("${help[@]}"); print;;
 	esac
 }
@@ -955,25 +959,20 @@ function mover () { timer=$1
 	esac
 
 	# alien's collisions with pius
-	case $type in 'alien'| 'boss')
+	case $type in 'alien' | 'boss')
 
 		for (( t=0; t<${NP}; t++ )); do
 
 			case "${PIU[$t]}" in # hit by bullet
 
-				"${target[0]}"| "${target[1]}"| "${target[2]}")
+				"${target[0]}"| "${target[1]}"| "${target[2]}"| "${target[3]}"| "${target[4]}"| "${target[5]}")
 
 					case $type in
-
-						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}") ;; esac # get bonus
-								 ((frags++));  ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
-
+						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}")  ;; esac # get bonus
+								 ((frags++))  ; ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
 						'boss' ) remove_piu $t; ((bhealth--)); continue;;
-						
 					esac
-
 			esac
-
 		done
 	esac
 
