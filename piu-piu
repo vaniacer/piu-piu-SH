@@ -521,7 +521,7 @@ function sprite_boss {
        width=$bossW
        color=("${boss_color[@]}")
 	  target=("$[$OX+5] $[$OY+2]" "$[$OX+3] $[$OY+3]" "$[$OX+2] $[$OY+4]")
-          EX=$[$OX+2]; EY=$[$OY+3]
+          EX=$[$OX+2]; EY=$[$OY+5]
           YY=$[$Y-1]
 
 		# Boss fire
@@ -1095,13 +1095,6 @@ while true; do
 
 		# print
 		XY $PX $PY "$SKY ${shoot[$L]}"
-
-		# Hit boss
-		[[ $frags -ge $tillboss ]] && for (( p=2; p<5; p++ )); do case "$PX $PY" in
-
-			"$BX $[$BY + $p]"|"$[$BX + 1] $[$BY + $p]") ((bhealth--)); remove_piu ${t};;
-
-		esac; done
 
 	done
 
