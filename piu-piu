@@ -459,15 +459,16 @@ function sprite_tree3 {
        width=$tree3W
        color=("${tree3_color[@]}")
 
+         CM1=$SKY$BLK
       sprite=("\e[$OY;$[$OX+3]H"$SKY$T3C'_._ '$SKY
         "\e[$[$OY+1];$[$OX+2]H"$SKY$T3C'/   \ '$SKY
        "\e[$[$OY+2];$[$OX+1]H"$SKY$T3C'_\ '$CM1'|'$T3C' / '$SKY
        "\e[$[$OY+3];${OX}H"$SKY$T3C'/  \\'$CM1'║'$T3C'/__ '$SKY
        "\e[$[$OY+4];${OX}H"$SKY$T3C'\_'$CM1'\\'$T3C'/'$CM1'║'$T3C'/  \ '$SKY
-         "\e[$[$OY+5];$[$OX+3]H"$SKY$BLK'\║'$T3C'|'$CM1'/'$T3C'_/ '$SKY
-          "\e[$[$OY+6];$[$OX+4]H"$SKY$BLK'║/ '$SKY
-          "\e[$[$OY+7];$[$OX+4]H"$SKY$BLK'║ '$SKY
-          "\e[$[$OY+8];$[$OX+4]H"$SKY$BLK'║ '$SKY)
+            "\e[$[$OY+5];$[$OX+3]H"$CM1'\║'$T3C'|'$CM1'/'$T3C'_/ '$SKY
+             "\e[$[$OY+6];$[$OX+4]H"$CM1'║/ '$SKY
+             "\e[$[$OY+7];$[$OX+4]H"$CM1'║ '$SKY
+             "\e[$[$OY+8];$[$OX+4]H"$CM1'║ '$SKY)
 
      sprite2=("${tree3[@]}")
 }
@@ -946,7 +947,7 @@ function fps_counter {
 function mover () { timer=$1
 
 	# fly away
-	[[ $OX -lt -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; }
+	[[ $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; }
 
 	# collisions with plane
 	case  $type:"$HX $HY" in
