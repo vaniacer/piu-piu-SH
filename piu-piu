@@ -522,8 +522,8 @@ function sprite_boss {
        hight=$bossH
        width=$bossW
        color=("${boss_color[@]}")
-	  target=("$[$OX+4] $[$OY+2]" "$[$OX+3] $[$OY+3]" "$[$OX+1] $[$OY+4]"
-              "$[$OX+5] $[$OY+2]" "$[$OX+3] $[$OY+3]" "$[$OX+2] $[$OY+4]")
+	  target=("$[$OX+0] $[$OY+2]" "$[$OX+1] $[$OY+3]" "$[$OX+2] $[$OY+4]"
+              "$[$OX+1] $[$OY+2]" "$[$OX+2] $[$OY+3]" "$[$OX+3] $[$OY+4]")
 
           EX=$[$OX+2]
           EY=$[$OY+5]; [[ $EY -gt $enmyendy ]] && EY=$enmyendy
@@ -750,7 +750,7 @@ Sunsendx=$[$endx - 18]
 }
 
 function default { HC=${DHC}; SC=${DSC}; HS=${DHS}; }
-function bye () { stty echo; printf "${CON}${DEF}"; clear; ls --color=auto; exit $1; }
+function bye ()  { stty echo; printf "${CON}${DEF}"; clear; ls --color=auto; exit $1; }
 function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--)); }
 function remove_piu () { unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--)); XY $PX       $PY "$SKY   "; }
 function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do XY $OX $[$OY+$k] "$SKY         "; done; }
@@ -946,9 +946,6 @@ function fps_counter {
 
 function mover () { timer=$1
 
-	# fly away
-	[[ $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; }
-
 	# collisions with plane
 	case  $type:"$HX $HY" in
 		'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
@@ -978,9 +975,9 @@ function mover () { timer=$1
 	esac
 
 	# print
-	[[ $cuter -lt $width ]] && cut_in
-	[[    $OX -lt 1      ]] && cut_out
-	printf "${sprite[*]}"
+	[[ $cuter -lt  $width ]] && cut_in
+	[[    $OX -lt  1      ]] && cut_out #                fly away                                       or      print
+	[[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || printf "${sprite[*]}"
 
 	# move
 	case $timer in 0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type";; esac
@@ -996,7 +993,7 @@ function fill_screen {
 	#-{ Fill screen }----------------------------------------------------------------------------------------------------
 	for ((i=0;         i<$lineendy; i++)); do printf "${SKY}%${endx}s"; done
 	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
-}; fill_screen; sec=$(date +'%s') # timer for FPS counter
+}; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 
 #================================================{ Main game loop }======================================================
 while true; do
@@ -1052,8 +1049,8 @@ while true; do
 		'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
 		'cloud3')	sprite_cloud3;    mover      $E ;; #
 
-		'alien' )	sprite_alien ;    mover       0 ;; # Aliens
 		'boss'  )	sprite_boss  ;    mover       1 ;; # Boss
+		'alien' )	sprite_alien ;    mover       0 ;; # Aliens
 
 		'bfire' )	sprite_bfire ;    mover       0 ;; # Boss' plasma shot
 
@@ -1119,7 +1116,7 @@ while true; do
 	#-{ Print game status }----------------------------------------------------------------------------------------------
 	XY 2 0     "$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
 	XY 2 $endy "$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL "
-
+#	XY 1 2 "${OBJ[*]}                                 "
 done
 
 # vim: ts=4
