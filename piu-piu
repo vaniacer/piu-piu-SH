@@ -418,8 +418,8 @@ function sprite_tree2 {
 
       sprite=("\e[$OY;$[$OX+1]H"$SKY$T2C'_._  '$SKY
            "\e[$[$OY+1];${OX}H"$SKY$T2C'/   \ '$SKY
-           "\e[$[$OY+2];${OX}H"$SKY$T2C'\\'$blk' | '$CM1'/ '$SKY
-         "\e[$[$OY+3];$[$OX+1]H"$SKY$T2C'\\'$blk'║'$CM1'/\ '$SKY
+           "\e[$[$OY+2];${OX}H"$SKY$T2C'\\'$blk' | '$T2C'/ '$SKY
+         "\e[$[$OY+3];$[$OX+1]H"$SKY$T2C'\\'$blk'║'$T2C'/\ '$SKY
           "\e[$[$OY+4];$[$OX+2]H"$SKY$blk'║'$T2C'_/ '$SKY
           "\e[$[$OY+5];$[$OX+2]H"$SKY$blk'║ '$SKY)
 
@@ -968,7 +968,7 @@ function mover () { timer=$1
 						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}") ;; esac # get bonus
 								 ((frags++));  ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
 
-						'boss') remove_piu $t; ((bhealth--)); continue;;
+						'boss' ) remove_piu $t; ((bhealth--)); continue;;
 						
 					esac
 
