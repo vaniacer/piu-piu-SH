@@ -837,7 +837,7 @@ function configure {
         menu=( 'hero' 'star' 'symbol' 'apply' 'back' )                ; menuN=${#menu[*]};     menuI=$[$menuN-1]
         selL='>'; selR='<'; selN=' '
 
-	function   back   { menu=( 'start' 'conf ' 'exit ' ); menuI=0; menuN=${#menu[*]}; }
+	function   back   { menu=( 'single' 'multiplayer' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}; }
 
 	function deselect {
 		selectedHCL=${selN}; selectedHCR=${selN}
@@ -907,7 +907,7 @@ function configure {
 function main_menu {
 
 	intro
-	menu=( 'start' 'conf ' 'exit ' ); menuI=0; menuN=${#menu[*]}
+	menu=( 'single' 'multiplayer' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}
 	while true; do get_dimensions
 
 		#-{ Get keys }-------------------------------------------------------------------------------------------------------
@@ -917,15 +917,15 @@ function main_menu {
 			'w'|'W') ((menuI--)); [[ $menuI -lt 0           ]] && menuI=0;;
 			'd'|'D') menuI=$[$menuN-1];;
 			'a'|'A') menuI=0;;
-			'p'|'P') case ${menu[$menuI]}	in	'start') return;;
-												'conf ') clear ;  configure && intro;;
-												'exit ') bye   ;; esac;;
+			'p'|'P') case ${menu[$menuI]}	in	'single') return;;
+												'conf'  ) clear ;  configure && intro;;
+												'exit'  ) bye   ;; esac;;
 		esac
 
 		for ((i=0; i<$menuN; i++)); do
 
 			[[ $i -eq $menuI ]] && selected=${BLD}${RED} || selected=${DEF}
-			XY $[$endx / 2 - ${#menu[$i]}] $[$endy - 5 + $i] " $selected${menu[$i]}${DEF} "
+			XY $[$endx/2-${#menu[$i]}/2] $[$endy-5+$i] " $selected${menu[$i]}${DEF} "
 
 		done
 	done
