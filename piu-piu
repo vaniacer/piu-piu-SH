@@ -837,8 +837,6 @@ function configure {
         menu=( 'hero' 'star' 'symbol' 'apply' 'back' )                ; menuN=${#menu[*]};     menuI=$[$menuN-1]
         selL='>'; selR='<'; selN=' '
 
-	function   back   { menu=( 'single' 'multiplayer' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}; }
-
 	function deselect {
 		selectedHCL=${selN}; selectedHCR=${selN}
 		selectedSCL=${selN}; selectedSCR=${selN}
@@ -904,30 +902,70 @@ function configure {
 
 }
 
-function main_menu {
+function back {
+	start_menu=('single' 'multiplayer' 'conf' 'exit')
+	menu=(${start_menu[@]}); menuI=0; menuN=${#menu[*]}
+	for ((i=0; i<${#start_menu[*]}; i++)); do XY $[$endx/2-12] $[$endy-5+$i] "                   "; done
+}
 
-	intro
-	menu=( 'single' 'multiplayer' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}
-	while true; do get_dimensions
+function selector {
 
-		#-{ Get keys }-------------------------------------------------------------------------------------------------------
-		read -t0.005 -n1 input 2> /dev/null; input=${input:0:1}; case $input in
+	#-{ Get keys }-------------------------------------------------------------------------------------------------------
+	read -t0.005 -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
-			's'|'S') ((menuI++)); [[ $menuI -gt $[$menuN-1] ]] && menuI=$[$menuN-1];;
-			'w'|'W') ((menuI--)); [[ $menuI -lt 0           ]] && menuI=0;;
-			'd'|'D') menuI=$[$menuN-1];;
-			'a'|'A') menuI=0;;
-			'p'|'P') case ${menu[$menuI]}	in	'single') return;;
-												'conf'  ) clear ;  configure && intro;;
-												'exit'  ) bye   ;; esac;;
+		's'|'S') ((menuI++)); [[ $menuI -gt $[$menuN-1] ]] && menuI=$[$menuN-1];;
+		'w'|'W') ((menuI--)); [[ $menuI -lt 0           ]] && menuI=0;;
+		'd'|'D') menuI=$[$menuN-1];;
+		'a'|'A') menuI=0;;
+
+	esac
+
+	for ((i=0; i<$menuN; i++)); do
+
+		[[ $i -eq $menuI ]] && selected=${BLD}${RED} || selected=${DEF}
+		XY $[$endx/2-${#menu[$i]}/2] $[$endy-5+$i] " $selected${menu[$i]}${DEF} "
+
+	done
+}
+
+function enter_server {
+
+	for ((i=0; i<${#start_menu[*]}; i++)); do XY $[$endx/2-12] $[$endy-5+$i] "                   "; done
+
+	XY $[$endx/2-8] $[$endy-10] "${RED}Enter server IP: "; XY $[$endx/2-8] $[$endy-9] "$CON"
+	stty echo; read -e saddr
+}
+
+function client_or_server {
+
+	menu=('server' 'client' 'back'); menuN=${#menu[*]}; menuI=$[$menuN-1]
+	for ((i=0; i<${#start_menu[*]}; i++)); do XY $[$endx/2-12] $[$endy-5+$i] "                   "; done
+
+	while true; do
+
+		selector; case $input in 'p'|'P')
+
+			case ${menu[$menuI]}	in	'server') return;;
+										'client') enter_server;;
+										'back'  ) back; return;; esac;;
 		esac
 
-		for ((i=0; i<$menuN; i++)); do
+	done
+}
 
-			[[ $i -eq $menuI ]] && selected=${BLD}${RED} || selected=${DEF}
-			XY $[$endx/2-${#menu[$i]}/2] $[$endy-5+$i] " $selected${menu[$i]}${DEF} "
+function main_menu {
 
-		done
+	intro; back
+
+	while true; do
+
+		selector; case $input in 'p'|'P')
+
+			case ${menu[$menuI]}	in	'single'     ) return;;
+										'multiplayer') client_or_server;;
+										'conf'       ) clear ;  configure && intro;;
+										'exit'       ) bye   ;; esac;;
+		esac
 	done
 }
 
