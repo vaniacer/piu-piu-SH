@@ -902,10 +902,13 @@ function configure {
 
 }
 
+function clr  {
+	for ((i=0; i<${#start_menu[*]}; i++)); do XY $[$endx/2-12] $[$endy-5+$i] "                       "; done
+}
+
 function back {
-	start_menu=('single' 'multiplayer' 'conf' 'exit')
-	menu=(${start_menu[@]}); menuI=0; menuN=${#menu[*]}
-	for ((i=0; i<${#start_menu[*]}; i++)); do XY $[$endx/2-12] $[$endy-5+$i] "                   "; done
+	start_menu=(" start $server" 'multiplayer' 'conf' 'exit')
+	menu=("${start_menu[@]}"); menuI=0; menuN=${#menu[*]}; clr
 }
 
 function selector {
@@ -923,30 +926,27 @@ function selector {
 	for ((i=0; i<$menuN; i++)); do
 
 		[[ $i -eq $menuI ]] && selected=${BLD}${RED} || selected=${DEF}
-		XY $[$endx/2-${#menu[$i]}/2] $[$endy-5+$i] " $selected${menu[$i]}${DEF} "
+		XY $[$endx/2-${#menu[$i]}/2-3] $[$endy-5+$i] " $selected${menu[$i]}${DEF} "
 
 	done
 }
 
 function enter_server {
 
-	for ((i=0; i<${#start_menu[*]}; i++)); do XY $[$endx/2-12] $[$endy-5+$i] "                   "; done
-
-	XY $[$endx/2-8] $[$endy-10] "${RED}Enter server IP: "; XY $[$endx/2-8] $[$endy-9] "$CON"
-	stty echo; read -e saddr
+	XY $[$endx/2-10] $[$endy-5] "${RED}Enter server IP: "; XY $[$endx/2-10] $[$endy-4] "$CON$BLD$WHT"
+	stty echo; read -e saddr; printf "$COF"; stty -echo; clr; return
 }
 
 function client_or_server {
 
 	menu=('server' 'client' 'back'); menuN=${#menu[*]}; menuI=$[$menuN-1]
-	for ((i=0; i<${#start_menu[*]}; i++)); do XY $[$endx/2-12] $[$endy-5+$i] "                   "; done
 
 	while true; do
 
 		selector; case $input in 'p'|'P')
 
-			case ${menu[$menuI]}	in	'server') return;;
-										'client') enter_server;;
+			case ${menu[$menuI]}	in	'server') server=server; back; return;;
+										'client') clr; enter_server; server=client; back; return;;
 										'back'  ) back; return;; esac;;
 		esac
 
@@ -961,8 +961,8 @@ function main_menu {
 
 		selector; case $input in 'p'|'P')
 
-			case ${menu[$menuI]}	in	'single'     ) return;;
-										'multiplayer') client_or_server;;
+			case ${menu[$menuI]}	in	' start'*    ) return;;
+										'multiplayer') clr; client_or_server;;
 										'conf'       ) clear ;  configure && intro;;
 										'exit'       ) bye   ;; esac;;
 		esac
