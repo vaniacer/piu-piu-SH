@@ -587,7 +587,7 @@ function sprite_boom {
      "\e[$[$OY+1];${OX}H${DIM}${RED}(       )"${SKY}
     "\e[$[$OY+2];$[$OX+2]H${DIM}${RED}_ _ ."${SKY})
 
-    printf "${boom[*]:$cuter:$boomC}"
+    screen+=("${boom[*]:$cuter:$boomC}")
     [[ $E -eq 0 ]] && { ((cuter+=${boomC})); OBJ[$i]="$OX $OY $cuter boom"; }
 }
 
@@ -653,7 +653,7 @@ function sprite_Sun {
           "\e[8;${Sunsendx}H$SKY$BLD$YLW"'          .`       '
               "\e[9;${Sunsendx}H$SKY$YLW"'         `         ')
 
-    [[ $Q -eq 0 ]] && printf "${Sun[*]:$S:$SunC}"
+    [[ $Q -eq 0 ]] && screen+=("${Sun[*]:$S:$SunC}")
 }
 
 function sprite_hero {
@@ -668,7 +668,7 @@ function sprite_hero {
               "\e[$[$Y+4];${X}H"${CM4}"    |${BLD}/     "${SKY}
               "\e[$[$Y+5];${X}H"${SKY}'       ')
 
-	printf "${sprite[*]}"
+	screen+=("${sprite[*]}")
 }
 
 #------------------------{ Intro }--------------------------------------------------------------------------------------
@@ -752,8 +752,8 @@ Sunsendx=$[$endx - 18]
 function default { HC=${DHC}; SC=${DSC}; HS=${DHS}; }
 function bye ()  { stty echo; printf "${CON}${DEF}"; clear; ls --color=auto; exit $1; }
 function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--)); }
-function remove_piu () { unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--)); XY $PX       $PY "$SKY   "; }
-function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do XY $OX $[$OY+$k] "$SKY         "; done; }
+function remove_piu () { unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--)); screen+=("\e[$PY;${PX}H$SKY   "); }
+function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+=("\e[$[$OY+$k];${OX}H$SKY         "); done; }
 
 function mess () { XY 1 1 ${DEF}; clear
 
@@ -976,8 +976,8 @@ function mover () { timer=$1
 
 	# print
 	[[ $cuter -lt  $width ]] && cut_in
-	[[    $OX -lt  1      ]] && cut_out #                fly away                                       or      print
-	[[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || printf "${sprite[*]}"
+	[[    $OX -lt  1      ]] && cut_out #                fly away                                       or         print
+	[[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || screen+=("${sprite[*]}")
 
 	# move
 	case $timer in 0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type";; esac
@@ -998,7 +998,7 @@ function fill_screen {
 #================================================{ Main game loop }======================================================
 while true; do
 
-	fps_counter
+	screen=(); fps_counter
 
 	# Hero collide coordinates
 	HX=$(($X + 9)); HY=$(($Y + 3))
@@ -1073,7 +1073,7 @@ while true; do
 		bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
 		for (( i=0  ; i<${hp}; i++ )); do bar="█${bar}"; done
 		for (( i=$hp; i<${hm}; i++ )); do bar="${bar} "; done
-		XY 1 $[$endy - 1] "${LND} ${BLD}${RED}BOSS: ${LND}${BLK}|${BLD}${RED}${bar}${LND}${BLK}|${LND}"
+		screen+=("\e[$[$endy - 1];1H${LND} ${BLD}${RED}BOSS: ${LND}${BLK}|${BLD}${RED}${bar}${LND}${BLK}|${LND}")
 
 		# Add enemy
 		[[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$EX $EY 0 alien"); }
@@ -1091,7 +1091,7 @@ while true; do
 		[[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY"; }
 
 		# print
-		XY $PX $PY "$SKY ${shoot[$L]}"
+		screen+=("\e[$PY;${PX}H$SKY ${shoot[$L]}")
 
 	done
 
@@ -1111,12 +1111,14 @@ while true; do
 	sprite_hero
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
-	XY 1 $lineendy "${LND}${land:$[1-$LX]:$endx}"; [ $LX -lt  -$[$LN/2]  ] && LX=-1 || ((LX--)); XY 1 $endy "${LND}%${endx}s"
+	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
-	XY 2 0     "$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
-	XY 2 $endy "$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL "
-#	XY 1 2 "${OBJ[*]}                                 "
+	screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+	screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
+
+	printf "${screen[*]}"
+
 done
 
 # vim: ts=4
