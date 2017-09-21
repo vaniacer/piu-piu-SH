@@ -69,6 +69,12 @@ function start_opt {
            S=0										# Sun animation counter
            G=1										# gun 										(1)(max 5)
 
+       #------------------------{ Multipleyer config }-----------------------------
+       caddr=($(ip a | grep 'inet ' | sed '/127.0.0.1/d; s/.*inet //g; s|/.*$||g'))
+       saddr=
+       sport=54321
+       cport=54322
+
 [ -e piu.conf ] && . piu.conf						# load start conf from file
 }; start_opt
 #------------------------{ Messages }-----------------------------------------------------------------------------------
@@ -671,6 +677,30 @@ function sprite_hero {
 	screen+=("${sprite[*]}")
 }
 
+function sprite_hero2 {
+		
+      client=($(nc -l $sport)) #${caddr[0]} $cport $HS $HC $X $Y $PIU
+       caddr=${client[0]}
+       cport=${client[1]}
+         HS2=${client[2]}
+         HC2=${client[3]}
+          X2=${client[4]}
+          Y2=${client[5]}
+        PIU2=${client[6]}; [[ $PIU2 ]] && PIU+=("$[$X2+9] $[$Y2+3]")
+
+         CM4=$DIM$HC2; CM5=$SKY$HC2; CM6=$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
+         CM8=$DIM$UND; CM9=$SKY$HC2$BLD
+
+      sprite=(     "\e[$Y2;${X2}H"${SKY}'    '
+              "\e[$[$Y2+1];${X2}H"${CM5}' __      '${SKY}
+              "\e[$[$Y2+2];${X2}H"${CM4}" |${CM7}〵${CM5}____  "${SKY}
+              "\e[$[$Y2+3];${X2}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G]}${SKY} "
+              "\e[$[$Y2+4];${X2}H"${CM4}"    |${BLD}/     "${SKY}
+              "\e[$[$Y2+5];${X2}H"${SKY}'       ')
+
+	screen+=("${sprite[*]}")
+}
+
 #------------------------{ Intro }--------------------------------------------------------------------------------------
            D=$DEF; C1=$BLU; C2=$RED; C3=$YLW; C4=$red; C5=$BLD$YLW; C6=$BLD$GRN; C7=$blu; C8=$BLD$RED
 
@@ -907,7 +937,7 @@ function clr  {
 }
 
 function back {
-	start_menu=(" start $server" 'multiplayer' 'conf' 'exit')
+	start_menu=(" start ${game_type:-single}" 'multiplayer' 'conf' 'exit')
 	menu=("${start_menu[@]}"); menuI=0; menuN=${#menu[*]}; clr
 }
 
@@ -945,8 +975,8 @@ function client_or_server {
 
 		selector; case $input in 'p'|'P')
 
-			case ${menu[$menuI]}	in	'server') server=server; back; return;;
-										'client') clr; enter_server; server=client; back; return;;
+			case ${menu[$menuI]}	in	'server') server=true; game_type='server'; back; return;;
+										'client') client=true; game_type='client'; clr; enter_server; back; return;;
 										'back'  ) back; return;; esac;;
 		esac
 
@@ -1033,7 +1063,28 @@ function fill_screen {
 	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
 }; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 
-#================================================{ Main game loop }======================================================
+
+[[ $client ]] && {
+#================================================={ Main game loop client mode}==========================================
+while true; do
+
+	PIU=
+
+	read -t0.0001 -n1 input &> /dev/null; input=${input:0:1}; case $input in
+		'w'|'W') [[ $Y -gt 1         ]] && ((Y--));;
+		'a'|'A') [[ $X -gt 1         ]] && ((X--));;
+		's'|'S') [[ $Y -lt $heroendy ]] && ((Y++));;
+		'd'|'D') [[ $X -lt $heroendx ]] && ((X++));;
+		'p'|'P') PIU="piu";;
+	esac
+
+	until echo "${caddr[0]} $cport $HS $HC $X $Y $PIU" 2> /dev/null > /dev/tcp/$saddr/$sport; do :; done
+
+	printf "$(nc -l $cport)"
+
+done
+} || {
+#========================================={ Main game loop single or server mode}========================================
 while true; do
 
 	screen=(); fps_counter
@@ -1146,7 +1197,7 @@ while true; do
 	esac
 
 	#-{ Print hero }-----------------------------------------------------------------------------------------------------
-	sprite_hero
+	sprite_hero; [[ $server ]] && sprite_hero2
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
 	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
@@ -1156,7 +1207,9 @@ while true; do
 	screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
 
 	printf "${screen[*]}"
+	[[ $server ]] && until echo "${screen[*]}" 2> /dev/null > /dev/tcp/$caddr/$cport; do :; done
 
 done
+}
 
 # vim: ts=4
