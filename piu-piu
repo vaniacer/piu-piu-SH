@@ -1094,14 +1094,14 @@ fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
-[[ $server ]] && XY 1 2 "${RED}Waiting for client..."
-[[ $client ]] && {
+
+[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.01; CLD=50; TRE=80; }
+[[ $client ]] && { spd=0.01; CLD=50; TRE=80
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
 	PIU=; client_read
 	until echo "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU" 2> /dev/null > /dev/tcp/$saddr/$sport; do client_read; done
-
 	printf "$(nc -l $cport)"
 
 done
@@ -1111,8 +1111,9 @@ while true; do
 
 	screen=(); fps_counter
 
-	# Hero collide coordinates
-	HX=$(($X + 9)); HY=$(($Y + 3))
+	# Hero(es) collide coordinates
+	                    HX=$[$X+9];   HY=$[$Y+3]
+	[[ $server ]] && { HX2=$[$X2+9]; HY2=$[$Y2+3]; }
 
 	#-{ Get keys }-------------------------------------------------------------------------------------------------------
 	server_read
@@ -1179,6 +1180,8 @@ while true; do
 		[[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
 	}
 
+	[[ $server ]] && sprite_hero2
+
 	#-{ Move\check\print hero bullets }----------------------------------------------------------------------------------
 	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}
 
@@ -1206,7 +1209,7 @@ while true; do
 	esac
 
 	#-{ Print hero }-----------------------------------------------------------------------------------------------------
-	sprite_hero; [[ $server ]] && sprite_hero2
+	sprite_hero
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
 	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
