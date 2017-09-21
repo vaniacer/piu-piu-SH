@@ -679,14 +679,15 @@ function sprite_hero {
 
 function sprite_hero2 {
 		
-      client=($(nc -l $sport)) #${caddr[0]} $cport $HS $HC $X $Y $PIU
+      client=($(nc -l $sport)) #${caddr[0]} $cport $HS $SC $HC $X $Y $PIU
        caddr=${client[0]}
        cport=${client[1]}
          HS2=${client[2]}
-         HC2=${client[3]}
-          X2=${client[4]}
-          Y2=${client[5]}
-        PIU2=${client[6]}; [[ $PIU2 ]] && PIU+=("$[$X2+9] $[$Y2+3]")
+         SC2=${client[3]}
+         HC2=${client[4]}
+          X2=${client[5]}
+          Y2=${client[6]}
+        PIU2=${client[7]}; [[ $PIU2 ]] && PIU+=("$[$X2+9] $[$Y2+3]")
 
          CM4=$DIM$HC2; CM5=$SKY$HC2; CM6=$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
          CM8=$DIM$UND; CM9=$SKY$HC2$BLD
@@ -1051,48 +1052,8 @@ function mover () { timer=$1
 	case $timer in 0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type";; esac
 }
 
-trap bye INT; trap : ALRM; stty -echo; printf "${COF}"; get_dimensions; default
-clear; mess "help"; sleep 2; clear; main_menu; clear
+function server_read {
 
-#-{ Generate grass }-----------------------------------------------------------------------------------------------------
-for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
-
-function fill_screen {
-	#-{ Fill screen }----------------------------------------------------------------------------------------------------
-	for ((i=0;         i<$lineendy; i++)); do printf "${SKY}%${endx}s"; done
-	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
-}; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
-
-
-[[ $client ]] && {
-#================================================={ Main game loop client mode}==========================================
-while true; do
-
-	PIU=
-
-	read -t0.0001 -n1 input &> /dev/null; input=${input:0:1}; case $input in
-		'w'|'W') [[ $Y -gt 1         ]] && ((Y--));;
-		'a'|'A') [[ $X -gt 1         ]] && ((X--));;
-		's'|'S') [[ $Y -lt $heroendy ]] && ((Y++));;
-		'd'|'D') [[ $X -lt $heroendx ]] && ((X++));;
-		'p'|'P') PIU="piu";;
-	esac
-
-	until echo "${caddr[0]} $cport $HS $HC $X $Y $PIU" 2> /dev/null > /dev/tcp/$saddr/$sport; do :; done
-
-	printf "$(nc -l $cport)"
-
-done
-} || {
-#========================================={ Main game loop single or server mode}========================================
-while true; do
-
-	screen=(); fps_counter
-
-	# Hero collide coordinates
-	HX=$(($X + 9)); HY=$(($Y + 3))
-
-	#-{ Get keys }-------------------------------------------------------------------------------------------------------
 	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
 		'w'|'W')	[[ $Y    -gt 1         ]] && ((Y--));;
@@ -1107,6 +1068,54 @@ while true; do
 						5) PIU+=("$[$HX+1] $[$HY+1]" "$[$HX+1] $[$HY-1]" "$HX $[$HY+2]" "$HX $[$HY-2]" "$[$HX+2] $HY");;
 					esac; ((ammo-=$G)); };;
 	esac
+}
+
+function client_read {
+
+	read -t$spd -n1 input &> /dev/null; input=${input:0:1}; case $input in
+		'w'|'W') [[ $Y -gt 1         ]] && ((Y--));;
+		'a'|'A') [[ $X -gt 1         ]] && ((X--));;
+		's'|'S') [[ $Y -lt $heroendy ]] && ((Y++));;
+		'd'|'D') [[ $X -lt $heroendx ]] && ((X++));;
+		'p'|'P') PIU="piu";;
+	esac
+}
+
+function fill_screen {
+	#-{ Fill screen }----------------------------------------------------------------------------------------------------
+	for ((i=0;         i<$lineendy; i++)); do printf "${SKY}%${endx}s"; done
+	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
+}
+
+trap bye INT; trap : ALRM; stty -echo; printf "${COF}"; get_dimensions; default
+clear; mess "help"; sleep 2; clear; main_menu; clear
+fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
+
+#-{ Generate grass }-----------------------------------------------------------------------------------------------------
+for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
+
+[[ $server ]] && XY 1 2 "${RED}Waiting for client..."
+[[ $client ]] && {
+#=============================================={ Main game loop client mode}=============================================
+while true; do
+
+	PIU=; client_read
+	until echo "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU" 2> /dev/null > /dev/tcp/$saddr/$sport; do client_read; done
+
+	printf "$(nc -l $cport)"
+
+done
+} || {
+#========================================={ Main game loop single or server mode}========================================
+while true; do
+
+	screen=(); fps_counter
+
+	# Hero collide coordinates
+	HX=$(($X + 9)); HY=$(($Y + 3))
+
+	#-{ Get keys }-------------------------------------------------------------------------------------------------------
+	server_read
 
 	# Check win\lose
 	[[ $bhealth -le 0 ]] && mess win
@@ -1207,7 +1216,7 @@ while true; do
 	screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
 
 	printf "${screen[*]}"
-	[[ $server ]] && until echo "${screen[*]}" 2> /dev/null > /dev/tcp/$caddr/$cport; do :; done
+	[[ $server ]] && until echo "${screen[*]}" 2> /dev/null > /dev/tcp/$caddr/$cport; do server_read; done
 
 done
 }
