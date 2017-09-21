@@ -1116,9 +1116,9 @@ function fill_screen {
 	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
 }
 
-trap bye INT; trap : ALRM; stty -echo; printf "${COF}"; get_dimensions; default
-clear; mess "help"; sleep 2; clear; main_menu; clear
-fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
+trap bye INT; trap : ALRM; get_dimensions; default; clear
+mess "help"; sleep 2; clear; main_menu; stty -echo; printf "${COF}"
+clear; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
