@@ -77,6 +77,7 @@ function start_opt {
       frags2=0										# frags counter								(0)
        life2=3										# life counter								(3)
        ammo2=100									# ammo counter								(100)
+          G2=1
 
 [ -e piu.conf ] && . piu.conf						# load start conf from file
 }; start_opt
@@ -690,7 +691,19 @@ function sprite_hero2 { server_read
          HC2=${client[4]}
           X2=${client[5]}
           Y2=${client[6]}
-        PIU2=${client[7]}; [[ $PIU2 ]] && PIU+=("$[$X2+9] $[$Y2+3]")
+        PIU2=${client[7]}
+	[[ $PIU2 ]] && {
+
+		[[ $ammo2 -ge $G2 ]] && { case $G2 in
+
+			1) PIU+=("$HX2 $HY2 2");;
+			2) PIU+=("$HX2 $[$HY2+1] 2" "$HX2 $[$HY2-1] 2");;
+			3) PIU+=("$HX2 $[$HY2+1] 2" "$HX2 $[$HY2-1] 2" "$[$HX2+1] $HY2 2");;
+			4) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2");;
+			5) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2" "$[$HX2+2] $HY2 2");;
+
+		esac; ((ammo2-=$G2)); }
+	}
 
          CM4=$DIM$HC2; CM5=$SKY$HC2; CM6=$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
          CM8=$DIM$UND; CM9=$SKY$HC2$BLD
@@ -1043,15 +1056,16 @@ function mover () { timer=$1
 	# alien's collisions with pius
 	case $type in 'alien' | 'boss')
 
-		for (( t=0; t<${NP}; t++ )); do
+		for (( t=0; t<$NP; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
 
-			case "${PIU[$t]}" in # hit by bullet
+			case "$PX $PY" in # hit by bullet
 
 				"${target[0]}"| "${target[1]}"| "${target[2]}"| "${target[3]}"| "${target[4]}"| "${target[5]}")
 
 					case $type in
-						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}")  ;; esac # get bonus
-								 ((frags++))  ; ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
+						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}");; esac # get bonus
+								 case $owner in 1) ((frags++));; 2) ((frags2++));; esac
+								 ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
 						'boss' ) remove_piu $t; ((bhealth--)); continue;;
 					esac
 			esac
@@ -1077,10 +1091,10 @@ function server_read {
 		'd'|'D')	[[ $X    -lt $heroendx ]] && ((X++));;
 		'p'|'P')	[[ $ammo -ge $G        ]] && { case ${G} in
 						1) PIU+=("$HX $HY");;
-						2) PIU+=("$HX $[$HY+1]" "$HX $[$HY-1]");;
-						3) PIU+=("$HX $[$HY+1]" "$HX $[$HY-1]" "$[$HX+1] $HY");;
-						4) PIU+=("$[$HX+1] $[$HY+1]" "$[$HX+1] $[$HY-1]" "$HX $[$HY+2]" "$HX $[$HY-2]");;
-						5) PIU+=("$[$HX+1] $[$HY+1]" "$[$HX+1] $[$HY-1]" "$HX $[$HY+2]" "$HX $[$HY-2]" "$[$HX+2] $HY");;
+						2) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1");;
+						3) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1" "$[$HX+1] $HY 1");;
+						4) PIU+=("$[$HX+1] $[$HY+1] 1" "$[$HX+1] $[$HY-1] 1" "$HX $[$HY+2] 1" "$HX $[$HY-2] 1");;
+						5) PIU+=("$[$HX+1] $[$HY+1] 1" "$[$HX+1] $[$HY-1] 1" "$HX $[$HY+2] 1" "$HX $[$HY-2] 1" "$[$HX+2] $HY 1");;
 					esac; ((ammo-=$G)); };;
 	esac
 }
@@ -1110,8 +1124,8 @@ fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
 
-[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; }
-[[ $client ]] && {
+[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.001; CLD=80; TRE=70; }
+[[ $client ]] && { spd=0.001
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
@@ -1178,7 +1192,7 @@ while true; do
 	esac; done
 
 	#-{ BOSS }-----------------------------------------------------------------------------------------------------------
-	[[ $frags -ge $tillboss ]] && {
+	[[ $[$frags+$frags2] -ge $tillboss ]] && {
 
 		# add boss object
 		[[ $bossborn ]] || { OBJ+=("$BX $BY 0 boss"); bossborn=true; }
@@ -1196,13 +1210,13 @@ while true; do
 	}
 
 	#-{ Move\check\print hero bullets }----------------------------------------------------------------------------------
-	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}
+	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
 
 		# Move
 		((PX++))
 
 		# Fly away
-		[[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY"; }
+		[[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; }
 
 		# print
 		screen+=("\e[$PY;${PX}H$SKY ${shoot[$L]}")
