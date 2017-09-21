@@ -74,6 +74,9 @@ function start_opt {
        saddr=
        sport=54321
        cport=54322
+      frags2=0										# frags counter								(0)
+       life2=3										# life counter								(3)
+       ammo2=100									# ammo counter								(100)
 
 [ -e piu.conf ] && . piu.conf						# load start conf from file
 }; start_opt
@@ -1015,7 +1018,7 @@ function fps_counter {
 
 function mover () { timer=$1
 
-	# collisions with plane
+	# collisions with plane1
 	case  $type:"$HX $HY" in
 		'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
 		'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G} -lt 5 ]] && ((G++)); return;;
@@ -1024,6 +1027,18 @@ function mover () { timer=$1
 		'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life--))   ; return;;
 		 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life--)); ((bhealth-=10)); return;;
 	esac
+
+	# collisions with plane2
+	[[ $server ]] && {
+		case  $type:"$HX $HY" in
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life2--)); ((frags2++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G2} -lt 5 ]] && ((G2++)); return;;
+			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo2+=100)); return;;
+			 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life2++))   ; return;;
+			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life2--))   ; return;;
+			 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life2--)); ((bhealth-=10)); return;;
+		esac
+	}
 
 	# alien's collisions with pius
 	case $type in 'alien' | 'boss')
@@ -1095,8 +1110,8 @@ fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
 
-[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.01; CLD=50; TRE=80; }
-[[ $client ]] && { spd=0.01; CLD=50; TRE=80
+[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.01; }
+[[ $client ]] && { spd=0.01
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
@@ -1215,8 +1230,14 @@ while true; do
 	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
-	screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
-	screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
+	[[ $server ]] && {
+		screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags$LND  ${BLK}Life: $LND$RED$life$LND  ${BLK}Ammo: $LND$RED$ammo$LND ")
+		screen+=("\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+		screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
+	} || {
+		screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+		screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
+	}
 
 	printf "${screen[*]}"
 	[[ $server ]] && until echo "${screen[*]}" 2> /dev/null > /dev/tcp/$caddr/$cport; do server_read; done
