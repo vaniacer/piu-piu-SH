@@ -1110,13 +1110,13 @@ fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
 
-[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.001; }
-[[ $client ]] && { spd=0.001
+[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; }
+[[ $client ]] && {
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
 	PIU=; client_read
-	until echo "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU" 2> /dev/null > /dev/tcp/$saddr/$sport; do client_read; done
+	until nc $saddr $sport 2> /dev/null <<< "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU"; do client_read; done
 	client_read; printf "$(nc -l $cport)"; client_read
 
 done
@@ -1238,7 +1238,7 @@ while true; do
 	}
 
 	printf "${screen[*]}"
-	[[ $server ]] && until echo "${screen[*]}" 2> /dev/null > /dev/tcp/$caddr/$cport; do server_read; done
+	[[ $server ]] && until nc $caddr $cport 2> /dev/null <<< "${screen[*]}"; do server_read; done
 
 done
 }
