@@ -680,9 +680,9 @@ function sprite_hero {
 	screen+=("${sprite[*]}")
 }
 
-function sprite_hero2 {
-		
-      client=($(nc -l $sport)) #${caddr[0]} $cport $HS $SC $HC $X $Y $PIU
+function sprite_hero2 { server_read
+
+      client=($(nc -l $sport)); server_read #${caddr[0]} $cport $HS $SC $HC $X $Y $PIU
        caddr=${client[0]}
        cport=${client[1]}
          HS2=${client[2]}
@@ -1030,7 +1030,7 @@ function mover () { timer=$1
 
 	# collisions with plane2
 	[[ $server ]] && {
-		case  $type:"$HX $HY" in
+		case  $type:"$HX2 $HY2" in
 			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life2--)); ((frags2++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
 			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G2} -lt 5 ]] && ((G2++)); return;;
 			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo2+=100)); return;;
@@ -1110,14 +1110,14 @@ fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
 
-[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.01; }
-[[ $client ]] && { spd=0.01
+[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.001; }
+[[ $client ]] && { spd=0.001
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
 	PIU=; client_read
 	until echo "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU" 2> /dev/null > /dev/tcp/$saddr/$sport; do client_read; done
-	printf "$(nc -l $cport)"
+	client_read; printf "$(nc -l $cport)"; client_read
 
 done
 } || {
@@ -1195,8 +1195,6 @@ while true; do
 		[[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
 	}
 
-	[[ $server ]] && sprite_hero2
-
 	#-{ Move\check\print hero bullets }----------------------------------------------------------------------------------
 	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}
 
@@ -1223,15 +1221,15 @@ while true; do
 		esac;;
 	esac
 
-	#-{ Print hero }-----------------------------------------------------------------------------------------------------
-	sprite_hero
+	#-{ Print hero(es) }-------------------------------------------------------------------------------------------------
+	sprite_hero; [[ $server ]] && sprite_hero2
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
 	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
 	[[ $server ]] && {
-		screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags$LND  ${BLK}Life: $LND$RED$life$LND  ${BLK}Ammo: $LND$RED$ammo$LND ")
+		screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags2$LND  ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
 		screen+=("\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
 		screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
 	} || {
