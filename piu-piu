@@ -82,34 +82,52 @@ function start_opt {
 [ -e piu.conf ] && . piu.conf						# load start conf from file
 }; start_opt
 #------------------------{ Messages }-----------------------------------------------------------------------------------
-        help=(                  '                   ^     '
-		                  "                   ${RED}W${DEF}     "
-		      "${BLD}Control with:${DEF}  < ${RED}A S D${DEF} > "
-		                        '                   v     '
-		      ''
-		      "${BLD}Shoot\select with:${DEF} ${YLW}P ${BLD}${red}-=${GRN}>${DEF} ")
 
-        lose=('                            '
-  ${BLD}${red}'  ____    _    __  __ _____ '${DEF}
-        ${red}' / ___|  / \  |  \/  | ____|'${DEF}
-        ${red}'| | __  / _ \ | |\/| |  _|  '${DEF}
-        ${RED}'| |_\ \/ ___ \| |  | | |___ '${DEF}
-  ${DIM}${RED}' \____/_/   \_\_|__|_|_____|'${DEF}
-  ${BLD}${red}'  / _ \ \   / / ____|  _ \  '${DEF}
-        ${red}' | | | \ \ / /|  _| | |_) | '${DEF}
-        ${RED}' | |_| |\ V / | |___|  _ <  '${DEF}
-  ${DIM}${RED}'  \___/  \_/  |_____|_| \_| '${DEF})
+function sprite_help {
 
-         win=('                           '
-  ${BLD}${grn}'__        ______ _    _    '${DEF}
-        ${grn}'\ \      / /____| |  | |   '${DEF}
-        ${grn}' \ \ /\ / /  _| | |  | |   '${DEF}
-        ${GRN}'  \ V  V /| |___| |__| |__ '${DEF}
-  ${DIM}${GRN}' __\_/\_/_|_____|____|____|'${DEF}
-  ${BLD}${grn}'|  _ \ / _ \| \ | | ____| |'${DEF}
-        ${grn}'| | | | | | |  \| |  _| | |'${DEF}
-        ${GRN}'| |_| | |_| | |\  | |___|_|'${DEF}
-  ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
+           x=$[$endx/2-25/2]
+           y=$[$endy/2-5]
+
+      sprite=(         "\e[$y;${x}H                   ^"
+            "\e[$[$y+1];${x}H                   ${RED}W$DEF"
+  "\e[$[$y+2];${x}H${BLD}Control with:$DEF  < ${RED}A S D$DEF >"
+                  "\e[$[$y+3];${x}H                   v"
+  "\e[$[$y+5];${x}H${BLD}Shoot\select with:$DEF ${YLW}P $BLD$red-=${GRN}>$DEF")
+}
+
+function sprite_lose {
+
+           x=$[$endx/2-25/2]
+           y=$[$endy/2-5]
+         CM1=$BLD$red; CM2=$DIM$RED
+
+      sprite=("\e[$y;${x}H$CM1  ____    _    __  __ _____$DEF"
+         "\e[$[$y+1];${x}H$red / ___|  / \  |  \/  | ____|$DEF"
+         "\e[$[$y+2];${x}H$red| | __  / _ \ | |\/| |  _|$DEF"
+         "\e[$[$y+3];${x}H$RED| |_\ \/ ___ \| |  | | |___$DEF"
+         "\e[$[$y+4];${x}H$CM2 \____/_/   \_\_|__|_|_____|$DEF"
+         "\e[$[$y+5];${x}H$CM1  / _ \ \   / / ____|  _ \ $DEF"
+         "\e[$[$y+6];${x}H$red | | | \ \ / /|  _| | |_) |$DEF"
+         "\e[$[$y+7];${x}H$RED | |_| |\ V / | |___|  _ < $DEF"
+         "\e[$[$y+8];${x}H$CM2  \___/  \_/  |_____|_| \_|$DEF")
+}
+
+function sprite_win {
+
+           x=$[$endx/2-25/2]
+           y=$[$endy/2-5]
+         CM1=$BLD$grn; CM2=$DIM$GRN
+
+      sprite=("\e[$y;${x}H${CM1}__        ______ _    _$DEF"
+           "\e[$[$y+1];${x}H$grn\ \      / /____| |  | |$DEF"
+           "\e[$[$y+2];${x}H$grn \ \ /\ / /  _| | |  | |$DEF"
+           "\e[$[$y+3];${x}H$GRN  \ V  V /| |___| |__| |__$DEF"
+           "\e[$[$y+4];${x}H$CM2 __\_/\_/_|_____|____|____|$DEF"
+           "\e[$[$y+5];${x}H$CM1|  _ \ / _ \| \ | | ____| |$DEF"
+           "\e[$[$y+6];${x}H$grn| | | | | | |  \| |  _| | |$DEF"
+           "\e[$[$y+7];${x}H$GRN| |_| | |_| | |\  | |___|_|$DEF"
+           "\e[$[$y+8];${x}H$CM2|____/ \___/|_| \_|_____(_)$DEF")
+}
 
 #------------------------{ Sprites }-------------------------------------------------------------------------------------
 case $month in	0[1-4]|12)	SKY=${DEF}${bwht}				# winter & early spring sky
@@ -809,15 +827,10 @@ function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+=("\
 
 function mess () { XY 1 1 ${DEF}; clear
 
-	function print {
-		x=$[$endx / 2 - ${#sprite} / 2]
-		for (( i=0; i<${#sprite[*]}; i++ )); do XY ${x} $[$endy / 2 - 5 + $i] "${sprite[$i]}"; done
-	}
-
 	case $1 in
-		"win" )	sprite=("${win[@]}") ; print; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
-		"lose")	sprite=("${lose[@]}"); print; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
-		"help")	sprite=("${help[@]}"); print;;
+		"win" )	sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
+		"lose")	sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
+		"help")	sprite_help; printf "${sprite[*]}";;
 	esac
 }
 
@@ -1152,11 +1165,13 @@ while true; do
 	screen=(); fps_counter
 
 	#-{ Get keys }-------------------------------------------------------------------------------------------------------
-	server_read
+	[[ $life -gt 0 ]] && server_read
 
 	# Check win\lose
-	[[ $bhealth -le 0 ]] && mess win
-	[[ $life    -le 0 ]] && mess lose
+	[[ $server ]] || {
+		[[ $bhealth -le 0 ]] && mess win
+		[[ $life    -le 0 ]] && mess lose
+	}
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
 	[[ $K -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
@@ -1243,7 +1258,7 @@ while true; do
 	esac
 
 	#-{ Print hero(es) }-------------------------------------------------------------------------------------------------
-	sprite_hero; [[ $server ]] && sprite_hero2
+	[[ $life -gt 0 ]] && sprite_hero; [[ $server ]] && sprite_hero2
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
 	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
@@ -1258,7 +1273,7 @@ while true; do
 		screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
 	}
 
-	printf "${screen[*]}"
+	[[ $life -gt 0 ]] && printf "${screen[*]}" || { sprite_lose; printf "${sprite[*]}"; }
 	[[ $server ]] && {
 		[[ $life2 -le 0 ]] && { sender 'lose'; server=; game_type='single'; }
 		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; game_type='single'; }
