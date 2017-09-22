@@ -668,6 +668,8 @@ function sprite_Sun {
 
 function sprite_hero {
 
+          HX=$[$X+9]; HY=$[$Y+3] # Hero collide coordinates
+
          CM4=$DIM$HC; CM5=$SKY$HC; CM6=$BLD$HC; CM7=$SKY$SC$HS$HC$BLD
          CM8=$DIM$UND; CM9=$SKY$HC$BLD
 
@@ -692,6 +694,9 @@ function sprite_hero2 { server_read
           X2=${client[5]}
           Y2=${client[6]}
         PIU2=${client[7]}
+         HX2=$[$X2+9] # Hero collide
+         HY2=$[$Y2+3] # coordinates
+
 	[[ $PIU2 ]] && {
 
 		[[ $ammo2 -ge $G2 ]] && { case $G2 in
@@ -1145,10 +1150,6 @@ done
 while true; do
 
 	screen=(); fps_counter
-
-	# Hero(es) collide coordinates
-	                    HX=$[$X+9];   HY=$[$Y+3]
-	[[ $server ]] && { HX2=$[$X2+9]; HY2=$[$Y2+3]; }
 
 	#-{ Get keys }-------------------------------------------------------------------------------------------------------
 	server_read
