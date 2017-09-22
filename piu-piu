@@ -557,14 +557,17 @@ function sprite_boss {
           EY=$[$OY+5]; [[ $EY -gt $enmyendy ]] && EY=$enmyendy
           YY=$[$Y-1]
 
-		# Boss fire
-		[[ $OY -eq $YY && $K -eq 0 ]] && OBJ+=("$[$OX - 4] $[$OY + 4] 0 bfire")
+	# kill client first
+	[[ $Y2 ]] && YY=$[$Y2-1] || YY=$[$Y-1]
 
-		# Boss move
-		[[ $OY -lt $YY                               ]] && ((OY++))
-		[[ $OY -gt $YY                               ]] && ((OY--))
-		[[ $OX -gt $[$endx / 2] && $goback = 'false' ]] && ((OX--)) || goback=true
-		[[ $OX -lt $bossendx    && $goback = 'true'  ]] && ((OX++)) || goback=false
+	# Boss fire
+	[[ $OY -eq $YY && $K -eq 0 ]] && OBJ+=("$[$OX - 4] $[$OY + 4] 0 bfire")
+
+	# Boss move
+	[[ $OY -lt $YY                               ]] && ((OY++))
+	[[ $OY -gt $YY                               ]] && ((OY--))
+	[[ $OX -gt $[$endx / 2] && $goback = 'false' ]] && ((OX--)) || goback=true
+	[[ $OX -lt $bossendx    && $goback = 'true'  ]] && ((OX++)) || goback=false
 
          CM1=$DIM$BLK; CM2=$BLD$BLK
       sprite=("\e[$OY;$[$OX+4]H${SKY}     "
@@ -1139,6 +1142,7 @@ function fill_screen {
 trap bye INT; trap : ALRM; get_dimensions; default; clear
 stty -echo; printf "$COF"; mess "help"; sleep 2; clear; main_menu
 clear; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
+stty -echo; printf "$COF"
 
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
@@ -1273,9 +1277,9 @@ while true; do
 		screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
 	}
 
-	[[ $life -gt 0 ]] && printf "${screen[*]}" || { sprite_lose; printf "${sprite[*]}"; }
+	[[ $life -gt 0 ]] && printf "${screen[*]}" || { clear; sprite_lose; printf "${sprite[*]}"; }
 	[[ $server ]] && {
-		[[ $life2 -le 0 ]] && { sender 'lose'; server=; game_type='single'; }
+		[[ $life2 -le 0 ]] && { sender 'lose'; server=; game_type='single'; Y2=; }
 		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; game_type='single'; }
 	}
 
