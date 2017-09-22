@@ -1110,6 +1110,8 @@ function client_read {
 	esac
 }
 
+function sender { until nc $caddr $cport 2> /dev/null <<< "$1"; do server_read; done; }
+
 function fill_screen {
 	#-{ Fill screen }----------------------------------------------------------------------------------------------------
 	for ((i=0;         i<$lineendy; i++)); do printf "${SKY}%${endx}s"; done
@@ -1133,7 +1135,7 @@ while true; do
 	until nc $saddr $sport 2> /dev/null <<< "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU"; do client_read; done
 	client_read
 	screen="$(nc -l $cport)"
-	case $screen in 'game_over_man') client=; game_type='single'; mess lose;; esac
+	case $screen in 'win'| 'lose') client=; game_type='single'; mess $screen;; esac
 	printf "$screen"
 	client_read
 
@@ -1257,10 +1259,11 @@ while true; do
 
 	printf "${screen[*]}"
 	[[ $server ]] && {
-		[[ $life2 -le 0 ]] \
-			&& { until nc $caddr $cport 2> /dev/null <<< 'game_over_man'; do server_read; done; server=; game_type='single'; } \
-			|| { until nc $caddr $cport 2> /dev/null <<< "${screen[*]}" ; do server_read; done; }
+		[[ $life2 -le 0 ]] && { sender 'lose'; server=; game_type='single'; }
+		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; game_type='single'; }
 	}
+
+	[[ $server ]] && sender "${screen[*]}"
 done
 }
 
