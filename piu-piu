@@ -711,7 +711,7 @@ function sprite_hero2 { server_read
       sprite=(     "\e[$Y2;${X2}H"${SKY}'    '
               "\e[$[$Y2+1];${X2}H"${CM5}' __      '${SKY}
               "\e[$[$Y2+2];${X2}H"${CM4}" |${CM7}〵${CM5}____  "${SKY}
-              "\e[$[$Y2+3];${X2}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G]}${SKY} "
+              "\e[$[$Y2+3];${X2}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G2]}${SKY} "
               "\e[$[$Y2+4];${X2}H"${CM4}"    |${BLD}/     "${SKY}
               "\e[$[$Y2+5];${X2}H"${SKY}'       ')
 
@@ -954,7 +954,7 @@ function clr  {
 }
 
 function back {
-	start_menu=(" start ${game_type:-single}" 'multiplayer' 'conf' 'exit')
+	start_menu=("start  ${game_type:-single}" 'multiplayer' 'conf' 'exit')
 	menu=("${start_menu[@]}"); menuI=0; menuN=${#menu[*]}; clr
 }
 
@@ -981,7 +981,7 @@ function selector {
 function enter_server {
 
 	XY $[$endx/2-10] $[$endy-5] "${RED}Enter server IP: "; XY $[$endx/2-10] $[$endy-4] "$CON$BLD$WHT"
-	stty echo; read -e saddr; printf "$COF"; stty -echo; clr; return
+	stty echo; read -p ' ' -e saddr; printf "$COF"; stty -echo; clr; return
 }
 
 function client_or_server {
@@ -1008,7 +1008,7 @@ function main_menu {
 
 		selector; case $input in 'p'|'P')
 
-			case ${menu[$menuI]}	in	' start'*    ) return;;
+			case ${menu[$menuI]}	in	'start'*    ) return;;
 										'multiplayer') clr; client_or_server;;
 										'conf'       ) clear ;  configure && intro;;
 										'exit'       ) bye   ;; esac;;
@@ -1117,7 +1117,7 @@ function fill_screen {
 }
 
 trap bye INT; trap : ALRM; get_dimensions; default; clear
-mess "help"; sleep 2; clear; main_menu; stty -echo; printf "${COF}"
+stty -echo; printf "$COF"; mess "help"; sleep 2; clear; main_menu
 clear; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
@@ -1131,7 +1131,11 @@ while true; do
 
 	PIU=; client_read
 	until nc $saddr $sport 2> /dev/null <<< "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU"; do client_read; done
-	client_read; printf "$(nc -l $cport)"; client_read
+	client_read
+	screen="$(nc -l $cport)"
+	case $screen in 'game_over_man') client=; game_type='single'; mess lose;; esac
+	printf "$screen"
+	client_read
 
 done
 } || {
@@ -1252,8 +1256,11 @@ while true; do
 	}
 
 	printf "${screen[*]}"
-	[[ $server ]] && until nc $caddr $cport 2> /dev/null <<< "${screen[*]}"; do server_read; done
-
+	[[ $server ]] && {
+		[[ $life2 -le 0 ]] \
+			&& { until nc $caddr $cport 2> /dev/null <<< 'game_over_man'; do server_read; done; server=; game_type='single'; } \
+			|| { until nc $caddr $cport 2> /dev/null <<< "${screen[*]}" ; do server_read; done; }
+	}
 done
 }
 
