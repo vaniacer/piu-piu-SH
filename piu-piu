@@ -1053,17 +1053,19 @@ function fps_counter {
 function mover () { timer=$1
 
 	# collisions with plane1
-	case  $type:"$HX $HY" in
-		'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
-		'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G} -lt 5 ]] && ((G++)); return;;
-		 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo+=100)); return;;
-		 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life++))   ; return;;
-		'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life--))   ; return;;
-		 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life--)); ((bhealth-=10)); return;;
-	esac
+	[[ $life -gt 0 ]] && {
+		case  $type:"$HX $HY" in
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G} -lt 5 ]] && ((G++)); return;;
+			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo+=100)); return;;
+			 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life++))   ; return;;
+			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life--))   ; return;;
+			 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life--)); ((bhealth-=10)); return;;
+		esac
+	}
 
 	# collisions with plane2
-	[[ $server ]] && {
+	[[ $server && $life2 -gt 0 ]] && {
 		case  $type:"$HX2 $HY2" in
 			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life2--)); ((frags2++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
 			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G2} -lt 5 ]] && ((G2++)); return;;
@@ -1262,7 +1264,7 @@ while true; do
 	esac
 
 	#-{ Print hero(es) }-------------------------------------------------------------------------------------------------
-	[[ $life -gt 0 ]] && sprite_hero; [[ $server ]] && sprite_hero2
+	[[ $life -gt 0 ]] && sprite_hero || OBJ+=("$X $Y 0 boom" "$X $[$Y+2] 0 boom" "$[$X+2] $[$Y+2] 0 boom"); [[ $server ]] && sprite_hero2
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
 	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
@@ -1279,7 +1281,7 @@ while true; do
 
 	[[ $life -gt 0 ]] && printf "${screen[*]}" || { clear; sprite_lose; printf "${sprite[*]}"; }
 	[[ $server ]] && {
-		[[ $life2 -le 0 ]] && { sender 'lose'; server=; game_type='single'; Y2=; }
+		[[ $life2 -le 0 ]] && { sender 'lose'; server=; game_type='single'; Y2=; OBJ+=("$X2 $Y2 0 boom" "$X2 $[$Y2+2] 0 boom" "$[$X2+2] $[$Y2+2] 0 boom"); }
 		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; game_type='single'; }
 	}
 
