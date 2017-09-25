@@ -69,37 +69,65 @@ function start_opt {
            S=0										# Sun animation counter
            G=1										# gun 										(1)(max 5)
 
+       #------------------------{ Multipleyer config }-----------------------------
+       caddr=($(ip a | grep 'inet ' | sed '/127.0.0.1/d; s/.*inet //g; s|/.*$||g'))
+       saddr=
+       sport=54321
+       cport=54322
+      frags2=0										# frags counter								(0)
+       life2=3										# life counter								(3)
+       ammo2=100									# ammo counter								(100)
+          G2=1
+
 [ -e piu.conf ] && . piu.conf						# load start conf from file
 }; start_opt
 #------------------------{ Messages }-----------------------------------------------------------------------------------
-        help=(                  '                   ^     '
-		                  "                   ${RED}W${DEF}     "
-		      "${BLD}Control with:${DEF}  < ${RED}A S D${DEF} > "
-		                        '                   v     '
-		      ''
-		      "${BLD}Shoot\select with:${DEF} ${YLW}P ${BLD}${red}-=${GRN}>${DEF} ")
 
-        lose=('                            '
-  ${BLD}${red}'  ____    _    __  __ _____ '${DEF}
-        ${red}' / ___|  / \  |  \/  | ____|'${DEF}
-        ${red}'| | __  / _ \ | |\/| |  _|  '${DEF}
-        ${RED}'| |_\ \/ ___ \| |  | | |___ '${DEF}
-  ${DIM}${RED}' \____/_/   \_\_|__|_|_____|'${DEF}
-  ${BLD}${red}'  / _ \ \   / / ____|  _ \  '${DEF}
-        ${red}' | | | \ \ / /|  _| | |_) | '${DEF}
-        ${RED}' | |_| |\ V / | |___|  _ <  '${DEF}
-  ${DIM}${RED}'  \___/  \_/  |_____|_| \_| '${DEF})
+function sprite_help {
 
-         win=('                           '
-  ${BLD}${grn}'__        ______ _    _    '${DEF}
-        ${grn}'\ \      / /____| |  | |   '${DEF}
-        ${grn}' \ \ /\ / /  _| | |  | |   '${DEF}
-        ${GRN}'  \ V  V /| |___| |__| |__ '${DEF}
-  ${DIM}${GRN}' __\_/\_/_|_____|____|____|'${DEF}
-  ${BLD}${grn}'|  _ \ / _ \| \ | | ____| |'${DEF}
-        ${grn}'| | | | | | |  \| |  _| | |'${DEF}
-        ${GRN}'| |_| | |_| | |\  | |___|_|'${DEF}
-  ${DIM}${GRN}'|____/ \___/|_| \_|_____(_)'${DEF})
+           x=$[$endx/2-25/2]
+           y=$[$endy/2-5]
+
+      sprite=(         "\e[$y;${x}H                   ^"
+            "\e[$[$y+1];${x}H                   ${RED}W$DEF"
+  "\e[$[$y+2];${x}H${BLD}Control with:$DEF  < ${RED}A S D$DEF >"
+                  "\e[$[$y+3];${x}H                   v"
+  "\e[$[$y+5];${x}H${BLD}Shoot\select with:$DEF ${YLW}P $BLD$red-=${GRN}>$DEF")
+}
+
+function sprite_lose {
+
+           x=$[$endx/2-25/2]
+           y=$[$endy/2-5]
+         CM1=$BLD$red; CM2=$DIM$RED
+
+      sprite=("\e[$y;${x}H$CM1  ____    _    __  __ _____$DEF"
+         "\e[$[$y+1];${x}H$red / ___|  / \  |  \/  | ____|$DEF"
+         "\e[$[$y+2];${x}H$red| | __  / _ \ | |\/| |  _|$DEF"
+         "\e[$[$y+3];${x}H$RED| |_\ \/ ___ \| |  | | |___$DEF"
+         "\e[$[$y+4];${x}H$CM2 \____/_/   \_\_|__|_|_____|$DEF"
+         "\e[$[$y+5];${x}H$CM1  / _ \ \   / / ____|  _ \ $DEF"
+         "\e[$[$y+6];${x}H$red | | | \ \ / /|  _| | |_) |$DEF"
+         "\e[$[$y+7];${x}H$RED | |_| |\ V / | |___|  _ < $DEF"
+         "\e[$[$y+8];${x}H$CM2  \___/  \_/  |_____|_| \_|$DEF")
+}
+
+function sprite_win {
+
+           x=$[$endx/2-25/2]
+           y=$[$endy/2-5]
+         CM1=$BLD$grn; CM2=$DIM$GRN
+
+      sprite=("\e[$y;${x}H${CM1}__        ______ _    _$DEF"
+           "\e[$[$y+1];${x}H$grn\ \      / /____| |  | |$DEF"
+           "\e[$[$y+2];${x}H$grn \ \ /\ / /  _| | |  | |$DEF"
+           "\e[$[$y+3];${x}H$GRN  \ V  V /| |___| |__| |__$DEF"
+           "\e[$[$y+4];${x}H$CM2 __\_/\_/_|_____|____|____|$DEF"
+           "\e[$[$y+5];${x}H$CM1|  _ \ / _ \| \ | | ____| |$DEF"
+           "\e[$[$y+6];${x}H$grn| | | | | | |  \| |  _| | |$DEF"
+           "\e[$[$y+7];${x}H$GRN| |_| | |_| | |\  | |___|_|$DEF"
+           "\e[$[$y+8];${x}H$CM2|____/ \___/|_| \_|_____(_)$DEF")
+}
 
 #------------------------{ Sprites }-------------------------------------------------------------------------------------
 case $month in	0[1-4]|12)	SKY=${DEF}${bwht}				# winter & early spring sky
@@ -529,14 +557,17 @@ function sprite_boss {
           EY=$[$OY+5]; [[ $EY -gt $enmyendy ]] && EY=$enmyendy
           YY=$[$Y-1]
 
-		# Boss fire
-		[[ $OY -eq $YY && $K -eq 0 ]] && OBJ+=("$[$OX - 4] $[$OY + 4] 0 bfire")
+	# kill client first
+	[[ $Y2 ]] && YY=$[$Y2-1] || YY=$[$Y-1]
 
-		# Boss move
-		[[ $OY -lt $YY                               ]] && ((OY++))
-		[[ $OY -gt $YY                               ]] && ((OY--))
-		[[ $OX -gt $[$endx / 2] && $goback = 'false' ]] && ((OX--)) || goback=true
-		[[ $OX -lt $bossendx    && $goback = 'true'  ]] && ((OX++)) || goback=false
+	# Boss fire
+	[[ $OY -eq $YY && $K -eq 0 ]] && OBJ+=("$[$OX - 4] $[$OY + 4] 0 bfire")
+
+	# Boss move
+	[[ $OY -lt $YY                               ]] && ((OY++))
+	[[ $OY -gt $YY                               ]] && ((OY--))
+	[[ $OX -gt $[$endx / 2] && $goback = 'false' ]] && ((OX--)) || goback=true
+	[[ $OX -lt $bossendx    && $goback = 'true'  ]] && ((OX++)) || goback=false
 
          CM1=$DIM$BLK; CM2=$BLD$BLK
       sprite=("\e[$OY;$[$OX+4]H${SKY}     "
@@ -658,6 +689,8 @@ function sprite_Sun {
 
 function sprite_hero {
 
+          HX=$[$X+9]; HY=$[$Y+3] # Hero collide coordinates
+
          CM4=$DIM$HC; CM5=$SKY$HC; CM6=$BLD$HC; CM7=$SKY$SC$HS$HC$BLD
          CM8=$DIM$UND; CM9=$SKY$HC$BLD
 
@@ -667,6 +700,46 @@ function sprite_hero {
               "\e[$[$Y+3];${X}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G]}${SKY} "
               "\e[$[$Y+4];${X}H"${CM4}"    |${BLD}/     "${SKY}
               "\e[$[$Y+5];${X}H"${SKY}'       ')
+
+	screen+=("${sprite[*]}")
+}
+
+function sprite_hero2 { server_read
+
+      client=($(nc -l $sport)); server_read #${caddr[0]} $cport $HS $SC $HC $X $Y $PIU
+       caddr=${client[0]}
+       cport=${client[1]}
+         HS2=${client[2]}
+         SC2=${client[3]}
+         HC2=${client[4]}
+          X2=${client[5]}
+          Y2=${client[6]}
+        PIU2=${client[7]}
+         HX2=$[$X2+9] # Hero collide
+         HY2=$[$Y2+3] # coordinates
+
+	[[ $PIU2 ]] && {
+
+		[[ $ammo2 -ge $G2 ]] && { case $G2 in
+
+			1) PIU+=("$HX2 $HY2 2");;
+			2) PIU+=("$HX2 $[$HY2+1] 2" "$HX2 $[$HY2-1] 2");;
+			3) PIU+=("$HX2 $[$HY2+1] 2" "$HX2 $[$HY2-1] 2" "$[$HX2+1] $HY2 2");;
+			4) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2");;
+			5) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2" "$[$HX2+2] $HY2 2");;
+
+		esac; ((ammo2-=$G2)); }
+	}
+
+         CM4=$DIM$HC2; CM5=$SKY$HC2; CM6=$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
+         CM8=$DIM$UND; CM9=$SKY$HC2$BLD
+
+      sprite=(     "\e[$Y2;${X2}H"${SKY}'    '
+              "\e[$[$Y2+1];${X2}H"${CM5}' __      '${SKY}
+              "\e[$[$Y2+2];${X2}H"${CM4}" |${CM7}〵${CM5}____  "${SKY}
+              "\e[$[$Y2+3];${X2}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G2]}${SKY} "
+              "\e[$[$Y2+4];${X2}H"${CM4}"    |${BLD}/     "${SKY}
+              "\e[$[$Y2+5];${X2}H"${SKY}'       ')
 
 	screen+=("${sprite[*]}")
 }
@@ -757,15 +830,10 @@ function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+=("\
 
 function mess () { XY 1 1 ${DEF}; clear
 
-	function print {
-		x=$[$endx / 2 - ${#sprite} / 2]
-		for (( i=0; i<${#sprite[*]}; i++ )); do XY ${x} $[$endy / 2 - 5 + $i] "${sprite[$i]}"; done
-	}
-
 	case $1 in
-		"win" )	sprite=("${win[@]}") ; print; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
-		"lose")	sprite=("${lose[@]}"); print; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
-		"help")	sprite=("${help[@]}"); print;;
+		"win" )	sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
+		"lose")	sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; sleep 3; clear; read -t1 -n1 trash; start_opt; main_menu; fill_screen;;
+		"help")	sprite_help; printf "${sprite[*]}";;
 	esac
 }
 
@@ -837,8 +905,6 @@ function configure {
         menu=( 'hero' 'star' 'symbol' 'apply' 'back' )                ; menuN=${#menu[*]};     menuI=$[$menuN-1]
         selL='>'; selR='<'; selN=' '
 
-	function   back   { menu=( 'single' 'multiplayer' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}; }
-
 	function deselect {
 		selectedHCL=${selN}; selectedHCR=${selN}
 		selectedSCL=${selN}; selectedSCR=${selN}
@@ -904,30 +970,70 @@ function configure {
 
 }
 
-function main_menu {
+function clr  {
+	for ((i=0; i<${#start_menu[*]}; i++)); do XY $[$endx/2-12] $[$endy-5+$i] "                       "; done
+}
 
-	intro
-	menu=( 'single' 'multiplayer' 'conf' 'exit' ); menuI=0; menuN=${#menu[*]}
-	while true; do get_dimensions
+function back {
+	start_menu=("start  ${game_type:-single}" 'multiplayer' 'conf' 'exit')
+	menu=("${start_menu[@]}"); menuI=0; menuN=${#menu[*]}; clr
+}
 
-		#-{ Get keys }-------------------------------------------------------------------------------------------------------
-		read -t0.005 -n1 input 2> /dev/null; input=${input:0:1}; case $input in
+function selector {
 
-			's'|'S') ((menuI++)); [[ $menuI -gt $[$menuN-1] ]] && menuI=$[$menuN-1];;
-			'w'|'W') ((menuI--)); [[ $menuI -lt 0           ]] && menuI=0;;
-			'd'|'D') menuI=$[$menuN-1];;
-			'a'|'A') menuI=0;;
-			'p'|'P') case ${menu[$menuI]}	in	'single') return;;
-												'conf'  ) clear ;  configure && intro;;
-												'exit'  ) bye   ;; esac;;
+	#-{ Get keys }-------------------------------------------------------------------------------------------------------
+	read -t0.005 -n1 input 2> /dev/null; input=${input:0:1}; case $input in
+
+		's'|'S') ((menuI++)); [[ $menuI -gt $[$menuN-1] ]] && menuI=$[$menuN-1];;
+		'w'|'W') ((menuI--)); [[ $menuI -lt 0           ]] && menuI=0;;
+		'd'|'D') menuI=$[$menuN-1];;
+		'a'|'A') menuI=0;;
+
+	esac
+
+	for ((i=0; i<$menuN; i++)); do
+
+		[[ $i -eq $menuI ]] && selected=${BLD}${RED} || selected=${DEF}
+		XY $[$endx/2-${#menu[$i]}/2-3] $[$endy-5+$i] " $selected${menu[$i]}${DEF} "
+
+	done
+}
+
+function enter_server {
+
+	XY $[$endx/2-10] $[$endy-5] "${RED}Enter server IP: "; XY $[$endx/2-10] $[$endy-4] "$CON$BLD$WHT"
+	stty echo; read -p ' ' -e saddr; printf "$COF"; stty -echo; clr; return
+}
+
+function client_or_server {
+
+	menu=('server' 'client' 'back'); menuN=${#menu[*]}; menuI=$[$menuN-1]
+
+	while true; do
+
+		selector; case $input in 'p'|'P')
+
+			case ${menu[$menuI]}	in	'server') server=true; game_type='server'; back; return;;
+										'client') client=true; game_type='client'; clr; enter_server; back; return;;
+										'back'  ) back; return;; esac;;
 		esac
 
-		for ((i=0; i<$menuN; i++)); do
+	done
+}
 
-			[[ $i -eq $menuI ]] && selected=${BLD}${RED} || selected=${DEF}
-			XY $[$endx/2-${#menu[$i]}/2] $[$endy-5+$i] " $selected${menu[$i]}${DEF} "
+function main_menu {
 
-		done
+	intro; back
+
+	while true; do
+
+		selector; case $input in 'p'|'P')
+
+			case ${menu[$menuI]}	in	'start'*    ) return;;
+										'multiplayer') clr; client_or_server;;
+										'conf'       ) clear ;  configure && intro;;
+										'exit'       ) bye   ;; esac;;
+		esac
 	done
 }
 
@@ -946,28 +1052,43 @@ function fps_counter {
 
 function mover () { timer=$1
 
-	# collisions with plane
-	case  $type:"$HX $HY" in
-		'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
-		'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G} -lt 5 ]] && ((G++)); return;;
-		 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo+=100)); return;;
-		 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life++))   ; return;;
-		'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life--))   ; return;;
-		 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life--)); ((bhealth-=10)); return;;
-	esac
+	# collisions with plane1
+	[[ $life -gt 0 ]] && {
+		case  $type:"$HX $HY" in
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G} -lt 5 ]] && ((G++)); return;;
+			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo+=100)); return;;
+			 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life++))   ; return;;
+			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life--))   ; return;;
+			 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life--)); ((bhealth-=10)); return;;
+		esac
+	}
+
+	# collisions with plane2
+	[[ $server && $life2 -gt 0 ]] && {
+		case  $type:"$HX2 $HY2" in
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life2--)); ((frags2++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G2} -lt 5 ]] && ((G2++)); return;;
+			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo2+=100)); return;;
+			 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life2++))   ; return;;
+			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life2--))   ; return;;
+			 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life2--)); ((bhealth-=10)); return;;
+		esac
+	}
 
 	# alien's collisions with pius
 	case $type in 'alien' | 'boss')
 
-		for (( t=0; t<${NP}; t++ )); do
+		for (( t=0; t<$NP; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
 
-			case "${PIU[$t]}" in # hit by bullet
+			case "$PX $PY" in # hit by bullet
 
 				"${target[0]}"| "${target[1]}"| "${target[2]}"| "${target[3]}"| "${target[4]}"| "${target[5]}")
 
 					case $type in
-						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}")  ;; esac # get bonus
-								 ((frags++))  ; ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
+						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}");; esac # get bonus
+								 case $owner in 1) ((frags++));; 2) ((frags2++));; esac
+								 ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
 						'boss' ) remove_piu $t; ((bhealth--)); continue;;
 					esac
 			esac
@@ -983,27 +1104,8 @@ function mover () { timer=$1
 	case $timer in 0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type";; esac
 }
 
-trap bye INT; trap : ALRM; stty -echo; printf "${COF}"; get_dimensions; default
-clear; mess "help"; sleep 2; clear; main_menu; clear
+function server_read {
 
-#-{ Generate grass }-----------------------------------------------------------------------------------------------------
-for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
-
-function fill_screen {
-	#-{ Fill screen }----------------------------------------------------------------------------------------------------
-	for ((i=0;         i<$lineendy; i++)); do printf "${SKY}%${endx}s"; done
-	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
-}; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
-
-#================================================{ Main game loop }======================================================
-while true; do
-
-	screen=(); fps_counter
-
-	# Hero collide coordinates
-	HX=$(($X + 9)); HY=$(($Y + 3))
-
-	#-{ Get keys }-------------------------------------------------------------------------------------------------------
 	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
 		'w'|'W')	[[ $Y    -gt 1         ]] && ((Y--));;
@@ -1012,16 +1114,70 @@ while true; do
 		'd'|'D')	[[ $X    -lt $heroendx ]] && ((X++));;
 		'p'|'P')	[[ $ammo -ge $G        ]] && { case ${G} in
 						1) PIU+=("$HX $HY");;
-						2) PIU+=("$HX $[$HY+1]" "$HX $[$HY-1]");;
-						3) PIU+=("$HX $[$HY+1]" "$HX $[$HY-1]" "$[$HX+1] $HY");;
-						4) PIU+=("$[$HX+1] $[$HY+1]" "$[$HX+1] $[$HY-1]" "$HX $[$HY+2]" "$HX $[$HY-2]");;
-						5) PIU+=("$[$HX+1] $[$HY+1]" "$[$HX+1] $[$HY-1]" "$HX $[$HY+2]" "$HX $[$HY-2]" "$[$HX+2] $HY");;
+						2) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1");;
+						3) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1" "$[$HX+1] $HY 1");;
+						4) PIU+=("$[$HX+1] $[$HY+1] 1" "$[$HX+1] $[$HY-1] 1" "$HX $[$HY+2] 1" "$HX $[$HY-2] 1");;
+						5) PIU+=("$[$HX+1] $[$HY+1] 1" "$[$HX+1] $[$HY-1] 1" "$HX $[$HY+2] 1" "$HX $[$HY-2] 1" "$[$HX+2] $HY 1");;
 					esac; ((ammo-=$G)); };;
 	esac
+}
+
+function client_read {
+
+	read -t$spd -n1 input &> /dev/null; input=${input:0:1}; case $input in
+		'w'|'W') [[ $Y -gt 1         ]] && ((Y--));;
+		'a'|'A') [[ $X -gt 1         ]] && ((X--));;
+		's'|'S') [[ $Y -lt $heroendy ]] && ((Y++));;
+		'd'|'D') [[ $X -lt $heroendx ]] && ((X++));;
+		'p'|'P') PIU="piu";;
+	esac
+}
+
+function sender { until nc $caddr $cport 2> /dev/null <<< "$1"; do server_read; done; }
+
+function fill_screen {
+	#-{ Fill screen }----------------------------------------------------------------------------------------------------
+	for ((i=0;         i<$lineendy; i++)); do printf "${SKY}%${endx}s"; done
+	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
+}
+
+trap bye INT; trap : ALRM; get_dimensions; default; clear
+stty -echo; printf "$COF"; mess "help"; sleep 2; clear; main_menu
+clear; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
+stty -echo; printf "$COF"
+
+#-{ Generate grass }-----------------------------------------------------------------------------------------------------
+for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
+
+
+[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.001; CLD=80; TRE=70; }
+[[ $client ]] && { spd=0.001
+#=============================================={ Main game loop client mode}=============================================
+while true; do
+
+	PIU=; client_read
+	until nc $saddr $sport 2> /dev/null <<< "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU"; do client_read; done
+	client_read
+	screen="$(nc -l $cport)"
+	case $screen in 'win'| 'lose') client=; game_type='single'; mess $screen;; esac
+	printf "$screen"
+	client_read
+
+done
+} || {
+#========================================={ Main game loop single or server mode}========================================
+while true; do
+
+	screen=(); fps_counter
+
+	#-{ Get keys }-------------------------------------------------------------------------------------------------------
+	[[ $life -gt 0 ]] && server_read
 
 	# Check win\lose
-	[[ $bhealth -le 0 ]] && mess win
-	[[ $life    -le 0 ]] && mess lose
+	[[ $server ]] || {
+		[[ $bhealth -le 0 ]] && mess win
+		[[ $life    -le 0 ]] && mess lose
+	}
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
 	[[ $K -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
@@ -1064,7 +1220,7 @@ while true; do
 	esac; done
 
 	#-{ BOSS }-----------------------------------------------------------------------------------------------------------
-	[[ $frags -ge $tillboss ]] && {
+	[[ $[$frags+$frags2] -ge $tillboss ]] && {
 
 		# add boss object
 		[[ $bossborn ]] || { OBJ+=("$BX $BY 0 boss"); bossborn=true; }
@@ -1082,13 +1238,13 @@ while true; do
 	}
 
 	#-{ Move\check\print hero bullets }----------------------------------------------------------------------------------
-	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}
+	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
 
 		# Move
 		((PX++))
 
 		# Fly away
-		[[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY"; }
+		[[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; }
 
 		# print
 		screen+=("\e[$PY;${PX}H$SKY ${shoot[$L]}")
@@ -1107,18 +1263,30 @@ while true; do
 		esac;;
 	esac
 
-	#-{ Print hero }-----------------------------------------------------------------------------------------------------
-	sprite_hero
+	#-{ Print hero(es) }-------------------------------------------------------------------------------------------------
+	[[ $life -gt 0 ]] && sprite_hero || OBJ+=("$X $Y 0 boom" "$X $[$Y+2] 0 boom" "$[$X+2] $[$Y+2] 0 boom"); [[ $server ]] && sprite_hero2
 
 	#-{ Print moving land }----------------------------------------------------------------------------------------------
 	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
-	screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
-	screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
+	[[ $server ]] && {
+		screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags2$LND  ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
+		screen+=("\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+		screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
+	} || {
+		screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+		screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
+	}
 
-	printf "${screen[*]}"
+	[[ $life -gt 0 ]] && printf "${screen[*]}" || { clear; sprite_lose; printf "${sprite[*]}"; }
+	[[ $server ]] && {
+		[[ $life2 -le 0 ]] && { sender 'lose'; server=; game_type='single'; Y2=; OBJ+=("$X2 $Y2 0 boom" "$X2 $[$Y2+2] 0 boom" "$[$X2+2] $[$Y2+2] 0 boom"); }
+		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; game_type='single'; }
+	}
 
+	[[ $server ]] && sender "${screen[*]}"
 done
+}
 
 # vim: ts=4
