@@ -1113,7 +1113,7 @@ function server_read {
 		's'|'S')	[[ $Y    -lt $heroendy ]] && ((Y++));;
 		'd'|'D')	[[ $X    -lt $heroendx ]] && ((X++));;
 		'p'|'P')	[[ $ammo -ge $G        ]] && { case ${G} in
-						1) PIU+=("$HX $HY");;
+						1) PIU+=("$HX $HY 1");;
 						2) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1");;
 						3) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1" "$[$HX+1] $HY 1");;
 						4) PIU+=("$[$HX+1] $[$HY+1] 1" "$[$HX+1] $[$HY-1] 1" "$HX $[$HY+2] 1" "$HX $[$HY-2] 1");;
@@ -1291,7 +1291,7 @@ while true; do
 			}
 
 	[[ $server ]] && {
-		[[ $life2 -le 0 ]] && { 
+		[[ $life2 -le 0 ]] && {
 			sender 'lose'
 			server=; Y2=; game_type='single'
 			OBJ+=("$[$X2+1] $[$Y2+1] 0 boom"
