@@ -1151,7 +1151,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
 
 [[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.001; CLD=80; TRE=70; }
-[[ $client ]] && { spd=0.001
+[[ $client ]] && { spd=0.001; X=1; Y=$heroendy
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
@@ -1172,12 +1172,6 @@ while true; do
 
 	#-{ Get keys }-------------------------------------------------------------------------------------------------------
 	[[ $life -gt 0 ]] && server_read
-
-	# Check win\lose
-	[[ $server ]] || {
-		[[ $bhealth -le 0 ]] && mess win
-		[[ $life    -le 0 ]] && mess lose
-	}
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
 	[[ $K -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
@@ -1299,9 +1293,14 @@ while true; do
 		}
 
 		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; game_type='single'; }
+		sender "${screen[*]}"
+
+	} || {
+		# Check win\lose
+		[[ $bhealth -le 0 ]] && mess win
+		[[ $life    -le 0 ]] && mess lose
 	}
 
-	[[ $server ]] && sender "${screen[*]}"
 done
 }
 
