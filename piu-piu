@@ -1029,7 +1029,7 @@ function main_menu {
 
 		selector; case $input in 'p'|'P')
 
-			case ${menu[$menuI]}	in	'start'*    ) return;;
+			case ${menu[$menuI]}	in	'start'*     ) return;;
 										'multiplayer') clr; client_or_server;;
 										'conf'       ) clear ;  configure && intro;;
 										'exit'       ) bye   ;; esac;;
