@@ -1273,16 +1273,15 @@ while true; do
 		screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
 	}
 
-	[[ $life -gt 0 ]] \
-		&& printf "${screen[*]}" \
-		|| { case $make_once in '')
-				XY 1 1 "$DEF"; clear
-				sprite_lose; printf "${sprite[*]}"
-				OBJ+=("$[$X+1] $[$Y+1] 0 boom"
-                      "$[$X+2] $[$Y+2] 0 boom")
-				make_once=done;;
-			 esac
-			}
+	[[ $life -gt 0 ]] && printf "${screen[*]}" || {
+		case $make_once in '')
+			XY 1 1 "$DEF"; clear
+			sprite_lose; printf "${sprite[*]}"
+			OBJ+=("$[$X+1] $[$Y+1] 0 boom"
+			      "$[$X+2] $[$Y+2] 0 boom")
+			make_once=done;;
+		esac
+	}
 
 	[[ $server ]] && {
 		[[ $life2 -le 0 ]] && {
