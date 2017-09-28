@@ -1013,8 +1013,8 @@ function client_or_server {
 
 		selector; case $input in 'p'|'P')
 
-			case ${menu[$menuI]}	in	'server') server=true; game_type='server'; back; return;;
-										'client') client=true; game_type='client'; clr; enter_server; back; return;;
+			case ${menu[$menuI]}	in	'server') server=true; client=; game_type='server'; back; return;;
+										'client') client=true; server=; game_type='client'; clr; enter_server; back; return;;
 										'back'  ) back; return;; esac;;
 		esac
 
