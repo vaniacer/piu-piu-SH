@@ -178,10 +178,19 @@ esac
               ${YLW}'o  '${SKY})
 
 #------------------------{ Shoots }--------------------------------------------------------------------------------------
+
+              # -=>
+              # <=-
+
        shoot=("$SKY ${RED}-${SKY}${BLD}${GRN}>${SKY}"
               "${BLD}${red}-=${SKY}${GRN}>${SKY}"
               "${red}=-${SKY}${BLD}${GRN}>${SKY}"
               "${RED}-${SKY} ${GRN}>${SKY}")
+
+      shoot2=("${BLD}${GRN}<${SKY}${RED}-${SKY} "
+              "${GRN}<${BLD}${red}=-${SKY}"
+              "${BLD}${GRN}<${SKY}${red}-=${SKY}"
+              "${GRN}<${SKY} ${RED}-${SKY}")
 
       bshoot=('█▓▒░ '
               '▓▒░▒ '
@@ -715,8 +724,45 @@ function sprite_hero2 { server_read
           X2=${client[5]}
           Y2=${client[6]}
         PIU2=${client[7]}
+
+         CM4=$DIM$HC2; CM5=$SKY$HC2; CM6=$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
+         CM8=$DIM$UND; CM9=$SKY$HC2$BLD
+
+
+    [[ $game_type -eq 'duel' ]] && {
+
+                                 #         __ 
+                                 #   _____/★〳
+                                 # -(° \ |_/
+                                 #      \|
+
+      sprite=("\e[$Y2;$[$X2+7]H"${SKY}'    '
+    "\e[$[$Y2+1];$[$X2+2]H"${CM5}"       __$SKY "
+   "\e[$[$Y2+2];$[$X2+1]H"${CM5}"  _____/${CM7}${CM6}〳$SKY "
+     "\e[$[$Y2+3];${X2}H"${CM5}" -(${CM8}° ${CM5}\ ${CM6}|${CM5}_${CM6}/$SKY "
+   "\e[$[$Y2+4];$[$X2+1]H"${CM5}'     \\'"${CM6}|$SKY   "
+      "\e[$[$Y2+5];$[$X2+5]H"${SKY}'     ')
+
+         HX2=$[$X2+3] # Hero collide
+         HY2=$[$Y2+3] # coordinates
+
+
+    } || {
+                                   # __
+                                   # |★〵____
+                                   #  \_| / °)-
+                                   #    |/
+
+      sprite=("\e[$Y2;${X2}H"${SKY}'    '
+         "\e[$[$Y2+1];${X2}H"${CM5}" __$SKY      "
+         "\e[$[$Y2+2];${X2}H"${CM4}" |${CM7}〵${CM5}____$SKY  "
+         "\e[$[$Y2+3];${X2}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G2]}$SKY "
+         "\e[$[$Y2+4];${X2}H"${CM4}"    |${BLD}/$SKY     "
+         "\e[$[$Y2+5];${X2}H"${SKY}'       ')
+
          HX2=$[$X2+9] # Hero collide
          HY2=$[$Y2+3] # coordinates
+    }
 
 	[[ $PIU2 ]] && {
 
@@ -730,16 +776,6 @@ function sprite_hero2 { server_read
 
 		esac; ((ammo2-=$G2)); }
 	}
-
-         CM4=$DIM$HC2; CM5=$SKY$HC2; CM6=$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
-         CM8=$DIM$UND; CM9=$SKY$HC2$BLD
-
-      sprite=(     "\e[$Y2;${X2}H"${SKY}'    '
-              "\e[$[$Y2+1];${X2}H"${CM5}' __      '${SKY}
-              "\e[$[$Y2+2];${X2}H"${CM4}" |${CM7}〵${CM5}____  "${SKY}
-              "\e[$[$Y2+3];${X2}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G2]}${SKY} "
-              "\e[$[$Y2+4];${X2}H"${CM4}"    |${BLD}/     "${SKY}
-              "\e[$[$Y2+5];${X2}H"${SKY}'       ')
 
 	screen+=("${sprite[*]}")
 }
@@ -1013,7 +1049,7 @@ function client_or_server {
 
 		'server'      ) server=true; client=; cors='server'; game_type=${menu[2]}; back; return;;
 		'client'      ) client=true; server=; cors='client'; clr;    enter_server; back; return;;
-		'team'| 'duel') case ${menu[2]} in 'team') menu[2]='duel';; 'duel') menu[2]='team';; esac ;;
+		'team'| 'duel') case ${menu[2]} in 'team') menu[2]='duel';; 'duel') menu[2]='team';; esac;;
 		'back'        ) back; return;; esac;;
 
 	esac; done
@@ -1147,7 +1183,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
 
 [[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; CLD=80; TRE=70; }
-[[ $client ]] && { X=1; Y=$heroendy
+[[ $client ]] && { X=1; Y=$heroendy; [[ $game_type -eq 'duel' ]] && { X=$heroendx;}
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
@@ -1160,8 +1196,8 @@ while true; do
 	client_read
 
 done
-} || {
-#========================================={ Main game loop single or server mode}========================================
+} || {                                 case $game_type in    ''   |        'team')
+#========================================={ Main game loop single or server team mode}========================================
 while true; do
 
 	screen=(); fps_counter
@@ -1296,7 +1332,91 @@ while true; do
 		[[ $life    -le 0 ]] && mess lose
 	}
 
-done
+done;;
+
+                                                                 'duel')
+#========================================={ Main game loop server duel mode}========================================
+while true; do
+
+	screen=(); fps_counter
+
+	#-{ Get keys }-------------------------------------------------------------------------------------------------------
+	server_read
+
+	#-{ Timings }--------------------------------------------------------------------------------------------------------
+	[[ $L -ge 3  ]] && L=0 || ((L++))	# sprites animation
+	[[ $Q -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
+	[[ $W -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
+	[[ $E -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
+	[[ $E -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
+
+	#-{ Print Sun }------------------------------------------------------------------------------------------------------
+	sprite_Sun
+
+	#-{ Move\check\print all flying to hero objects }--------------------------------------------------------------------
+	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
+
+       #----------+---------------+------------+-----+----------+
+       # OBJ type |  sprite maker |sprite mover|timer|  comment |
+       #----------+---------------+------------+-----+----------+
+		'tree1' )	sprite_tree1 ;    mover      $Q ;; #
+		'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
+		'tree3' )	sprite_tree3 ;    mover      $E ;; #
+
+		'cloud1')	sprite_cloud1;    mover      $Q ;; #
+		'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
+		'cloud3')	sprite_cloud3;    mover      $E ;; #
+
+	esac; done
+
+	#-{ Move\check\print heroes' bullets }----------------------------------------------------------------------------------
+	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
+
+		# Move\Fly away
+		case $owner in
+
+            '1') ((PX++)); sprite="$SKY ${shoot[$L]}" ; [[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; };;
+            '2') ((PX--)); sprite="${shoot2[$L]}$SKY "; [[ $PX -le 1         ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; };;
+
+        esac
+
+		# print
+		screen+=( "\e[$PY;${PX}H$sprite" )
+
+	done
+
+	case $background in true)
+		#-{ Add cloud }--------------------------------------------------------------------------------------------------
+		case $[RANDOM % $CLD] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
+
+		#-{ Add tree }---------------------------------------------------------------------------------------------------
+		case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
+		    0:1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
+		    0:2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
+		    0:3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
+		esac;;
+	esac
+
+	#-{ Print hero(es) }-------------------------------------------------------------------------------------------------
+	sprite_hero; sprite_hero2
+
+	#-{ Print moving land }----------------------------------------------------------------------------------------------
+	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+
+	#-{ Print game status }----------------------------------------------------------------------------------------------
+	screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
+	screen+=("\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+	screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
+
+    [[ $life2 -le 0 ]] && { sender 'lose'; mess   'win'; }
+    [[ $life  -le 0 ]] && { mess   'lose'; sender 'win'; }
+
+	printf "${screen[*]}"; sender "${screen[*]}"
+
+done;;
+
+esac
 }
+
 
 # vim: ts=4
