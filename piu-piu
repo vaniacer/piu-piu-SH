@@ -51,7 +51,7 @@ function start_opt {
         FPSM=0										# maximum FPS initial value					(0)
         FPSC=0										# FPS counter								(0)
          rnd=10										# random seed 4 bonuses						(10)
-         spd=0.0001									# game\read speed							(0.0001)
+         spd=0.001									# game\read speed							(0.001)
          DHC=${BLK}									# default hero color						($BLK)
          DSC=${RED}									# default symbol color						($red)
          DHS=★										# default symbol							(★)
@@ -975,7 +975,7 @@ function clr  {
 }
 
 function back {
-	start_menu=("start  ${game_type:-single}" 'multiplayer' 'conf' 'exit')
+	start_menu=("start  ${cors:-single}" 'multiplayer' 'conf' 'exit')
 	menu=("${start_menu[@]}"); menuI=0; menuN=${#menu[*]}; clr
 }
 
@@ -1007,41 +1007,37 @@ function enter_server {
 
 function client_or_server {
 
-	menu=('server' 'client' 'back'); menuN=${#menu[*]}; menuI=$[$menuN-1]
+	menu=('server' 'client' 'team' 'back'); menuN=${#menu[*]}; menuI=$[$menuN-1]
 
-	while true; do
+	while true; do selector; case $input in 'p'|'P') case ${menu[$menuI]} in
 
-		selector; case $input in 'p'|'P')
+		'server'      ) server=true; client=; cors='server'; game_type=${menu[2]}; back; return;;
+		'client'      ) client=true; server=; cors='client'; clr;    enter_server; back; return;;
+		'team'| 'duel') case ${menu[2]} in 'team') menu[2]='duel';; 'duel') menu[2]='team';; esac ;;
+		'back'        ) back; return;; esac;;
 
-			case ${menu[$menuI]}	in	'server') server=true; client=; game_type='server'; back; return;;
-										'client') client=true; server=; game_type='client'; clr; enter_server; back; return;;
-										'back'  ) back; return;; esac;;
-		esac
-
-	done
+	esac; done
 }
 
 function main_menu {
 
 	intro; back
 
-	while true; do
+	while true; do selector; case $input in 'p'|'P') case ${menu[$menuI]} in
 
-		selector; case $input in 'p'|'P')
+		'start'*     ) return;;
+		'multiplayer') clr   ; client_or_server;;
+		'conf'       ) clear ; configure; intro;;
+		'exit'       ) bye  ;; esac;;
 
-			case ${menu[$menuI]}	in	'start'*     ) return;;
-										'multiplayer') clr; client_or_server;;
-										'conf'       ) clear ;  configure && intro;;
-										'exit'       ) bye   ;; esac;;
-		esac
-	done
+	esac; done
 }
 
 function fps_counter {
 
 	#Needs bash 4.2
 	printf -v cur_sec '%(%s)T\n' -1
-	[[ $cur_sec -gt $sec ]] && {
+	[[ $cur_sec -gt $sec ]] && {\
 		FPS=$FPSC
 		[[ $FPS -gt $FPSM ]] && FPSM=$FPS
 		[[ $FPS -lt $FPSL ]] && FPSL=$FPS
@@ -1150,8 +1146,8 @@ stty -echo; printf "$COF"
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
 
-[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; spd=0.001; CLD=80; TRE=70; }
-[[ $client ]] && { spd=0.001; X=1; Y=$heroendy
+[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; CLD=80; TRE=70; }
+[[ $client ]] && { X=1; Y=$heroendy
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
@@ -1159,7 +1155,7 @@ while true; do
 	until nc $saddr $sport 2> /dev/null <<< "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU"; do client_read; done
 	client_read
 	screen="$(nc -l $cport)"
-	case $screen in 'win'| 'lose') client=; game_type='single'; mess $screen;; esac
+	case $screen in 'win'| 'lose') client=; cors='single'; mess $screen;; esac
 	printf "$screen"
 	client_read
 
@@ -1286,12 +1282,12 @@ while true; do
 	[[ $server ]] && {
 		[[ $life2 -le 0 ]] && {
 			sender 'lose'
-			server=; Y2=; game_type='single'
+			server=; Y2=; cors='single'
 			OBJ+=("$[$X2+1] $[$Y2+1] 0 boom"
                   "$[$X2+2] $[$Y2+2] 0 boom")
 		}
 
-		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; game_type='single'; }
+		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; cors='single'; }
 		sender "${screen[*]}"
 
 	} || {
