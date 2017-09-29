@@ -52,8 +52,8 @@ function start_opt {
         FPSC=0										# FPS counter								(0)
          rnd=10										# random seed 4 bonuses						(10)
          spd=0.001									# game\read speed							(0.001)
-         DHC=${BLK}									# default hero color						($BLK)
-         DSC=${RED}									# default symbol color						($red)
+         DHC=$BLK									# default hero color						($BLK)
+         DSC=$RED									# default symbol color						($red)
          DHS=★										# default symbol							(★)
          OBJ=()										# start obj array
          PIU=()										# start piu array
@@ -92,7 +92,7 @@ function sprite_help {
             "\e[$[$y+1];${x}H                   ${RED}W$DEF"
   "\e[$[$y+2];${x}H${BLD}Control with:$DEF  < ${RED}A S D$DEF >"
                   "\e[$[$y+3];${x}H                   v"
-  "\e[$[$y+5];${x}H${BLD}Shoot\select with:$DEF ${YLW}P $BLD$red-=${GRN}>$DEF")
+  "\e[$[$y+5];${x}H${BLD}Shoot\select with:$DEF ${YLW}P $BLD$red-=$GRN>$DEF")
 }
 
 function sprite_lose {
@@ -130,20 +130,20 @@ function sprite_win {
 }
 
 #------------------------{ Sprites }-------------------------------------------------------------------------------------
-case $month in	0[1-4]|12)	SKY=${DEF}${bwht}				# winter & early spring sky
-							LND=${DEF}${BLD}${WHT}${BWHT}	# winter & early spring land
-							CLD=30							# winter & early spring clouds rnd
-							TRE=50;;						# winter & early spring trees rnd
+case $month in	0[1-4]|12)	SKY=$DEF$bwht			# winter & early spring sky
+							LND=$DEF$BLD$WHT$BWHT	# winter & early spring land
+							CLD=30					# winter & early spring clouds rnd
+							TRE=50;;				# winter & early spring trees rnd
 
-				0[5-8]   )	SKY=${DEF}${bcyn}				# late spring & summer sky
-							LND=${DEF}${DIM}${GRN}${bgrn}	# late spring & summer land
-							CLD=50							# late spring & summer clouds rnd
-							TRE=20;;						# late spring & summer trees rnd
+				0[5-8]   )	SKY=$DEF$bcyn			# late spring & summer sky
+							LND=$DEF$DIM$GRN$bgrn	# late spring & summer land
+							CLD=50					# late spring & summer clouds rnd
+							TRE=20;;				# late spring & summer trees rnd
 
-				09|1[0-1])	SKY=${DEF}${BCYN}				# autumn sky
-							LND=${DEF}${DIM}${YLW}${BGRN}	# autumn land
-							CLD=20							# autumn clouds rnd
-							TRE=50;;						# autumn trees rnd
+				09|1[0-1])	SKY=$DEF$BCYN			# autumn sky
+							LND=$DEF$DIM$YLW$BGRN	# autumn land
+							CLD=20					# autumn clouds rnd
+							TRE=50;;				# autumn trees rnd
 esac
 
          gun=(- - = ≡ ≣ 𝄚)
@@ -162,35 +162,35 @@ esac
               ' o ')
 
 #------------------------{ Cycle fast }----------------------------------------------------------------------------------
-        big2=(${RED}' O   O '${SKY}
-		      ${RED}'O   O  '${SKY}
-              ${RED}"   ${BLD}O   "${SKY}
-              ${RED}'  O   O'${SKY})
+        big2=($RED' O   O '$SKY
+		      $RED'O   O  '$SKY
+              $RED"   ${BLD}O   "$SKY
+              $RED'  O   O'$SKY)
 
-        big3=(${BLU}'  O   O'${SKY}
-              ${BLU}"   ${BLD}O   "${SKY}
-		      ${BLU}'O   O  '${SKY}
-              ${BLU}' O   O '${SKY})
+        big3=($BLU'  O   O'$SKY
+              $BLU"   ${BLD}O   "$SKY
+		      $BLU'O   O  '$SKY
+              $BLU' O   O '$SKY)
 
-      small2=(${YLW}" ${BLD}o "${SKY}
-              ${YLW}'  o'${SKY}
-              ${YLW}'   '${SKY}
-              ${YLW}'o  '${SKY})
+      small2=($YLW" ${BLD}o "$SKY
+              $YLW'  o'$SKY
+              $YLW'   '$SKY
+              $YLW'o  '$SKY)
 
 #------------------------{ Shoots }--------------------------------------------------------------------------------------
 
               # -=>
               # <=-
 
-       shoot=("$SKY ${RED}-${SKY}${BLD}${GRN}>${SKY}"
-              "${BLD}${red}-=${SKY}${GRN}>${SKY}"
-              "${red}=-${SKY}${BLD}${GRN}>${SKY}"
-              "${RED}-${SKY} ${GRN}>${SKY}")
+       shoot=("$SKY $RED-$SKY$BLD$GRN>$SKY"
+              "$BLD$red-=$SKY$GRN>$SKY"
+              "$red=-$SKY$BLD$GRN>$SKY"
+              "$RED-$SKY $GRN>$SKY")
 
-      shoot2=("${BLD}${GRN}<${SKY}${RED}-${SKY} "
-              "${GRN}<${BLD}${red}=-${SKY}"
-              "${BLD}${GRN}<${SKY}${red}-=${SKY}"
-              "${GRN}<${SKY} ${RED}-${SKY}")
+      shoot2=("$SKY$BLD$GRN<$SKY$RED-$SKY "
+              "$SKY$GRN<$BLD$red=-$SKY"
+              "$SKY$BLD$GRN<$SKY$red-=$SKY"
+              "$SKY$GRN<$SKY $RED-$SKY")
 
       bshoot=('█▓▒░ '
               '▓▒░▒ '
@@ -1183,7 +1183,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
 
 [[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; CLD=80; TRE=70; }
-[[ $client ]] && { X=1; Y=$heroendy; [[ $game_type -eq 'duel' ]] && { X=$heroendx;}
+[[ $client ]] && { X=1; Y=$heroendy; [[ $game_type -eq 'duel' ]] && { X=$heroendx; Y=$[RANDOM % $[$heroendy-2]+2]; }
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
@@ -1334,7 +1334,7 @@ while true; do
 
 done;;
 
-                                                                 'duel')
+                                                                 'duel') Y=$[RANDOM % $[$heroendy-2]+2]
 #========================================={ Main game loop server duel mode}========================================
 while true; do
 
@@ -1415,8 +1415,8 @@ while true; do
 	screen+=("\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
 	screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
 
-    [[ $life2 -le 0 ]] && { sender 'lose'; mess   'win'; }
-    [[ $life  -le 0 ]] && { mess   'lose'; sender 'win'; }
+    [[ $life2 -le 0 ]] && { sender 'lose'; mess  'win'; }
+    [[ $life  -le 0 ]] && { sender 'win' ; mess 'lose'; }
 
 	printf "${screen[*]}"; sender "${screen[*]}"
 
@@ -1424,6 +1424,5 @@ done;;
 
 esac
 }
-
 
 # vim: ts=4
