@@ -1372,11 +1372,18 @@ while true; do
 	#-{ Move\check\print heroes' bullets }----------------------------------------------------------------------------------
 	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
 
-		# Move\Fly away
+		# Move\Fly away\Collision
 		case $owner in
 
-            '1') ((PX++)); sprite="$SKY ${shoot[$L]}" ; [[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; };;
-            '2') ((PX--)); sprite="${shoot2[$L]}$SKY "; [[ $PX -le 1         ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; };;
+            '1') ((PX++))
+                 sprite="$SKY ${shoot[$L]}"
+                 [[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; }
+                 case "$[$PX+2] $PY" in "$HX2 $HY2"| "$[$HX2+1] $HY2") remove_piu ${t}; ((life2--)); continue;; esac;;
+
+            '2') ((PX--))
+                 sprite="${shoot2[$L]}$SKY "
+                 [[ $PX -le 1         ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; }
+                 case "$PX $PY" in "$HX $HY"| "$[$HX-1] $HY") remove_piu ${t}; ((life--)); continue;; esac;;
 
         esac
 
