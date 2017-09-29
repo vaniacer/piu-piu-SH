@@ -51,7 +51,7 @@ function start_opt {
         FPSM=0										# maximum FPS initial value					(0)
         FPSC=0										# FPS counter								(0)
          rnd=10										# random seed 4 bonuses						(10)
-         spd=0.001									# game\read speed							(0.001)
+         spd=0.0001									# game\read speed							(0.0001)
          DHC=$BLK									# default hero color						($BLK)
          DSC=$RED									# default symbol color						($red)
          DHS=★										# default symbol							(★)
@@ -1182,8 +1182,8 @@ stty -echo; printf "$COF"
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
 
-[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; CLD=80; TRE=70; }
-[[ $client ]] && { X=1; Y=$heroendy; [[ $game_type -eq 'duel' ]] && { X=$heroendx; Y=$[RANDOM % $[$heroendy-2]+2]; }
+[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; CLD=80; TRE=70; spd=0.001; }
+[[ $client ]] && { X=1; spd=0.001; Y=$heroendy; [[ $game_type -eq 'duel' ]] && { X=$heroendx; Y=$[RANDOM % $[$heroendy-2]+2]; }
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
@@ -1318,12 +1318,12 @@ while true; do
 	[[ $server ]] && {
 		[[ $life2 -le 0 ]] && {
 			sender 'lose'
-			server=; Y2=; cors='single'
+			server=; Y2=; spd=0.0001; cors='single'
 			OBJ+=("$[$X2+1] $[$Y2+1] 0 boom"
                   "$[$X2+2] $[$Y2+2] 0 boom")
 		}
 
-		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; cors='single'; }
+		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; spd=0.0001; cors='single'; }
 		sender "${screen[*]}"
 
 	} || {
