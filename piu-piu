@@ -518,9 +518,14 @@ function sprite_tree2 {
           "\e[$[$OY+5];$[$OX+2]H"$SKY$blk'║ '$SKY);;
     esac
 
-
      sprite2=("${tree2[@]}")
 }
+
+	case $month in
+        0[1-4]|12) T3C=$BLD$cyn;; # winter & early spring
+        0[5-8]   ) T3C=$BLD$GRN;; # late spring & summer
+        09|1[0-1]) T3C=$DIM$red;; # autumn
+	esac
 
        tree3=('   _._ '
               '  /   \ '
@@ -530,12 +535,8 @@ function sprite_tree2 {
               '   \║|/_/ '
               '    ║/ '
               '    ║ '
-              '    ║ '); tree3H=${#tree3[*]}; tree3W=${#tree3[5]}
+              '    ║ '); tree3W=${#tree3[5]}
 
-	case $month in	0[1-4]|12) T3C=$BLD$cyn;; # winter & early spring
-					0[5-8]   ) T3C=$BLD$GRN;; # late spring & summer
-					09|1[0-1]) T3C=$DIM$red;; # autumn
-	esac
 
          CM1=$SKY$BLK
  tree3_color=("$SKY $SKY $SKY $T3C $T3C $T3C $SKY"
@@ -548,13 +549,51 @@ function sprite_tree2 {
               "$SKY $SKY $SKY $SKY $CM1 $SKY"
               "$SKY $SKY $SKY $SKY $CM1 $SKY")
 
+      wtree3=('     |/ '
+              '  \||/ '
+              '_\_\║ '
+              ' /\ ║ \/_ '
+              '   \║ / '
+              '    ║/ '
+              '    ║ '
+              '    ║ ')
+
+wtree3_color=("$SKY $SKY $SKY $SKY $SKY $T3C $T3C $SKY"
+              "$SKY $SKY $T3C $T3C $CM1 $CM1 $SKY"
+              "$T3C $T3C $T3C $CM1 $XM1 $SKY"
+              "$SKY $T3C $CM1 $SKY $CM1 $SKY $T3C $T3C $T3C $SKY"
+              "$SKY $SKY $SKY $CM1 $CM1 $SKY $CM1 $SKY"
+              "$SKY $SKY $SKY $SKY $CM1 $CM1 $SKY"
+              "$SKY $SKY $SKY $SKY $CM1 $SKY"
+              "$SKY $SKY $SKY $SKY $CM1 $SKY")
+
+	case $month in 0[1-4]|12) # change winter sprite
+        tree3=("${wtree3[@]}")
+        tree3_color=("${wtree3_color[@]}")
+        tree3W=${#tree3[3]};;
+	esac
+
+      tree3H=${#tree3[*]}
+
 function sprite_tree3 {
 
        hight=$tree3H
        width=$tree3W
        color=("${tree3_color[@]}")
-
          CM1=$SKY$BLK
+
+    case $month in
+        0[1-4]|12)
+      sprite=("\e[$OY;$[$OX+5]H$SKY$T3C|/$SKY "
+  "\e[$[$OY+1];$[$OX+2]H$SKY$T3C\|$CM1|/$SKY "
+ "\e[$[$OY+2];${OX}H$SKY${T3C}_\_$CM1\║$SKY "
+ "\e[$[$OY+3];$[$OX+1]H$SKY$T3C/$CM1\ ║$SKY $T3C\/_$SKY "
+       "\e[$[$OY+4];$[$OX+3]H$SKY$CM1\║$SKY $CM1/$SKY "
+        "\e[$[$OY+5];$[$OX+4]H$SKY$CM1║/$SKY "
+        "\e[$[$OY+6];$[$OX+4]H$SKY$CM1║$SKY "
+        "\e[$[$OY+7];$[$OX+4]H$SKY$CM1║$SKY ");;
+
+        *)
       sprite=("\e[$OY;$[$OX+3]H"$SKY$T3C'_._ '$SKY
         "\e[$[$OY+1];$[$OX+2]H"$SKY$T3C'/   \ '$SKY
        "\e[$[$OY+2];$[$OX+1]H"$SKY$T3C'_\ '$CM1'|'$T3C' / '$SKY
@@ -564,6 +603,7 @@ function sprite_tree3 {
               "\e[$[$OY+6];$[$OX+4]H"$CM1'║/ '$SKY
               "\e[$[$OY+7];$[$OX+4]H"$CM1'║ '$SKY
               "\e[$[$OY+8];$[$OX+4]H"$CM1'║ '$SKY)
+    esac
 
      sprite2=("${tree3[@]}")
 }
@@ -911,7 +951,7 @@ bossendy=$[$endy-6 ]
 bosshbar=$[$endx-10]
 tre1endy=$[$endy-$tree1H-2]
 tre2endy=$[$endy-$tree2H-2]
-tre3endy=$[$endy-11]
+tre3endy=$[$endy-$tree3H-2]
 lineendy=$[$endy-2 ]
 Sunsendx=$[$endx-18]
 }
