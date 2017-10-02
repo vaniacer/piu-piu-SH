@@ -397,12 +397,19 @@ function sprite_cloud3 {
 }
 
 #------------------------{ Trees }---------------------------------------------------------------------------------------
+
+	case $month in
+        0[1-4]|12) T1C=$DIM$WHT;; # winter & early spring
+        0[5-8]   ) T1C=$DIM$GRN;; # late spring & summer
+        09|1[0-1]) T1C=$DIM$YLW;; # autumn
+	esac
+
        tree1=(' _ '
               '/ \ '
               '\|/ '
               ' | '); tree1W=${#tree1[1]}
 
-         CM1=$SKY$DIM
+         CM1=$SKY$DIM$blk
  tree1_color=("$T1C $T1C $SKY"
               "$T1C $T1C $T1C $SKY"
               "$T1C $CM1 $T1C $SKY"
@@ -416,22 +423,20 @@ wtree1_color=("$SKY $T1C $T1C $SKY"
               "$T1C $CM1 $SKY"
               "$SKY $CM1 $SKY")
 
-	case $month in
-	0[1-4]|12) T1C=$DIM$WHT   # winter & early spring
-                               tree1=("${wtree1[@]}")
-                               tree1_color=("${wtree1_color[@]}")
-                               tree1W=${#tree1[0]};;
-					0[5-8]   ) T1C=$DIM$GRN;; # late spring & summer
-					09|1[0-1]) T1C=$DIM$YLW;; # autumn
+	case $month in 0[1-4]|12) # change winter sprite
+        tree1=("${wtree1[@]}")
+        tree1_color=("${wtree1_color[@]}")
+        tree1W=${#tree1[0]};;
 	esac
 
-      tree1H=${#tree1[*]};
+      tree1H=${#tree1[*]}
 
 function sprite_tree1 {
 
        hight=$tree1H
        width=$tree1W
        color=("${tree1_color[@]}")
+         CM1=$SKY$DIM$blk
 
     case $month in
         0[1-4]|12)
@@ -454,7 +459,7 @@ function sprite_tree1 {
               '\ | / '
               ' \║/\ '
               '  ║_/ '
-              '  ║ '); tree2H=${#tree2[*]}; tree2W=${#tree2[1]}
+              '  ║ '); tree2W=${#tree2[1]}
 
 	case $month in	0[1-4]|12) T2C=$WHT;; # winter & early spring
 					0[5-8]   ) T2C=$GRN;; # late spring & summer
@@ -468,6 +473,8 @@ function sprite_tree1 {
               "$SKY $T2C $blk $CM1 $T2C $SKY"
               "$SKY $SKY $blk $CM1 $T2C $SKY"
               "$SKY $SKY $blk $CM1 $SKY")
+
+      tree2H=${#tree2[*]}
 
 function sprite_tree2 {
 
@@ -839,25 +846,25 @@ function sprite_hero2 { server_read
 				"   " "   " " $C7░░" "░ ▒" "▒▒ " "░░▒" "▒░$D " "   " ""    ""); arrN=${#arr[*]}; arrC=10
 
 #------------------------{ Functions }-----------------------------------------------------------------------------------
-function cut_in () { spr=()
+function cut_in () {
 
-	for ((h=0; h<$hight; h++)); do
+	for ((h=0; h<$hight; h++)); do  spr=; stp=0; stop=0
 		for ((c=0; c<$cuter; c++)); do
 			color2=(${color[$h]}); symbol=${sprite2[$h]:$c:1}
-			spr[$h]+="${color2[$c]}"${symbol//'\'/'\\'}
+			case $symbol:$stop in ' ':0) ((stp++));; *:*) stop=1; spr+="${color2[$c]}"${symbol//'\'/'\\'};; esac
 		done
-		sprite[$h]="$SKY\e[$[$OY+$h];${OX}H""${spr[$h]}"
+		sprite[$h]="$SKY\e[$[$OY+$h];$[$OX+$stp]H$spr"
 	done
 }
 
-function cut_out () { spr=()
+function cut_out () {
 
-	for ((h=0; h<$hight; h++)); do
+	for ((h=0; h<$hight; h++)); do spr=
 		for ((w=$[1-$OX]; w<$width; w++)); do
 			color2=(${color[$h]}); symbol=${sprite2[$h]:$w:1}
-			spr[$h]+="${color2[$w]}"${symbol//'\'/'\\'}
+			spr+="${color2[$w]}"${symbol//'\'/'\\'}
 		done
-		sprite[$h]="$SKY\e[$[$OY+$h];1H${spr[$h]}"
+		sprite[$h]="$SKY\e[$[$OY+$h];1H$spr"
 	done
 }
 
