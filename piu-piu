@@ -399,9 +399,9 @@ function sprite_cloud3 {
 #------------------------{ Trees }---------------------------------------------------------------------------------------
 
 	case $month in
-        0[1-4]|12) T1C=$DIM$WHT;; # winter & early spring
-        0[5-8]   ) T1C=$DIM$GRN;; # late spring & summer
-        09|1[0-1]) T1C=$DIM$YLW;; # autumn
+        0[1-4]|12) T1C=$SKY$DIM$WHT;; # winter & early spring
+        0[5-8]   ) T1C=$SKY$DIM$GRN;; # late spring & summer
+        09|1[0-1]) T1C=$SKY$DIM$YLW;; # autumn
 	esac
 
        tree1=('Z_ '
@@ -455,9 +455,9 @@ function sprite_tree1 {
 }
 
 	case $month in
-        0[1-4]|12) T2C=$WHT;; # winter & early spring
-        0[5-8]   ) T2C=$GRN;; # late spring & summer
-        09|1[0-1]) T2C=$YLW;; # autumn
+        0[1-4]|12) T2C=$SKY$WHT;; # winter & early spring
+        0[5-8]   ) T2C=$SKY$GRN;; # late spring & summer
+        09|1[0-1]) T2C=$SKY$YLW;; # autumn
 	esac
 
        tree2=('Z_._ '
@@ -522,9 +522,9 @@ function sprite_tree2 {
 }
 
 	case $month in
-        0[1-4]|12) T3C=$BLD$cyn;; # winter & early spring
-        0[5-8]   ) T3C=$BLD$GRN;; # late spring & summer
-        09|1[0-1]) T3C=$DIM$red;; # autumn
+        0[1-4]|12) T3C=$SKY$BLD$cyn;; # winter & early spring
+        0[5-8]   ) T3C=$SKY$BLD$GRN;; # late spring & summer
+        09|1[0-1]) T3C=$SKY$DIM$red;; # autumn
 	esac
 
        tree3=('ZZZ_._ '
@@ -549,18 +549,18 @@ function sprite_tree2 {
               "$SKY $SKY $SKY $SKY $CM1 $SKY"
               "$SKY $SKY $SKY $SKY $CM1 $SKY")
 
-      wtree3=('ZZZZZ|/ '
-              'ZZ\||/ '
-              '_\_\║ '
+      wtree3=('ZZ\| '
+              'ZZZ\|\/ '
+              '_\_ ║/ '
               'Z/\ ║ \/_ '
               'ZZZ\║ / '
               'ZZZZ║/ '
               'ZZZZ║ '
               'ZZZZ║ ')
 
-wtree3_color=("$SKY $SKY $SKY $SKY $SKY $T3C $T3C $SKY"
-              "$SKY $SKY $T3C $T3C $CM1 $CM1 $SKY"
-              "$T3C $T3C $T3C $CM1 $CM1 $SKY"
+wtree3_color=("$SKY $SKY $T3C $T3C $SKY"
+              "$SKY $SKY $SKY $CM1 $CM1 $T3C $T3C $SKY"
+              "$T3C $T3C $T3C $SKY $CM1 $CM1 $SKY"
               "$SKY $T3C $CM1 $SKY $CM1 $SKY $T3C $T3C $T3C $SKY"
               "$SKY $SKY $SKY $CM1 $CM1 $SKY $CM1 $SKY"
               "$SKY $SKY $SKY $SKY $CM1 $CM1 $SKY"
@@ -584,14 +584,14 @@ function sprite_tree3 {
 
     case $month in
         0[1-4]|12)
-      sprite=("\e[$OY;$[$OX+5]H$SKY$T3C|/$SKY "
-  "\e[$[$OY+1];$[$OX+2]H$SKY$T3C\|$CM1|/$SKY "
- "\e[$[$OY+2];${OX}H$SKY${T3C}_\_$CM1\║$SKY "
- "\e[$[$OY+3];$[$OX+1]H$SKY$T3C/$CM1\ ║$SKY $T3C\/_$SKY "
-       "\e[$[$OY+4];$[$OX+3]H$SKY$CM1\║$SKY $CM1/$SKY "
-        "\e[$[$OY+5];$[$OX+4]H$SKY$CM1║/$SKY "
-        "\e[$[$OY+6];$[$OX+4]H$SKY$CM1║$SKY "
-        "\e[$[$OY+7];$[$OX+4]H$SKY$CM1║$SKY ");;
+      sprite=("\e[$OY;$[$OX+2]H$SKY$T3C\|$SKY "
+     "\e[$[$OY+1];$[$OX+3]H$SKY$CM1"'\\'"|$SKY$T3C\/$SKY "
+"\e[$[$OY+2];${OX}H$SKY${T3C}_\_$SKY $CM1║/$SKY "
+    "\e[$[$OY+3];$[$OX+1]H$SKY$T3C/$CM1\ ║$SKY $T3C\/_$SKY "
+          "\e[$[$OY+4];$[$OX+3]H$SKY$CM1\║$SKY $CM1/$SKY "
+           "\e[$[$OY+5];$[$OX+4]H$SKY$CM1║/$SKY "
+           "\e[$[$OY+6];$[$OX+4]H$SKY$CM1║$SKY "
+           "\e[$[$OY+7];$[$OX+4]H$SKY$CM1║$SKY ");;
 
         *)
       sprite=("\e[$OY;$[$OX+3]H"$SKY$T3C'_._ '$SKY
@@ -918,10 +918,10 @@ function sprite_hero2 { server_read
 #------------------------{ Functions }-----------------------------------------------------------------------------------
 function cut_in () {
 
-	for ((h=0; h<$hight; h++)); do spr=; stp=0; mask=0
+	for ((h=0; h<$hight; h++)); do spr=; stp=0
 		for ((c=0; c<$cuter; c++)); do
 			color2=(${color[$h]}); symbol=${sprite2[$h]:$c:1}
-			case $symbol:$mask in 'Z':0) ((stp++));; *:*) mask=1; spr+="${color2[$c]}"${symbol//'\'/'\\'};; esac
+			case $symbol in 'Z') ((stp++));; *) spr+="${color2[$c]}"${symbol//'\'/'\\'};; esac
 		done
 		sprite[$h]="$SKY\e[$[$OY+$h];$[$OX+$stp]H$spr"
 	done
@@ -929,10 +929,10 @@ function cut_in () {
 
 function cut_out () {
 
-	for ((h=0; h<$hight; h++)); do spr=; stp=1; mask=0
+	for ((h=0; h<$hight; h++)); do spr=; stp=1
 		for ((w=$[1-$OX]; w<$width; w++)); do
 			color2=(${color[$h]}); symbol="${sprite2[$h]:$w:1}"
-			case "$symbol":"$mask" in 'Z':0) ((stp++));; *:*) mask=1; spr+="${color2[$w]}"${symbol//'\'/'\\'};; esac
+			case $symbol in 'Z') ((stp++));; *) spr+="${color2[$w]}"${symbol//'\'/'\\'};; esac
 		done
 		sprite[$h]="\e[$[$OY+$h];${stp}H$spr"
 	done
