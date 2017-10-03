@@ -635,13 +635,13 @@ function sprite_alien {
               'Z`¯´ ')
 }
 
-        boss=('         '
-              '     ___   '
-              '   _/   \_  '
-              '  /       \  '
-              ' (         ) '
-              '  `¯¯---¯¯´  '
-              '            '); bossH=${#boss[*]}; bossW=${#boss[4]}
+        boss=('ZZZ      '
+              'ZZZZZ___   '
+              'ZZZ_/   \_  '
+              'ZZ/       \  '
+              'Z(         ) '
+              'ZZ`¯¯---¯¯´  '
+              'ZZZ         '); bossH=${#boss[*]}; bossW=${#boss[4]}
 
 
          CM1=$DIM$BLK; CM2=$BLD$BLK; CM3=$SKY$BLK; CM4=$SKY$BLU; CM5=$BLD$YLW; CM6=$BLD$RED; CM7=$BLD$BLU; CM8=$SKY$YLW; CM9=$SKY$RED
@@ -685,13 +685,13 @@ function sprite_boss {
       "\e[$[$OY+5];${OX}H  ${CM1}"'`¯¯---¯¯´  '
       "\e[$[$OY+6];$[$OX+1]H${SKY}           ")
 
-     sprite2=('         '
-              '     ___   '
-              "   _/${small[$L]}\_  "
-              "  /${big[$L]}\  "
-              " ( ${big[$L]} ) "
-              '  `¯¯---¯¯´  '
-              '            ')
+     sprite2=('ZZZ      '
+              'ZZZZZ___   '
+              "ZZZ_/${small[$L]}\_  "
+              "ZZ/${big[$L]}\  "
+              "Z( ${big[$L]} ) "
+              'ZZ`¯¯---¯¯´  '
+              'ZZZ         ')
 
 	((cuter++)); OBJ[$i]="$OX $OY $cuter $type"
 }
@@ -829,10 +829,10 @@ function sprite_hero2 { server_read
 
     [[ $game_type -eq 'duel' ]] && {
 
-                                 #         __
-                                 #   _____/★〳
-                                 # -(° \ |_/
-                                 #      \|
+                                   #         __
+                                   #   _____/★〳
+                                   # -(° \ |_/
+                                   #      \|
 
       sprite=("\e[$Y2;$[$X2+7]H"${SKY}'    '
     "\e[$[$Y2+1];$[$X2+2]H"${CM5}"       __$SKY "
@@ -918,23 +918,29 @@ function sprite_hero2 { server_read
 #------------------------{ Functions }-----------------------------------------------------------------------------------
 function cut_in () {
 
-	for ((h=0; h<$hight; h++)); do spr=; stp=0
+	for ((h=0; h<$hight; h++)); do spr=
 		for ((c=0; c<$cuter; c++)); do
-			color2=(${color[$h]}); symbol=${sprite2[$h]:$c:1}
-			case $symbol in 'Z') ((stp++));; *) spr+="${color2[$c]}"${symbol//'\'/'\\'};; esac
+			color2=(${color[$h]})
+            symbol=${sprite2[$h]:$c:1}
+            symbol=${symbol//'\'/'\\'}
+            symbol=${symbol//'Z'/"\e[$[$OY+$h];$[$OX+$c+1]H"}
+			spr+="${color2[$c]}$symbol"
 		done
-		sprite[$h]="$SKY\e[$[$OY+$h];$[$OX+$stp]H$spr"
+		sprite[$h]="$SKY\e[$[$OY+$h];${OX}H$spr"
 	done
 }
 
 function cut_out () {
 
 	for ((h=0; h<$hight; h++)); do spr=; stp=1
-		for ((w=$[1-$OX]; w<$width; w++)); do
-			color2=(${color[$h]}); symbol="${sprite2[$h]:$w:1}"
-			case $symbol in 'Z') ((stp++));; *) spr+="${color2[$w]}"${symbol//'\'/'\\'};; esac
+		for ((w=$[1-$OX]; w<$width; w++)); do ((stp++))
+			color2=(${color[$h]})
+            symbol="${sprite2[$h]:$w:1}"
+            symbol=${symbol//'\'/'\\'}
+            symbol=${symbol//'Z'/"\e[$[$OY+$h];${stp}H"}
+			spr+="${color2[$w]}$symbol"
 		done
-		sprite[$h]="\e[$[$OY+$h];${stp}H$spr"
+		sprite[$h]="\e[$[$OY+$h];1H$spr"
 	done
 }
 
