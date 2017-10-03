@@ -1227,7 +1227,7 @@ function mover () { timer=$1
 
 	# print
 	[[ $cuter -lt  $width ]] && cut_in
-	[[    $OX -lt  1      ]] && cut_out #                fly away                                       or         print
+	[[    $OX -le  1      ]] && cut_out #                fly away                                       or         print
 	[[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || screen+=("${sprite[*]}")
 
 	# move
@@ -1315,7 +1315,7 @@ while true; do
 
 	#-{ Print Sun }------------------------------------------------------------------------------------------------------
 	sprite_Sun
-    XY 1 $[$endy-3] "----"
+
 	#-{ Move\check\print all flying to hero objects }--------------------------------------------------------------------
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
 
