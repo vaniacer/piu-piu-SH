@@ -410,18 +410,18 @@ function sprite_cloud3 {
               'Z| '); tree1W=${#tree1[1]}
 
          CM1=$SKY$DIM$blk
- tree1_color=("$T1C $T1C $SKY"
-              "$T1C $T1C $T1C $SKY"
-              "$T1C $CM1 $T1C $SKY"
-              "$SKY $CM1 $SKY")
+ tree1_color=("$T1C $T1C $SKY"      # _
+              "$T1C $T1C $T1C $SKY" #/ \
+              "$T1C $CM1 $T1C $SKY" #\|/
+              "$SKY $CM1 $SKY")     # |
 
       wtree1=('Z|/ '
               '\| '
               'Z| ')
 
-wtree1_color=("$SKY $T1C $T1C $SKY"
-              "$T1C $CM1 $SKY"
-              "$SKY $CM1 $SKY")
+wtree1_color=("$SKY $T1C $T1C $SKY" # |/
+              "$T1C $CM1 $SKY"      #\|
+              "$SKY $CM1 $SKY")     # |
 
 	case $month in 0[1-4]|12) # change winter sprite
         tree1=("${wtree1[@]}")
@@ -468,12 +468,12 @@ function sprite_tree1 {
               'ZZ║ '); tree2W=${#tree2[1]}
 
          CM1=$SKY$T2C
- tree2_color=("$T2C $T2C $T2C $T2C $SKY"
-              "$T2C $T2C $T2C $T2C $T2C $SKY"
-              "$T2C $T2C $blk $CM1 $T2C $SKY"
-              "$SKY $T2C $blk $CM1 $T2C $SKY"
-              "$SKY $SKY $blk $CM1 $T2C $SKY"
-              "$SKY $SKY $blk $CM1 $SKY")
+ tree2_color=("$T2C $T2C $T2C $T2C $SKY"        # _._
+              "$T2C $T2C $T2C $T2C $T2C $SKY"   #/   \
+              "$T2C $T2C $blk $CM1 $T2C $SKY"   #\ | /
+              "$SKY $T2C $blk $CM1 $T2C $SKY"   # \║/\
+              "$SKY $SKY $blk $CM1 $T2C $SKY"   #  ║_/
+              "$SKY $SKY $blk $CM1 $SKY")       #  ║
 
       wtree2=('ZZZ|_ '
               '\||/ '
@@ -481,11 +481,11 @@ function sprite_tree1 {
               'ZZ║/ '
               'ZZ║ ')
 
-wtree2_color=("$SKY $SKY $SKY $T2C $T2C $SKY"
-              "$T2C $T2C $blk $blk $SKY"
-              "$SKY $blk $blk $T2C $T2C $SKY"
-              "$SKY $SKY $blk $blk $SKY"
-              "$SKY $SKY $blk $SKY")
+wtree2_color=("$SKY $SKY $SKY $T2C $T2C $SKY"   #   |_
+              "$T2C $T2C $blk $blk $SKY"        #\||/
+              "$SKY $blk $blk $T2C $T2C $SKY"   # \║|_
+              "$SKY $SKY $blk $blk $SKY"        #  ║/
+              "$SKY $SKY $blk $SKY")            #  ║
 
 	case $month in 0[1-4]|12) # change winter sprite
         tree2=("${wtree2[@]}")
@@ -539,33 +539,33 @@ function sprite_tree2 {
 
 
          CM1=$SKY$BLK
- tree3_color=("$SKY $SKY $SKY $T3C $T3C $T3C $SKY"
-              "$SKY $SKY $T3C $SKY $SKY $SKY $T3C $SKY"
-              "$SKY $T3C $T3C $SKY $CM1 $SKY $T3C $SKY"
-              "$T3C $SKY $SKY $T3C $CM1 $T3C $T3C $T3C $SKY"
-              "$T3C $T3C $CM1 $T3C $CM1 $T3C $SKY $SKY $T3C $SKY"
-              "$SKY $SKY $SKY $CM1 $CM1 $T3C $CM1 $T3C $T3C $SKY"
-              "$SKY $SKY $SKY $SKY $CM1 $CM1 $SKY"
-              "$SKY $SKY $SKY $SKY $CM1 $SKY"
-              "$SKY $SKY $SKY $SKY $CM1 $SKY")
+ tree3_color=("$SKY $SKY $SKY $T3C $T3C $T3C $SKY"                      #   _._
+              "$SKY $SKY $T3C $SKY $SKY $SKY $T3C $SKY"                 #  /   \
+              "$SKY $T3C $T3C $SKY $CM1 $SKY $T3C $SKY"                 # _\ | /
+              "$T3C $SKY $SKY $T3C $CM1 $T3C $T3C $T3C $SKY"            #/  \║/__
+              "$T3C $T3C $CM1 $T3C $CM1 $T3C $SKY $SKY $T3C $SKY"       #\_\/║/  \
+              "$SKY $SKY $SKY $CM1 $CM1 $T3C $CM1 $T3C $T3C $SKY"       #   \║|/_/
+              "$SKY $SKY $SKY $SKY $CM1 $CM1 $SKY"                      #    ║/
+              "$SKY $SKY $SKY $SKY $CM1 $SKY"                           #    ║
+              "$SKY $SKY $SKY $SKY $CM1 $SKY")                          #    ║
 
       wtree3=('ZZ\| '
               'ZZZ\|\/ '
               '_\_ ║/ '
-              'Z/\ ║ \/_ '
-              'ZZZ\║ / '
-              'ZZZZ║/ '
+              'Z/\ ║ Z\/_ '
+              'ZZZ\║ Z/ '
+              'ZZZZ║_/ '
               'ZZZZ║ '
               'ZZZZ║ ')
 
-wtree3_color=("$SKY $SKY $T3C $T3C $SKY"
-              "$SKY $SKY $SKY $CM1 $CM1 $T3C $T3C $SKY"
-              "$T3C $T3C $T3C $SKY $CM1 $CM1 $SKY"
-              "$SKY $T3C $CM1 $SKY $CM1 $SKY $T3C $T3C $T3C $SKY"
-              "$SKY $SKY $SKY $CM1 $CM1 $SKY $CM1 $SKY"
-              "$SKY $SKY $SKY $SKY $CM1 $CM1 $SKY"
-              "$SKY $SKY $SKY $SKY $CM1 $SKY"
-              "$SKY $SKY $SKY $SKY $CM1 $SKY")
+wtree3_color=("$SKY $SKY $T3C $T3C $SKY"                                #  \|
+              "$SKY $SKY $SKY $CM1 $CM1 $T3C $T3C $SKY"                 #   \|\/
+              "$T3C $T3C $T3C $SKY $CM1 $CM1 $SKY"                      #_\_ ║/
+              "$SKY $T3C $CM1 $SKY $CM1 $SKY $SKY $T3C $T3C $T3C $SKY"  # /\ ║  \/_
+              "$SKY $SKY $SKY $CM1 $CM1 $SKY $SKY $CM1 $SKY"            #   \║  /
+              "$SKY $SKY $SKY $SKY $CM1 $CM1 $CM1 $SKY"                 #    ║_/
+              "$SKY $SKY $SKY $SKY $CM1 $SKY"                           #    ║
+              "$SKY $SKY $SKY $SKY $CM1 $SKY")                          #    ║
 
 	case $month in 0[1-4]|12) # change winter sprite
         tree3=("${wtree3[@]}")
@@ -582,14 +582,23 @@ function sprite_tree3 {
        color=("${tree3_color[@]}")
          CM1=$SKY$BLK
 
+      wtree3=('ZZ\| '
+              'ZZZ\|\/ '
+              '_\_ ║/ '
+              'Z/\ ║ Z\/_ '
+              'ZZZ\║ Z/ '
+              'ZZZZ║_/ '
+              'ZZZZ║ '
+              'ZZZZ║ ')
+
     case $month in
         0[1-4]|12)
       sprite=("\e[$OY;$[$OX+2]H$SKY$T3C\|$SKY "
      "\e[$[$OY+1];$[$OX+3]H$SKY$CM1"'\\'"|$SKY$T3C\/$SKY "
 "\e[$[$OY+2];${OX}H$SKY${T3C}_\_$SKY $CM1║/$SKY "
-    "\e[$[$OY+3];$[$OX+1]H$SKY$T3C/$CM1\ ║$SKY $T3C\/_$SKY "
-          "\e[$[$OY+4];$[$OX+3]H$SKY$CM1\║$SKY $CM1/$SKY "
-           "\e[$[$OY+5];$[$OX+4]H$SKY$CM1║/$SKY "
+    "\e[$[$OY+3];$[$OX+1]H$SKY$T3C/$CM1\ ║$SKY \e[$[$OY+3];$[$OX+7]H$T3C\/_$SKY "
+          "\e[$[$OY+4];$[$OX+3]H$SKY$CM1\║$SKY \e[$[$OY+4];$[$OX+7]H$CM1/$SKY "
+           "\e[$[$OY+5];$[$OX+4]H$SKY$CM1║_/$SKY "
            "\e[$[$OY+6];$[$OX+4]H$SKY$CM1║$SKY "
            "\e[$[$OY+7];$[$OX+4]H$SKY$CM1║$SKY ");;
 
