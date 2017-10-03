@@ -321,9 +321,9 @@ function sprite_gunup {
               '(    ) '
               'Z`+-` '); cloud1H=${#cloud1[*]}; cloud1W=${#cloud1[1]}
 
-	case $month in	0[1-4]|12) C1C=$DIM$CYN;; # winter & early spring
-					0[5-8]   ) C1C=$DIM$WHT;; # late spring & summer
-					09|1[0-1]) C1C=$blk    ;; # autumn
+	case $month in	0[1-4]|12) C1C=$SKY$DIM$CYN;; # winter & early spring
+					0[5-8]   ) C1C=$SKY$DIM$WHT;; # late spring & summer
+					09|1[0-1]) C1C=$SKY$blk    ;; # autumn
 	esac
 
 cloud1_color=("$SKY $C1C $C1C $C1C $C1C $SKY"
@@ -347,9 +347,9 @@ function sprite_cloud1 {
               '(      ) '
               'Z`-...` '); cloud2H=${#cloud2[*]}; cloud2W=${#cloud2[1]}
 
-	case $month in	0[1-4]|12) C2C=$CYN;; # winter & early spring
-					0[5-8]   ) C2C=$WHT;; # late spring & summer
-					09|1[0-1]) C2C=$BLK;; # autumn
+	case $month in	0[1-4]|12) C2C=$SKY$CYN;; # winter & early spring
+					0[5-8]   ) C2C=$SKY$WHT;; # late spring & summer
+					09|1[0-1]) C2C=$SKY$BLK;; # autumn
 	esac
 
          CM1=$SKY$DIM
@@ -374,9 +374,9 @@ function sprite_cloud2 {
               '(         ) '
               'Z`--.....` '); cloud3H=${#cloud3[*]}; cloud3W=${#cloud3[1]}
 
-	case $month in	0[1-4]|12) C3C=$BLD$CYN;; # winter & early spring
-					0[5-8]   ) C3C=$BLD$WHT;; # late spring & summer
-					09|1[0-1]) C3C=$DIM$BLK;; # autumn
+	case $month in	0[1-4]|12) C3C=$SKY$BLD$CYN;; # winter & early spring
+					0[5-8]   ) C3C=$SKY$BLD$WHT;; # late spring & summer
+					09|1[0-1]) C3C=$SKY$DIM$BLK;; # autumn
 	esac
 
 cloud3_color=("$SKY $C3C $C3C $C3C $C3C $C3C $C3C $C3C $C3C $C3C $SKY"
@@ -613,7 +613,7 @@ function sprite_tree3 {
               '(   ) '
               'Z`¯´ '); alienH=${#alien[*]}; alienW=${#alien[1]}
 
-         CM1=$DIM$BLK; CM2=$BLD$BLK
+         CM1=$SKY$DIM$BLK; CM2=$SKY$BLD$BLK
  alien_color=("$SKY $CM1 $CM2 $CM1 $SKY"
               "$CM1 $red $red $red $CM1 $SKY"
               "$SKY $CM1 $CM1 $CM1 $SKY")
@@ -635,13 +635,13 @@ function sprite_alien {
               'Z`¯´ ')
 }
 
-        boss=('ZZZ      '
+        boss=('ZZZZ     '
               'ZZZZZ___   '
               'ZZZ_/   \_  '
               'ZZ/       \  '
               'Z(         ) '
               'ZZ`¯¯---¯¯´  '
-              'ZZZ         '); bossH=${#boss[*]}; bossW=${#boss[4]}
+              'Z           '); bossH=${#boss[*]}; bossW=${#boss[4]}
 
 
          CM1=$DIM$BLK; CM2=$BLD$BLK; CM3=$SKY$BLK; CM4=$SKY$BLU; CM5=$BLD$YLW; CM6=$BLD$RED; CM7=$BLD$BLU; CM8=$SKY$YLW; CM9=$SKY$RED
@@ -685,13 +685,13 @@ function sprite_boss {
       "\e[$[$OY+5];${OX}H  ${CM1}"'`¯¯---¯¯´  '
       "\e[$[$OY+6];$[$OX+1]H${SKY}           ")
 
-     sprite2=('ZZZ      '
+     sprite2=('ZZZZ     '
               'ZZZZZ___   '
               "ZZZ_/${small[$L]}\_  "
               "ZZ/${big[$L]}\  "
               "Z( ${big[$L]} ) "
               'ZZ`¯¯---¯¯´  '
-              'ZZZ         ')
+              'Z           ')
 
 	((cuter++)); OBJ[$i]="$OX $OY $cuter $type"
 }
