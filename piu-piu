@@ -317,9 +317,9 @@ function sprite_gunup {
 }
 
 #------------------------{ Clouds }--------------------------------------------------------------------------------------
-      cloud1=(' ,-., '
+      cloud1=('Z,-., '
               '(    ) '
-              ' `+-` '); cloud1H=${#cloud1[*]}; cloud1W=${#cloud1[1]}
+              'Z`+-` '); cloud1H=${#cloud1[*]}; cloud1W=${#cloud1[1]}
 
 	case $month in	0[1-4]|12) C1C=$DIM$CYN;; # winter & early spring
 					0[5-8]   ) C1C=$DIM$WHT;; # late spring & summer
@@ -343,9 +343,9 @@ function sprite_cloud1 {
      sprite2=("${cloud1[@]}")
 }
 
-      cloud2=(' ,-._., '
+      cloud2=('Z,-._., '
               '(      ) '
-              ' `-...` '); cloud2H=${#cloud2[*]}; cloud2W=${#cloud2[1]}
+              'Z`-...` '); cloud2H=${#cloud2[*]}; cloud2W=${#cloud2[1]}
 
 	case $month in	0[1-4]|12) C2C=$CYN;; # winter & early spring
 					0[5-8]   ) C2C=$WHT;; # late spring & summer
@@ -370,9 +370,9 @@ function sprite_cloud2 {
      sprite2=("${cloud2[@]}")
 }
 
-      cloud3=(' ,-"`.-"`. '
+      cloud3=('Z,-"`.-"`. '
               '(         ) '
-              ' `--.....` '); cloud3H=${#cloud3[*]}; cloud3W=${#cloud3[1]}
+              'Z`--.....` '); cloud3H=${#cloud3[*]}; cloud3W=${#cloud3[1]}
 
 	case $month in	0[1-4]|12) C3C=$BLD$CYN;; # winter & early spring
 					0[5-8]   ) C3C=$BLD$WHT;; # late spring & summer
@@ -404,10 +404,10 @@ function sprite_cloud3 {
         09|1[0-1]) T1C=$DIM$YLW;; # autumn
 	esac
 
-       tree1=(' _ '
+       tree1=('Z_ '
               '/ \ '
               '\|/ '
-              ' | '); tree1W=${#tree1[1]}
+              'Z| '); tree1W=${#tree1[1]}
 
          CM1=$SKY$DIM$blk
  tree1_color=("$T1C $T1C $SKY"
@@ -415,9 +415,9 @@ function sprite_cloud3 {
               "$T1C $CM1 $T1C $SKY"
               "$SKY $CM1 $SKY")
 
-      wtree1=(' |/ '
+      wtree1=('Z|/ '
               '\| '
-              ' | ')
+              'Z| ')
 
 wtree1_color=("$SKY $T1C $T1C $SKY"
               "$T1C $CM1 $SKY"
@@ -460,12 +460,12 @@ function sprite_tree1 {
         09|1[0-1]) T2C=$YLW;; # autumn
 	esac
 
-       tree2=(' _._ '
+       tree2=('Z_._ '
               '/   \ '
               '\ | / '
-              ' \║/\ '
-              '  ║_/ '
-              '  ║ '); tree2W=${#tree2[1]}
+              'Z\║/\ '
+              'ZZ║_/ '
+              'ZZ║ '); tree2W=${#tree2[1]}
 
          CM1=$SKY$T2C
  tree2_color=("$T2C $T2C $T2C $T2C $SKY"
@@ -475,14 +475,14 @@ function sprite_tree1 {
               "$SKY $SKY $blk $CM1 $T2C $SKY"
               "$SKY $SKY $blk $CM1 $SKY")
 
-      wtree2=('   |_ '
+      wtree2=('ZZZ|_ '
               '\||/ '
-              ' \║|_ '
-              '  ║/ '
-              '  ║ ')
+              'Z\║|_ '
+              'ZZ║/ '
+              'ZZ║ ')
 
 wtree2_color=("$SKY $SKY $SKY $T2C $T2C $SKY"
-              "$T2C $T2C $blk $lbk $SKY"
+              "$T2C $T2C $blk $blk $SKY"
               "$SKY $blk $blk $T2C $T2C $SKY"
               "$SKY $SKY $blk $blk $SKY"
               "$SKY $SKY $blk $SKY")
@@ -527,15 +527,15 @@ function sprite_tree2 {
         09|1[0-1]) T3C=$DIM$red;; # autumn
 	esac
 
-       tree3=('   _._ '
-              '  /   \ '
-              ' _\ | / '
+       tree3=('ZZZ_._ '
+              'ZZ/   \ '
+              'Z_\ | / '
               '/  \║/__ '
               '\_\/║/  \ '
-              '   \║|/_/ '
-              '    ║/ '
-              '    ║ '
-              '    ║ '); tree3W=${#tree3[5]}
+              'ZZZ\║|/_/ '
+              'ZZZZ║/ '
+              'ZZZZ║ '
+              'ZZZZ║ '); tree3W=${#tree3[5]}
 
 
          CM1=$SKY$BLK
@@ -549,18 +549,18 @@ function sprite_tree2 {
               "$SKY $SKY $SKY $SKY $CM1 $SKY"
               "$SKY $SKY $SKY $SKY $CM1 $SKY")
 
-      wtree3=('     |/ '
-              '  \||/ '
+      wtree3=('ZZZZZ|/ '
+              'ZZ\||/ '
               '_\_\║ '
-              ' /\ ║ \/_ '
-              '   \║ / '
-              '    ║/ '
-              '    ║ '
-              '    ║ ')
+              'Z/\ ║ \/_ '
+              'ZZZ\║ / '
+              'ZZZZ║/ '
+              'ZZZZ║ '
+              'ZZZZ║ ')
 
 wtree3_color=("$SKY $SKY $SKY $SKY $SKY $T3C $T3C $SKY"
               "$SKY $SKY $T3C $T3C $CM1 $CM1 $SKY"
-              "$T3C $T3C $T3C $CM1 $XM1 $SKY"
+              "$T3C $T3C $T3C $CM1 $CM1 $SKY"
               "$SKY $T3C $CM1 $SKY $CM1 $SKY $T3C $T3C $T3C $SKY"
               "$SKY $SKY $SKY $CM1 $CM1 $SKY $CM1 $SKY"
               "$SKY $SKY $SKY $SKY $CM1 $CM1 $SKY"
@@ -609,9 +609,9 @@ function sprite_tree3 {
 }
 
 #------------------------{ Aliens slow }---------------------------------------------------------------------------------
-       alien=(' ___ '
+       alien=('Z___ '
               '(   ) '
-              ' `¯´ '); alienH=${#alien[*]}; alienW=${#alien[1]}
+              'Z`¯´ '); alienH=${#alien[*]}; alienW=${#alien[1]}
 
          CM1=$DIM$BLK; CM2=$BLD$BLK
  alien_color=("$SKY $CM1 $CM2 $CM1 $SKY"
@@ -630,9 +630,9 @@ function sprite_alien {
               "\e[$[$OY+1];${OX}H${CM1}(${red}${small[$L]}${CM1})${SKY} "
               "\e[$[$OY+2];$[$OX+1]H"${CM1}'`¯´ '${SKY})
 
-     sprite2=(' ___ '
+     sprite2=('Z___ '
               "(${small[$L]}) "
-              ' `¯´ ')
+              'Z`¯´ ')
 }
 
         boss=('         '
@@ -829,7 +829,7 @@ function sprite_hero2 { server_read
 
     [[ $game_type -eq 'duel' ]] && {
 
-                                 #         __ 
+                                 #         __
                                  #   _____/★〳
                                  # -(° \ |_/
                                  #      \|
@@ -918,10 +918,10 @@ function sprite_hero2 { server_read
 #------------------------{ Functions }-----------------------------------------------------------------------------------
 function cut_in () {
 
-	for ((h=0; h<$hight; h++)); do  spr=; stp=0; stop=0
+	for ((h=0; h<$hight; h++)); do spr=; stp=0; mask=0
 		for ((c=0; c<$cuter; c++)); do
 			color2=(${color[$h]}); symbol=${sprite2[$h]:$c:1}
-			case $symbol:$stop in ' ':0) ((stp++));; *:*) stop=1; spr+="${color2[$c]}"${symbol//'\'/'\\'};; esac
+			case $symbol:$mask in 'Z':0) ((stp++));; *:*) mask=1; spr+="${color2[$c]}"${symbol//'\'/'\\'};; esac
 		done
 		sprite[$h]="$SKY\e[$[$OY+$h];$[$OX+$stp]H$spr"
 	done
@@ -929,12 +929,12 @@ function cut_in () {
 
 function cut_out () {
 
-	for ((h=0; h<$hight; h++)); do spr=
+	for ((h=0; h<$hight; h++)); do spr=; stp=1; mask=0
 		for ((w=$[1-$OX]; w<$width; w++)); do
-			color2=(${color[$h]}); symbol=${sprite2[$h]:$w:1}
-			spr+="${color2[$w]}"${symbol//'\'/'\\'}
+			color2=(${color[$h]}); symbol="${sprite2[$h]:$w:1}"
+			case "$symbol":"$mask" in 'Z':0) ((stp++));; *:*) mask=1; spr+="${color2[$w]}"${symbol//'\'/'\\'};; esac
 		done
-		sprite[$h]="$SKY\e[$[$OY+$h];1H$spr"
+		sprite[$h]="\e[$[$OY+$h];${stp}H$spr"
 	done
 }
 
@@ -949,11 +949,11 @@ enmyendy=$[$endy-7 ]
 bossendx=$[$endx-11]
 bossendy=$[$endy-6 ]
 bosshbar=$[$endx-10]
+lineendy=$[$endy-2 ]
+Sunsendx=$[$endx-18]
 tre1endy=$[$endy-$tree1H-2]
 tre2endy=$[$endy-$tree2H-2]
 tre3endy=$[$endy-$tree3H-2]
-lineendy=$[$endy-2 ]
-Sunsendx=$[$endx-18]
 }
 
 function default { HC=${DHC}; SC=${DSC}; HS=${DHS}; }
@@ -1315,7 +1315,7 @@ while true; do
 
 	#-{ Print Sun }------------------------------------------------------------------------------------------------------
 	sprite_Sun
-
+    XY 1 $[$endy-3] "----"
 	#-{ Move\check\print all flying to hero objects }--------------------------------------------------------------------
 	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
 
