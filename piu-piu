@@ -146,7 +146,7 @@ case $month in	0[1-4]|12)	SKY=$DEF$bwht			# winter & early spring sky
 							TRE=50;;				# autumn trees rnd
 esac
 
-         gun=(- - = ≡ ≣ 𝄚)
+         gun=(─ ─ ═ ≡ ≣ 𝄚)
 
        grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █) # grass types
 
@@ -336,9 +336,9 @@ function sprite_cloud1 {
        width=$cloud1W
        color=("${cloud1_color[@]}")
 
-      sprite=("\e[$OY;$[$OX+1]H"$SKY$C1C',-., '$SKY
-           "\e[$[$OY+1];${OX}H"$SKY$C1C'(    ) '$SKY
-         "\e[$[$OY+2];$[$OX+1]H"$SKY$C1C'`+-` '$SKY)
+      sprite=("\e[$OY;$[$OX+1]H"$SKY$C1C',-.,'"$SKY "
+           "\e[$[$OY+1];${OX}H"$SKY$C1C'(    )'"$SKY "
+         "\e[$[$OY+2];$[$OX+1]H"$SKY$C1C'`+-`'"$SKY ")
 
      sprite2=("${cloud1[@]}")
 }
@@ -363,9 +363,9 @@ function sprite_cloud2 {
        width=$cloud2W
        color=("${cloud2_color[@]}")
 
-      sprite=("\e[$OY;$[$OX+1]H"$SKY$C2C',-._., '$SKY
-           "\e[$[$OY+1];${OX}H"$SKY$C2C'(      ) '$SKY
-         "\e[$[$OY+2];$[$OX+1]H"$SKY$C2C'`-...` '$SKY)
+      sprite=("\e[$OY;$[$OX+1]H"$SKY$C2C',-._.,'"$SKY "
+           "\e[$[$OY+1];${OX}H"$SKY$C2C'(      )'"$SKY "
+         "\e[$[$OY+2];$[$OX+1]H"$SKY$C2C'`-...`'"$SKY ")
 
      sprite2=("${cloud2[@]}")
 }
@@ -389,9 +389,9 @@ function sprite_cloud3 {
        width=$cloud3W
        color=("${cloud3_color[@]}")
 
-      sprite=("\e[$OY;$[$OX+1]H"$SKY$C3C',-"`.-"`. '$SKY
-           "\e[$[$OY+1];${OX}H"$SKY$C3C'(         ) '$SKY
-         "\e[$[$OY+2];$[$OX+1]H"$SKY$C3C'`--.....` '$SKY)
+      sprite=("\e[$OY;$[$OX+1]H"$SKY$C3C',-"`.-"`.'"$SKY "
+           "\e[$[$OY+1];${OX}H"$SKY$C3C'(         )'"$SKY "
+         "\e[$[$OY+2];$[$OX+1]H"$SKY$C3C'`--.....`'"$SKY ")
 
      sprite2=("${cloud3[@]}")
 }
@@ -803,19 +803,37 @@ function sprite_Sun {
     [[ $Q -eq 0 ]] && screen+=("${Sun[*]:$S:$SunC}")
 }
 
+
+   mainrotor=('___________' '   _____   ' '      _      ' '   _____   ')
+   tailrotor=('\\' '─' '/' '|')
+
 function sprite_hero {
 
-          HX=$[$X+9]; HY=$[$Y+3] # Hero collide coordinates
+#         HX=$[$X+9]; HY=$[$Y+3] # Hero collide coordinates
+          HX=$[$X+11]; HY=$[$Y+3] # Hero collide coordinates
 
-         CM4=$DIM$HC; CM5=$SKY$HC; CM6=$BLD$HC; CM7=$SKY$SC$HS$HC$BLD
-         CM8=$DIM$UND; CM9=$SKY$HC$BLD
+         CM4=$SKY$DIM$HC ; CM5=$SKY$HC; CM6=$SKY$BLD$HC; CM7=$SKY$SC$HS$HC$BLD
+         CM8=$SKY$DIM$UND; CM9=$SKY$HC$BLD
 
-      sprite=(     "\e[$Y;${X}H"${SKY}'    '
-              "\e[$[$Y+1];${X}H"${CM5}' __      '${SKY}
-              "\e[$[$Y+2];${X}H"${CM4}" |${CM7}〵${CM5}____  "${SKY}
-              "\e[$[$Y+3];${X}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G]}${SKY} "
-              "\e[$[$Y+4];${X}H"${CM4}"    |${BLD}/     "${SKY}
-              "\e[$[$Y+5];${X}H"${SKY}'       ')
+#      sprite=(     "\e[$Y;${X}H"${SKY}'    '
+#              "\e[$[$Y+1];${X}H"${CM5}' __      '${SKY}
+#              "\e[$[$Y+2];${X}H"${CM4}" |${CM7}〵${CM5}____  "${SKY}
+#              "\e[$[$Y+3];${X}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G]}${SKY} "
+#              "\e[$[$Y+4];${X}H"${CM4}"    |${BLD}/     "${SKY}
+#              "\e[$[$Y+5];${X}H"${SKY}'       ')
+
+        #      new hero
+        #  __ ___________
+        #  |X\___.-╨─¬_
+        #  `─´‾‾‷\°★ º¯]─
+        #          ￣
+
+	sprite=("\e[$Y;${X}H$SKY                  "
+            "\e[$[$Y+1];${X}H$CM5 __ $CM6${mainrotor[$L]}$SKY "
+            "\e[$[$Y+2];${X}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND¬ $SKY  "
+                        "\e[$[$Y+3];${X}H$CM4"' `─´‾‾‷\\'"$UND°$CM7$SKY$CM4 $UNDº¯$CM9]$CM5${gun[$G]}$SKY "
+                               "\e[$[$Y+4];${X}H         $CM4￣$SKY   "
+                                     "\e[$[$Y+5];$[$X+7]H$SKY  ")
 
 	screen+=("${sprite[*]}")
 }
@@ -958,7 +976,7 @@ function get_dimensions {
     endx=${size[1]}
     endy=${size[0]}
 bullendx=$[$endx-4 ]
-heroendx=$[$endx-12]
+heroendx=$[$endx-15] # old - 12
 heroendy=$[$endy-7 ]
 enmyendy=$[$endy-7 ]
 bossendx=$[$endx-11]
@@ -1253,11 +1271,11 @@ function server_read {
 
 	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
 
-		'w'|'W')	[[ $Y    -gt 1         ]] && ((Y--));;
-		'a'|'A')	[[ $X    -gt 1         ]] && ((X--));;
-		's'|'S')	[[ $Y    -lt $heroendy ]] && ((Y++));;
-		'd'|'D')	[[ $X    -lt $heroendx ]] && ((X++));;
-		'p'|'P')	[[ $ammo -ge $G        ]] && { case ${G} in
+		'w'|'W') [[ $Y    -gt 1               ]] && ((Y--));;
+		'a'|'A') [[ $X    -gt 1               ]] && ((X--));;
+		's'|'S') [[ $Y    -lt $heroendy       ]] && ((Y++));;
+		'd'|'D') [[ $X    -lt $heroendx       ]] && ((X++));;
+		'p'|'P') [[ $ammo -ge $G && $CD -eq 0 ]] && { CD=7; case ${G} in
             1) PIU+=("$HX $HY 1");;
             2) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1");;
             3) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1" "$[$HX+1] $HY 1");;
@@ -1320,13 +1338,14 @@ while true; do
 	[[ $life -gt 0 ]] && server_read
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
-	[[ $K -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
-	[[ $L -ge 3  ]] && L=0 || ((L++))	# sprites animation
-	[[ $J -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
-	[[ $Q -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
-	[[ $W -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
-	[[ $E -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
-	[[ $E -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
+	[[ $K  -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
+	[[ $L  -ge 3  ]] && L=0 || ((L++))	# sprites animation
+	[[ $J  -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
+	[[ $Q  -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
+	[[ $W  -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
+	[[ $E  -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
+    [[ $CD -gt 0  ]] && ((CD--))        # hero1 cooldown timer
+	[[ $E  -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
 
 	#-{ Print Sun }------------------------------------------------------------------------------------------------------
 	sprite_Sun
