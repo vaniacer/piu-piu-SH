@@ -811,7 +811,7 @@ function sprite_Sun {
 }
 
 
-   mainrotor=('___________' '   _____   ' '      _      ' '   _____   ')
+   mainrotor=('___________' '    ___    ' '     _     ' '    ___    ')
    tailrotor=('\\' '─' '/' '|')
 
 function sprite_hero {
@@ -836,12 +836,12 @@ function sprite_hero {
 
                                        #     new hero
                                        # __ ___________
-                                       # |X\___.-╨─¬_
+                                       # |X\___.-╨─._¬
                                        # `─´‾‾‷\°★ º¯]─
                                        #         ￣
       sprite=("\e[$Y;${X}H$SKY                  "
             "\e[$[$Y+1];${X}H$CM5 __ $CM6${mainrotor[$L]}$SKY "
-            "\e[$[$Y+2];${X}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND¬ $SKY  "
+            "\e[$[$Y+2];${X}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND. $SKY  "
                         "\e[$[$Y+3];${X}H$CM4"' `─´‾‾‷\\'"$UND°$CM7$SKY$CM4 $UNDº¯$CM9]$CM5${gun[$G]}$SKY "
                                "\e[$[$Y+4];${X}H         $CM4￣$SKY   "
                                      "\e[$[$Y+5];$[$X+7]H$SKY  ")
@@ -867,25 +867,37 @@ function sprite_hero2 {
 
 	esac
 
-         CM4=$DIM$HC2; CM5=$SKY$HC2; CM6=$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
-         CM8=$DIM$UND; CM9=$SKY$HC2$BLD
+         CM4=$SKY$DIM$HC2; CM5=$SKY$HC2; CM6=$SKY$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
+         CM8=$SKY$DIM$UND; CM9=$SKY$HC2$BLD
 
 
     case $game_type in
 
     'duel')
-
                                    #         __
                                    #   _____/★〳
                                    # -(° \ |_/
                                    #      \|
 
-      sprite=("\e[$Y2;$[$X2+7]H"${SKY}'    '
-    "\e[$[$Y2+1];$[$X2+2]H"${CM5}"       __$SKY "
-   "\e[$[$Y2+2];$[$X2+1]H"${CM5}"  _____/${CM7}${CM6}〳$SKY "
-     "\e[$[$Y2+3];${X2}H"${CM5}" -(${CM8}° ${CM5}\ ${CM6}|${CM5}_${CM6}/$SKY "
-   "\e[$[$Y2+4];$[$X2+1]H"${CM5}'     \\'"${CM6}|$SKY   "
-      "\e[$[$Y2+5];$[$X2+5]H"${SKY}'     ')
+#      sprite=("\e[$Y2;$[$X2+7]H"${SKY}'    '
+#    "\e[$[$Y2+1];$[$X2+2]H"${CM5}"       __$SKY "
+#   "\e[$[$Y2+2];$[$X2+1]H"${CM5}"  _____/${CM7}${CM6}〳$SKY "
+#     "\e[$[$Y2+3];${X2}H"${CM5}" -(${CM8}° ${CM5}\ ${CM6}|${CM5}_${CM6}/$SKY "
+#   "\e[$[$Y2+4];$[$X2+1]H"${CM5}'     \\'"${CM6}|$SKY   "
+#      "\e[$[$Y2+5];$[$X2+5]H"${SKY}'     ')
+
+                                   #    new hero
+                                   #  ___________ __
+                                   #    _.─╨-.___/X|
+                                   # ─[¯º ★°/‴‾‾`─´
+                                   #      ￣
+
+      sprite=("\e[$Y2;${X2}H$SKY                  "
+         "\e[$[$Y2+1];${X2}H$CM6 ${mainrotor[$L]}$CM5 __$SKY "
+         "\e[$[$Y2+2];${X2}H$CM5   $UND .─$CM5╨$CM6-.${CM5}___/$CM6${tailrotor[$L]}$CM6|$SKY "
+         "\e[$[$Y2+3];${X2}H$CM5 ${gun[$G2]}$CM4[$UND¯º$CM7 $CM4$UND°$CM4/‴‾‾"'`─´'"$SKY "
+                       "\e[$[$Y2+4];${X2}H     $CM4￣$SKY        "
+                        "\e[$[$Y2+5];$[$X2+4]H$SKY   ")
 
          HX2=$[$X2+3] # Hero collide
          HY2=$[$Y2+3] # coordinates
@@ -904,17 +916,18 @@ function sprite_hero2 {
 #         "\e[$[$Y2+4];${X2}H"${CM4}"    |${BLD}/$SKY     "
 #         "\e[$[$Y2+5];${X2}H"${SKY}'       ')
 
-            #      new hero
-            #  __ ___________
-            #  |X\___.-╨─¬_
-            #  `─´‾‾‷\°★ º¯]─
-            #          ￣
+                                   #     new hero
+                                   # __ ___________
+                                   # |X\___.-╨─¬_
+                                   # `─´‾‾‷\°★ º¯]─
+                                   #         ￣
       sprite=("\e[$Y2;${X2}H$SKY                  "
             "\e[$[$Y2+1];${X2}H$CM5 __ $CM6${mainrotor[$L]}$SKY "
             "\e[$[$Y2+2];${X2}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND¬ $SKY  "
                         "\e[$[$Y2+3];${X2}H$CM4"' `─´‾‾‷\\'"$UND°$CM7$SKY$CM4 $UNDº¯$CM9]$CM5${gun[$G2]}$SKY "
                                "\e[$[$Y2+4];${X2}H         $CM4￣$SKY   "
                                      "\e[$[$Y2+5];$[$X2+7]H$SKY  ")
+
          HX2=$[$X2+11] # Hero collide
          HY2=$[$Y2+3]  # coordinates
 
@@ -1319,12 +1332,10 @@ function server_read {
 
 function client_read {
 
-	read -t$spd -n1 input &> /dev/null #; input=${input::1}
+	read -t$spd -n1 input &> /dev/null; input=${input::1}
 }
 
 function sender () { until nc $1 $2 2> /dev/null <<< "$3"; do $4; done; }
-#function sender () { until echo "$3" > /dec/tcp/$1/$2; do $4; done; }
-
 
 function fill_screen {
 	#-{ Fill screen }----------------------------------------------------------------------------------------------------
@@ -1338,7 +1349,7 @@ clear; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 stty -echo; printf "$COF"
 
 case $game_type in
-    'team') X2=1; Y2=$heroendy;;
+    'team') X2=1        ; Y2=$heroendy;;
     'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2];;
 esac
 
@@ -1347,7 +1358,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
 [[ $server ]] && {
 
-    XY 1 1 $SKY$RED"${game_type^} mode. Waiting for client..."; CLD=80; TRE=70; spd=0.001
+    XY 1 1 $SKY$RED"${game_type^} mode. Waiting for client..."; CLD=80; TRE=70 #; spd=0.01
       clnt=($(nc -l $sport))
 	 caddr=${clnt[0]}
 	 cport=${clnt[1]}
@@ -1358,7 +1369,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
 [[ $client ]] && { #---------------------------------{ Initialisation }--------------------------------------------------
 
-spd=0.001
+#spd=0.01
 sender $saddr $sport "${caddr[0]} $cport $HC $HS $SC" ':'
 XY 1 1 $SKY$RED"Waiting for server..."
 
@@ -1507,7 +1518,7 @@ while true; do
 done;;
 
                                                                  'duel') Y=$[RANDOM % $[$heroendy-2]+2]
-#========================================={ Main game loop server duel mode}========================================
+#========================================={ Main game loop server duel mode }============================================
 while true; do
 
 	screen=(); fps_counter
@@ -1537,7 +1548,7 @@ while true; do
 
 	esac; done
 
-	#-{ Move\check\print heroes' bullets }----------------------------------------------------------------------------------
+	#-{ Move\check\print heroes' bullets }-------------------------------------------------------------------------------
 	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
 
 		# Move\Fly away\Collision
