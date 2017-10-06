@@ -1343,7 +1343,7 @@ function fill_screen {
 	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
 }
 
-trap bye INT; trap : ALRM; get_dimensions; default; clear
+trap bye INT TERM SIGINT SIGTERM EXIT; trap : ALRM; get_dimensions; default; clear
 stty -echo; printf "$COF"; mess "help"; sleep 2; clear; main_menu
 clear; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 stty -echo; printf "$COF"
@@ -1358,7 +1358,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
 [[ $server ]] && {
 
-    XY 1 1 $SKY$RED"${game_type^} mode. Waiting for client..."; CLD=80; TRE=70 #; spd=0.01
+    XY 2 1 $SKY$RED"${game_type^} mode. Waiting for client..."; CLD=80; TRE=70
       clnt=($(nc -l $sport))
 	 caddr=${clnt[0]}
 	 cport=${clnt[1]}
@@ -1369,9 +1369,8 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
 [[ $client ]] && { #---------------------------------{ Initialisation }--------------------------------------------------
 
-#spd=0.01
 sender $saddr $sport "${caddr[0]} $cport $HC $HS $SC" ':'
-XY 1 1 $SKY$RED"Waiting for server..."
+XY 2 1 $SKY$RED"Waiting for server..."
 
 #=============================================={ Main game loop client mode}=============================================
 while true; do
@@ -1384,7 +1383,7 @@ while true; do
 
 done
 } || {                                 case $game_type in    ''   |        'team')
-#========================================={ Main game loop single or server team mode}========================================
+#========================================={ Main game loop single or server team mode}===================================
 while true; do
 
 	screen=(); fps_counter
@@ -1490,28 +1489,35 @@ while true; do
 		case $make_once in '')
 			XY 1 1 "$DEF"; clear
 			sprite_lose; printf "${sprite[*]}"
-			OBJ+=("$[$X+1] $[$Y+1] 0 boom"
+			OBJ+=("  $X      $Y    0 boom"
+                  "$[$X+1] $[$Y+1] 0 boom"
 			      "$[$X+2] $[$Y+2] 0 boom")
 			make_once=done;;
 		esac
 	}
 
-	[[ $server ]] && {
+	case $server in 
 
-		[[ $life2 -le 0 ]] && {
-			sender $caddr $cport 'lose' server_read
-			server=; Y2=; spd=0.0001; cors='single'
-			OBJ+=("$[$X2+1] $[$Y2+1] 0 boom"
-                  "$[$X2+2] $[$Y2+2] 0 boom")
-		}
+        true)
 
-		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender $caddr $cport 'win' server_read; server=; spd=0.0001; cors='single'; }
+		    [[ $life2 -le 0 ]] && {
+			    sender $caddr $cport 'lose' server_read
+			    server=; Y2=; cors='single'
+			    OBJ+=("  $X2      $Y2    0 boom"
+                      "$[$X2+1] $[$Y2+1] 0 boom"
+                      "$[$X2+2] $[$Y2+2] 0 boom")
+		    }
 
-	} || {
-		# Check win\lose
-		[[ $bhealth -le 0 ]] && mess win
-		[[ $life    -le 0 ]] && mess lose
-	}
+		    [[ $life2 -gt 0 && $bhealth -le 0 ]] && {
+                sender $caddr $cport 'win' server_read
+                cors='single'
+                server=
+            };;
+
+	    *   )
+		    [[ $bhealth -le 0 ]] && mess win
+		    [[ $life    -le 0 ]] && mess lose;;
+    esac
 
     [[ $server ]] && sender $caddr $cport "${screen[*]}" server_read
 
@@ -1591,7 +1597,7 @@ while true; do
 
 	#-{ Print game status }----------------------------------------------------------------------------------------------
 	screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
-	screen+=("\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+	screen+=("\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY         ")
 	screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
 
     [[ $life2 -le 0 ]] && { sender $caddr $cport 'lose' server_read; mess  'win'; }
