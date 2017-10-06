@@ -826,6 +826,7 @@ function sprite_hero {
                                        # |★〵____
                                        #  \_| /  °)-
                                        #    |/
+
 #      sprite=(     "\e[$Y;${X}H"${SKY}'    '
 #              "\e[$[$Y+1];${X}H"${CM5}' __      '${SKY}
 #              "\e[$[$Y+2];${X}H"${CM4}" |${CM7}〵${CM5}____  "${SKY}
@@ -838,7 +839,7 @@ function sprite_hero {
             #  |X\___.-╨─¬_
             #  `─´‾‾‷\°★ º¯]─
             #          ￣
-	sprite=("\e[$Y;${X}H$SKY                  "
+      sprite=("\e[$Y;${X}H$SKY                  "
             "\e[$[$Y+1];${X}H$CM5 __ $CM6${mainrotor[$L]}$SKY "
             "\e[$[$Y+2];${X}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND¬ $SKY  "
                         "\e[$[$Y+3];${X}H$CM4"' `─´‾‾‷\\'"$UND°$CM7$SKY$CM4 $UNDº¯$CM9]$CM5${gun[$G]}$SKY "
@@ -864,7 +865,9 @@ function sprite_hero2 { server_read
          CM8=$DIM$UND; CM9=$SKY$HC2$BLD
 
 
-    [[ $game_type -eq 'duel' ]] && {
+    case $game_type in
+
+    'duel')
 
                                    #         __
                                    #   _____/★〳
@@ -880,8 +883,9 @@ function sprite_hero2 { server_read
 
          HX2=$[$X2+3] # Hero collide
          HY2=$[$Y2+3] # coordinates
+    ;;
 
-    } || {
+    'team')
                                    # __
                                    # |★〵____
                                    #  \_| /  °)-
@@ -899,19 +903,20 @@ function sprite_hero2 { server_read
             #  |X\___.-╨─¬_
             #  `─´‾‾‷\°★ º¯]─
             #          ￣
-	sprite=("\e[$Y;${X}H$SKY                  "
-            "\e[$[$Y+1];${X}H$CM5 __ $CM6${mainrotor[$L]}$SKY "
-            "\e[$[$Y+2];${X}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND¬ $SKY  "
-                        "\e[$[$Y+3];${X}H$CM4"' `─´‾‾‷\\'"$UND°$CM7$SKY$CM4 $UNDº¯$CM9]$CM5${gun[$G2]}$SKY "
-                               "\e[$[$Y+4];${X}H         $CM4￣$SKY   "
-                                     "\e[$[$Y+5];$[$X+7]H$SKY  ")
+      sprite=("\e[$Y2;${X2}H$SKY                  "
+            "\e[$[$Y2+1];${X2}H$CM5 __ $CM6${mainrotor[$L]}$SKY "
+            "\e[$[$Y2+2];${X2}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND¬ $SKY  "
+                        "\e[$[$Y2+3];${X2}H$CM4"' `─´‾‾‷\\'"$UND°$CM7$SKY$CM4 $UNDº¯$CM9]$CM5${gun[$G2]}$SKY "
+                               "\e[$[$Y2+4];${X2}H         $CM4￣$SKY   "
+                                     "\e[$[$Y2+5];$[$X2+7]H$SKY  ")
          HX2=$[$X2+11] # Hero collide
          HY2=$[$Y2+3]  # coordinates
-    }
+
+    ;; esac
 
 	[[ $PIU2 ]] && {
 
-		[[ $ammo2 -ge $G2 ]] && { case $G2 in
+		[[ $ammo2 -ge $G2 && $CD2 -eq 0 ]] && { case $G2 in
 
 			1) PIU+=("$HX2 $HY2 2");;
 			2) PIU+=("$HX2 $[$HY2+1] 2" "$HX2 $[$HY2-1] 2");;
@@ -919,7 +924,7 @@ function sprite_hero2 { server_read
 			4) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2");;
 			5) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2" "$[$HX2+2] $HY2 2");;
 
-		esac; ((ammo2-=$G2)); }
+		esac; ((ammo2-=$G2)); CD2=7; }
 	}
 
 	screen+=("${sprite[*]}")
@@ -1317,6 +1322,19 @@ function client_read {
 	esac
 }
 
+function timings {
+
+	[[ $K   -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
+	[[ $L   -ge 3  ]] && L=0 || ((L++))	# sprites animation
+	[[ $J   -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
+	[[ $Q   -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
+	[[ $W   -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
+	[[ $E   -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
+    [[ $CD  -gt 0  ]] && ((CD--))       # hero1 cooldown timer
+    [[ $CD2 -gt 0  ]] && ((CD2--))      # hero2 cooldown timer
+	[[ $E   -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
+}
+
 function sender { until nc $caddr $cport 2> /dev/null <<< "$1"; do server_read; done; }
 
 function fill_screen {
@@ -1334,8 +1352,19 @@ stty -echo; printf "$COF"
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
 
-[[ $server ]] && { XY 1 1 $SKY$RED"Waiting for client..."; CLD=80; TRE=70; spd=0.001; }
-[[ $client ]] && { X=1; spd=0.001; Y=$heroendy; [[ $game_type -eq 'duel' ]] && { X=$heroendx; Y=$[RANDOM % $[$heroendy-2]+2]; }
+[[ $server ]] && {
+    XY 1 1 $SKY$RED"Waiting for client... ${game_type^} mode"; CLD=80; TRE=70; spd=0.001
+#    client=($(nc -l $sport)); caddr=${client[0]}; cport=${client[1]}
+#    until nc $caddr $cport 2> /dev/null <<< "$gametype"; do :; done
+}
+
+
+[[ $client ]] && {
+
+X=1; Y=$heroendy; spd=0.001
+#until nc $saddr $sport 2> /dev/null <<< "${caddr[0]} $cport"; do :; done
+#game_type="$(nc -l $cport)"; case $game_type in 'duel') X=$heroendx; Y=$[RANDOM % $[$heroendy-2]+2];; esac
+
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
@@ -1358,14 +1387,7 @@ while true; do
 	[[ $life -gt 0 ]] && server_read
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
-	[[ $K  -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
-	[[ $L  -ge 3  ]] && L=0 || ((L++))	# sprites animation
-	[[ $J  -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
-	[[ $Q  -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
-	[[ $W  -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
-	[[ $E  -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
-    [[ $CD -gt 0  ]] && ((CD--))        # hero1 cooldown timer
-	[[ $E  -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
+    timings
 
 	#-{ Print Sun }------------------------------------------------------------------------------------------------------
 	sprite_Sun
@@ -1497,11 +1519,7 @@ while true; do
 	server_read
 
 	#-{ Timings }--------------------------------------------------------------------------------------------------------
-	[[ $L -ge 3  ]] && L=0 || ((L++))	# sprites animation
-	[[ $Q -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
-	[[ $W -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
-	[[ $E -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
-	[[ $E -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
+    timings
 
 	#-{ Print Sun }------------------------------------------------------------------------------------------------------
 	sprite_Sun
