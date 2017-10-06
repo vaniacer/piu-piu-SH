@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# check bash version
+case ${BASH_VERSINFO[@]::2} in [1-3]' '[0-9][0-9]|[1-3]' '[0-9]|'4 '[0-1])
+	echo -e "\nYour BASH is too short!) 4.2+ required to run this game, your is - ${BASH_VERSINFO[@]}"
+    exit 1;;
+esac
+
 #--------------------------------------------------------------------+
 #Color picker, usage: printf ${BLD}${CUR}${RED}${BBLU}"Hello!)"${DEF}|
 #-------------------------+--------------------------------+---------+
