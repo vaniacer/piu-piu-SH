@@ -822,6 +822,10 @@ function sprite_hero {
          CM4=$SKY$DIM$HC ; CM5=$SKY$HC; CM6=$SKY$BLD$HC; CM7=$SKY$SC$HS$HC$BLD
          CM8=$SKY$DIM$UND; CM9=$SKY$HC$BLD
 
+                                       # __
+                                       # |★〵____
+                                       #  \_| /  °)-
+                                       #    |/
 #      sprite=(     "\e[$Y;${X}H"${SKY}'    '
 #              "\e[$[$Y+1];${X}H"${CM5}' __      '${SKY}
 #              "\e[$[$Y+2];${X}H"${CM4}" |${CM7}〵${CM5}____  "${SKY}
@@ -829,12 +833,11 @@ function sprite_hero {
 #              "\e[$[$Y+4];${X}H"${CM4}"    |${BLD}/     "${SKY}
 #              "\e[$[$Y+5];${X}H"${SKY}'       ')
 
-        #      new hero
-        #  __ ___________
-        #  |X\___.-╨─¬_
-        #  `─´‾‾‷\°★ º¯]─
-        #          ￣
-
+            #      new hero
+            #  __ ___________
+            #  |X\___.-╨─¬_
+            #  `─´‾‾‷\°★ º¯]─
+            #          ￣
 	sprite=("\e[$Y;${X}H$SKY                  "
             "\e[$[$Y+1];${X}H$CM5 __ $CM6${mainrotor[$L]}$SKY "
             "\e[$[$Y+2];${X}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND¬ $SKY  "
@@ -878,22 +881,32 @@ function sprite_hero2 { server_read
          HX2=$[$X2+3] # Hero collide
          HY2=$[$Y2+3] # coordinates
 
-
     } || {
                                    # __
                                    # |★〵____
-                                   #  \_| / °)-
+                                   #  \_| /  °)-
                                    #    |/
 
-      sprite=("\e[$Y2;${X2}H"${SKY}'    '
-         "\e[$[$Y2+1];${X2}H"${CM5}" __$SKY      "
-         "\e[$[$Y2+2];${X2}H"${CM4}" |${CM7}〵${CM5}____$SKY  "
-         "\e[$[$Y2+3];${X2}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G2]}$SKY "
-         "\e[$[$Y2+4];${X2}H"${CM4}"    |${BLD}/$SKY     "
-         "\e[$[$Y2+5];${X2}H"${SKY}'       ')
+#      sprite=("\e[$Y2;${X2}H"${SKY}'    '
+#         "\e[$[$Y2+1];${X2}H"${CM5}" __$SKY      "
+#         "\e[$[$Y2+2];${X2}H"${CM4}" |${CM7}〵${CM5}____$SKY  "
+#         "\e[$[$Y2+3];${X2}H"${CM4}"  \_| ${CM6}/${CM8} °${CM9})${blk}${gun[$G2]}$SKY "
+#         "\e[$[$Y2+4];${X2}H"${CM4}"    |${BLD}/$SKY     "
+#         "\e[$[$Y2+5];${X2}H"${SKY}'       ')
 
-         HX2=$[$X2+9] # Hero collide
-         HY2=$[$Y2+3] # coordinates
+            #      new hero
+            #  __ ___________
+            #  |X\___.-╨─¬_
+            #  `─´‾‾‷\°★ º¯]─
+            #          ￣
+	sprite=("\e[$Y;${X}H$SKY                  "
+            "\e[$[$Y+1];${X}H$CM5 __ $CM6${mainrotor[$L]}$SKY "
+            "\e[$[$Y+2];${X}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND¬ $SKY  "
+                        "\e[$[$Y+3];${X}H$CM4"' `─´‾‾‷\\'"$UND°$CM7$SKY$CM4 $UNDº¯$CM9]$CM5${gun[$G2]}$SKY "
+                               "\e[$[$Y+4];${X}H         $CM4￣$SKY   "
+                                     "\e[$[$Y+5];$[$X+7]H$SKY  ")
+         HX2=$[$X2+11] # Hero collide
+         HY2=$[$Y2+3]  # coordinates
     }
 
 	[[ $PIU2 ]] && {
