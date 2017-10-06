@@ -834,11 +834,11 @@ function sprite_hero {
 #              "\e[$[$Y+4];${X}H"${CM4}"    |${BLD}/     "${SKY}
 #              "\e[$[$Y+5];${X}H"${SKY}'       ')
 
-            #      new hero
-            #  __ ___________
-            #  |X\___.-╨─¬_
-            #  `─´‾‾‷\°★ º¯]─
-            #          ￣
+                                       #     new hero
+                                       # __ ___________
+                                       # |X\___.-╨─¬_
+                                       # `─´‾‾‷\°★ º¯]─
+                                       #         ￣
       sprite=("\e[$Y;${X}H$SKY                  "
             "\e[$[$Y+1];${X}H$CM5 __ $CM6${mainrotor[$L]}$SKY "
             "\e[$[$Y+2];${X}H$CM4 |$CM6${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND¬ $SKY  "
@@ -849,17 +849,23 @@ function sprite_hero {
 	screen+=("${sprite[*]}")
 }
 
-function sprite_hero2 { server_read
+function sprite_hero2 {
 
-      client=($(nc -l $sport)); server_read #${caddr[0]} $cport $HS $SC $HC $X $Y $PIU
-       caddr=${client[0]}
-       cport=${client[1]}
-         HS2=${client[2]}
-         SC2=${client[3]}
-         HC2=${client[4]}
-          X2=${client[5]}
-          Y2=${client[6]}
-        PIU2=${client[7]}
+    case $(nc -l $sport) in
+
+		'w'|'W') [[ $Y2    -gt 1                 ]] && ((Y2--));;
+		'a'|'A') [[ $X2    -gt 1                 ]] && ((X2--));;
+		's'|'S') [[ $Y2    -lt $heroendy         ]] && ((Y2++));;
+		'd'|'D') [[ $X2    -lt $heroendx         ]] && ((X2++));;
+		'p'|'P') [[ $ammo2 -ge $G2 && $CD2 -eq 0 ]] && { CD2=7; case $G2 in
+            1) PIU+=("$HX2 $HY2 2");;
+            2) PIU+=("$HX2 $[$HY2+1] 2" "$HX2 $[$HY2-1] 2");;
+            3) PIU+=("$HX2 $[$HY2+1] 2" "$HX2 $[$HY2-1] 2" "$[$HX2+1] $HY2 2");;
+            4) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2");;
+            5) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2" "$[$HX2+2] $HY2 2");;
+        esac; ((ammo2-=$G2)); };;
+
+	esac
 
          CM4=$DIM$HC2; CM5=$SKY$HC2; CM6=$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
          CM8=$DIM$UND; CM9=$SKY$HC2$BLD
@@ -913,19 +919,6 @@ function sprite_hero2 { server_read
          HY2=$[$Y2+3]  # coordinates
 
     ;; esac
-
-	[[ $PIU2 ]] && {
-
-		[[ $ammo2 -ge $G2 && $CD2 -eq 0 ]] && { case $G2 in
-
-			1) PIU+=("$HX2 $HY2 2");;
-			2) PIU+=("$HX2 $[$HY2+1] 2" "$HX2 $[$HY2-1] 2");;
-			3) PIU+=("$HX2 $[$HY2+1] 2" "$HX2 $[$HY2-1] 2" "$[$HX2+1] $HY2 2");;
-			4) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2");;
-			5) PIU+=("$[$HX2+1] $[$HY2+1] 2" "$[$HX2+1] $[$HY2-1] 2" "$HX2 $[$HY2+2] 2" "$HX2 $[$HY2-2] 2" "$[$HX2+2] $HY2 2");;
-
-		esac; ((ammo2-=$G2)); CD2=7; }
-	}
 
 	screen+=("${sprite[*]}")
 }
@@ -1292,6 +1285,19 @@ function mover () { timer=$1
 	case $timer in 0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type";; esac
 }
 
+function timings {
+
+	[[ $K   -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
+	[[ $L   -ge 3  ]] && L=0 || ((L++))	# sprites animation
+	[[ $J   -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
+	[[ $Q   -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
+	[[ $W   -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
+	[[ $E   -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
+    [[ $CD  -gt 0  ]] && ((CD--))       # hero1 cooldown timer
+    [[ $CD2 -gt 0  ]] && ((CD2--))      # hero2 cooldown timer
+	[[ $E   -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
+}
+
 function server_read {
 
 	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
@@ -1313,29 +1319,12 @@ function server_read {
 
 function client_read {
 
-	read -t$spd -n1 input &> /dev/null; input=${input:0:1}; case $input in
-		'w'|'W') [[ $Y -gt 1         ]] && ((Y--));;
-		'a'|'A') [[ $X -gt 1         ]] && ((X--));;
-		's'|'S') [[ $Y -lt $heroendy ]] && ((Y++));;
-		'd'|'D') [[ $X -lt $heroendx ]] && ((X++));;
-		'p'|'P') PIU="piu";;
-	esac
+	read -t$spd -n1 input &> /dev/null #; input=${input::1}
 }
 
-function timings {
+function sender () { until nc $1 $2 2> /dev/null <<< "$3"; do $4; done; }
+#function sender () { until echo "$3" > /dec/tcp/$1/$2; do $4; done; }
 
-	[[ $K   -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
-	[[ $L   -ge 3  ]] && L=0 || ((L++))	# sprites animation
-	[[ $J   -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
-	[[ $Q   -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
-	[[ $W   -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
-	[[ $E   -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
-    [[ $CD  -gt 0  ]] && ((CD--))       # hero1 cooldown timer
-    [[ $CD2 -gt 0  ]] && ((CD2--))      # hero2 cooldown timer
-	[[ $E   -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
-}
-
-function sender { until nc $caddr $cport 2> /dev/null <<< "$1"; do server_read; done; }
 
 function fill_screen {
 	#-{ Fill screen }----------------------------------------------------------------------------------------------------
@@ -1348,33 +1337,39 @@ stty -echo; printf "$COF"; mess "help"; sleep 2; clear; main_menu
 clear; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
 stty -echo; printf "$COF"
 
+case $game_type in
+    'team') X2=1; Y2=$heroendy;;
+    'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2];;
+esac
+
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
-
 [[ $server ]] && {
-    XY 1 1 $SKY$RED"Waiting for client... ${game_type^} mode"; CLD=80; TRE=70; spd=0.001
-#    client=($(nc -l $sport)); caddr=${client[0]}; cport=${client[1]}
-#    until nc $caddr $cport 2> /dev/null <<< "$gametype"; do :; done
+
+    XY 1 1 $SKY$RED"${game_type^} mode. Waiting for client..."; CLD=80; TRE=70; spd=0.001
+      clnt=($(nc -l $sport))
+	 caddr=${clnt[0]}
+	 cport=${clnt[1]}
+       HC2=${clnt[2]}
+       HS2=${clnt[3]}
+       SC2=${clnt[4]}
 }
 
+[[ $client ]] && { #---------------------------------{ Initialisation }--------------------------------------------------
 
-[[ $client ]] && {
-
-X=1; Y=$heroendy; spd=0.001
-#until nc $saddr $sport 2> /dev/null <<< "${caddr[0]} $cport"; do :; done
-#game_type="$(nc -l $cport)"; case $game_type in 'duel') X=$heroendx; Y=$[RANDOM % $[$heroendy-2]+2];; esac
+spd=0.001
+sender $saddr $sport "${caddr[0]} $cport $HC $HS $SC" ':'
+XY 1 1 $SKY$RED"Waiting for server..."
 
 #=============================================={ Main game loop client mode}=============================================
 while true; do
 
-	PIU=; client_read
-	until nc $saddr $sport 2> /dev/null <<< "${caddr[0]} $cport $HS $SC $HC $X $Y $PIU"; do client_read; done
-	client_read
+    client_read
+	sender $saddr $sport $input client_read
 	screen="$(nc -l $cport)"
 	case $screen in 'win'| 'lose') client=; cors='single'; mess $screen;; esac
 	printf "$screen"
-	client_read
 
 done
 } || {                                 case $game_type in    ''   |        'team')
@@ -1491,21 +1486,23 @@ while true; do
 	}
 
 	[[ $server ]] && {
+
 		[[ $life2 -le 0 ]] && {
-			sender 'lose'
+			sender $caddr $cport 'lose' server_read
 			server=; Y2=; spd=0.0001; cors='single'
 			OBJ+=("$[$X2+1] $[$Y2+1] 0 boom"
                   "$[$X2+2] $[$Y2+2] 0 boom")
 		}
 
-		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender 'win'; server=; spd=0.0001; cors='single'; }
-		sender "${screen[*]}"
+		[[ $life2 -gt 0 && $bhealth -le 0 ]] && { sender $caddr $cport 'win' server_read; server=; spd=0.0001; cors='single'; }
 
 	} || {
 		# Check win\lose
 		[[ $bhealth -le 0 ]] && mess win
 		[[ $life    -le 0 ]] && mess lose
 	}
+
+    [[ $server ]] && sender $caddr $cport "${screen[*]}" server_read
 
 done;;
 
@@ -1586,10 +1583,10 @@ while true; do
 	screen+=("\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
 	screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
 
-    [[ $life2 -le 0 ]] && { sender 'lose'; mess  'win'; }
-    [[ $life  -le 0 ]] && { sender 'win' ; mess 'lose'; }
+    [[ $life2 -le 0 ]] && { sender $caddr $cport 'lose' server_read; mess  'win'; }
+    [[ $life  -le 0 ]] && { sender $caddr $cport 'win'  server_read; mess 'lose'; }
 
-	printf "${screen[*]}"; sender "${screen[*]}"
+	printf "${screen[*]}";  sender $caddr $cport "${screen[*]}" server_read
 
 done;;
 
