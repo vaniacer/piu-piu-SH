@@ -1313,7 +1313,8 @@ function timings {
 
 function server_read {
 
-	read -t${spd} -n1 input 2> /dev/null; input=${input:0:1}; case $input in
+	read -t${spd} -s -n1 input 2> /dev/null
+    case $input in
 
 		'w'|'W') [[ $Y    -gt 1               ]] && ((Y--));;
 		'a'|'A') [[ $X    -gt 1               ]] && ((X--));;
@@ -1330,11 +1331,7 @@ function server_read {
 	esac
 }
 
-function client_read {
-
-	read -t$spd -n1 input &> /dev/null; input=${input::1}
-}
-
+function client_read { read -t$spd -s -n1 input &> /dev/null; }
 function sender () { until nc $1 $2 2> /dev/null <<< "$3"; do $4; done; }
 
 function fill_screen {
