@@ -57,6 +57,7 @@ function start_opt {
         FPSL=100									# lower FPS initial value					(100)
         FPSM=0										# maximum FPS initial value					(0)
         FPSC=0										# FPS counter								(0)
+         day=$(date +'%d')                          #
          rnd=10										# random seed 4 bonuses						(10)
          spd=0.0001									# game\read speed							(0.0001)
          DHC=$BLK									# default hero color						($BLK)
@@ -574,11 +575,38 @@ wtree3_color=("$SKY $SKY $T3C $T3C $SKY $SKY $SKY $SKY $SKY $SKY $SKY"  #  \|
               "$SKY $SKY $SKY $SKY $CM1 $SKY $SKY $SKY $SKY $SKY $SKY"  #    ║
               "$SKY $SKY $SKY $SKY $CM1 $SKY $SKY $SKY $SKY $SKY $SKY") #    ║
 
+      xtree3=('ZZZZZZ★ '
+              'ZZZZZZ/\ '
+              'ZZZZ_❅|● '
+              'ZZZZ-/○|❄- '
+              'ZZZZ●/||\○ '
+              'ZZ_/❄/●\❅\ '
+              'ZZ○///||❄\● '
+              '_/❅/●/|○\❅\- '
+              'ZZZZZZ|| ')
+
+xtree3_color=("$SKY $SKY $SKY $SKY $SKY $SKY $RED $SKY $SKY $SKY $SKY $SKY $SKY"  #       ★
+              "$SKY $SKY $SKY $SKY $SKY $SKY $GRN $GRN $SKY $SKY $SKY $SKY $SKY"  #       /\
+              "$SKY $SKY $SKY $SKY $GRN $cyn $GRN $BLU $SKY $SKY $SKY $SKY $SKY"  #     _❅|●
+              "$SKY $SKY $SKY $SKY $SKY $GRN $YLW $GRN $CYN $GRN $SKY $SKY $SKY"  #     -/○|❄-
+              "$SKY $SKY $SKY $SKY $RED $GRN $grn $grn $GRN $ylw $SKY $SKY $SKY"  #     ●/||\○
+              "$SKY $SKY $GRN $GRN $cyn $GRN $blu $GRN $cyn $GRN $SKY $SKY $SKY"  #   _/❄/●\❅\
+              "$SKY $SKY $red $GRN $GRN $grn $grn $GRN $CYN $GRN $RED $SKY $SKY"  #   ○///||❄\●
+              "$GRN $GRN $cyn $GRN $YLW $GRN $grn $RED $GRN $cyn $GRN $GRN $SKY"  # _/❅/●/|○\❅\-
+              "$SKY $SKY $SKY $SKY $SKY $SKY $BLK $blk $SKY $SKY $SKY $SKY $SKY") #       ||
+
 	case $month in 0[1-4]|12) # change winter sprite
         tree3=("${wtree3[@]}")
         tree3_color=("${wtree3_color[@]}")
         tree3W=${#tree3[3]};;
 	esac
+
+
+    case "$day$month" in 3112|0101)
+        tree3=("${xtree3[@]}")
+        tree3_color=("${xtree3_color[@]}")
+        tree3W=${#tree3[7]};;
+    esac
 
       tree3H=${#tree3[*]}
 
@@ -589,17 +617,20 @@ function sprite_tree3 {
        color=("${tree3_color[@]}")
          CM1=$SKY$BLK
 
-      wtree3=('ZZ\| '
-              'ZZZ\|\/ '
-              '_\_ ║/ '
-              'Z/\ ║ Z\/_ '
-              'ZZZ\║ Z/ '
-              'ZZZZ║_/ '
-              'ZZZZ║ '
-              'ZZZZ║ ')
+    case "$day$month" in
 
-    case $month in
-        0[1-4]|12)
+        3112|0101)
+      sprite=("\e[$OY;$[$OX+6]H$RED★$SKY "
+         "\e[$[$OY+1];$[$OX+6]H$GRN/"'\\'"$SKY "
+     "\e[$[$OY+2];$[$OX+4]H${GRN}_$cyn❅$GRN|$BLU●$SKY "
+      "\e[$[$OY+3];$[$OX+4]H$GRN-/$YLW○$GRN|$CYN❄$GRN-$SKY "
+      "\e[$[$OY+4];$[$OX+4]H$RED●$GRN/$grn||$GRN"'\\'"$ylw○$SKY "
+   "\e[$[$OY+5];$[$OX+2]H${GRN}_/$cyn❄$GRN/$blu●$GRN"'\\'"$cyn❅$GRN"'\\'"$SKY "
+   "\e[$[$OY+6];$[$OX+2]H$red○$GRN//$grn/|$GRN|$CYN❄$GRN"'\\'"$RED●$SKY "
+   "\e[$[$OY+7];${OX}H${GRN}_/$cyn❅$GRN/$YLW●$GRN/$grn|$RED○$GRN"'\\'"$cyn❅$GRN\-$SKY "
+              "\e[$[$OY+8];$[$OX+6]H$BLK|$blk|$SKY ");;
+
+        ??0[1-4]|??12)
       sprite=("\e[$OY;$[$OX+2]H$SKY$T3C\|$SKY "
      "\e[$[$OY+1];$[$OX+3]H$SKY$CM1"'\\'"|$SKY$T3C\/$SKY "
 "\e[$[$OY+2];${OX}H$SKY${T3C}_\_$SKY $CM1║/$SKY "
@@ -618,7 +649,7 @@ function sprite_tree3 {
                "\e[$[$OY+5];$[$OX+3]H$CM1\║$T3C|$CM1/${T3C}_/$SKY "
                 "\e[$[$OY+6];$[$OX+4]H$CM1║/$SKY "
                 "\e[$[$OY+7];$[$OX+4]H$CM1║$SKY "
-                "\e[$[$OY+8];$[$OX+4]H$CM1║$SKY ")
+                "\e[$[$OY+8];$[$OX+4]H$CM1║$SKY ");;
     esac
 
      sprite2=("${tree3[@]}")
