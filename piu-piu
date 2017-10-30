@@ -715,20 +715,26 @@ function sprite_alien {
         3110)
 
     mouthtop=('/VVVVV\'
-              '/VVVVV\'
+              '/vvvvv\'
+              '.-----.'
               '       '
-              '       ')
+              '.-----.'
+              '/vvvvv\'
+              '/VVVVV\')
 
-    mouthlow=('\\vvvvv/'
-              '\\vvvvv/'
-              '(VVVVV)'
-              '(VVVVV)')
+    mouthlow=('VvvvvvV'
+              'V^^^^^V'
+              '`¯¯¯¯¯´'
+              ' ‾‾‾‾‾ '
+              '`-----´'
+              'V^^^^^V'
+              'VvvvvvV')
 
         boss=('ZZ         '
               'ZZZ.--._.-.  '
               'ZZ/(⁐ ) () \ '
               'Z❲ /VVVVV\ ❳ '
-              'ZZ\\vvvvv/ /  '
+              'ZZ\VvvvvvV /  '
               'ZZZ`¯----¯´  '
               'ZZ         '); bossH=${#boss[*]}; bossW=${#boss[3]}
 
@@ -793,16 +799,16 @@ function sprite_boss {
       sprite=("\e[$OY;$[$OX+2]H$SKY         "
               "\e[$[$OY+1];${OX}H$SKY   $CM1.--.$CM2${pumtop[$L]}$CM1.-.$SKY  "
               "\e[$[$OY+2];${OX}H$SKY  $CM1/$CM6(⁐ ) () $CM1"'\\'"$SKY "
-              "\e[$[$OY+3];${OX}H$SKY $CM1❲ $RED${mouthtop[$L]} $CM1❳$SKY "
-           "\e[$[$OY+4];${OX}H$SKY  $CM1"'\\'"$RED${mouthlow[$L]} $CM1/$SKY  "
+              "\e[$[$OY+3];${OX}H$SKY $CM1❲ $RED${mouthtop[$Q]} $CM1❳$SKY "
+           "\e[$[$OY+4];${OX}H$SKY  $CM1"'\\'"$RED${mouthlow[$Q]} $CM1/$SKY  "
              "\e[$[$OY+5];${OX}H$SKY   $CM1"'`¯----¯´'"$SKY  "
               "\e[$[$OY+6];$[$OX+2]H$SKY         ")
 
      sprite2=('ZZ         '
               "ZZZ.--.${pumtop[$L]}.-.  "
               'ZZ/(⁐ ) () \ '
-              "Z❲ ${mouthtop[$L]} ❳ "
-              'ZZ\'"${mouthlow[$L]} / "
+              "Z❲ ${mouthtop[$Q]} ❳ "
+              'ZZ\'"${mouthlow[$Q]} / "
               'ZZZ`¯----¯´  '
               'ZZ         ');;
 
