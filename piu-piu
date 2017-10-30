@@ -660,7 +660,20 @@ function sprite_tree3 {
               '(   ) '
               'Z`¯´ '); alienH=${#alien[*]}; alienW=${#alien[1]}
 
+      pumtop=( '\\' '|' '|' '/')
+     pumface=('O…o'
+              '…o '
+              'o  '
+              '   '
+              '  O'
+              ' O…')
+
          CM1=$SKY$DIM$BLK; CM2=$SKY$BLD$BLK
+
+    case "$day$month" in 3110)
+        CM1=$SKY$DIM$ylw; CM2=$SKY$UND$DIM$grn;;
+    esac
+
  alien_color=("$SKY $CM1 $CM2 $CM1 $SKY $SKY"
               "$CM1 $red $red $red $CM1 $SKY"
               "$SKY $CM1 $CM1 $CM1 $SKY $SKY")
@@ -672,6 +685,21 @@ function sprite_alien {
        color=("${alien_color[@]}")
 	  target=("$OX $[$OY+1]" "$[$OX+1] $[$OY+1]")
 
+
+
+    case "$day$month" in
+
+        3110)
+         CM1=$SKY$DIM$ylw; CM2=$SKY$UND$DIM$grn
+	  sprite=("\e[$OY;$[$OX+1]H${CM1}_$CM2${pumtop[$L]}${CM1}_$SKY "
+              "\e[$[$OY+1];${OX}H${CM1}(${red}${pumface[$Q]}${CM1})$SKY "
+              "\e[$[$OY+2];$[$OX+1]H"${CM1}'`¯´'"$SKY ")
+
+     sprite2=("Z_${pumtop[$L]}_ "
+              "(${pumface[$Q]}) "
+              'Z`¯´ ');;
+
+		*)
          CM1=$SKY$DIM$BLK; CM2=$BLD$BLK
 	  sprite=("\e[$OY;$[$OX+1]H${CM1}_${CM2}_${CM1}_$SKY "
               "\e[$[$OY+1];${OX}H${CM1}(${red}${small[$L]}${CM1})$SKY "
@@ -679,9 +707,41 @@ function sprite_alien {
 
      sprite2=('Z___ '
               "(${small[$L]}) "
-              'Z`¯´ ')
+              'Z`¯´ ');;
+	esac
 }
+    case "$day$month" in
 
+        3110)
+
+    mouthtop=('/VVVVV\'
+              '/VVVVV\'
+              '       '
+              '       ')
+
+    mouthlow=('\\vvvvv/'
+              '\\vvvvv/'
+              '(VVVVV)'
+              '(VVVVV)')
+
+        boss=('ZZ         '
+              'ZZZ.--._.-.  '
+              'ZZ/(⁐ ) () \ '
+              'Z❲ /VVVVV\ ❳ '
+              'ZZ\\vvvvv/ /  '
+              'ZZZ`¯----¯´  '
+              'ZZ         '); bossH=${#boss[*]}; bossW=${#boss[3]}
+
+         CM1=$SKY$DIM$ylw; CM2=$DIM$UND$grn; CM6=$BLD$RED
+  boss_color=("$SKY" #                   center point
+              "$SKY $SKY $SKY $CM1 $CM1 $CM1 $CM2 $CM1 $CM1 $CM1 $SKY $SKY"
+              "$SKY $SKY $CM1 $CM6 $CM6 $CM6 $CM6 $SKY $CM6 $CM6 $SKY $CM1 $SKY"
+              "$SKY $CM1 $SKY $RED $RED $RED $RED $RED $RED $RED $SKY $CM1 $SKY"
+              "$SKY $SKY $CM1 $RED $RED $RED $RED $RED $RED $RED $SKY $CM1 $SKY"
+              "$SKY $SKY $SKY $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $SKY $SKY"
+              "$SKY");;
+
+		*)
         boss=('ZZZZ     '
               'ZZZZZ___   '
               'ZZZ_/   \_  '
@@ -697,7 +757,10 @@ function sprite_alien {
               "$SKY $SKY $SKY $CM1 $CM1 $YLW $CM5 $CM8 $CM1 $CM1 $SKY $SKY $SKY"
               "$SKY $SKY $CM1 $RED $RED $RED $CM6 $CM9 $RED $RED $CM1 $SKY $SKY"
               "$SKY $CM1 $SKY $BLU $BLU $BLU $CM7 $CM4 $BLU $BLU $SKY $CM1 $SKY"
-              "$SKY $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $SKY $SKY")
+              "$SKY $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $SKY $SKY"
+              "$SKY");;
+	esac
+
 
 function sprite_boss {
 
@@ -723,6 +786,27 @@ function sprite_boss {
 	[[ $OX -gt $[$endx / 2] && $goback = 'false' ]] && ((OX--)) || goback=true
 	[[ $OX -lt $bossendx    && $goback = 'true'  ]] && ((OX++)) || goback=false
 
+    case "$day$month" in
+
+        3110)
+         CM1=$SKY$DIM$ylw; CM2=$DIM$UND$grn; CM6=$BLD$RED
+      sprite=("\e[$OY;$[$OX+2]H$SKY         "
+              "\e[$[$OY+1];${OX}H$SKY   $CM1.--.$CM2${pumtop[$L]}$CM1.-.$SKY  "
+              "\e[$[$OY+2];${OX}H$SKY  $CM1/$CM6(⁐ ) () $CM1"'\\'"$SKY "
+              "\e[$[$OY+3];${OX}H$SKY $CM1❲ $RED${mouthtop[$L]} $CM1❳$SKY "
+           "\e[$[$OY+4];${OX}H$SKY  $CM1"'\\'"$RED${mouthlow[$L]} $CM1/$SKY  "
+             "\e[$[$OY+5];${OX}H$SKY   $CM1"'`¯----¯´'"$SKY  "
+              "\e[$[$OY+6];$[$OX+2]H$SKY         ")
+
+     sprite2=('ZZ         '
+              "ZZZ.--.${pumtop[$L]}.-.  "
+              'ZZ/(⁐ ) () \ '
+              "Z❲ ${mouthtop[$L]} ❳ "
+              'ZZ\'"${mouthlow[$L]} / "
+              'ZZZ`¯----¯´  '
+              'ZZ         ');;
+
+		*)
          CM1=$DIM$BLK; CM2=$BLD$BLK
       sprite=("\e[$OY;$[$OX+4]H$SKY     "
        "\e[$[$OY+1];$[$OX+2]H$SKY   ${CM1}_${CM2}_${CM1}_$SKY   "
@@ -738,7 +822,8 @@ function sprite_boss {
               "ZZ/${big[$L]}\  "
               "Z( ${big[$L]} ) "
               'ZZ`¯¯---¯¯´  '
-              'Z           ')
+              'Z           ');;
+	esac
 
 	((cuter++)); OBJ[$i]="$OX $OY $cuter $type"
 }
@@ -1353,6 +1438,7 @@ esac
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
+#--------------------------------------------------{ Initialisation }----------------------------------------------------
 [[ $server ]] && {
 
     XY 2 1 $SKY$RED"${game_type^} mode. Waiting for client..."; CLD=80; TRE=70
@@ -1364,7 +1450,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
        SC2=${clnt[4]}
 }
 
-[[ $client ]] && { #---------------------------------{ Initialisation }--------------------------------------------------
+[[ $client ]] && {
 
 sender $saddr $sport "${caddr[0]} $cport $HC $HS $SC" ':'
 XY 2 1 $SKY$RED"Waiting for server..."
