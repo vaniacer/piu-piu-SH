@@ -418,18 +418,18 @@ function sprite_cloud3 {
               'Z| '); tree1W=${#tree1[1]}
 
          CM1=$SKY$DIM$blk
- tree1_color=("$T1C $T1C $SKY"      # _
-              "$T1C $T1C $T1C $SKY" #/ \
-              "$T1C $CM1 $T1C $SKY" #\|/
-              "$SKY $CM1 $SKY")     # |
+ tree1_color=("$SKY $T1C $SKY $SKY"  # _
+              "$T1C $T1C $T1C $SKY"  #/ \
+              "$T1C $CM1 $T1C $SKY"  #\|/
+              "$SKY $CM1 $SKY $SKY") # |
 
       wtree1=('Z|/ '
               '\| '
               'Z| ')
 
-wtree1_color=("$SKY $T1C $T1C $SKY" # |/
-              "$T1C $CM1 $SKY"      #\|
-              "$SKY $CM1 $SKY")     # |
+wtree1_color=("$SKY $T1C $T1C $SKY"  # |/
+              "$T1C $CM1 $SKY $SKY"  #\|
+              "$SKY $CM1 $SKY $SKY") # |
 
 	case $month in 0[1-4]|12) # change winter sprite
         tree1=("${wtree1[@]}")
@@ -476,7 +476,7 @@ function sprite_tree1 {
               'ZZ║ '); tree2W=${#tree2[1]}
 
          CM1=$SKY$T2C
- tree2_color=("$T2C $T2C $T2C $T2C $SKY $SKY"   # _._
+ tree2_color=("$SKY $T2C $T2C $T2C $SKY $SKY"   # _._
               "$T2C $T2C $T2C $T2C $T2C $SKY"   #/   \
               "$T2C $T2C $blk $CM1 $T2C $SKY"   #\ | /
               "$SKY $T2C $blk $CM1 $T2C $SKY"   # \║/\
@@ -583,7 +583,7 @@ wtree3_color=("$SKY $SKY $T3C $T3C $SKY $SKY $SKY $SKY $SKY $SKY $SKY"  #  \|
               'ZZ_/❄/●\❅\ '
               'ZZ○///||❄\● '
               '_/❅/●/|○\❅\- '
-              'ZZZZZZ|| ')
+              'ZZZZZZ║ ')
 
 xtree3_color=("$SKY $SKY $SKY $SKY $SKY $SKY $RED $SKY $SKY $SKY $SKY $SKY $SKY"  #       ★
               "$SKY $SKY $SKY $SKY $SKY $SKY $GRN $GRN $SKY $SKY $SKY $SKY $SKY"  #       /\
@@ -593,7 +593,7 @@ xtree3_color=("$SKY $SKY $SKY $SKY $SKY $SKY $RED $SKY $SKY $SKY $SKY $SKY $SKY"
               "$SKY $SKY $GRN $GRN $cyn $GRN $blu $GRN $cyn $GRN $SKY $SKY $SKY"  #   _/❄/●\❅\
               "$SKY $SKY $red $GRN $GRN $grn $grn $GRN $CYN $GRN $RED $SKY $SKY"  #   ○///||❄\●
               "$GRN $GRN $cyn $GRN $YLW $GRN $grn $RED $GRN $cyn $GRN $GRN $SKY"  # _/❅/●/|○\❅\-
-              "$SKY $SKY $SKY $SKY $SKY $SKY $BLK $blk $SKY $SKY $SKY $SKY $SKY") #       ||
+              "$SKY $SKY $SKY $SKY $SKY $SKY $BLK $SKY $SKY $SKY $SKY $SKY $SKY") #       ║
 
 	case $month in 0[1-4]|12) # change winter sprite
         tree3=("${wtree3[@]}")
@@ -628,7 +628,7 @@ function sprite_tree3 {
    "\e[$[$OY+5];$[$OX+2]H${GRN}_/$cyn❄$GRN/$blu●$GRN"'\\'"$cyn❅$GRN"'\\'"$SKY "
    "\e[$[$OY+6];$[$OX+2]H$red○$GRN//$grn/|$GRN|$CYN❄$GRN"'\\'"$RED●$SKY "
    "\e[$[$OY+7];${OX}H${GRN}_/$cyn❅$GRN/$YLW●$GRN/$grn|$RED○$GRN"'\\'"$cyn❅$GRN\-$SKY "
-              "\e[$[$OY+8];$[$OX+6]H$BLK|$blk|$SKY ");;
+              "\e[$[$OY+8];$[$OX+6]H$BLK║$SKY ");;
 
         ??0[1-4]|??12)
       sprite=("\e[$OY;$[$OX+2]H$SKY$T3C\|$SKY "
@@ -739,13 +739,14 @@ function sprite_alien {
               'ZZ         '); bossH=${#boss[*]}; bossW=${#boss[3]}
 
          CM1=$SKY$DIM$ylw; CM2=$DIM$UND$grn; CM6=$BLD$RED
-  boss_color=("$SKY" #                   center point
-              "$SKY $SKY $SKY $CM1 $CM1 $CM1 $CM2 $CM1 $CM1 $CM1 $SKY $SKY"
+#                                        center point
+  boss_color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY"
+              "$SKY $SKY $SKY $CM1 $CM1 $CM1 $CM2 $CM1 $CM1 $CM1 $SKY $SKY $SKY"
               "$SKY $SKY $CM1 $CM6 $CM6 $CM6 $CM6 $SKY $CM6 $CM6 $SKY $CM1 $SKY"
               "$SKY $CM1 $SKY $RED $RED $RED $RED $RED $RED $RED $SKY $CM1 $SKY"
               "$SKY $SKY $CM1 $RED $RED $RED $RED $RED $RED $RED $SKY $CM1 $SKY"
               "$SKY $SKY $SKY $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $SKY $SKY"
-              "$SKY");;
+              "$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY");;
 
 		*)
         boss=('ZZZZ     '
@@ -758,13 +759,14 @@ function sprite_alien {
 
 
          CM1=$DIM$BLK; CM2=$BLD$BLK; CM3=$SKY$BLK; CM4=$SKY$BLU; CM5=$BLD$YLW; CM6=$BLD$RED; CM7=$BLD$BLU; CM8=$SKY$YLW; CM9=$SKY$RED
-  boss_color=("$SKY" #                   center point
+#                                        center point
+  boss_color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY"
               "$SKY $SKY $SKY $SKY $SKY $CM1 $CM2 $CM1 $SKY $SKY $SKY $SKY $SKY"
               "$SKY $SKY $SKY $CM1 $CM1 $YLW $CM5 $CM8 $CM1 $CM1 $SKY $SKY $SKY"
               "$SKY $SKY $CM1 $RED $RED $RED $CM6 $CM9 $RED $RED $CM1 $SKY $SKY"
               "$SKY $CM1 $SKY $BLU $BLU $BLU $CM7 $CM4 $BLU $BLU $SKY $CM1 $SKY"
               "$SKY $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $SKY $SKY"
-              "$SKY");;
+              "$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY");;
 	esac
 
 
