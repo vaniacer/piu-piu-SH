@@ -1,0 +1,72 @@
+#!/bin/bash
+
+name=piu-piu
+ver=1.0-1
+url=https://github.com/vaniacer/piu-piu-SH
+me=(Ivan Marov '<ie.marov@gmail.com>')
+pname=${name}_${ver}_all
+
+mkdir -p $pname/{DEBIAN,usr/games,usr/share/doc/$name}
+cp piu-piu $pname/usr/games
+chmod 0755 $pname -R
+
+cat > $pname/usr/share/doc/$name/changelog.Debian <<EOF
+$name ($ver) unstable; urgency=medium
+
+* This is my first Debian package.
+
+-- $me $(LANG=en.US date)
+EOF
+gzip $pname/usr/share/doc/$name/changelog.Debian
+
+cat > $pname/DEBIAN/control <<EOF
+Package: $name
+Version: $ver
+Section: games
+Origin: $url
+Architecture: all
+Priority: optional
+Installed-Size: $(du -k piu-piu | cut -f1)
+Depends: bash (>= 4.2-1), netcat-openbsd (>= 1.105-1)
+Maintainer: ${me[@]}
+Description: BASH game
+ This is an Old School horisontal scroller 'Shoot Them All' game on bash.
+ With co-op mode. You have to defeat 100 aliens to fight with Boss.
+ To play in co-op mode first, start the server, then start the client.
+ Terminals on both hosts have to be with equal dimensions. 
+EOF
+
+cat > $pname/usr/share/doc/$name/copyright <<EOF
+Format: https://www.debian.org/doc/$pnameaging-manuals/copyright-format/1.0/
+Upstream-Name: $name
+Upstream-Contact: ${me[@]}
+Source: $url
+
+Files: *
+Copyright: 2016-$(date +%Y) ${me[@]::2}
+License: MIT
+
+License: MIT
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+EOF
+chmod 0644 $pname/usr/share/doc/$name/copyright
+
+fakeroot dpkg-deb --build $pname
+lintian $pname_all.deb
+rm -r $pname

@@ -593,7 +593,7 @@ xtree3_color=("$SKY $SKY $SKY $SKY $SKY $SKY $RED $SKY $SKY $SKY $SKY $SKY $SKY"
               "$SKY $SKY $GRN $GRN $cyn $GRN $blu $GRN $cyn $GRN $SKY $SKY $SKY"  #   _/❄/●\❅\
               "$SKY $SKY $red $GRN $GRN $grn $grn $GRN $CYN $GRN $RED $SKY $SKY"  #   ○///||❄\●
               "$GRN $GRN $cyn $GRN $YLW $GRN $grn $RED $GRN $cyn $GRN $GRN $SKY"  # _/❅/●/|○\❅\-
-              "$SKY $SKY $SKY $SKY $SKY $SKY $BLK $SKY $SKY $SKY $SKY $SKY $SKY") #       ║
+              "$SKY $SKY $SKY $SKY $SKY $SKY $BLK $SKY $SKY $SKY $SKY $SKY $SKY") #        ║
 
 	case $month in 0[1-4]|12) # change winter sprite
         tree3=("${wtree3[@]}")
