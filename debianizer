@@ -1,16 +1,20 @@
 #!/bin/bash
 
+p=1
+v=1.0
+ver=$v-$p
 name=piu-piu
-ver=1.0-1
 url=https://github.com/vaniacer/piu-piu-SH
 me=(Ivan Marov '<ie.marov@gmail.com>')
 pname=${name}_${ver}_all
 
-mkdir -p $pname/{DEBIAN,usr/games,usr/share/doc/$name}
+#-----------------------{ Create dirs }----------------------------------------
+mkdir -p $pname/{DEBIAN,usr/games,usr/share/doc/$name,usr/share/man/man1}
 cp piu-piu $pname/usr/games
 chmod 0755 $pname -R
 
-cat > $pname/usr/share/doc/$name/changelog.Debian <<EOF
+#-----------------------{ Create changelog }-----------------------------------
+cat > $pname/usr/share/doc/$name/changelog.Debian << EOF
 $name ($ver) unstable; urgency=low
 
   * First pack. (closes: Bug#1111)
@@ -22,7 +26,8 @@ EOF
 gzip --best $pname/usr/share/doc/$name/changelog.Debian
 chmod 0644 $pname/usr/share/doc/$name/changelog.Debian.gz
 
-cat > $pname/DEBIAN/control <<EOF
+#-----------------------{ Create control }-------------------------------------
+cat > $pname/DEBIAN/control << EOF
 Package: $name
 Version: $ver
 Section: games
@@ -39,7 +44,8 @@ Description: BASH game
  Terminals on both hosts have to be with equal dimensions. 
 EOF
 
-cat > $pname/usr/share/doc/$name/copyright <<EOF
+#-----------------------{ Create copyright }-----------------------------------
+cat > $pname/usr/share/doc/$name/copyright << EOF
 Format: https://www.debian.org/doc/$pnameaging-manuals/copyright-format/1.0/
 Upstream-Name: $name
 Upstream-Contact: ${me[@]}
@@ -69,6 +75,39 @@ License: MIT
 	SOFTWARE.
 EOF
 chmod 0644 $pname/usr/share/doc/$name/copyright
+
+#-----------------------{ Create man }-----------------------------------
+cat > $pname/usr/share/man/man1/$name.1 << EOF
+.TH ${name}-$v "$p" "$(LANG=en.US date +'%B %Y')" "${name}-$v $v" "User manual"
+.SH NAME
+${name}-$v \- BASH game.
+.SH DESCRIPTION
+This is an Old School horisontal scroller 'Shoot Them All' game on bash.
+With co-op mode. You have to defeat 100 aliens to fight with Boss.
+To play in co-op mode first, start the server, then start the client.
+Terminals on both hosts have to be with equal dimensions.
+.SH CONTROLS
+.TP
+\fB\-w\fR
+Fly up.
+.TP
+\fB\-a\fR
+Fly left.
+.TP
+\fB\-s\fR
+Fly down.
+.TP
+\fB\-s\fR
+Fly right.
+.TP
+\fB\-p\fR
+Shoot or select.
+.SH GITHUB
+https://github.com/vaniacer/piu-piu-SH
+
+EOF
+gzip --best $pname/usr/share/man/man1/$name.1
+chmod 0644 $pname/usr/share/man/man1/$name.1.gz
 
 fakeroot dpkg-deb --build $pname
 lintian $pname.deb
