@@ -111,6 +111,9 @@ EOF
 gzip --best $pname/usr/share/man/man1/$name.1
 chmod 0644 $pname/usr/share/man/man1/$name.1.gz
 
+#-----------------------{ Create package }-------------------------------------
 fakeroot dpkg-deb --build $pname
 lintian $pname.deb
 rm -r $pname
+printf 'Done :)'
+exit 0
