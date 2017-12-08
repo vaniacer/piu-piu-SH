@@ -11,13 +11,16 @@ cp piu-piu $pname/usr/games
 chmod 0755 $pname -R
 
 cat > $pname/usr/share/doc/$name/changelog.Debian <<EOF
-$name ($ver) unstable; urgency=medium
+$name ($ver) unstable; urgency=low
 
-* This is my first Debian package.
+  * First pack. (closes: Bug#1111)
+    BASH game.
 
--- $me $(LANG=en.US date)
+ -- ${me[@]}  $(LANG=en.US date +'%a, %d %b %Y %T %z')
+
 EOF
-gzip $pname/usr/share/doc/$name/changelog.Debian
+gzip --best $pname/usr/share/doc/$name/changelog.Debian
+chmod 0644 $pname/usr/share/doc/$name/changelog.Debian.gz
 
 cat > $pname/DEBIAN/control <<EOF
 Package: $name
@@ -68,5 +71,5 @@ EOF
 chmod 0644 $pname/usr/share/doc/$name/copyright
 
 fakeroot dpkg-deb --build $pname
-lintian $pname_all.deb
+lintian $pname.deb
 rm -r $pname
