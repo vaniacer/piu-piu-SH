@@ -88,20 +88,22 @@ To play in co-op mode first, start the server, then start the client.
 Terminals on both hosts have to be with equal dimensions.
 .SH CONTROLS
 .TP
-\fB\-w\fR
+\fBw\fR, \fBW\fR
 Fly up.
 .TP
-\fB\-a\fR
+\fBa\fR, \fBA\fR
 Fly left.
 .TP
-\fB\-s\fR
+\fBs\fR, \fBS\fR
 Fly down.
 .TP
-\fB\-s\fR
+\fBd\fR, \fBD\fR
 Fly right.
 .TP
-\fB\-p\fR
+\fBp\fR, \fBP\fR
 Shoot or select.
+.SH AUTHOR
+${me[@]}
 .SH GITHUB
 https://github.com/vaniacer/piu-piu-SH
 
