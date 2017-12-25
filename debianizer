@@ -35,10 +35,10 @@ Origin: $url
 Architecture: all
 Priority: optional
 Installed-Size: $(du -k piu-piu | cut -f1)
-Depends: bash (>= 4.2-1), netcat-openbsd (>= 1.105-1)
+Depends: bash (>= 4.2), netcat-openbsd (>= 1.105)
 Maintainer: ${me[@]}
-Description: BASH game
- This is an Old School horisontal scroller 'Shoot Them All' game on bash.
+Description: Cli game horisontal scroller in bash.
+ This is an Old School horisontal scroller 'Shoot Them All' game in bash.
  With co-op mode. You have to defeat 100 aliens to fight with Boss.
  To play in co-op mode first, start the server, then start the client.
  Terminals on both hosts have to be with equal dimensions. 
