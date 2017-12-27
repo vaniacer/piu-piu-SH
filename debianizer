@@ -7,6 +7,11 @@ name=piu-piu
 url=https://github.com/vaniacer/piu-piu-SH
 me=(Ivan Marov '<ie.marov@gmail.com>')
 pname=${name}_${ver}_all
+description=" This is an Old School horisontal scroller 'Shoot Them All' game in bash.
+ With co-op mode. You have to defeat 100 aliens to fight with Boss.
+ To play in co-op mode first, start the server, then start the client.
+ Terminals on both hosts have to be with equal dimensions. 
+"
 
 #-----------------------{ Create dirs }----------------------------------------
 mkdir -p $pname/{DEBIAN,usr/games,usr/share/doc/$name,usr/share/man/man1} debian
@@ -24,11 +29,8 @@ Priority: optional
 Installed-Size: $(du -k piu-piu | cut -f1)
 Depends: bash (>= 4.2), netcat-openbsd (>= 1.105)
 Maintainer: ${me[@]}
-Description: Cli game horisontal scroller in bash.
- This is an Old School horisontal scroller 'Shoot Them All' game in bash.
- With co-op mode. You have to defeat 100 aliens to fight with Boss.
- To play in co-op mode first, start the server, then start the client.
- Terminals on both hosts have to be with equal dimensions. 
+Description: Horisontal scroller game in bash for cli.
+$description
 EOF
 
 #-----------------------{ Create changelog }-----------------------------------
@@ -76,10 +78,7 @@ cat > $pname/usr/share/man/man1/$name.1 << EOF
 .SH NAME
 ${name}-$v \- BASH game.
 .SH DESCRIPTION
-This is an Old School horisontal scroller 'Shoot Them All' game in bash.
-With co-op mode. You have to defeat 100 aliens to fight with Boss.
-To play in co-op mode first, start the server, then start the client.
-Terminals on both hosts have to be with equal dimensions.
+$description
 .SH CONTROLS
 .TP
 \fBw\fR, \fBW\fR
