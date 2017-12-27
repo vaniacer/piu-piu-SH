@@ -9,22 +9,9 @@ me=(Ivan Marov '<ie.marov@gmail.com>')
 pname=${name}_${ver}_all
 
 #-----------------------{ Create dirs }----------------------------------------
-mkdir -p $pname/{DEBIAN,usr/games,usr/share/doc/$name,usr/share/man/man1}
+mkdir -p $pname/{DEBIAN,usr/games,usr/share/doc/$name,usr/share/man/man1} debian
 cp piu-piu $pname/usr/games
 chmod 0755 $pname -R
-
-#-----------------------{ Create changelog }-----------------------------------
-cat > $pname/usr/share/doc/$name/changelog.Debian << EOF
-$name ($ver) unstable; urgency=low
-
-  * First pack. (closes: Bug#1111)
-    BASH game.
-
- -- ${me[@]}  $(LANG=en.US date +'%a, %d %b %Y %T %z')
-
-EOF
-gzip --best $pname/usr/share/doc/$name/changelog.Debian
-chmod 0644 $pname/usr/share/doc/$name/changelog.Debian.gz
 
 #-----------------------{ Create control }-------------------------------------
 cat > $pname/DEBIAN/control << EOF
@@ -43,6 +30,13 @@ Description: Cli game horisontal scroller in bash.
  To play in co-op mode first, start the server, then start the client.
  Terminals on both hosts have to be with equal dimensions. 
 EOF
+
+#-----------------------{ Create changelog }-----------------------------------
+cp $pname/DEBIAN/control debian
+dch --create --package $name --distribution UNRELEASED --newversion=$ver --urgency low --controlmaint 'Initial release. (Closes: #1111)'
+cp debian/changelog $pname/usr/share/doc/$name/changelog.Debian
+gzip --best $pname/usr/share/doc/$name/changelog.Debian
+chmod 0644 $pname/usr/share/doc/$name/changelog.Debian.gz
 
 #-----------------------{ Create copyright }-----------------------------------
 cat > $pname/usr/share/doc/$name/copyright << EOF
@@ -82,7 +76,7 @@ cat > $pname/usr/share/man/man1/$name.1 << EOF
 .SH NAME
 ${name}-$v \- BASH game.
 .SH DESCRIPTION
-This is an Old School horisontal scroller 'Shoot Them All' game on bash.
+This is an Old School horisontal scroller 'Shoot Them All' game in bash.
 With co-op mode. You have to defeat 100 aliens to fight with Boss.
 To play in co-op mode first, start the server, then start the client.
 Terminals on both hosts have to be with equal dimensions.
@@ -114,6 +108,6 @@ chmod 0644 $pname/usr/share/man/man1/$name.1.gz
 #-----------------------{ Create package }-------------------------------------
 fakeroot dpkg-deb --build $pname
 lintian $pname.deb
-rm -r $pname
+rm -r $pname debian
 printf 'Done :)'
 exit 0
