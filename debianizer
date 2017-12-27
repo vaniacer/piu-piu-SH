@@ -42,7 +42,7 @@ chmod 0644 $pname/usr/share/doc/$name/changelog.Debian.gz
 
 #-----------------------{ Create copyright }-----------------------------------
 cat > $pname/usr/share/doc/$name/copyright << EOF
-Format: https://www.debian.org/doc/$pnameaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: $name
 Upstream-Contact: ${me[@]}
 Source: $url
@@ -71,6 +71,7 @@ License: MIT
 	SOFTWARE.
 EOF
 chmod 0644 $pname/usr/share/doc/$name/copyright
+cp $pname/usr/share/doc/$name/copyright .
 
 #-----------------------{ Create man }-----------------------------------
 cat > $pname/usr/share/man/man1/$name.1 << EOF
