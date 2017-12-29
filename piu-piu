@@ -1561,14 +1561,13 @@ function game_team {
 
 		        [[ $life2 -gt 0 && $bhealth -le 0 ]] && {
                     sender $caddr $cport 'win' server_read
-                    cors='single'
-                    server=
+                    server=; cors='single'
                 };;
 
 	        *   )
 
-		        [[ $bhealth -le 0 ]] && { gameover=win ; break; }
-		        [[ $life    -le 0 ]] && { gameover=lose; break; };;
+		        [[ $bhealth -le 0 ]] && { gameover=win ; return; }
+		        [[ $life    -le 0 ]] && { gameover=lose; return; };;
         esac
 
         [[ $server ]] && sender $caddr $cport "${screen[*]}" server_read
@@ -1664,15 +1663,17 @@ function game_duel {
     done
 }
 
-trap bye INT TERM SIGINT SIGTERM EXIT; trap : ALRM; get_dimensions; default; clear
-stty -echo; printf "$COF"; mess "help"; sleep 2; clear; main_menu
-clear; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
-stty -echo; printf "$COF"
+trap bye INT TERM SIGINT SIGTERM EXIT
+trap : ALRM
 
-case $game_type in
-    'team') X2=1        ; Y2=$heroendy;;
-    'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2];;
-esac
+stty -echo; printf "$COF"
+get_dimensions; default
+clear; mess "help"; sleep 2
+clear; main_menu
+clear; fill_screen
+sec=$(date +'%s') # timer for FPS counter
+stty -echo; printf "$COF"
+OBJ=();
 
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
@@ -1707,8 +1708,9 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 }
 
 case $game_type in
-    '' | 'team') game_team;;
-         'duel') Y=$[RANDOM % $[$heroendy-2]+2]; game_duel;;
+        '') game_team;;
+    'team') X2=1; Y2=$heroendy; game_team;;
+    'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2]; game_duel;;
 esac
 
 mess $gameover
