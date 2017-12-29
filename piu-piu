@@ -49,6 +49,8 @@ function start_opt {
      enumber=0										# current enemy counter						(0)
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# bonuses, more ammo, less life ang gunup
       goback=false									# need 4 boss movement
+      server=                                       # if server
+      client=                                       # if client
        enmax=10										# max number of akiens						(10)
        month=$(date +'%m')							# get current month
        frags=0										# frags counter								(0)
@@ -948,12 +950,12 @@ function sprite_hero {
 
                                        #     new hero
                                        # __ ___________
-                                       # |X\___.-╨─._
+                                       # |X\___.-╨─｡_
                                        # `─´‾‾‷\°★ º¯]─
                                        #        ‾‾‾‾‾
       sprite=("\e[$Y;${X}H$SKY                  "
             "\e[$[$Y+1];${X}H$CM5 __ $blk${mainrotor[$L]}$SKY "
-            "\e[$[$Y+2];${X}H$CM4 |$blk${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND. $SKY  "
+            "\e[$[$Y+2];${X}H$CM4 |$blk${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND｡ $SKY  "
           "\e[$[$Y+3];${X}H$CM4"' `─´‾‾‷\\'"$blk°$CM7$SKY$blk º¯$CM9]$SKY$BLK${gun[$G]}$SKY   "
         "\e[$[$Y+4];${X}H$SKY        $CM4‾‾‾‾‾$SKY     "
                 "\e[$[$Y+5];$[$X+7]H$SKY       ")
@@ -982,19 +984,18 @@ function sprite_hero2 {
          CM4=$SKY$DIM$HC2; CM5=$SKY$HC2; CM6=$SKY$BLD$HC2; CM7=$SKY$SC2$HS2$HC2$BLD
          CM8=$SKY$DIM$UND; CM9=$SKY$HC2$BLD
 
-
     case $game_type in
 
     'duel')
                                    #    new hero
-                                   #  ___________ __
-                                   #    _.─╨-.___/X|
-                                   # ─[¯º ★°/‴‾‾`─´
+                                   # ___________ __
+                                   #   _｡─╨-.___/X|
+                                   # ─[¯º★°/‴‾‾`─´
                                    #   ‾‾‾‾‾
 
       sprite=("\e[$Y2;${X2}H$SKY                  "
          "\e[$[$Y2+1];${X2}H$SKY $blk${mainrotor[$L]}$CM5 __$SKY "
-         "\e[$[$Y2+2];${X2}H$CM4   $UND .─$CM5╨$CM6-.${CM5}___/$blk${tailrotor[$L]}$CM6|$SKY "
+         "\e[$[$Y2+2];${X2}H$CM4   $UND ｡─$CM5╨$CM6-.${CM5}___/$blk${tailrotor[$L]}$CM6|$SKY "
           "\e[$[$Y2+3];${X2}H$SKY $BLK${gun[$G2]}$CM4[$blk¯º$CM7$SKY $blk°$CM4/‴‾‾"'`─´'"$SKY "
                         "\e[$[$Y2+4];${X2}H$SKY   $CM4‾‾‾‾‾$SKY      "
                            "\e[$[$Y2+5];$[$X2+3]H$SKY       ")
@@ -1006,12 +1007,12 @@ function sprite_hero2 {
     'team')
                                    #     new hero
                                    # __ ___________
-                                   # |X\___.-╨─._
+                                   # |X\___.-╨─｡_
                                    # `─´‾‾‷\°★ º¯]─
                                    #        ‾‾‾‾‾
       sprite=("\e[$Y2;${X2}H$SKY                  "
             "\e[$[$Y2+1];${X2}H$CM5 __ $blk${mainrotor[$L]}$SKY "
-            "\e[$[$Y2+2];${X2}H$CM4 |$blk${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND. $SKY  "
+            "\e[$[$Y2+2];${X2}H$CM4 |$blk${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND｡ $SKY  "
           "\e[$[$Y2+3];${X2}H$CM4"' `─´‾‾‷\\'"$blk°$CM7$SKY$blk º¯$CM9]$SKY$BLK${gun[$G]}$SKY   "
         "\e[$[$Y2+4];${X2}H$SKY        $CM4‾‾‾‾‾$SKY     "
                 "\e[$[$Y2+5];$[$X2+7]H$SKY       ")
@@ -1119,8 +1120,8 @@ function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+=("\
 function mess () { XY 1 1 ${DEF}; clear
 
 	case $1 in
-		"win" )	sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; sleep 3; bye 0;;
-		"lose")	sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; sleep 3; bye 1;;
+		"win" )	sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
+		"lose")	sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
 		"help")	sprite_help; printf "${sprite[*]}";;
 	esac
 }
@@ -1187,17 +1188,19 @@ function intro {
 
 function configure {
 
-  hero_color=(${BLK} ${RED} ${GRN} ${YLW} ${BLU} ${MGN} ${CYN} ${WHT}); HCN=${#hero_color[*]}; HCI=0;
-  star_color=(${BLK} ${RED} ${GRN} ${YLW} ${BLU} ${MGN} ${CYN} ${WHT}); SCN=${#star_color[*]}; SCI=0;
-   hero_star=(★ ☭ ✚ ✙ ✠ ✡ ✦ ✧ ✩ ✪ ☘ ☠ ☢ ☣ ☯ ❃ ❂ ❁ ✿ ❀ ✣ ♣ ♠ ♥ ♦ ❤ ● ☻ ♀ ♂); HSI=0; HSN=${#hero_star[*]}
-        menu=( 'hero' 'star' 'symbol' 'apply' 'back' )                ; menuN=${#menu[*]};     menuI=$[$menuN-1]
+  hero_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT); HCN=${#hero_color[*]}; HCI=0;
+  star_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT); SCN=${#star_color[*]}; SCI=0;
+   hero_star=(★ ☭ ✚ ✙ ✠ ✡ ✦ ✧ ✩ ✪ ☘ ☠ ☢ ☣ ☯ ❃ ❂ ❁ ✿ ❀ ✣ ♣ ♠ ♥ ♦ ❤ ● ☻ ♀ ♂)
+        menu=( 'hero' 'star' 'symbol' 'apply' 'back' )
+         HSI=0; HSN=${#hero_star[*]}; menuN=${#menu[*]}; menuI=$[$menuN-1]
         selL='>'; selR='<'; selN=' '
 
 	function deselect {
-		selectedHCL=${selN}; selectedHCR=${selN}
-		selectedSCL=${selN}; selectedSCR=${selN}
-		selectedHSL=${selN}; selectedHSR=${selN}
-		selectedAP=${DEF}  ; selectedBK=${DEF}; }
+		selectedHCL=$selN; selectedHCR=$selN
+		selectedSCL=$selN; selectedSCR=$selN
+		selectedHSL=$selN; selectedHSR=$selN
+		selectedAP=$DEF  ; selectedBK=$DEF
+    }
 
 	while true; do get_dimensions; timings
 
@@ -1206,7 +1209,7 @@ function configure {
          CM8=$SKY$DIM$UND ; CM9=$SKY$HC$BLD
 
         hero=("$CM5 __ $blk${mainrotor[$L]}$SKY   "
-             "$CM4 |$blk${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND. $SKY     "
+             "$CM4 |$blk${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND｡ $SKY     "
            "$CM4"' `─´‾‾‷\\'"$blk°$CM7$SKY$blk º¯$CM9]$SKY$BLK${gun[$G]}$SKY   "
                 "$SKY        $CM4‾‾‾‾‾$SKY     ")
 
@@ -1234,28 +1237,28 @@ function configure {
 		for (( i=0; i<${#hero[@]}; i++ )); do XY $[$endx/2-9] $[5+$i] "$SKY ${hero[$i]} "; done
 
 		#----------------------------------{ Print controls }-------------------------------------------------------------
-		for ((i=0; i<${HCN}; i++ )); do [ $i -eq $HCI ] && selectedHC=${BLD} || selectedHC=${DEF}
-										XY $[$endx/2 - 4 + $i*3] $[$endy/2]   "$selectedHC${hero_color[$i]}██${DEF}"; done
+		for ((i=0; i<${HCN}; i++ )); do [ $i -eq $HCI ] && selectedHC=$BLD || selectedHC=$DEF
+										XY $[$endx/2 - 4 + $i*3] $[$endy/2]   "$selectedHC${hero_color[$i]}██$DEF"; done
 		for ((i=0; i<${SCN}; i++ )); do [ $i -eq $SCI ] && selectedSC=${BLD} || selectedSC=${DEF}; SL=; SR=
-										XY $[$endx/2 - 4 + $i*3] $[$endy/2+2] "$selectedSC${star_color[$i]}██${DEF}"; done
-		for ((i=0; i<$[${HSN}/2]; i++ )); do [ $i -eq $HSI ] && selectedHS=${BLD}${RED} || selectedHS=${DEF}; SL=; SR=
-										XY $[$endx/2 - 15 + $i*3] $[$endy/2+4] "$selectedHS${hero_star[$i]} ${DEF}" ; done
-		for ((i=$[${HSN}/2]; i<${HSN}; i++ )); do [ $i -eq $HSI ] && selectedHS=${BLD}${RED} || selectedHS=${DEF}; SL=; SR=
-										XY $[$endx/2 - 60 + $i*3] $[$endy/2+5] "$selectedHS${hero_star[$i]} ${DEF}" ; done
+										XY $[$endx/2 - 4 + $i*3] $[$endy/2+2] "$selectedSC${star_color[$i]}██$DEF"; done
+		for ((i=0; i<$[${HSN}/2]; i++ )); do [ $i -eq $HSI ] && selectedHS=$BLD$RED || selectedHS=$DEF; SL=; SR=
+										XY $[$endx/2 - 15 + $i*3] $[$endy/2+4] "$selectedHS${hero_star[$i]} $DEF" ; done
+		for ((i=$[${HSN}/2]; i<${HSN}; i++ )); do [ $i -eq $HSI ] && selectedHS=$BLD$RED || selectedHS=$DEF; SL=; SR=
+										XY $[$endx/2 - 60 + $i*3] $[$endy/2+5] "$selectedHS${hero_star[$i]} $DEF" ; done
 
-		case ${menu[$menuI]} in 'apply' )	deselect; selectedAP=${BLD}${RED};;
-								'back'  )	deselect; selectedBK=${BLD}${RED};;
-								'hero'  )	deselect; selectedHCL=${selL}; selectedHCR=${selR};;
-								'star'  )	deselect; selectedSCL=${selL}; selectedSCR=${selR};;
-								'symbol')	deselect; selectedHSL=${selL}; selectedHSR=${selR};;
+		case ${menu[$menuI]} in 'apply' )	deselect; selectedAP=$BLD$RED;;
+								'back'  )	deselect; selectedBK=$BLD$RED;;
+								'hero'  )	deselect; selectedHCL=$selL; selectedHCR=$selR;;
+								'star'  )	deselect; selectedSCL=$selL; selectedSCR=$selR;;
+								'symbol')	deselect; selectedHSL=$selL; selectedHSR=$selR;;
 								*       )	deselect;;esac
 
-		XY $[$endx/2 - 18] $[$endy/2]   "${selectedHCL} Hero color: "  ; XY $[$endx/2 + 20] $[$endy/2]   "${selectedHCR}"
-		XY $[$endx/2 - 20] $[$endy/2+2] "${selectedSCL} Symbol color: "; XY $[$endx/2 + 20] $[$endy/2+2] "${selectedSCR}"
-		XY $[$endx/2 - 30] $[$endy/2+4] "${selectedHSL} Hero symbol: " ; XY $[$endx/2 + 30] $[$endy/2+4] "${selectedHSR}"
+		XY $[$endx/2 - 18] $[$endy/2]   "$selectedHCL Hero color: "  ; XY $[$endx/2 + 20] $[$endy/2]   "$selectedHCR"
+		XY $[$endx/2 - 20] $[$endy/2+2] "$selectedSCL Symbol color: "; XY $[$endx/2 + 20] $[$endy/2+2] "$selectedSCR"
+		XY $[$endx/2 - 30] $[$endy/2+4] "$selectedHSL Hero symbol: " ; XY $[$endx/2 + 30] $[$endy/2+4] "$selectedHSR"
 
-		XY $[$endx/2 - 2]  $[$endy/2+7] "${selectedAP}apply${DEF}"
-		XY $[$endx/2 - 2]  $[$endy/2+9] "${selectedBK}back${DEF}"
+		XY $[$endx/2 - 2]  $[$endy/2+7] "${selectedAP}apply$DEF"
+		XY $[$endx/2 - 2]  $[$endy/2+9] "${selectedBK}back$DEF"
 
 	done
 
@@ -1284,8 +1287,8 @@ function selector {
 
 	for ((i=0; i<$menuN; i++)); do
 
-		[[ $i -eq $menuI ]] && selected=${BLD}${RED} || selected=${DEF}
-		XY $[$endx/2-${#menu[$i]}/2-3] $[$endy-5+$i] " $selected${menu[$i]}${DEF} "
+		[[ $i -eq $menuI ]] && selected=$BLD$RED || selected=$DEF
+		XY $[$endx/2-${#menu[$i]}/2-3] $[$endy-5+$i] " $selected${menu[$i]}$DEF "
 
 	done
 }
@@ -1302,10 +1305,10 @@ function client_or_server {
 
 	while true; do selector; case $input in 'p'|'P') case ${menu[$menuI]} in
 
-		'server'      ) server=true; client=; cors='server'; game_type=${menu[2]}; back; return;;
-		'client'      ) client=true; server=; cors='client'; clr;    enter_server; back; return;;
-		'team'| 'duel') case ${menu[2]} in 'team') menu[2]='duel';; 'duel') menu[2]='team';; esac;;
-		'back'        ) back; return;; esac;;
+		'server'       ) server=true; client=; cors='server'; game_type=${menu[2]}; back; return;;
+		'client'       ) client=true; server=; cors='client'; game_type='clnt'; clr; enter_server; back; return;;
+		'team' | 'duel') case ${menu[2]} in 'team') menu[2]='duel';; 'duel') menu[2]='team';; esac;;
+		'back'         ) back; return;; esac;;
 
 	esac; done
 }
@@ -1401,19 +1404,19 @@ function timings {
 	[[ $E   -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
     [[ $CD  -gt 0  ]] && ((CD--))       # hero1 cooldown timer
     [[ $CD2 -gt 0  ]] && ((CD2--))      # hero2 cooldown timer
-	[[ $E   -eq 0  ]] && { ((S+=${SunC})); [[ $S -gt ${SunN} ]] && S=0; }	# Sun animation
+	[[ $E   -eq 0  ]] && { ((S+=$SunC)); [[ $S -gt $SunN ]] && S=0; }	# Sun animation
 }
 
 function server_read {
 
-	read -t${spd} -s -n1 input 2> /dev/null
+	read -t$spd -s -n1 input &> /dev/null
     case $input in
 
 		'w'|'W') [[ $Y    -gt 1               ]] && ((Y--));;
 		'a'|'A') [[ $X    -gt 1               ]] && ((X--));;
 		's'|'S') [[ $Y    -lt $heroendy       ]] && ((Y++));;
 		'd'|'D') [[ $X    -lt $heroendx       ]] && ((X++));;
-		'p'|'P') [[ $ammo -ge $G && $CD -eq 0 ]] && { CD=7; case ${G} in
+		'p'|'P') [[ $ammo -ge $G && $CD -eq 0 ]] && { CD=7; case $G in
             1) PIU+=("$HX $HY 1");;
             2) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1");;
             3) PIU+=("$HX $[$HY+1] 1" "$HX $[$HY-1] 1" "$[$HX+1] $HY 1");;
@@ -1433,20 +1436,264 @@ function fill_screen {
 	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
 }
 
-trap bye INT TERM SIGINT SIGTERM EXIT; trap : ALRM; get_dimensions; default; clear
-stty -echo; printf "$COF"; mess "help"; sleep 2; clear; main_menu
-clear; fill_screen; OBJ=(); sec=$(date +'%s') # timer for FPS counter
-stty -echo; printf "$COF"
+function game_team {
+    #======================================{ Main game loop single or server team mode }=================================
+    while true; do
 
-case $game_type in
-    'team') X2=1        ; Y2=$heroendy;;
-    'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2];;
-esac
+	    screen=(); fps_counter
+
+	    #-{ Timings }----------------------------------------------------------------------------------------------------
+        timings
+
+	    #-{ Print Sun }--------------------------------------------------------------------------------------------------
+	    sprite_Sun
+
+	    #-{ Print hero and get keys }------------------------------------------------------------------------------------
+	    [[ $life -gt 0 ]] && {
+            sprite_hero
+            server_read
+        } || {
+            case $make_once in '')
+                OBJ+=("  $X      $Y    0 boom"
+                      "$[$X+1] $[$Y+1] 0 boom"
+                      "$[$X+2] $[$Y+2] 0 boom")
+                make_once=done;;
+            esac
+        }
+
+	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
+	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
+
+           #----------+---------------+------------+-----+----------+
+           # OBJ type |  sprite maker |sprite mover|timer|  comment |
+           #----------+---------------+------------+-----+----------+
+		    'tree1' )	sprite_tree1 ;    mover      $Q ;; #
+		    'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
+		    'tree3' )	sprite_tree3 ;    mover      $E ;; #
+
+		    'cloud1')	sprite_cloud1;    mover      $Q ;; #
+		    'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
+		    'cloud3')	sprite_cloud3;    mover      $E ;; #
+
+		    'boss'  )	sprite_boss  ;    mover       1 ;; # Boss
+		    'alien' )	sprite_alien ;    mover       0 ;; # Aliens
+
+		    'bfire' )	sprite_bfire ;    mover       0 ;; # Boss' plasma shot
+
+		    'ammo'  )	sprite_ammob ;    mover       0 ;; # Ammo bonus
+		    'life'  )	sprite_lifep ;    mover       0 ;; # Life bonus
+		    'gunup' )	sprite_gunup ;    mover       0 ;; # Gun powerup bonus
+
+            # Enemy explosions, not moving, print in place
+		    'boom'  )	sprite_boom;;
+
+	    esac; done
+
+	    #-{ BOSS }-------------------------------------------------------------------------------------------------------
+	    [[ $[$frags+$frags2] -ge $tillboss ]] && {
+
+		    # add boss object
+		    [[ $bossborn ]] || { OBJ+=("$BX $BY 0 boss"); bossborn=true; }
+
+		    # Health bar
+		    bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
+		    for (( i=0  ; i<${hp}; i++ )); do bar="█$bar"; done
+		    for (( i=$hp; i<${hm}; i++ )); do bar="$bar "; done
+		    screen+=("\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND")
+
+		    # Add enemy
+		    [[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$EX $EY 0 alien"); }
+	    } || {
+		    [[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
+	    }
+
+	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
+	    NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
+
+		    # Move
+		    ((PX++))
+
+		    # Fly away
+		    [[ $PX -ge $bullendx ]] && { remove_piu $t; continue; } || { PIU[$t]="$PX $PY $owner"; }
+
+		    # print
+		    screen+=("\e[$PY;${PX}H$SKY ${shoot[$L]}")
+
+	    done
+
+	    case $background in true)
+		    #-{ Add cloud }----------------------------------------------------------------------------------------------
+		    case $[RANDOM % $CLD] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
+
+		    #-{ Add tree }-----------------------------------------------------------------------------------------------
+		    case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
+		        0:1) OBJ+=("$[$endx + 1] $tre1endy 0 tree1");;
+		        0:2) OBJ+=("$[$endx + 1] $tre2endy 0 tree2");;
+		        0:3) OBJ+=("$[$endx + 1] $tre3endy 0 tree3");;
+		    esac;;
+	    esac
+
+	    #-{ Print moving land }------------------------------------------------------------------------------------------
+	    screen+=("\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+
+	    #-{ Print game status }------------------------------------------------------------------------------------------
+	    [[ $server ]] && {
+		    screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags2$LND  ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
+		    screen+=("\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+		    screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
+	    } || {
+		    screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+		    screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
+	    }
+
+        [[ $server ]] && {
+
+            sprite_hero2
+	        [[ $life2 -gt 0 ]] && sender $caddr $cport "${screen[*]}" server_read || {
+
+		        sender $caddr $cport 'lose' server_read
+		        server=; Y2=; cors='single'
+		        OBJ+=("  $X2      $Y2    0 boom"
+                      "$[$X2+1] $[$Y2+1] 0 boom"
+                      "$[$X2+2] $[$Y2+2] 0 boom")
+	        }
+
+	        [[ $bhealth -le 0 ]] && {
+                sender $caddr $cport 'win' server_read
+                server=; cors='single'
+            }
+
+        }
+
+        [[ $server ]] || {
+
+	        [[ $bhealth -le 0 ]] && mess win
+	        [[ $life    -le 0 ]] && mess lose
+        }
+
+        printf "${screen[*]}"
+
+    done
+}
+
+function game_duel {                                                                 
+    #========================================={ Main game loop server duel mode }========================================
+    while true; do
+
+	    screen=(); fps_counter
+
+	    #-{ Get keys }---------------------------------------------------------------------------------------------------
+	    server_read
+
+	    #-{ Timings }----------------------------------------------------------------------------------------------------
+        timings
+
+	    #-{ Print Sun }--------------------------------------------------------------------------------------------------
+	    sprite_Sun
+
+	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
+	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}
+
+            case $type in
+
+               #----------+---------------+------------+-----+----------+
+               # OBJ type |  sprite maker |sprite mover|timer|  comment |
+               #----------+---------------+------------+-----+----------+
+		        'tree1' )	sprite_tree1 ;    mover      $Q ;; #
+		        'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
+		        'tree3' )	sprite_tree3 ;    mover      $E ;; #
+
+		        'cloud1')	sprite_cloud1;    mover      $Q ;; #
+		        'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
+		        'cloud3')	sprite_cloud3;    mover      $E ;; #
+
+	        esac
+        done
+
+	    #-{ Move\check\print heroes' bullets }---------------------------------------------------------------------------
+	    NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
+
+		    # Move\Fly away\Collision
+		    case $owner in
+
+                '1') ((PX++))
+                     sprite="$SKY ${shoot[$L]}"
+                     [[ $PX -ge $bullendx ]] && { remove_piu $t; continue; } || { PIU[$t]="$PX $PY $owner"; }
+                     case "$[$PX+2] $PY" in "$HX2 $HY2"| "$[$HX2+1] $HY2") remove_piu $t; ((life2--)); continue;; esac;;
+
+                '2') ((PX--))
+                     sprite="${shoot2[$L]}$SKY "
+                     [[ $PX -le 1         ]] && { remove_piu $t; continue; } || { PIU[$t]="$PX $PY $owner"; }
+                     case "$PX $PY" in "$HX $HY"| "$[$HX-1] $HY") remove_piu $t; ((life--)); continue;; esac;;
+
+            esac
+
+		    # print
+		    screen+=( "\e[$PY;${PX}H$sprite" )
+
+	    done
+
+	    case $background in true)
+		    #-{ Add cloud }----------------------------------------------------------------------------------------------
+		    case $[RANDOM % $CLD] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
+
+		    #-{ Add tree }-----------------------------------------------------------------------------------------------
+		    case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
+		        0:1) OBJ+=("$[$endx + 1] $tre1endy 0 tree1");;
+		        0:2) OBJ+=("$[$endx + 1] $tre2endy 0 tree2");;
+		        0:3) OBJ+=("$[$endx + 1] $tre3endy 0 tree3");;
+		    esac;;
+	    esac
+
+	    #-{ Print hero(es) }---------------------------------------------------------------------------------------------
+	    sprite_hero; sprite_hero2
+
+	    #-{ Print moving land }------------------------------------------------------------------------------------------
+	    screen+=("\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+
+	    #-{ Print game status }------------------------------------------------------------------------------------------
+	    screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
+	    screen+=("\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY         ")
+	    screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
+
+        [[ $life2 -le 0 ]] && { sender $caddr $cport 'lose' server_read; mess  'win'; }
+        [[ $life  -le 0 ]] && { sender $caddr $cport 'win'  server_read; mess 'lose'; }
+
+	    printf "${screen[*]}";  sender $caddr $cport "${screen[*]}" server_read
+
+    done
+}
+
+function game_client {
+    #========================================={ Main game loop client mode }=============================================
+    while true; do
+
+        client_read
+	    sender $saddr $sport $input client_read
+	    screen="$(nc -l $cport)"
+	    case $screen in 'win' | 'lose') client=; cors='single'; mess $screen;; esac
+	    printf "$screen"
+
+    done
+}
+
+#--------------------------------------------------{ Initialisation }----------------------------------------------------
+trap bye INT TERM SIGINT SIGTERM EXIT
+trap : ALRM
+
+stty -echo; printf "$COF"
+get_dimensions; default
+clear; mess "help"; sleep 2
+clear; main_menu
+clear; fill_screen
+sec=$(date +'%s') # timer for FPS counter
+stty -echo; printf "$COF"
+OBJ=()
 
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
-#--------------------------------------------------{ Initialisation }----------------------------------------------------
+#-{ If server }----------------------------------------------------------------------------------------------------------
 [[ $server ]] && {
 
     XY 2 1 $SKY$RED"${game_type^} mode. Waiting for client..."; CLD=80; TRE=70
@@ -1458,248 +1705,20 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
        SC2=${clnt[4]}
 }
 
+#-{ If client }----------------------------------------------------------------------------------------------------------
 [[ $client ]] && {
 
-sender $saddr $sport "${caddr[0]} $cport $HC $HS $SC" ':'
-XY 2 1 $SKY$RED"Waiting for server..."
-
-#=============================================={ Main game loop client mode}=============================================
-while true; do
-
-    client_read
-	sender $saddr $sport $input client_read
-	screen="$(nc -l $cport)"
-	case $screen in 'win'| 'lose') client=; cors='single'; mess $screen;; esac
-	printf "$screen"
-
-done
-} || {                                 case $game_type in    ''   |        'team')
-#========================================={ Main game loop single or server team mode}===================================
-while true; do
-
-	screen=(); fps_counter
-
-	#-{ Get keys }-------------------------------------------------------------------------------------------------------
-	[[ $life -gt 0 ]] && server_read
-
-	#-{ Timings }--------------------------------------------------------------------------------------------------------
-    timings
-
-	#-{ Print Sun }------------------------------------------------------------------------------------------------------
-	sprite_Sun
-
-	#-{ Move\check\print all flying to hero objects }--------------------------------------------------------------------
-	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
-
-       #----------+---------------+------------+-----+----------+
-       # OBJ type |  sprite maker |sprite mover|timer|  comment |
-       #----------+---------------+------------+-----+----------+
-		'tree1' )	sprite_tree1 ;    mover      $Q ;; #
-		'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
-		'tree3' )	sprite_tree3 ;    mover      $E ;; #
-
-		'cloud1')	sprite_cloud1;    mover      $Q ;; #
-		'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
-		'cloud3')	sprite_cloud3;    mover      $E ;; #
-
-		'boss'  )	sprite_boss  ;    mover       1 ;; # Boss
-		'alien' )	sprite_alien ;    mover       0 ;; # Aliens
-
-		'bfire' )	sprite_bfire ;    mover       0 ;; # Boss' plasma shot
-
-		'ammo'  )	sprite_ammob ;    mover       0 ;; # Ammo bonus
-		'life'  )	sprite_lifep ;    mover       0 ;; # Life bonus
-		'gunup' )	sprite_gunup ;    mover       0 ;; # Gun powerup bonus
-
-        # Enemy explosions, not moving, print in place
-		'boom'  )	sprite_boom;;
-
-	esac; done
-
-	#-{ BOSS }-----------------------------------------------------------------------------------------------------------
-	[[ $[$frags+$frags2] -ge $tillboss ]] && {
-
-		# add boss object
-		[[ $bossborn ]] || { OBJ+=("$BX $BY 0 boss"); bossborn=true; }
-
-		# Health bar
-		bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
-		for (( i=0  ; i<${hp}; i++ )); do bar="█${bar}"; done
-		for (( i=$hp; i<${hm}; i++ )); do bar="${bar} "; done
-		screen+=("\e[$[$endy - 1];1H${LND} ${BLD}${RED}BOSS: ${LND}${BLK}|${BLD}${RED}${bar}${LND}${BLK}|${LND}")
-
-		# Add enemy
-		[[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$EX $EY 0 alien"); }
-	} || {
-		[[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
-	}
-
-	#-{ Move\check\print hero bullets }----------------------------------------------------------------------------------
-	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
-
-		# Move
-		((PX++))
-
-		# Fly away
-		[[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; }
-
-		# print
-		screen+=("\e[$PY;${PX}H$SKY ${shoot[$L]}")
-
-	done
-
-	case $background in true)
-		#-{ Add cloud }--------------------------------------------------------------------------------------------------
-		case $[RANDOM % $CLD] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
-
-		#-{ Add tree }---------------------------------------------------------------------------------------------------
-		case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
-		    0:1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
-		    0:2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
-		    0:3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
-		esac;;
-	esac
-
-	#-{ Print hero(es) }-------------------------------------------------------------------------------------------------
-	[[ $life -gt 0 ]] && sprite_hero; [[ $server ]] && sprite_hero2
-
-	#-{ Print moving land }----------------------------------------------------------------------------------------------
-	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
-
-	#-{ Print game status }----------------------------------------------------------------------------------------------
-	[[ $server ]] && {
-		screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags2$LND  ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
-		screen+=("\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
-		screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
-	} || {
-		screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
-		screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
-	}
-
-	[[ $life -gt 0 ]] && printf "${screen[*]}" || {
-		case $make_once in '')
-			XY 1 1 "$DEF"; clear
-			sprite_lose; printf "${sprite[*]}"
-			OBJ+=("  $X      $Y    0 boom"
-                  "$[$X+1] $[$Y+1] 0 boom"
-			      "$[$X+2] $[$Y+2] 0 boom")
-			make_once=done;;
-		esac
-	}
-
-	case $server in 
-
-        true)
-
-		    [[ $life2 -le 0 ]] && {
-			    sender $caddr $cport 'lose' server_read
-			    server=; Y2=; cors='single'
-			    OBJ+=("  $X2      $Y2    0 boom"
-                      "$[$X2+1] $[$Y2+1] 0 boom"
-                      "$[$X2+2] $[$Y2+2] 0 boom")
-		    }
-
-		    [[ $life2 -gt 0 && $bhealth -le 0 ]] && {
-                sender $caddr $cport 'win' server_read
-                cors='single'
-                server=
-            };;
-
-	    *   )
-
-		    [[ $bhealth -le 0 ]] && mess win
-		    [[ $life    -le 0 ]] && mess lose;;
-    esac
-
-    [[ $server ]] && sender $caddr $cport "${screen[*]}" server_read
-
-done;;
-
-                                                                 'duel') Y=$[RANDOM % $[$heroendy-2]+2]
-#========================================={ Main game loop server duel mode }============================================
-while true; do
-
-	screen=(); fps_counter
-
-	#-{ Get keys }-------------------------------------------------------------------------------------------------------
-	server_read
-
-	#-{ Timings }--------------------------------------------------------------------------------------------------------
-    timings
-
-	#-{ Print Sun }------------------------------------------------------------------------------------------------------
-	sprite_Sun
-
-	#-{ Move\check\print all flying to hero objects }--------------------------------------------------------------------
-	NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
-
-       #----------+---------------+------------+-----+----------+
-       # OBJ type |  sprite maker |sprite mover|timer|  comment |
-       #----------+---------------+------------+-----+----------+
-		'tree1' )	sprite_tree1 ;    mover      $Q ;; #
-		'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
-		'tree3' )	sprite_tree3 ;    mover      $E ;; #
-
-		'cloud1')	sprite_cloud1;    mover      $Q ;; #
-		'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
-		'cloud3')	sprite_cloud3;    mover      $E ;; #
-
-	esac; done
-
-	#-{ Move\check\print heroes' bullets }-------------------------------------------------------------------------------
-	NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
-
-		# Move\Fly away\Collision
-		case $owner in
-
-            '1') ((PX++))
-                 sprite="$SKY ${shoot[$L]}"
-                 [[ $PX -ge $bullendx ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; }
-                 case "$[$PX+2] $PY" in "$HX2 $HY2"| "$[$HX2+1] $HY2") remove_piu ${t}; ((life2--)); continue;; esac;;
-
-            '2') ((PX--))
-                 sprite="${shoot2[$L]}$SKY "
-                 [[ $PX -le 1         ]] && { remove_piu ${t}; continue; } || { PIU[$t]="$PX $PY $owner"; }
-                 case "$PX $PY" in "$HX $HY"| "$[$HX-1] $HY") remove_piu ${t}; ((life--)); continue;; esac;;
-
-        esac
-
-		# print
-		screen+=( "\e[$PY;${PX}H$sprite" )
-
-	done
-
-	case $background in true)
-		#-{ Add cloud }--------------------------------------------------------------------------------------------------
-		case $[RANDOM % $CLD] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
-
-		#-{ Add tree }---------------------------------------------------------------------------------------------------
-		case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
-		    0:1) OBJ+=("$[$endx + 1] ${tre1endy} 0 tree1");;
-		    0:2) OBJ+=("$[$endx + 1] ${tre2endy} 0 tree2");;
-		    0:3) OBJ+=("$[$endx + 1] ${tre3endy} 0 tree3");;
-		esac;;
-	esac
-
-	#-{ Print hero(es) }-------------------------------------------------------------------------------------------------
-	sprite_hero; sprite_hero2
-
-	#-{ Print moving land }----------------------------------------------------------------------------------------------
-	screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
-
-	#-{ Print game status }----------------------------------------------------------------------------------------------
-	screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
-	screen+=("\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY         ")
-	screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
-
-    [[ $life2 -le 0 ]] && { sender $caddr $cport 'lose' server_read; mess  'win'; }
-    [[ $life  -le 0 ]] && { sender $caddr $cport 'win'  server_read; mess 'lose'; }
-
-	printf "${screen[*]}";  sender $caddr $cport "${screen[*]}" server_read
-
-done;;
-
-esac
+    XY 2 1 $SKY$RED"Waiting for server..."
+    sender $saddr $sport "${caddr[0]} $cport $HC $HS $SC" ':'
+    game_client
 }
+
+#-{ Start game }---------------------------------------------------------------------------------------------------------
+case $game_type in
+        '') game_team;;
+    'clnt') game_client;;
+    'team') X2=1; Y2=$heroendy; game_team;;
+    'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2]; game_duel;;
+esac
 
 # vim: ts=4
