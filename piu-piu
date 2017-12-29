@@ -49,6 +49,8 @@ function start_opt {
      enumber=0										# current enemy counter						(0)
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# bonuses, more ammo, less life ang gunup
       goback=false									# need 4 boss movement
+      server=                                       # if server
+      client=                                       # if client
        enmax=10										# max number of akiens						(10)
        month=$(date +'%m')							# get current month
        frags=0										# frags counter								(0)
@@ -1407,7 +1409,7 @@ function timings {
 
 function server_read {
 
-	read -t$spd -s -n1 input 2> /dev/null
+	read -t$spd -s -n1 input &> /dev/null
     case $input in
 
 		'w'|'W') [[ $Y    -gt 1               ]] && ((Y--));;
@@ -1435,19 +1437,29 @@ function fill_screen {
 }
 
 function game_team {
-    #========================================={ Main game loop single or server team mode }==============================
+    #======================================{ Main game loop single or server team mode }=================================
     while true; do
 
 	    screen=(); fps_counter
-
-	    #-{ Get keys }---------------------------------------------------------------------------------------------------
-	    [[ $life -gt 0 ]] && server_read
 
 	    #-{ Timings }----------------------------------------------------------------------------------------------------
         timings
 
 	    #-{ Print Sun }--------------------------------------------------------------------------------------------------
 	    sprite_Sun
+
+	    #-{ Print hero and get keys }------------------------------------------------------------------------------------
+	    [[ $life -gt 0 ]] && {
+            sprite_hero
+            server_read
+        } || {
+            case $make_once in '')
+                OBJ+=("  $X      $Y    0 boom"
+                      "$[$X+1] $[$Y+1] 0 boom"
+                      "$[$X+2] $[$Y+2] 0 boom")
+                make_once=done;;
+            esac
+        }
 
 	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
 	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
@@ -1521,18 +1533,6 @@ function game_team {
 		    esac;;
 	    esac
 
-	    #-{ Print hero(es) }---------------------------------------------------------------------------------------------
-	    [[ $life -gt 0 ]] && sprite_hero || {
-            case $make_once in '')
-                XY 1 1 "$DEF"; clear
-                sprite_lose; printf "${sprite[*]}"
-                OBJ+=("  $X      $Y    0 boom"
-                      "$[$X+1] $[$Y+1] 0 boom"
-                      "$[$X+2] $[$Y+2] 0 boom")
-                make_once=done;;
-            esac
-        }
-
 	    #-{ Print moving land }------------------------------------------------------------------------------------------
 	    screen+=("\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
 
@@ -1549,7 +1549,8 @@ function game_team {
         [[ $server ]] && {
 
             sprite_hero2
-	        [[ $life2 -le 0 ]] && {
+	        [[ $life2 -gt 0 ]] && sender $caddr $cport "${screen[*]}" server_read || {
+
 		        sender $caddr $cport 'lose' server_read
 		        server=; Y2=; cors='single'
 		        OBJ+=("  $X2      $Y2    0 boom"
@@ -1557,17 +1558,17 @@ function game_team {
                       "$[$X2+2] $[$Y2+2] 0 boom")
 	        }
 
-	        [[ $life2 -gt 0 && $bhealth -le 0 ]] && {
+	        [[ $bhealth -le 0 ]] && {
                 sender $caddr $cport 'win' server_read
                 server=; cors='single'
             }
 
-            sender $caddr $cport "${screen[*]}" server_read
+        }
 
-        } || {
+        [[ $server ]] || {
 
-	        [[ $bhealth -le 0 ]] && { gameover=win ; return; }
-	        [[ $life    -le 0 ]] && { gameover=lose; return; }
+	        [[ $bhealth -le 0 ]] && mess win
+	        [[ $life    -le 0 ]] && mess lose
         }
 
         printf "${screen[*]}"
@@ -1664,7 +1665,7 @@ function game_duel {
 }
 
 function game_client {
-    #=============================================={ Main game loop client mode }========================================
+    #========================================={ Main game loop client mode }=============================================
     while true; do
 
         client_read
@@ -1707,8 +1708,8 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 #-{ If client }----------------------------------------------------------------------------------------------------------
 [[ $client ]] && {
 
-    sender $saddr $sport "${caddr[0]} $cport $HC $HS $SC" ':'
     XY 2 1 $SKY$RED"Waiting for server..."
+    sender $saddr $sport "${caddr[0]} $cport $HC $HS $SC" ':'
     game_client
 }
 
@@ -1719,8 +1720,5 @@ case $game_type in
     'team') X2=1; Y2=$heroendy; game_team;;
     'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2]; game_duel;;
 esac
-
-#-{ Game over man! }-----------------------------------------------------------------------------------------------------
-mess $gameover
 
 # vim: ts=4
