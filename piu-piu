@@ -1521,7 +1521,16 @@ function game_team {
 	    esac
 
 	    #-{ Print hero(es) }---------------------------------------------------------------------------------------------
-	    [[ $life -gt 0 ]] && sprite_hero; [[ $server ]] && sprite_hero2
+	    [[ $life -gt 0 ]] && sprite_hero || {
+            case $make_once in '')
+                XY 1 1 "$DEF"; clear
+                sprite_lose; printf "${sprite[*]}"
+                OBJ+=("  $X      $Y    0 boom"
+                      "$[$X+1] $[$Y+1] 0 boom"
+                      "$[$X+2] $[$Y+2] 0 boom")
+                make_once=done;;
+            esac
+        }
 
 	    #-{ Print moving land }------------------------------------------------------------------------------------------
 	    screen+=("\e[$lineendy;1H${LND}${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
@@ -1536,41 +1545,31 @@ function game_team {
 		    screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
 	    }
 
-	    [[ $life -gt 0 ]] && printf "${screen[*]}" || {
-		    case $make_once in '')
-			    XY 1 1 "$DEF"; clear
-			    sprite_lose; printf "${sprite[*]}"
-			    OBJ+=("  $X      $Y    0 boom"
-                      "$[$X+1] $[$Y+1] 0 boom"
-			          "$[$X+2] $[$Y+2] 0 boom")
-			    make_once=done;;
-		    esac
-	    }
+        [[ $server ]] && {
 
-	    case $server in 
+            sprite_hero2
+	        [[ $life2 -le 0 ]] && {
+		        sender $caddr $cport 'lose' server_read
+		        server=; Y2=; cors='single'
+		        OBJ+=("  $X2      $Y2    0 boom"
+                      "$[$X2+1] $[$Y2+1] 0 boom"
+                      "$[$X2+2] $[$Y2+2] 0 boom")
+	        }
 
-            true)
+	        [[ $life2 -gt 0 && $bhealth -le 0 ]] && {
+                sender $caddr $cport 'win' server_read
+                server=; cors='single'
+            }
 
-		        [[ $life2 -le 0 ]] && {
-			        sender $caddr $cport 'lose' server_read
-			        server=; Y2=; cors='single'
-			        OBJ+=("  $X2      $Y2    0 boom"
-                          "$[$X2+1] $[$Y2+1] 0 boom"
-                          "$[$X2+2] $[$Y2+2] 0 boom")
-		        }
+            sender $caddr $cport "${screen[*]}" server_read
 
-		        [[ $life2 -gt 0 && $bhealth -le 0 ]] && {
-                    sender $caddr $cport 'win' server_read
-                    server=; cors='single'
-                };;
+        } || {
 
-	        *   )
+	        [[ $bhealth -le 0 ]] && { gameover=win ; return; }
+	        [[ $life    -le 0 ]] && { gameover=lose; return; }
+        }
 
-		        [[ $bhealth -le 0 ]] && { gameover=win ; return; }
-		        [[ $life    -le 0 ]] && { gameover=lose; return; };;
-        esac
-
-        [[ $server ]] && sender $caddr $cport "${screen[*]}" server_read
+        printf "${screen[*]}"
 
     done
 }
@@ -1673,7 +1672,7 @@ clear; main_menu
 clear; fill_screen
 sec=$(date +'%s') # timer for FPS counter
 stty -echo; printf "$COF"
-OBJ=();
+OBJ=()
 
 #-{ Generate grass }-----------------------------------------------------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
