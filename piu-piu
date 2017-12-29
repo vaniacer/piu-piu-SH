@@ -1119,8 +1119,8 @@ function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+=("\
 function mess () { XY 1 1 ${DEF}; clear
 
 	case $1 in
-		"win" )	sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 trash; bye 0;;
-		"lose")	sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 trash; bye 1;;
+		"win" )	sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
+		"lose")	sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
 		"help")	sprite_help; printf "${sprite[*]}";;
 	esac
 }
