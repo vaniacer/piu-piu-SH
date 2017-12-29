@@ -1302,10 +1302,10 @@ function client_or_server {
 
 	while true; do selector; case $input in 'p'|'P') case ${menu[$menuI]} in
 
-		'server'      ) server=true; client=; cors='server'; game_type=${menu[2]}; back; return;;
-		'client'      ) client=true; server=; cors='client'; clr;    enter_server; back; return;;
-		'team'| 'duel') case ${menu[2]} in 'team') menu[2]='duel';; 'duel') menu[2]='team';; esac;;
-		'back'        ) back; return;; esac;;
+		'server'       ) server=true; client=; cors='server'; game_type=${menu[2]}; back; return;;
+		'client'       ) client=true; server=; cors='client'; game_type='clnt'; clr; enter_server; back; return;;
+		'team' | 'duel') case ${menu[2]} in 'team') menu[2]='duel';; 'duel') menu[2]='team';; esac;;
+		'back'         ) back; return;; esac;;
 
 	esac; done
 }
@@ -1662,6 +1662,19 @@ function game_duel {
     done
 }
 
+function game_client {
+    #=============================================={ Main game loop client mode }========================================
+    while true; do
+
+        client_read
+	    sender $saddr $sport $input client_read
+	    screen="$(nc -l $cport)"
+	    case $screen in 'win' | 'lose') client=; cors='single'; mess $screen;; esac
+	    printf "$screen"
+
+    done
+}
+
 trap bye INT TERM SIGINT SIGTERM EXIT
 trap : ALRM
 
@@ -1693,21 +1706,12 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
     sender $saddr $sport "${caddr[0]} $cport $HC $HS $SC" ':'
     XY 2 1 $SKY$RED"Waiting for server..."
-
-    #=============================================={ Main game loop client mode }========================================
-    while true; do
-
-        client_read
-	    sender $saddr $sport $input client_read
-	    screen="$(nc -l $cport)"
-	    case $screen in 'win'| 'lose') client=; cors='single'; mess $screen;; esac
-	    printf "$screen"
-
-    done
+    game_client
 }
 
 case $game_type in
         '') game_team;;
+    'clnt') game_client;;
     'team') X2=1; Y2=$heroendy; game_team;;
     'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2]; game_duel;;
 esac
