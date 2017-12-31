@@ -7,3 +7,4 @@ I'm using netcat for client-server exchange in multiplayer mode.
 So netcat have to be installed on system if you wish to play with friend.
 Terminals on both hosts have to be with equal dimensions.
 
+Happy New Year to All!)
