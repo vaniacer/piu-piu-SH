@@ -49,8 +49,6 @@ function start_opt {
      enumber=0										# current enemy counter						(0)
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# bonuses, more ammo, less life ang gunup
       goback=false									# need 4 boss movement
-      server=                                       # if server
-      client=                                       # if client
        enmax=10										# max number of akiens						(10)
        month=$(date +'%m')							# get current month
        frags=0										# frags counter								(0)
@@ -79,14 +77,16 @@ function start_opt {
            S=0										# Sun animation counter
            G=1										# gun 										(1)(max 5)
 
-       #------------------------{ Multipleyer config }-----------------------------
+#--------------------{ Multipleyer config }-------------------{ description }--------------{ def. values }---------------
+      server=                                       # if server
+      client=                                       # if client
+      frags2=0										# frags counter								(0)
+       life2=3										# life counter								(3)
+       ammo2=100									# ammo counter								(100)
        caddr=($(ip a | grep 'inet ' | sed '/127.0.0.1/d; s/.*inet //g; s|/.*$||g'))
        saddr=
        sport=54321
        cport=54322
-      frags2=0										# frags counter								(0)
-       life2=3										# life counter								(3)
-       ammo2=100									# ammo counter								(100)
           G2=1
 
 [ -e piu.conf ] && . piu.conf						# load start conf from file
@@ -965,7 +965,7 @@ function sprite_hero {
 
 function sprite_hero2 {
 
-    case $(nc -l $sport) in
+    case $(nc -l -p $sport) in
 
 		'w'|'W') [[ $Y2    -gt 1                 ]] && ((Y2--));;
 		'a'|'A') [[ $X2    -gt 1                 ]] && ((X2--));;
@@ -1428,7 +1428,7 @@ function server_read {
 }
 
 function client_read { read -t$spd -s -n1 input &> /dev/null; }
-function sender () { until nc $1 $2 2> /dev/null <<< "$3"; do $4; done; }
+function sender () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do $4; done; }
 
 function fill_screen {
 	#-{ Fill screen }----------------------------------------------------------------------------------------------------
@@ -1670,7 +1670,7 @@ function game_client {
 
         client_read
 	    sender $saddr $sport $input client_read
-	    screen="$(nc -l $cport)"
+	    screen="$(nc -l -p $cport)"
 	    case $screen in 'win' | 'lose') client=; cors='single'; mess $screen;; esac
 	    printf "$screen"
 
@@ -1697,9 +1697,9 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 [[ $server ]] && {
 
     XY 2 1 $SKY$RED"${game_type^} mode. Waiting for client..."; CLD=80; TRE=70
-      clnt=($(nc -l $sport))
-	 caddr=${clnt[0]}
-	 cport=${clnt[1]}
+      clnt=($(nc -l -p $sport))
+     caddr=${clnt[0]}
+     cport=${clnt[1]}
        HC2=${clnt[2]}
        HS2=${clnt[3]}
        SC2=${clnt[4]}
