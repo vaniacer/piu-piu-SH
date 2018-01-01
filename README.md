@@ -8,3 +8,26 @@ So netcat have to be installed on system if you wish to play with friend.
 Terminals on both hosts have to be with equal dimensions.
 
 Happy New Year to All!)
+
+
+Docker Usage
+------------
+
+Run already compiled image (multi arch)
+
+```
+docker run --rm -ti --net=host jaymoulin/piu-piu
+```
+(You can check image source code on https://github.com/jaymoulin/docker-piu-piu)
+
+Build your own image
+
+```
+docker build -t piu-piu .
+```
+
+Run your own built image
+
+```
+docker run --rm -ti --net=host piu-piu
+```
