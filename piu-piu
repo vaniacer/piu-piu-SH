@@ -1676,12 +1676,11 @@ function game_duel {
 		        'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
 		        'tree3' )	sprite_tree3 ;    mover      $E ;; #
 
-    		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
-
 		        'cloud1')	sprite_cloud1;    mover      $Q ;; #
 		        'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
 		        'cloud3')	sprite_cloud3;    mover      $E ;; #
 
+    		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
 	        esac
         done
 
