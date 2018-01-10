@@ -67,6 +67,8 @@ line () { printf %.s"${1}" $(seq ${2}); } #                          |
 
 function start_opt {
 #------------------------{ Start opt }------------------------{ description }--------------{ def. values }--------------
+ msngr_line1=' Die alien scum '                     # text on messanger plane line1       ' Die alien scum '
+ msngr_line2='      DIE!      '                     # text on messanger plane line2       '      DIE!      '
   background=true									# background objects visibility				(true)
     bossborn=										# boss starter
     tillboss=100									# frags needed to fight with boss			(100)
@@ -82,6 +84,7 @@ function start_opt {
         FPSL=100									# lower FPS initial value					(100)
         FPSM=0										# maximum FPS initial value					(0)
         FPSC=0										# FPS counter								(0)
+         MSN=1111                                   # messanger randomizer
          day=$(date +'%d')                          #
          rnd=10										# random seed 4 bonuses						(10)
          spd=0.0001									# game\read speed							(0.0001)
@@ -117,6 +120,11 @@ function start_opt {
 [ -e piu.conf ] && . piu.conf						# load start conf from file
 }; start_opt
 #------------------------{ Messages }-----------------------------------------------------------------------------------
+
+case "$day$month" in 1101)
+    msngr_line1=' Happy birthday '
+    msngr_line2='     Yura $)    ';;
+esac
 
 function sprite_help {
 
@@ -429,6 +437,36 @@ function sprite_cloud3 {
          "\e[$[$OY+2];$[$OX+1]H"$SKY$C3C'`--.....`'"$SKY ")
 
      sprite2=("${cloud3[@]}")
+}
+
+       msngr=('ZZZZZZZ__ Z+----------------+ '
+              'Z_____/ /_/|'"$msngr_line1"'| '
+              '(° \ | / Z\|'"$msngr_line2"'| '
+              'ZZZZ\| ZZZZ+----------------+ '); msngrH=${#msngr[*]}; msngrW=${#msngr[2]}
+
+         CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
+         CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
+
+ msngr_color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $CM5 $CM5 $SKY $SKY $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $SKY"  #        __  +----------------+
+              "$SKY $CM5 $CM5 $CM5 $CM5 $CM5 $CM4 $SKY $CM6 $BLK $BLK $blk $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $blk $SKY"  #  _____/ /_/| Die alien scum |
+              "$CM5 $CM8 $CM8 $CM4 $SKY $CM6 $CM8 $CM6 $SKY $SKY $BLK $blk $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $blk $SKY"  # (° \ |_/  \|      DIE!      |
+              "$SKY $SKY $SKY $SKY $CM4 $CM6 $SKY $SKY $SKY $SKY $SKY $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $SKY") #     \|     +----------------+
+
+function sprite_msngr {
+
+       hight=$msngrH
+       width=$msngrW
+       color=("${msngr_color[@]}")
+
+         CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
+         CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
+
+      sprite=("\e[$OY;$[$OX+7]H"$CM5"__$SKY \e[$OY;$[$OX+11]H$blk+----------------+$SKY "
+        "\e[$[$OY+1];$[$OX+1]H"$CM5"_____$CM4/$SKY $CM6/${BLK}_/$blk|$TXT$msngr_line1$blk|$SKY "
+          "\e[$[$OY+2];${OX}H"$CM5"($CM8° $CM4\ $CM6|$CM8 $CM6/$SKY \e[$[$OY+2];$[$OX+10]H$BLK"'\\'"$blk|$TXT$msngr_line2$blk|$SKY "
+        "\e[$[$OY+3];$[$OX+4]H$SKY"$CM4'\\'"$CM6|$SKY \e[$[$OY+3];$[$OX+11]H$blk+----------------+$SKY ")
+
+     sprite2=("${msngr[@]}")
 }
 
 #------------------------{ Trees }---------------------------------------------------------------------------------------
@@ -1424,6 +1462,7 @@ function timings {
 	[[ $K   -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
 	[[ $L   -ge 3  ]] && L=0 || ((L++))	# sprites animation
 	[[ $J   -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
+	[[ $M   -ge 8  ]] && M=0 || ((M++))	# messenger plane speed
 	[[ $Q   -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
 	[[ $W   -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
 	[[ $E   -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
@@ -1452,14 +1491,31 @@ function server_read {
 	esac
 }
 
-function client_read { read -t$spd -s -n1 input &> /dev/null; }
-function sender () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do $4; done; }
+function add_backgound {
+    case $background in true)
+        #-{ Add msngr }----------------------------------------------------------------------------------------------
+        case $[RANDOM % $MSN] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 20 + 2] 0 msngr");; esac
+
+        #-{ Add cloud }----------------------------------------------------------------------------------------------
+        case $[RANDOM % $CLD] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
+
+        #-{ Add tree }-----------------------------------------------------------------------------------------------
+        case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
+            0:1) OBJ+=("$[$endx + 1] $tre1endy 0 tree1");;
+            0:2) OBJ+=("$[$endx + 1] $tre2endy 0 tree2");;
+            0:3) OBJ+=("$[$endx + 1] $tre3endy 0 tree3");;
+        esac;;
+    esac
+}
 
 function fill_screen {
 	#-{ Fill screen }----------------------------------------------------------------------------------------------------
 	for ((i=0;         i<$lineendy; i++)); do printf "${SKY}%${endx}s"; done
 	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
 }
+
+function client_read { read -t$spd -s -n1 input &> /dev/null; }
+function sender () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do $4; done; }
 
 function game_team {
     #======================================{ Main game loop single or server team mode }=================================
@@ -1499,6 +1555,8 @@ function game_team {
 		    'cloud1')	sprite_cloud1;    mover      $Q ;; #
 		    'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
 		    'cloud3')	sprite_cloud3;    mover      $E ;; #
+
+		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
 
 		    'boss'  )	sprite_boss  ;    mover       1 ;; # Boss
 		    'alien' )	sprite_alien ;    mover       0 ;; # Aliens
@@ -1546,17 +1604,7 @@ function game_team {
 
 	    done
 
-	    case $background in true)
-		    #-{ Add cloud }----------------------------------------------------------------------------------------------
-		    case $[RANDOM % $CLD] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
-
-		    #-{ Add tree }-----------------------------------------------------------------------------------------------
-		    case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
-		        0:1) OBJ+=("$[$endx + 1] $tre1endy 0 tree1");;
-		        0:2) OBJ+=("$[$endx + 1] $tre2endy 0 tree2");;
-		        0:3) OBJ+=("$[$endx + 1] $tre3endy 0 tree3");;
-		    esac;;
-	    esac
+        add_backgound
 
 	    #-{ Print moving land }------------------------------------------------------------------------------------------
 	    screen+=("\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
@@ -1628,6 +1676,8 @@ function game_duel {
 		        'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
 		        'tree3' )	sprite_tree3 ;    mover      $E ;; #
 
+    		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
+
 		        'cloud1')	sprite_cloud1;    mover      $Q ;; #
 		        'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
 		        'cloud3')	sprite_cloud3;    mover      $E ;; #
@@ -1658,17 +1708,7 @@ function game_duel {
 
 	    done
 
-	    case $background in true)
-		    #-{ Add cloud }----------------------------------------------------------------------------------------------
-		    case $[RANDOM % $CLD] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
-
-		    #-{ Add tree }-----------------------------------------------------------------------------------------------
-		    case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
-		        0:1) OBJ+=("$[$endx + 1] $tre1endy 0 tree1");;
-		        0:2) OBJ+=("$[$endx + 1] $tre2endy 0 tree2");;
-		        0:3) OBJ+=("$[$endx + 1] $tre3endy 0 tree3");;
-		    esac;;
-	    esac
+        add_backgound
 
 	    #-{ Print hero(es) }---------------------------------------------------------------------------------------------
 	    sprite_hero; sprite_hero2
