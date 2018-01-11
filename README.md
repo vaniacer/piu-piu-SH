@@ -16,10 +16,12 @@ Message splits to 2 lines each line 16 characters long.
 
 Need this in issue:
 
+<pre>
 day=01
 month=01
 msngr_line1=' Die alien scum '
 msngr_line2='      DIE!      '
+</pre>
 
 Don't use bad language in your massages.
 And no ad (at least for free))
