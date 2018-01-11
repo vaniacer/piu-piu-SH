@@ -1494,7 +1494,7 @@ function server_read {
 function add_backgound {
     case $background in true)
         #-{ Add msngr }----------------------------------------------------------------------------------------------
-        case $[RANDOM % $MSN] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 20 + 2] 0 msngr");; esac
+        case $[RANDOM % $MSN] in 0) OBJ+=("$[$endx + 1] $[RANDOM % $heroendy + 2] 0 msngr");; esac
 
         #-{ Add cloud }----------------------------------------------------------------------------------------------
         case $[RANDOM % $CLD] in 0) OBJ+=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud$[RANDOM % 3 + 1]");; esac
