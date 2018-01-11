@@ -14,13 +14,13 @@ I wanted to congratulate my friend on his birthday. Your name can also be there.
 First 10 issues with your messages will be added to piu-piu)
 Message splits to 2 lines each line 16 characters long.
 
-Need this in issue:
+Need this in issue (example):
 
 <pre>
-day=01
-month=01
-msngr_line1=' Die alien scum '
-msngr_line2='      DIE!      '
+day=01                         # day to show message
+month=01                       # month to show message
+msngr_line1=' Die alien scum ' # message first line
+msngr_line2='      DIE!      ' # message second line
 </pre>
 
 Don't use bad language in your massages.
