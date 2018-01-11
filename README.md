@@ -1,5 +1,5 @@
 # piu-piu-SH
-![screeenshot](https://user-images.githubusercontent.com/18072680/31125995-fbaab74a-a852-11e7-8c99-8fea7dfd2ad7.gif)
+![screeenshot](https://user-images.githubusercontent.com/18072680/34843456-9bb65774-f71f-11e7-9982-c799f15ac87f.gif)
 
 This is an Old School horizontal scroller 'Shoot Them All' game in bash.
 With multiplayer modes team and duel. You have to defeat 100 aliens to fight with Boss.
