@@ -12,7 +12,7 @@ I've added a new background object. It's a plane with a message board.
 I wanted to congratulate my friend on his birthday. Your name can also be there.
 
 First 10 issues with your messages will be added to piu-piu)
-Message splits to 2 lines each line 16 characters long.
+Message splits into 2 lines each line is 16 characters long.
 
 Need this in issue (example):
 
