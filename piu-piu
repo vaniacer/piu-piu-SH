@@ -1408,11 +1408,11 @@ function mover () { timer=$1
 	# collisions with plane1
 	[[ $life -gt 0 ]] && {
 		case  $type:"$HX $HY" in
-			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; hero_hit $X $Y; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; hero_hit $X $Y; ((life--)) ; return;;
 			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G} -lt 5 ]] && ((G++)); return;;
 			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo+=100)); return;;
 			 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life++))   ; return;;
-			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life--))   ; return;;
 			 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life--)); ((bhealth-=10)); return;;
 		esac
 	}
@@ -1420,11 +1420,11 @@ function mover () { timer=$1
 	# collisions with plane2
 	[[ $server && $life2 -gt 0 ]] && {
 		case  $type:"$HX2 $HY2" in
-			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; ((life2--)); ((frags2++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; hero_hit $X2 $Y2; ((life2--)); ((frags2++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; hero_hit $X2 $Y2; ((life2--)); return;;
 			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G2} -lt 5 ]] && ((G2++)); return;;
 			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo2+=100)); return;;
 			 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life2++))   ; return;;
-			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; ((life2--))   ; return;;
 			 'boss':${target[0]}|  'boss':${target[1]}|  'boss':${target[2]}) ((life2--)); ((bhealth-=10)); return;;
 		esac
 	}
@@ -1514,6 +1514,15 @@ function fill_screen {
 	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
 }
 
+function hero_hit () {
+#             X       Y
+    OBJ+=("  $1      $2    0 boom"
+          "$[$1+5]   $2    0 boom"
+          "$[$1+1] $[$2+2] 0 boom"
+          "$[$1+5] $[$2+2] 0 boom"
+          "  $1    $[$2+1] 0 boom")
+}
+
 function client_read { read -t$spd -s -n1 input &> /dev/null; }
 function sender () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do $4; done; }
 
@@ -1533,13 +1542,6 @@ function game_team {
 	    [[ $life -gt 0 ]] && {
             sprite_hero
             server_read
-        } || {
-            case $make_once in '')
-                OBJ+=("  $X      $Y    0 boom"
-                      "$[$X+1] $[$Y+1] 0 boom"
-                      "$[$X+2] $[$Y+2] 0 boom")
-                make_once=done;;
-            esac
         }
 
 	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
@@ -1626,9 +1628,7 @@ function game_team {
 
 		        sender $caddr $cport 'lose' server_read
 		        server=; Y2=; cors='single'
-		        OBJ+=("  $X2      $Y2    0 boom"
-                      "$[$X2+1] $[$Y2+1] 0 boom"
-                      "$[$X2+2] $[$Y2+2] 0 boom")
+
 	        }
 
 	        [[ $bhealth -le 0 ]] && {
