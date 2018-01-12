@@ -6,6 +6,7 @@ With multiplayer modes team and duel. You have to defeat 100 aliens to fight wit
 I'm using netcat for client-server exchange in multiplayer mode.
 So netcat have to be installed on system if you wish to play with friend.
 Terminals on both hosts have to be with equal dimensions.
+Read about it <a href="https://habrahabr.ru/post/335960">here</a>.
 
 Ok guyz, new year celebration is over but gifts are still comming)
 I've added a new background object. It's a plane with a message board.
