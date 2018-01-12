@@ -23,7 +23,7 @@ msngr_line1=' Die alien scum ' # message first line
 msngr_line2='      DIE!      ' # message second line
 </pre>
 
-Don't use bad language in your massages.
+Don't use bad language in your messages.
 And no ad (at least for free))
 
 Piu-Piu!)
