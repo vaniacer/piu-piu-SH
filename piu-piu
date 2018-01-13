@@ -1515,7 +1515,7 @@ function fill_screen {
 }
 
 function hero_hit () {
-#             X       Y
+    #         X       Y
     OBJ+=("  $1      $2    0 boom"
           "$[$1+5]   $2    0 boom"
           "$[$1+1] $[$2+2] 0 boom"
@@ -1530,13 +1530,21 @@ function game_team {
     #======================================{ Main game loop single or server team mode }=================================
     while true; do
 
-	    screen=(); fps_counter
+        #-{ Empty screen, count fps, add backrount objects; set timings and print Sun }----------------------------------
+	    screen=(); fps_counter; add_backgound; timings; sprite_Sun
 
-	    #-{ Timings }----------------------------------------------------------------------------------------------------
-        timings
+	    #-{ Print moving land }------------------------------------------------------------------------------------------
+	    screen+=("\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
 
-	    #-{ Print Sun }--------------------------------------------------------------------------------------------------
-	    sprite_Sun
+	    #-{ Print game status }------------------------------------------------------------------------------------------
+	    [[ $server ]] && {
+		    screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags2$LND  ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
+		    screen+=("\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+		    screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
+	    } || {
+		    screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
+		    screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
+	    }
 
 	    #-{ Print hero and get keys }------------------------------------------------------------------------------------
 	    [[ $life -gt 0 ]] && {
@@ -1550,6 +1558,8 @@ function game_team {
            #----------+---------------+------------+-----+----------+
            # OBJ type |  sprite maker |sprite mover|timer|  comment |
            #----------+---------------+------------+-----+----------+
+		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
+
 		    'tree1' )	sprite_tree1 ;    mover      $Q ;; #
 		    'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
 		    'tree3' )	sprite_tree3 ;    mover      $E ;; #
@@ -1557,8 +1567,6 @@ function game_team {
 		    'cloud1')	sprite_cloud1;    mover      $Q ;; #
 		    'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
 		    'cloud3')	sprite_cloud3;    mover      $E ;; #
-
-		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
 
 		    'boss'  )	sprite_boss  ;    mover       1 ;; # Boss
 		    'alien' )	sprite_alien ;    mover       0 ;; # Aliens
@@ -1605,21 +1613,6 @@ function game_team {
 		    screen+=("\e[$PY;${PX}H$SKY ${shoot[$L]}")
 
 	    done
-
-        add_backgound
-
-	    #-{ Print moving land }------------------------------------------------------------------------------------------
-	    screen+=("\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
-
-	    #-{ Print game status }------------------------------------------------------------------------------------------
-	    [[ $server ]] && {
-		    screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags2$LND  ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
-		    screen+=("\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
-		    screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
-	    } || {
-		    screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
-		    screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
-	    }
 
         [[ $server ]] && {
 
@@ -1672,6 +1665,8 @@ function game_duel {
                #----------+---------------+------------+-----+----------+
                # OBJ type |  sprite maker |sprite mover|timer|  comment |
                #----------+---------------+------------+-----+----------+
+    		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
+
 		        'tree1' )	sprite_tree1 ;    mover      $Q ;; #
 		        'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
 		        'tree3' )	sprite_tree3 ;    mover      $E ;; #
@@ -1679,8 +1674,6 @@ function game_duel {
 		        'cloud1')	sprite_cloud1;    mover      $Q ;; #
 		        'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
 		        'cloud3')	sprite_cloud3;    mover      $E ;; #
-
-    		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
 	        esac
         done
 
