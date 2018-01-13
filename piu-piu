@@ -1546,10 +1546,14 @@ function game_team {
 		    screen+="\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL "
 	    }
 
-	    #-{ Print hero and get keys }------------------------------------------------------------------------------------
+	    #-{ Print heroes and get keys }----------------------------------------------------------------------------------
 	    [[ $life -gt 0 ]] && {
             sprite_hero
             server_read
+        }
+
+        [[ $server ]] && {
+            sprite_hero2
         }
 
 	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
@@ -1614,28 +1618,21 @@ function game_team {
 
 	    done
 
-        [[ $server ]] && {
+        if [[ $server ]]; then
 
-            sprite_hero2
 	        [[ $life2 -gt 0 ]] && sender $caddr $cport "$screen" server_read || {
-
 		        sender $caddr $cport 'lose' server_read
 		        server=; Y2=; cors='single'
-
 	        }
 
 	        [[ $bhealth -le 0 ]] && {
                 sender $caddr $cport 'win' server_read
                 server=; cors='single'
             }
-
-        }
-
-        [[ $server ]] || {
-
+        else
 	        [[ $bhealth -le 0 ]] && mess win
 	        [[ $life    -le 0 ]] && mess lose
-        }
+        fi
 
         printf "$screen"
 
@@ -1657,8 +1654,8 @@ function game_duel {
 	    screen+="\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY         "
 	    screen+="\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  "
 
-	    #-{ Print hero(es) }---------------------------------------------------------------------------------------------
-	    sprite_hero; sprite_hero2
+	    #-{ Print heroes }-----------------------------------------------------------------------------------------------
+	    server_read; sprite_hero; sprite_hero2
 
 	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
 	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}
@@ -1761,6 +1758,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 }
 
 #-{ Start game }---------------------------------------------------------------------------------------------------------
+XY 2 1 "$SKY                                                " # Erase waiting for ...
 case $game_type in
         '') game_team;;
     'clnt') game_client;;
