@@ -930,7 +930,7 @@ function sprite_boom {
      "\e[$[$OY+1];${OX}H${DIM}${RED}(       )"$SKY
     "\e[$[$OY+2];$[$OX+2]H${DIM}${RED}_ _ ."$SKY)
 
-    screen+=("${boom[*]:$cuter:$boomC}")
+    screen+="${boom[*]:$cuter:$boomC}"
     [[ $E -eq 0 ]] && { ((cuter+=${boomC})); OBJ[$i]="$OX $OY $cuter boom"; }
 }
 
@@ -996,7 +996,7 @@ function sprite_Sun {
           "\e[8;${Sunsendx}H$SKY$BLD$YLW"'          .`       '
               "\e[9;${Sunsendx}H$SKY$YLW"'         `         ')
 
-    [[ $Q -eq 0 ]] && screen+=("${Sun[*]:$S:$SunC}")
+    [[ $Q -eq 0 ]] && screen+="${Sun[*]:$S:$SunC}"
 }
 
 
@@ -1023,7 +1023,7 @@ function sprite_hero {
         "\e[$[$Y+4];${X}H$SKY        $CM4‾‾‾‾‾$SKY     "
                 "\e[$[$Y+5];$[$X+7]H$SKY       ")
 
-	screen+=("${sprite[*]}")
+	screen+="${sprite[*]}"
 }
 
 function sprite_hero2 {
@@ -1087,7 +1087,7 @@ function sprite_hero2 {
 
     ;; esac
 
-	screen+=("${sprite[*]}")
+	screen+="${sprite[*]}"
 }
 
 #------------------------{ Intro }--------------------------------------------------------------------------------------
@@ -1177,8 +1177,8 @@ tre3endy=$[$endy-$tree3H-2]
 function default { HC=${DHC}; SC=${DSC}; HS=${DHS}; }
 function bye ()  { stty echo; printf "${CON}${DEF}"; clear; ls --color=auto; exit $1; }
 function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--)); }
-function remove_piu () { unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--)); screen+=("\e[$PY;${PX}H$SKY   "); }
-function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+=("\e[$[$OY+$k];${OX}H$SKY         "); done; }
+function remove_piu () { unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--)); screen+="\e[$PY;${PX}H$SKY   "; }
+function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+="\e[$[$OY+$k];${OX}H$SKY         "; done; }
 
 function mess () { XY 1 1 ${DEF}; clear
 
@@ -1451,7 +1451,7 @@ function mover () { timer=$1
 	# print
 	[[ $cuter -lt  $width ]] && cut_in
 	[[    $OX -le  1      ]] && cut_out #                fly away                                       or         print
-	[[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || screen+=("${sprite[*]}")
+	[[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || screen+="${sprite[*]}"
 
 	# move
 	case $timer in 0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type";; esac
@@ -1510,8 +1510,8 @@ function add_backgound {
 
 function fill_screen {
 	#-{ Fill screen }----------------------------------------------------------------------------------------------------
-	for ((i=0;         i<$lineendy; i++)); do printf "${SKY}%${endx}s"; done
-	for ((i=$lineendy; i<$endy;     i++)); do printf "${LND}%${endx}s"; done
+	for ((i=0;         i<$lineendy; i++)); do printf "$SKY%${endx}s"; done
+	for ((i=$lineendy; i<$endy;     i++)); do printf "$LND%${endx}s"; done
 }
 
 function hero_hit () {
@@ -1531,19 +1531,19 @@ function game_team {
     while true; do
 
         #-{ Empty screen, count fps, add backrount objects; set timings and print Sun }----------------------------------
-	    screen=(); fps_counter; add_backgound; timings; sprite_Sun
+	    screen=; fps_counter; add_backgound; timings; sprite_Sun
 
 	    #-{ Print moving land }------------------------------------------------------------------------------------------
-	    screen+=("\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+	    screen+="\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"; [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
 
 	    #-{ Print game status }------------------------------------------------------------------------------------------
 	    [[ $server ]] && {
-		    screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags2$LND  ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
-		    screen+=("\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
-		    screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
+		    screen+="\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags2$LND  ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND "
+		    screen+="\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
+		    screen+="\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  "
 	    } || {
-		    screen+=("\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY ")
-		    screen+=("\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL ")
+		    screen+="\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
+		    screen+="\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL "
 	    }
 
 	    #-{ Print hero and get keys }------------------------------------------------------------------------------------
@@ -1577,7 +1577,7 @@ function game_team {
 		    'life'  )	sprite_lifep ;    mover       0 ;; # Life bonus
 		    'gunup' )	sprite_gunup ;    mover       0 ;; # Gun powerup bonus
 
-            # Enemy explosions, not moving, print in place
+           # Explosions, not moving, print in place
 		    'boom'  )	sprite_boom;;
 
 	    esac; done
@@ -1592,7 +1592,7 @@ function game_team {
 		    bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
 		    for (( i=0  ; i<${hp}; i++ )); do bar="█$bar"; done
 		    for (( i=$hp; i<${hm}; i++ )); do bar="$bar "; done
-		    screen+=("\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND")
+		    screen+="\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 
 		    # Add enemy
 		    [[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$EX $EY 0 alien"); }
@@ -1610,14 +1610,14 @@ function game_team {
 		    [[ $PX -ge $bullendx ]] && { remove_piu $t; continue; } || { PIU[$t]="$PX $PY $owner"; }
 
 		    # print
-		    screen+=("\e[$PY;${PX}H$SKY ${shoot[$L]}")
+		    screen+="\e[$PY;${PX}H$SKY ${shoot[$L]}"
 
 	    done
 
         [[ $server ]] && {
 
             sprite_hero2
-	        [[ $life2 -gt 0 ]] && sender $caddr $cport "${screen[*]}" server_read || {
+	        [[ $life2 -gt 0 ]] && sender $caddr $cport "$screen" server_read || {
 
 		        sender $caddr $cport 'lose' server_read
 		        server=; Y2=; cors='single'
@@ -1637,7 +1637,7 @@ function game_team {
 	        [[ $life    -le 0 ]] && mess lose
         }
 
-        printf "${screen[*]}"
+        printf "$screen"
 
     done
 }
@@ -1646,16 +1646,19 @@ function game_duel {
     #========================================={ Main game loop server duel mode }========================================
     while true; do
 
-	    screen=(); fps_counter
+        #-{ Empty screen, count fps, add backrount objects; set timings and print Sun }----------------------------------
+	    screen=; fps_counter; add_backgound; timings; sprite_Sun
 
-	    #-{ Get keys }---------------------------------------------------------------------------------------------------
-	    server_read
+	    #-{ Print moving land }------------------------------------------------------------------------------------------
+	    screen+="\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"; [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
 
-	    #-{ Timings }----------------------------------------------------------------------------------------------------
-        timings
+	    #-{ Print game status }------------------------------------------------------------------------------------------
+	    screen+="\e[$endy;2H$LND$SC2$HS2 ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND "
+	    screen+="\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY         "
+	    screen+="\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  "
 
-	    #-{ Print Sun }--------------------------------------------------------------------------------------------------
-	    sprite_Sun
+	    #-{ Print hero(es) }---------------------------------------------------------------------------------------------
+	    sprite_hero; sprite_hero2
 
 	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
 	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}
@@ -1696,27 +1699,14 @@ function game_duel {
             esac
 
 		    # print
-		    screen+=( "\e[$PY;${PX}H$sprite" )
+		    screen+="\e[$PY;${PX}H$sprite"
 
 	    done
-
-        add_backgound
-
-	    #-{ Print hero(es) }---------------------------------------------------------------------------------------------
-	    sprite_hero; sprite_hero2
-
-	    #-{ Print moving land }------------------------------------------------------------------------------------------
-	    screen+=("\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"); [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
-
-	    #-{ Print game status }------------------------------------------------------------------------------------------
-	    screen+=("\e[$endy;2H$LND$SC2$HS2 ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND ")
-	    screen+=("\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY         ")
-	    screen+=("\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  ")
 
         [[ $life2 -le 0 ]] && { sender $caddr $cport 'lose' server_read; mess  'win'; }
         [[ $life  -le 0 ]] && { sender $caddr $cport 'win'  server_read; mess 'lose'; }
 
-	    printf "${screen[*]}";  sender $caddr $cport "${screen[*]}" server_read
+	    printf "$screen";  sender $caddr $cport "$screen" server_read
 
     done
 }
