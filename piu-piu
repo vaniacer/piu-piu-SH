@@ -121,9 +121,18 @@ function start_opt {
 }; start_opt
 #------------------------{ Messages }-----------------------------------------------------------------------------------
 
-case "$day$month" in 1101)
-    msngr_line1=' Happy birthday '
-    msngr_line2='     Yura $)    ';;
+case "$day$month" in
+    1101)
+        msngr_line1=' Happy birthday '
+        msngr_line2='     Yura $)    ';;
+
+    0202)
+        msngr_line1=" It's groundhog "
+        msngr_line2='     day !)     ';;
+
+    0228)
+        msngr_line1=' Happy birthday '
+        msngr_line2='   Matvey !)    ';;
 esac
 
 function sprite_help {
