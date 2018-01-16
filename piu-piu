@@ -1571,7 +1571,7 @@ function game_team {
            #----------+---------------+------------+-----+----------+
            # OBJ type |  sprite maker |sprite mover|timer|  comment |
            #----------+---------------+------------+-----+----------+
-		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
+		    'msngr' )	sprite_msngr;     mover      $E ;; # messanger plane
 
 		    'tree1' )	sprite_tree1 ;    mover      $Q ;; #
 		    'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
@@ -1674,7 +1674,7 @@ function game_duel {
                #----------+---------------+------------+-----+----------+
                # OBJ type |  sprite maker |sprite mover|timer|  comment |
                #----------+---------------+------------+-----+----------+
-    		    'msngr' )	sprite_msngr;     mover      $M ;; # messanger plane
+    		    'msngr' )	sprite_msngr;     mover      $E ;; # messanger plane
 
 		        'tree1' )	sprite_tree1 ;    mover      $Q ;; #
 		        'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
