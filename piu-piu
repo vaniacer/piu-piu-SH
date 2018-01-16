@@ -1533,7 +1533,7 @@ function hero_hit () {
 }
 
 function client_read { read -t$spd -s -n1 input &> /dev/null; }
-function sender () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do $4; done; }
+function sender () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do :; done; }
 
 function game_team {
     #======================================{ Main game loop single or server team mode }=================================
@@ -1629,13 +1629,13 @@ function game_team {
 
         if [[ $server ]]; then
 
-	        [[ $life2 -gt 0 ]] && sender $caddr $cport "$screen" server_read || {
-		        sender $caddr $cport 'lose' server_read
+	        [[ $life2 -gt 0 ]] && sender $caddr $cport "$screen" || {
+		        sender $caddr $cport 'lose'
 		        server=; Y2=; cors='single'
 	        }
 
 	        [[ $bhealth -le 0 ]] && {
-                sender $caddr $cport 'win' server_read
+                sender $caddr $cport 'win'
                 server=; cors='single'
             }
         else
@@ -1648,7 +1648,7 @@ function game_team {
     done
 }
 
-function game_duel {                                                                 
+function game_duel {
     #========================================={ Main game loop server duel mode }========================================
     while true; do
 
@@ -1709,10 +1709,10 @@ function game_duel {
 
 	    done
 
-        [[ $life2 -le 0 ]] && { sender $caddr $cport 'lose' server_read; mess  'win'; }
-        [[ $life  -le 0 ]] && { sender $caddr $cport 'win'  server_read; mess 'lose'; }
+        [[ $life2 -le 0 ]] && { sender $caddr $cport 'lose'; mess  'win'; }
+        [[ $life  -le 0 ]] && { sender $caddr $cport 'win' ; mess 'lose'; }
 
-	    printf "$screen";  sender $caddr $cport "$screen" server_read
+	    printf "$screen";  sender $caddr $cport "$screen"
 
     done
 }
@@ -1722,7 +1722,7 @@ function game_client {
     while true; do
 
         client_read
-	    sender $saddr $sport $input client_read
+	    sender $saddr $sport $input
 	    screen="$(nc -l -p $cport)"
 	    case $screen in 'win' | 'lose') client=; cors='single'; mess $screen;; esac
 	    printf "$screen"
