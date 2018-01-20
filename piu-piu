@@ -79,12 +79,13 @@ function start_opt {
        enmax=10										# max number of akiens						(10)
        month=$(date +'%m')							# get current month
        frags=0										# frags counter								(0)
+        jump=false
         life=3										# life counter								(3)
         ammo=100									# ammo counter								(100)
         FPSL=100									# lower FPS initial value					(100)
         FPSM=0										# maximum FPS initial value					(0)
         FPSC=0										# FPS counter								(0)
-         MSN=1111                                   # messanger randomizer
+         MSN=1111                                   # messanger randomizer                      (1111)
          day=$(date +'%d')                          # get current  day
          rnd=10										# random seed 4 bonuses						(10)
          spd=0.0001									# game\read speed							(0.0001)
@@ -93,6 +94,7 @@ function start_opt {
          DHS=★										# default symbol							(★)
          OBJ=()										# start obj array
          PIU=()										# start piu array
+          BJ=10                                     # boss jumps
           BY=$[$(tput lines) / 2]					# boss start Y
           BX=$[$(tput  cols) + 1]					# boss start X
           BC=0										# boss' sprite cutter
@@ -859,14 +861,22 @@ function sprite_boss {
 	# kill client first
 	[[ $Y2 ]] && YY=$[$Y2-1] || YY=$[$Y-1]
 
-	# Boss fire
-	[[ $OY -eq $YY && $K -eq 0 ]] && OBJ+=("$[$OX - 4] $[$OY + 4] 0 bfire")
+    if [[ $bhealth -gt 0 ]]; then
+	    # Boss fire
+	    [[ $OY -eq $YY && $K -eq 0 ]] && OBJ+=("$[$OX - 4] $[$OY + 4] 0 bfire")
 
-	# Boss move
-	[[ $OY -lt $YY                               ]] && ((OY++))
-	[[ $OY -gt $YY                               ]] && ((OY--))
-	[[ $OX -gt $[$endx / 2] && $goback = 'false' ]] && ((OX--)) || goback=true
-	[[ $OX -lt $bossendx    && $goback = 'true'  ]] && ((OX++)) || goback=false
+	    # Boss move
+	    [[ $OY -lt $YY                               ]] && ((OY++))
+	    [[ $OY -gt $YY                               ]] && ((OY--))
+	    [[ $OX -gt $[$endx / 2] && $goback = 'false' ]] && ((OX--)) || goback=true
+	    [[ $OX -lt $bossendx    && $goback = 'true'  ]] && ((OX++)) || goback=false
+    else # when boss' health goes to 0 it starts to fall, explodes and bounces on the ground
+        spd=0.1; ((OX--))
+	    [[ $OY -lt   $bossendy      && $jump = 'false' ]] && ((OY++)) || { jump=true; ((BJ--)); }
+	    [[ $OY -gt $[$bossendy-$BJ] && $jump = 'true'  ]] && ((OY--)) ||   jump=false
+        [[ $OX -gt 0 && $L -eq 0 ]] && BOOM $OX $OY
+        [[ $OX -le -$bossW       ]] && gamend='win'
+    fi
 
     case "$day$month" in
 
@@ -1174,7 +1184,7 @@ heroendx=$[$endx-15] # old - 12
 heroendy=$[$endy-7 ]
 enmyendy=$[$endy-7 ]
 bossendx=$[$endx-11]
-bossendy=$[$endy-6 ]
+bossendy=$[$endy-7 ]
 bosshbar=$[$endx-10]
 lineendy=$[$endy-2 ]
 Sunsendx=$[$endx-18]
@@ -1417,8 +1427,8 @@ function mover () { timer=$1
 	# collisions with plane1
 	[[ $life -gt 0 ]] && {
 		case  $type:"$HX $HY" in
-			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; hero_hit $X $Y; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
-			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; hero_hit $X $Y; ((life--)) ; return;;
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; BOOM $X $Y; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; BOOM $X $Y; ((life--)) ; return;;
 			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G} -lt 5 ]] && ((G++)); return;;
 			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo+=100)); return;;
 			 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life++))   ; return;;
@@ -1429,8 +1439,8 @@ function mover () { timer=$1
 	# collisions with plane2
 	[[ $server && $life2 -gt 0 ]] && {
 		case  $type:"$HX2 $HY2" in
-			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; hero_hit $X2 $Y2; ((life2--)); ((frags2++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
-			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; hero_hit $X2 $Y2; ((life2--)); return;;
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; BOOM $X2 $Y2; ((life2--)); ((frags2++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; BOOM $X2 $Y2; ((life2--)); return;;
 			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G2} -lt 5 ]] && ((G2++)); return;;
 			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo2+=100)); return;;
 			 'life':${target[0]}|  'life':${target[1]}|  'life':${target[2]}) erase_obj $i $hight; ((life2++))   ; return;;
@@ -1471,7 +1481,6 @@ function timings {
 	[[ $K   -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
 	[[ $L   -ge 3  ]] && L=0 || ((L++))	# sprites animation
 	[[ $J   -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
-	[[ $M   -ge 8  ]] && M=0 || ((M++))	# messenger plane speed
 	[[ $Q   -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
 	[[ $W   -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
 	[[ $E   -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
@@ -1523,7 +1532,7 @@ function fill_screen {
 	for ((i=$lineendy; i<$endy;     i++)); do printf "$LND%${endx}s"; done
 }
 
-function hero_hit () {
+function BOOM () {
     #         X       Y
     OBJ+=("  $1      $2    0 boom"
           "$[$1+5]   $2    0 boom"
@@ -1539,7 +1548,7 @@ function game_team {
     #======================================{ Main game loop single or server team mode }=================================
     while true; do
 
-        #-{ Empty screen, count fps, add backrount objects; set timings and print Sun }----------------------------------
+        #-{ Empty screen, count fps, add backrount objects, set timings and print Sun }----------------------------------
 	    screen=; fps_counter; add_backgound; timings; sprite_Sun
 
 	    #-{ Print moving land }------------------------------------------------------------------------------------------
@@ -1556,14 +1565,8 @@ function game_team {
 	    }
 
 	    #-{ Print heroes and get keys }----------------------------------------------------------------------------------
-	    [[ $life -gt 0 ]] && {
-            sprite_hero
-            server_read
-        }
-
-        [[ $server ]] && {
-            sprite_hero2
-        }
+	    [[ $life -gt 0 ]] && { sprite_hero; server_read; }
+        [[ $server     ]] &&   sprite_hero2
 
 	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
 	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
@@ -1596,7 +1599,7 @@ function game_team {
 	    esac; done
 
 	    #-{ BOSS }-------------------------------------------------------------------------------------------------------
-	    [[ $[$frags+$frags2] -ge $tillboss ]] && {
+	    if [[ $[$frags+$frags2] -ge $tillboss ]]; then
 
 		    # add boss object
 		    [[ $bossborn ]] || { OBJ+=("$BX $BY 0 boss"); bossborn=true; }
@@ -1608,10 +1611,10 @@ function game_team {
 		    screen+="\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 
 		    # Add enemy
-		    [[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$EX $EY 0 alien"); }
-	    } || {
-		    [[ $enumber -lt $enmax && $J -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
-	    }
+		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ+=("$EX $EY 0 alien"); }
+	    else
+		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien"); }
+	    fi
 
 	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
 	    NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
@@ -1629,18 +1632,19 @@ function game_team {
 
         if [[ $server ]]; then
 
+            [[ $gamend ]] && {
+                sender $caddr $cport $gamend
+                mess $gamend
+            }
+
 	        [[ $life2 -gt 0 ]] && sender $caddr $cport "$screen" || {
 		        sender $caddr $cport 'lose'
 		        server=; Y2=; cors='single'
 	        }
 
-	        [[ $bhealth -le 0 ]] && {
-                sender $caddr $cport 'win'
-                server=; cors='single'
-            }
         else
-	        [[ $bhealth -le 0 ]] && mess win
-	        [[ $life    -le 0 ]] && mess lose
+            [[ $gamend     ]] && mess $gamend
+	        [[ $life -le 0 ]] && mess lose
         fi
 
         printf "$screen"
@@ -1724,9 +1728,10 @@ function game_client {
         client_read
 	    sender $saddr $sport $input
 	    screen="$(nc -l -p $cport)"
-	    case $screen in 'win' | 'lose') client=; cors='single'; mess $screen;; esac
-	    printf "$screen"
-
+	    case $screen in
+            'win' | 'lose') mess   "$screen";;
+            *             ) printf "$screen";;
+        esac
     done
 }
 
