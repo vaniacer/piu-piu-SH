@@ -8,4 +8,4 @@ So netcat have to be installed on system if you wish to play with friend.
 Terminals on both hosts have to be with equal dimensions.<br>
 Read about it <a href="https://habrahabr.ru/post/335960">here</a>.
 
-Piu-Piu!)
+<a href="http://coub.com/view/1283mt>Piu-Piu!)</a>
