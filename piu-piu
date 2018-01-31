@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 #----------------------------{ Copyright }----------------------------------
 #Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 #Upstream-Name: piu-piu
@@ -59,10 +58,10 @@ COF='\e[?25l' #Cursor Off                                            |
 CON='\e[?25h' #Cursor On                                             |
 #--------------------------------------------------------------------+
 # Text positioning, usage: XY 10 10 "Hello World!"                   |
-XY   () { printf "\e[${2};${1}H${3}";   } #                          |
+XY   () { printf "\e[$2;$1H$3"; } #                                  |
 #--------------------------------------------------------------------+
 # Print line, usage: line - 10 | line -= 20 | line "Hello World!" 20 |
-line () { printf %.s"${1}" $(seq ${2}); } #                          |
+line () { printf %.s"$1" `seq $2`; } #                               |
 #--------------------------------------------------------------------+
 
 function start_opt {
@@ -77,7 +76,7 @@ function start_opt {
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")	# bonuses, more ammo, less life ang gunup
       goback=false									# need 4 boss movement
        enmax=10										# max number of akiens						(10)
-       month=$(date +'%m')							# get current month
+       month=`date +'%m'`							# get current month
        frags=0										# frags counter								(0)
         jump=false
         life=3										# life counter								(3)
@@ -86,7 +85,7 @@ function start_opt {
         FPSM=0										# maximum FPS initial value					(0)
         FPSC=0										# FPS counter								(0)
          MSN=1111                                   # messanger randomizer                      (1111)
-         day=$(date +'%d')                          # get current  day
+         day=`date +'%d'`                          # get current  day
          rnd=10										# random seed 4 bonuses						(10)
          spd=0.0001									# game\read speed							(0.0001)
          DHC=$BLK									# default hero color						($BLK)
@@ -95,8 +94,8 @@ function start_opt {
          OBJ=()										# start obj array
          PIU=()										# start piu array
           BJ=10                                     # boss jumps
-          BY=$[$(tput lines) / 2]					# boss start Y
-          BX=$[$(tput  cols) + 1]					# boss start X
+          BY=$[`tput lines` / 2]					# boss start Y
+          BX=$[`tput  cols` + 1]					# boss start X
           BC=0										# boss' sprite cutter
           LX=1										# grass X counter
            X=1										# hero X									(1)
@@ -113,7 +112,7 @@ function start_opt {
       frags2=0										# frags counter								(0)
        life2=3										# life counter								(3)
        ammo2=100									# ammo counter								(100)
-       caddr=($(ip a | grep 'inet ' | sed '/127.0.0.1/d; s/.*inet //g; s|/.*$||g'))
+       caddr=(`ip a | grep 'inet ' | sed '/127.0.0.1/d; s/.*inet //g; s|/.*$||g'`)
        saddr=
        sport=54321
        cport=54322
@@ -1047,7 +1046,7 @@ function sprite_hero {
 
 function sprite_hero2 {
 
-    case $(nc -l -p $sport) in
+    case `nc -l -p $sport` in
 
 		'w'|'W') [[ $Y2    -gt 1                 ]] && ((Y2--));;
 		'a'|'A') [[ $X2    -gt 1                 ]] && ((X2--));;
@@ -1176,7 +1175,7 @@ function cut_out () {
 }
 
 function get_dimensions {
-    size=($(stty size))
+    size=(`stty size`)
     endx=${size[1]}
     endy=${size[0]}
 bullendx=$[$endx-4 ]
@@ -1725,7 +1724,7 @@ function game_client {
 
         client_read
 	    sender $saddr $sport $input
-	    screen="$(nc -l -p $cport)"
+	    screen="`nc -l -p $cport`"
 	    case $screen in
             'win' | 'lose') mess   "$screen";;
             *             ) printf "$screen";;
@@ -1752,7 +1751,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 [[ $server ]] && {
 
     XY 2 1 $SKY$RED"${game_type^} mode. Waiting for client..."; CLD=80; TRE=70
-      clnt=($(nc -l -p $sport))
+      clnt=(`nc -l -p $sport`)
      caddr=${clnt[0]}
      cport=${clnt[1]}
        HC2=${clnt[2]}
