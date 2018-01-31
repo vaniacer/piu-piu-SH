@@ -1411,13 +1411,11 @@ function main_menu {
 
 function fps_counter {
 
-	#Needs bash 4.2
-	printf -v cur_sec '%(%s)T\n' -1
-	[[ $cur_sec -gt $sec ]] && {\
+	[[ $SECONDS -gt $sec ]] && {\
 		FPS=$FPSC
 		[[ $FPS -gt $FPSM ]] && FPSM=$FPS
 		[[ $FPS -lt $FPSL ]] && FPSL=$FPS
-		sec=$cur_sec
+		sec=$SECONDS
 		FPSC=0
 	} || ((FPSC++))
 }
@@ -1744,7 +1742,6 @@ get_dimensions; default
 clear; mess "help"; sleep 2
 clear; main_menu
 clear; fill_screen
-sec=$(date +'%s') # timer for FPS counter
 stty -echo; printf "$COF"
 OBJ=()
 
@@ -1763,7 +1760,7 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
        SC2=${clnt[4]}
 }
 
-#-{ If client }----------------------------------------------------------------------------------------------------------
+#-{ If client }--------------------------------------top--------------------------------------------------------------------
 [[ $client ]] && {
 
     XY 2 1 $SKY$RED"Waiting for server..."
@@ -1773,6 +1770,8 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 
 #-{ Start game }---------------------------------------------------------------------------------------------------------
 XY 2 1 "$SKY                                                " # Erase waiting for ...
+sec=$SECONDS # set timer for FPS counter
+
 case $game_type in
         '') game_team;;
     'clnt') game_client;;
