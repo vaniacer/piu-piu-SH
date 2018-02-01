@@ -85,7 +85,7 @@ function start_opt {
         FPSM=0										# maximum FPS initial value					(0)
         FPSC=0										# FPS counter								(0)
          MSN=1111                                   # messanger randomizer                      (1111)
-         day=`date +'%d'`                          # get current  day
+         day=`date +'%d'`                           # get current  day
          rnd=10										# random seed 4 bonuses						(10)
          spd=0.0001									# game\read speed							(0.0001)
          DHC=$BLK									# default hero color						($BLK)
@@ -1014,7 +1014,7 @@ function sprite_Sun {
           "\e[8;${Sunsendx}H$SKY$BLD$YLW"'          .`       '
               "\e[9;${Sunsendx}H$SKY$YLW"'         `         ')
 
-    [[ $Q -eq 0 ]] && screen+="${Sun[*]:$S:$SunC}"
+    [[ $L -eq 0 ]] && screen+="${Sun[*]:$S:$SunC}"
 }
 
 
@@ -1481,11 +1481,27 @@ function mover () { timer=$1
     esac
 }
 
+function obj_mover {
+    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do
+
+        OI=(${OBJ[$i]});   OX=${OI[0]};   OY=${OI[1]}
+        cuter=${OI[2]}; speed=${OI[3]}; type=${OI[4]}
+
+        case $type in
+
+            'hero'[1-2]| 'boom') sprite_$type;;        # Our heroes and booms
+                              *) sprite_$type; mover;; # All other objects
+
+        esac
+    done
+}
+
 function timings {
 
 	[[ $K   -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
 	[[ $L   -ge 3  ]] && L=0 || ((L++))	# sprites animation
 	[[ $J   -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
+    [[ $N   -ge 10 ]] && N=0 || ((N++))	# enemies born rate
     [[ $CD  -gt 0  ]] && ((CD--))       # hero1 cooldown timer
     [[ $CD2 -gt 0  ]] && ((CD2--))      # hero2 cooldown timer
 	[[ $E   -eq 0  ]] && { ((S+=$SunC)); [[ $S -gt $SunN ]] && S=0; }	# Sun animation
@@ -1578,18 +1594,7 @@ function game_team {
 	    }
 
 	    #-{ Move\check\print objects }-----------------------------------------------------------------------------------
-	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do
-
-            OI=(${OBJ[$i]});   OX=${OI[0]};   OY=${OI[1]}
-            cuter=${OI[2]}; speed=${OI[3]}; type=${OI[4]}
-
-            case $type in
-
-		        'hero'[1-2]| 'boom') sprite_$type;;        # Our heroes, booms
-                                  *) sprite_$type; mover;; # All other objects
-
-	        esac
-	    done
+        obj_mover
 
 	    #-{ BOSS }-------------------------------------------------------------------------------------------------------
 	    if [[ $[$frags+$frags2] -ge $tillboss ]]; then
@@ -1604,9 +1609,9 @@ function game_team {
 		    screen+="\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 
 		    # Add enemy
-		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$EX $EY 0 00 alien" "${OBJ[@]:$IN}"); }
+		    [[ $enumber -lt $enmax && $N -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$EX $EY 0 00 alien" "${OBJ[@]:$IN}"); }
 	    else
-		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 00 alien" "${OBJ[@]:$IN}"); }
+		    [[ $enumber -lt $enmax && $N -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 00 alien" "${OBJ[@]:$IN}"); }
 	    fi
 
 	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
@@ -1663,18 +1668,7 @@ function game_duel {
 	    screen+="\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  "
 
 	    #-{ Move\check\print objects }-----------------------------------------------------------------------------------
-	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do
-
-            OI=(${OBJ[$i]});   OX=${OI[0]};   OY=${OI[1]}
-            cuter=${OI[2]}; speed=${OI[3]}; type=${OI[4]}
-
-            case $type in
-
-		        'hero'[1-2]| 'boom') sprite_$type;;        # Our heroes and booms
-                                  *) sprite_$type; mover;; # All other objects
-
-	        esac
-	    done
+        obj_mover
 
 	    #-{ Move\check\print heroes' bullets }---------------------------------------------------------------------------
 	    NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
