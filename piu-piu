@@ -1464,6 +1464,9 @@ function mover () { timer=$1
 		done
 	esac
 
+	# remember last index of cloud2 to insert enemies after it
+	case $type in 'cloud2') IN=$i;; esac
+
 	# print
 	[[ $cuter -lt  $width ]] && cut_in
 	[[    $OX -le  1      ]] && cut_out #                fly away                                       or         print
@@ -1590,12 +1593,10 @@ function game_team {
 		    'life'  )	sprite_lifep ;    mover       0 ;; # Life bonus
 		    'gunup' )	sprite_gunup ;    mover       0 ;; # Gun powerup bonus
 
-           # Explosions, not moving, print in place
-		    'boom'  )	sprite_boom;;
+	        'boom'  )	sprite_boom;; # Explosions, not moving, print in place
 
-           # Heroes
-		    'hero1' )	sprite_hero1;;
-		    'hero2' )	sprite_hero2;;
+	        'hero1' )	sprite_hero1;; #  Our
+	        'hero2' )	sprite_hero2;; # heroes
 
 	    esac; done
 
@@ -1612,9 +1613,9 @@ function game_team {
 		    screen+="\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 
 		    # Add enemy
-		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("$EX $EY 0 alien" "${OBJ[@]}"); }
+		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$EX $EY 0 alien" "${OBJ[@]:$IN}"); }
 	    else
-		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien" "${OBJ[@]}"); }
+		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien" "${OBJ[@]:$IN}"); }
 	    fi
 
 	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
@@ -1670,9 +1671,6 @@ function game_duel {
 	    screen+="\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY         "
 	    screen+="\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  "
 
-	    #-{ Print heroes }-----------------------------------------------------------------------------------------------
-	    server_read; sprite_hero1; sprite_hero2
-
 	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
 	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}
 
@@ -1690,6 +1688,11 @@ function game_duel {
 		        'cloud1')	sprite_cloud1;    mover      $Q ;; #
 		        'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
 		        'cloud3')	sprite_cloud3;    mover      $E ;; #
+
+		        'boom'  )	sprite_boom;; # Explosions, not moving, print in place
+
+		        'hero1' )	sprite_hero1;; #  Our
+		        'hero2' )	sprite_hero2;; # heroes
 	        esac
         done
 
