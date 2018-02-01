@@ -1180,7 +1180,7 @@ function get_dimensions {
     endy=${size[0]}
 boomendx=$[$endx-10]
 bullendx=$[$endx-4 ]
-heroendx=$[$endx-15] # old - 12
+heroendx=$[$endx-15]
 heroendy=$[$endy-7 ]
 enmyendy=$[$endy-7 ]
 bossendx=$[$endx-11]
@@ -1474,10 +1474,10 @@ function mover () { timer=$1
 	[[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || screen+="${sprite[*]}"
 
 	# move
-    c_spd=${speed::1}; d_spd=${speed:1}
-	case $c_spd in
-        0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $d_spd$d_spd $type";;
-        *) ((c_spd--))          ; OBJ[$i]="$OX $OY $cuter $c_spd$d_spd $type";;
+    CS=${speed::1}; DS=${speed:1}
+	case $CS in
+        0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $DS$DS $type";;
+        *) ((CS--))             ; OBJ[$i]="$OX $OY $cuter $CS$DS $type";;
     esac
 }
 
@@ -1662,30 +1662,19 @@ function game_duel {
 	    screen+="\e[1;2H$SKY$SC$HS ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY         "
 	    screen+="\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  "
 
-	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
-	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}
+	    #-{ Move\check\print objects }-----------------------------------------------------------------------------------
+	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do
+
+            OI=(${OBJ[$i]});   OX=${OI[0]};   OY=${OI[1]}
+            cuter=${OI[2]}; speed=${OI[3]}; type=${OI[4]}
 
             case $type in
 
-               #----------+---------------+------------+-----+----------+
-               # OBJ type |  sprite maker |sprite mover|timer|  comment |
-               #----------+---------------+------------+-----+----------+
-    		    'msngr' )	sprite_msngr;     mover      $E ;; # messanger plane
+		        'hero'[1-2]| 'boom') sprite_$type;;        # Our heroes and booms
+                                  *) sprite_$type; mover;; # All other objects
 
-		        'tree1' )	sprite_tree1 ;    mover      $Q ;; #
-		        'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
-		        'tree3' )	sprite_tree3 ;    mover      $E ;; #
-
-		        'cloud1')	sprite_cloud1;    mover      $Q ;; #
-		        'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
-		        'cloud3')	sprite_cloud3;    mover      $E ;; #
-
-		        'boom'  )	sprite_boom;; # Explosions, not moving, print in place
-
-		        'hero1' )	sprite_hero1;; #  Our
-		        'hero2' )	sprite_hero2;; # heroes
 	        esac
-        done
+	    done
 
 	    #-{ Move\check\print heroes' bullets }---------------------------------------------------------------------------
 	    NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
