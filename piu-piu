@@ -1041,7 +1041,7 @@ function sprite_hero1 {
         "\e[$[$Y+4];${X}H$SKY        $CM4‾‾‾‾‾$SKY     "
                 "\e[$[$Y+5];$[$X+7]H$SKY       ")
 
-# 	screen+="${sprite[*]}"; OBJ[$i]="$X $Y 0 00 hero1"
+ 	screen+="${sprite[*]}"; OBJ[$i]="$X $Y 0 00 hero1"
 }
 
 function sprite_hero2 {
@@ -1178,6 +1178,7 @@ function get_dimensions {
     size=(`stty size`)
     endx=${size[1]}
     endy=${size[0]}
+boomendx=$[$endx-10]
 bullendx=$[$endx-4 ]
 heroendx=$[$endx-15] # old - 12
 heroendy=$[$endy-7 ]
@@ -1424,7 +1425,7 @@ function mover () { timer=$1
 	# collisions with plane1
 	[[ $life -gt 0 ]] && {
 		case  $type:"$HX $HY" in
-			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; BOOM $X $Y; ((life--)); ((frags++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; BOOM $X $Y; ((life--)); ((frags++)); ((enumber--)); boom $OX $OY; return;;
 			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; BOOM $X $Y; ((life--)) ; return;;
 			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G} -lt 5 ]] && ((G++)); return;;
 			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo+=100)); return;;
@@ -1436,7 +1437,7 @@ function mover () { timer=$1
 	# collisions with plane2
 	[[ $server && $life2 -gt 0 ]] && {
 		case  $type:"$HX2 $HY2" in
-			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; BOOM $X2 $Y2; ((life2--)); ((frags2++)); ((enumber--)); OBJ+=("$OX $OY 0 boom"); return;;
+			'alien':${target[0]}| 'alien':${target[1]}| 'alien':${target[2]}) erase_obj $i $hight; BOOM $X2 $Y2; ((life2--)); ((frags2++)); ((enumber--)); boom $OX $OY; return;;
 			'bfire':${target[0]}| 'bfire':${target[1]}| 'bfire':${target[2]}) erase_obj $i $hight; BOOM $X2 $Y2; ((life2--)); return;;
 			'gunup':${target[0]}| 'gunup':${target[1]}| 'gunup':${target[2]}) erase_obj $i $hight; [[ ${G2} -lt 5 ]] && ((G2++)); return;;
 			 'ammo':${target[0]}|  'ammo':${target[1]}|  'ammo':${target[2]}) erase_obj $i $hight; ((ammo2+=100)); return;;
@@ -1457,7 +1458,7 @@ function mover () { timer=$1
 					case $type in
 						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]}");; esac # get bonus
 								 case $owner in 1) ((frags++));; 2) ((frags2++));; esac
-								 ((enumber--)); erase_obj $i $hight; remove_piu $t; OBJ+=("$OX $OY 0 boom"); return;;
+								 ((enumber--)); erase_obj $i $hight; remove_piu $t; boom $OX $OY; return;;
 						'boss' ) remove_piu $t; ((bhealth--)); continue;;
 					esac
 			esac
@@ -1485,9 +1486,6 @@ function timings {
 	[[ $K   -ge 20 ]] && K=0 || ((K++))	# boss' fire rate
 	[[ $L   -ge 3  ]] && L=0 || ((L++))	# sprites animation
 	[[ $J   -ge 5  ]] && J=0 || ((J++))	# boss' bullet animation
-	[[ $Q   -ge 6  ]] && Q=0 || ((Q++))	# tree1\cloud1(small)  speed
-	[[ $W   -ge 4  ]] && W=0 || ((W++))	# tree2\cloud2(medium) speed
-	[[ $E   -ge 2  ]] && E=0 || ((E++))	# tree3\cloud3(large)  speed
     [[ $CD  -gt 0  ]] && ((CD--))       # hero1 cooldown timer
     [[ $CD2 -gt 0  ]] && ((CD2--))      # hero2 cooldown timer
 	[[ $E   -eq 0  ]] && { ((S+=$SunC)); [[ $S -gt $SunN ]] && S=0; }	# Sun animation
@@ -1540,13 +1538,20 @@ function fill_screen {
 	for ((i=$lineendy; i<$endy;     i++)); do printf "$LND%${endx}s"; done
 }
 
-function BOOM () {
-    #         X       Y
-    OBJ+=("  $1      $2    0 boom"
-          "$[$1+5]   $2    0 boom"
-          "$[$1+1] $[$2+2] 0 boom"
-          "$[$1+5] $[$2+2] 0 boom"
-          "  $1    $[$2+1] 0 boom")
+function boom () { XB=$1; YB=$2; [[ $XB -gt $boomendx ]] && XB=$boomendx
+
+    #       X   Y  cuter speed type
+    OBJ+=("$XB $YB   0     00  boom")
+}
+
+function BOOM () { XB=$1; YB=$2; [[ $XB -gt $boomendx ]] && XB=$boomendx
+
+    #         X        Y   cuter speed type
+    OBJ+=("  $XB      $YB    0     00  boom"
+          "$[$XB+5]   $YB    0     00  boom"
+          "$[$XB+1] $[$YB+2] 0     00  boom"
+          "$[$XB+5] $[$YB+2] 0     00  boom"
+          "  $XB    $[$YB+1] 0     00  boom")
 }
 
 function client_read { read -t$spd -s -n1 input &> /dev/null; }
@@ -1578,8 +1583,12 @@ function game_team {
             OI=(${OBJ[$i]});   OX=${OI[0]};   OY=${OI[1]}
             cuter=${OI[2]}; speed=${OI[3]}; type=${OI[4]}
 
-            sprite_$type; mover
+            case $type in
 
+		        'hero'[1-2]| 'boom'| 'boss') sprite_$type;;        # Our heroes, booms and boss
+                                          *) sprite_$type; mover;; # All other objects
+
+	        esac
 	    done
 
 	    #-{ BOSS }-------------------------------------------------------------------------------------------------------
