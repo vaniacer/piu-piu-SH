@@ -1425,8 +1425,8 @@ function mover {
 	# remember last index of cloud2 to insert enemies after it
 
 	case $type in
-        'cloud1') IN1=$i;;
-        'cloud2') IN2=$i;;
+        'cloud1') BP1=$i;;
+        'cloud2') BP2=$i;;
     esac
 
 	# collisions with plane1
@@ -1532,19 +1532,19 @@ function server_read {
 function add_backgound {
     [[ $background ]] && {
         #-{ Add msngr }----------------------------------------------------------------------------------------------
-        case $[RANDOM % $MSN] in 0) OBJ=("${OBJ[@]::$IN2}" "$[$endx + 1] $[RANDOM % $heroendy + 2] 0 msngr 33" "${OBJ[@]:$IN2}");; esac
+        case $[RANDOM % $MSN] in 0) OBJ=("${OBJ[@]::$BP2}" "$[$endx + 1] $[RANDOM % $heroendy + 2] 0 msngr 33" "${OBJ[@]:$BP2}");; esac
 
         #-{ Add cloud }----------------------------------------------------------------------------------------------
         case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
             0:1) OBJ=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud1 66" "${OBJ[@]}");;
-            0:2) OBJ=("${OBJ[@]::$IN1}" "$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud2 44" "${OBJ[@]:$IN1}");;
+            0:2) OBJ=("${OBJ[@]::$BP1}" "$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud2 44" "${OBJ[@]:$BP1}");;
             0:3) OBJ=("${OBJ[@]}" "$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud3 22");;
         esac
 
         #-{ Add tree }-----------------------------------------------------------------------------------------------
         case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
             0:1) OBJ=("$[$endx + 1] $tre1endy 0 tree1 66" "${OBJ[@]}");;
-            0:2) OBJ=("${OBJ[@]::$IN1}" "$[$endx + 1] $tre2endy 0 tree2 44" "${OBJ[@]:$IN1}");;
+            0:2) OBJ=("${OBJ[@]::$BP1}" "$[$endx + 1] $tre2endy 0 tree2 44" "${OBJ[@]:$BP1}");;
             0:3) OBJ=("${OBJ[@]}" "$[$endx + 1] $tre3endy 0 tree3 22");;
         esac
     }
@@ -1611,9 +1611,9 @@ function game_team {
 		    screen+="\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 
 		    # Add enemy
-		    [[ $enumber -lt $enmax && $M -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN2}" "$EX $EY 0 alien 00" "${OBJ[@]:$IN2}"); }
+		    [[ $enumber -lt $enmax && $M -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$BP2}" "$EX $EY 0 alien 00" "${OBJ[@]:$BP2}"); }
 	    else
-		    [[ $enumber -lt $enmax && $M -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN2}" "$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien 00" "${OBJ[@]:$IN2}"); }
+		    [[ $enumber -lt $enmax && $M -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$BP2}" "$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien 00" "${OBJ[@]:$BP2}"); }
 	    fi
 
 	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
