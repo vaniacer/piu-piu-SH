@@ -455,11 +455,11 @@ function sprite_cloud3 {
               'ZZZZ\| ZZZZ+----------------+ '); msngrH=${#msngr[*]}; msngrW=${#msngr[2]}
 
          CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
-         CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
+         CM7=$SKY$blk; CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
 
  msngr_color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $CM5 $CM5 $SKY $SKY $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $SKY"  #        __  +----------------+
-              "$SKY $CM5 $CM5 $CM5 $CM5 $CM5 $CM4 $SKY $CM6 $BLK $BLK $blk $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $blk $SKY"  #  _____/ /_/| Die alien scum |
-              "$CM5 $CM8 $CM8 $CM4 $SKY $CM6 $CM8 $CM6 $SKY $SKY $BLK $blk $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $blk $SKY"  # (° \ |_/  \|      DIE!      |
+              "$SKY $CM5 $CM5 $CM5 $CM5 $CM5 $CM4 $SKY $CM6 $BLK $BLK $blk $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $CM7 $SKY"  #  _____/ /_/| Die alien scum |
+              "$CM5 $CM8 $CM8 $CM4 $SKY $CM6 $CM8 $CM6 $SKY $SKY $BLK $blk $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $TXT $CM7 $SKY"  # (° \ |_/  \|      DIE!      |
               "$SKY $SKY $SKY $SKY $CM4 $CM6 $SKY $SKY $SKY $SKY $SKY $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $SKY") #     \|     +----------------+
 
 function sprite_msngr {
@@ -469,11 +469,11 @@ function sprite_msngr {
        color=("${msngr_color[@]}")
 
          CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
-         CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
+         CM7=$SKY$blk; CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
 
       sprite=("\e[$OY;$[$OX+7]H"$CM5"__$SKY \e[$OY;$[$OX+11]H$blk+----------------+$SKY "
-        "\e[$[$OY+1];$[$OX+1]H"$CM5"_____$CM4/$SKY $CM6/${BLK}_/$blk|$TXT$msngr_line1$blk|$SKY "
-          "\e[$[$OY+2];${OX}H"$CM5"($CM8° $CM4\ $CM6|$CM8 $CM6/$SKY \e[$[$OY+2];$[$OX+10]H$BLK"'\\'"$blk|$TXT$msngr_line2$blk|$SKY "
+        "\e[$[$OY+1];$[$OX+1]H"$CM5"_____$CM4/$SKY $CM6/${BLK}_/$blk|$TXT$msngr_line1$CM7|$SKY "
+          "\e[$[$OY+2];${OX}H"$CM5"($CM8° $CM4\ $CM6|$CM8 $CM6/$SKY \e[$[$OY+2];$[$OX+10]H$BLK"'\\'"$blk|$TXT$msngr_line2$CM7|$SKY "
         "\e[$[$OY+3];$[$OX+4]H$SKY"$CM4'\\'"$CM6|$SKY \e[$[$OY+3];$[$OX+11]H$blk+----------------+$SKY ")
 
      sprite2=("${msngr[@]}")
@@ -1156,7 +1156,7 @@ function cut_in () {
             symbol=${symbol//'Z'/"\e[$[$OY+$h];$[$OX+$c+1]H"}
 			spr+="${color2[$c]}$symbol"
 		done
-		sprite[$h]="$SKY\e[$[$OY+$h];${OX}H$spr"
+		sprite[$h]="$SKY\e[$[$OY+$h];${OX}H$spr$SKY"
 	done
 }
 
@@ -1423,7 +1423,11 @@ function fps_counter {
 function mover {
 
 	# remember last index of cloud2 to insert enemies after it
-	case $type in 'cloud2') IN=$i;; esac
+
+	case $type in
+        'cloud1') IN1=$i;;
+        'cloud2') IN2=$i;;
+    esac
 
 	# collisions with plane1
 	[[ $life -gt 0 ]] && {
@@ -1459,7 +1463,7 @@ function mover {
 				"${target[0]}"| "${target[1]}"| "${target[2]}"| "${target[3]}"| "${target[4]}"| "${target[5]}")
 
 					case $type in
-						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]} 00");; esac # get bonus
+						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]} 11");; esac # get bonus
 								 case $owner in 1) ((frags++));; 2) ((frags2++));; esac
 								 ((enumber--)); erase_obj $i $hight; remove_piu $t; boom $OX $OY; return;;
 						'boss' ) remove_piu $t; ((bhealth--)); continue;;
@@ -1528,19 +1532,19 @@ function server_read {
 function add_backgound {
     [[ $background ]] && {
         #-{ Add msngr }----------------------------------------------------------------------------------------------
-        case $[RANDOM % $MSN] in 0) OBJ=("${OBJ[@]::$IN}" "$[$endx + 1] $[RANDOM % $heroendy + 2] 0 msngr 33" "${OBJ[@]:$IN}");; esac
+        case $[RANDOM % $MSN] in 0) OBJ=("${OBJ[@]::$IN2}" "$[$endx + 1] $[RANDOM % $heroendy + 2] 0 msngr 33" "${OBJ[@]:$IN2}");; esac
 
         #-{ Add cloud }----------------------------------------------------------------------------------------------
         case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
             0:1) OBJ=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud1 66" "${OBJ[@]}");;
-            0:2) OBJ=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud2 44" "${OBJ[@]}");;
+            0:2) OBJ=("${OBJ[@]::$IN1}" "$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud2 44" "${OBJ[@]:$IN1}");;
             0:3) OBJ=("${OBJ[@]}" "$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud3 22");;
         esac
 
         #-{ Add tree }-----------------------------------------------------------------------------------------------
         case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
             0:1) OBJ=("$[$endx + 1] $tre1endy 0 tree1 66" "${OBJ[@]}");;
-            0:2) OBJ=("$[$endx + 1] $tre2endy 0 tree2 44" "${OBJ[@]}");;
+            0:2) OBJ=("${OBJ[@]::$IN1}" "$[$endx + 1] $tre2endy 0 tree2 44" "${OBJ[@]:$IN1}");;
             0:3) OBJ=("${OBJ[@]}" "$[$endx + 1] $tre3endy 0 tree3 22");;
         esac
     }
@@ -1607,9 +1611,9 @@ function game_team {
 		    screen+="\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 
 		    # Add enemy
-		    [[ $enumber -lt $enmax && $M -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$EX $EY 0 alien 00" "${OBJ[@]:$IN}"); }
+		    [[ $enumber -lt $enmax && $M -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN2}" "$EX $EY 0 alien 00" "${OBJ[@]:$IN2}"); }
 	    else
-		    [[ $enumber -lt $enmax && $M -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien 00" "${OBJ[@]:$IN}"); }
+		    [[ $enumber -lt $enmax && $M -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN2}" "$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien 00" "${OBJ[@]:$IN2}"); }
 	    fi
 
 	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
