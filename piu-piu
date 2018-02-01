@@ -1762,8 +1762,8 @@ sec=$SECONDS # set timer for FPS counter
 case $game_type in
         '') OBJ=("$X $Y 0 00 hero1"); game_team;;
     'clnt') game_client;;
-    'team') X2=1        ; Y2=$heroendy                   ; OBJ=("$X $Y 0 00 hero1" "$X2 $Y2 0 00 hero1"); game_team;;
-    'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2]; OBJ=("$X $Y 0 00 hero1" "$X2 $Y2 0 00 hero1"); game_duel;;
+    'team') X2=1        ; Y2=$heroendy                   ; OBJ=("$X $Y 0 00 hero1" "$X2 $Y2 0 00 hero2"); game_team;;
+    'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2]; OBJ=("$X $Y 0 00 hero1" "$X2 $Y2 0 00 hero2"); game_duel;;
 esac
 
 # vim: ts=4
