@@ -862,7 +862,7 @@ function sprite_boss {
 
     if [[ $bhealth -gt 0 ]]; then
 	    # Boss fire
-	    [[ $OY -eq $YY && $K -eq 0 ]] && OBJ+=("$[$OX - 4] $[$OY + 4] 0 bfire")
+	    [[ $OY -eq $YY && $K -eq 0 ]] && OBJ+=("$[$OX - 4] $[$OY + 4] 0 00 bfire")
 
 	    # Boss move
 	    [[ $OY -lt $YY                               ]] && ((OY++))
@@ -905,7 +905,7 @@ function sprite_boss {
         "\e[$[$OY+3];${OX}H$SKY  ${CM1}/${big2[$L]}"${CM1}'\\'"$SKY  "
         "\e[$[$OY+4];${OX}H$SKY ${CM1}( ${big3[$L]} ${CM1})$SKY "
       "\e[$[$OY+5];${OX}H$SKY  ${CM1}"'`¯¯---¯¯´'"$SKY  "
-      "\e[$[$OY+6];$[$OX+1]H$SKY           ")
+      "\e[$[$OY+6];$[$OX+1]H$SKY            ")
 
      sprite2=('ZZZZ     '
               'ZZZZZ___   '
@@ -1585,8 +1585,8 @@ function game_team {
 
             case $type in
 
-		        'hero'[1-2]| 'boom'| 'boss') sprite_$type;;        # Our heroes, booms and boss
-                                          *) sprite_$type; mover;; # All other objects
+		        'hero'[1-2]| 'boom') sprite_$type;;        # Our heroes, booms
+                                  *) sprite_$type; mover;; # All other objects
 
 	        esac
 	    done
