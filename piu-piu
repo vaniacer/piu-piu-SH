@@ -916,7 +916,7 @@ function sprite_boss {
               'Z           ');;
 	esac
 
-	((cuter++)); OBJ[$i]="$OX $OY $cuter $type"
+	((cuter++)); OBJ[$i]="$OX $OY $cuter 00 $type"
 }
 
 #------------------------{ Animations }---------------------------------------------------------------------------------
@@ -949,7 +949,7 @@ function sprite_boom {
     "\e[$[$OY+2];$[$OX+2]H${DIM}${RED}_ _ ."$SKY)
 
     screen+="${boom[*]:$cuter:$boomC}"
-    [[ $E -eq 0 ]] && { ((cuter+=${boomC})); OBJ[$i]="$OX $OY $cuter boom"; }
+    [[ $E -eq 0 ]] && { ((cuter+=${boomC})); OBJ[$i]="$OX $OY $cuter 00 boom"; }
 }
 
          Sun=('       ___ |       '
@@ -1041,7 +1041,7 @@ function sprite_hero1 {
         "\e[$[$Y+4];${X}H$SKY        $CM4‾‾‾‾‾$SKY     "
                 "\e[$[$Y+5];$[$X+7]H$SKY       ")
 
- 	screen+="${sprite[*]}"; OBJ[$i]="$X $Y 0 hero1"
+# 	screen+="${sprite[*]}"; OBJ[$i]="$X $Y 0 00 hero1"
 }
 
 function sprite_hero2 {
@@ -1105,7 +1105,7 @@ function sprite_hero2 {
 
     ;; esac
 
- 	screen+="${sprite[*]}"; OBJ[$i]="$X2 $Y2 0 hero2"
+ 	screen+="${sprite[*]}"; OBJ[$i]="$X2 $Y2 0 00 hero2"
 }
 
 #------------------------{ Intro }--------------------------------------------------------------------------------------
@@ -1473,7 +1473,11 @@ function mover () { timer=$1
 	[[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || screen+="${sprite[*]}"
 
 	# move
-	case $timer in 0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $type";; esac
+    c_spd=${speed::1}; d_spd=${speed:1}
+	case $c_spd in
+        0) ((OX--)); ((cuter++)); OBJ[$i]="$OX $OY $cuter $d_spd$d_spd $type";;
+        *) ((c_spd--))          ; OBJ[$i]="$OX $OY $cuter $c_spd$d_spd $type";;
+    esac
 }
 
 function timings {
@@ -1512,20 +1516,20 @@ function server_read {
 function add_backgound {
     [[ $background ]] && {
         #-{ Add msngr }----------------------------------------------------------------------------------------------
-        case $[RANDOM % $MSN] in 0) OBJ=("${OBJ[@]::$IN}" "$[$endx + 1] $[RANDOM % $heroendy + 2] 0 msngr" "${OBJ[@]:$IN}");; esac
+        case $[RANDOM % $MSN] in 0) OBJ=("${OBJ[@]::$IN}" "$[$endx + 1] $[RANDOM % $heroendy + 2] 0 33 msngr" "${OBJ[@]:$IN}");; esac
 
         #-{ Add cloud }----------------------------------------------------------------------------------------------
         case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
-            0:1) OBJ=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud1" "${OBJ[@]}");;
-            0:2) OBJ=("$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud2" "${OBJ[@]}");;
-            0:3) OBJ=("${OBJ[@]}" "$[$endx + 1] $[RANDOM % 10 + 2] 0 cloud3");;
+            0:1) OBJ=("$[$endx + 1] $[RANDOM % 10 + 2] 0 66 cloud1" "${OBJ[@]}");;
+            0:2) OBJ=("$[$endx + 1] $[RANDOM % 10 + 2] 0 44 cloud2" "${OBJ[@]}");;
+            0:3) OBJ=("${OBJ[@]}" "$[$endx + 1] $[RANDOM % 10 + 2] 0 22 cloud3");;
         esac
 
         #-{ Add tree }-----------------------------------------------------------------------------------------------
         case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
-            0:1) OBJ=("$[$endx + 1] $tre1endy 0 tree1" "${OBJ[@]}");;
-            0:2) OBJ=("$[$endx + 1] $tre2endy 0 tree2" "${OBJ[@]}");;
-            0:3) OBJ=("${OBJ[@]}" "$[$endx + 1] $tre3endy 0 tree3");;
+            0:1) OBJ=("$[$endx + 1] $tre1endy 0 66 tree1" "${OBJ[@]}");;
+            0:2) OBJ=("$[$endx + 1] $tre2endy 0 44 tree2" "${OBJ[@]}");;
+            0:3) OBJ=("${OBJ[@]}" "$[$endx + 1] $tre3endy 0 22 tree3");;
         esac
     }
 }
@@ -1568,43 +1572,21 @@ function game_team {
 		    screen+="\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL "
 	    }
 
-	    #-{ Move\check\print all flying to hero objects }----------------------------------------------------------------
-	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do OI=(${OBJ[$i]}); OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; case $type in
+	    #-{ Move\check\print objects }-----------------------------------------------------------------------------------
+	    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do
 
-           #----------+---------------+------------+-----+----------+
-           # OBJ type |  sprite maker |sprite mover|timer|  comment |
-           #----------+---------------+------------+-----+----------+
-		    'msngr' )	sprite_msngr;     mover      $E ;; # messanger plane
+            OI=(${OBJ[$i]});   OX=${OI[0]};   OY=${OI[1]}
+            cuter=${OI[2]}; speed=${OI[3]}; type=${OI[4]}
 
-		    'tree1' )	sprite_tree1 ;    mover      $Q ;; #
-		    'tree2' )	sprite_tree2 ;    mover      $W ;; # Trees
-		    'tree3' )	sprite_tree3 ;    mover      $E ;; #
+            sprite_$type; mover
 
-		    'cloud1')	sprite_cloud1;    mover      $Q ;; #
-		    'cloud2')	sprite_cloud2;    mover      $W ;; # Clouds
-		    'cloud3')	sprite_cloud3;    mover      $E ;; #
-
-		    'boss'  )	sprite_boss  ;    mover       1 ;; # Boss
-		    'alien' )	sprite_alien ;    mover       0 ;; # Aliens
-
-		    'bfire' )	sprite_bfire ;    mover       0 ;; # Boss' plasma shot
-
-		    'ammo'  )	sprite_ammob ;    mover       0 ;; # Ammo bonus
-		    'life'  )	sprite_lifep ;    mover       0 ;; # Life bonus
-		    'gunup' )	sprite_gunup ;    mover       0 ;; # Gun powerup bonus
-
-	        'boom'  )	sprite_boom;; # Explosions, not moving, print in place
-
-	        'hero1' )	sprite_hero1;; #  Our
-	        'hero2' )	sprite_hero2;; # heroes
-
-	    esac; done
+	    done
 
 	    #-{ BOSS }-------------------------------------------------------------------------------------------------------
 	    if [[ $[$frags+$frags2] -ge $tillboss ]]; then
 
 		    # add boss object
-		    [[ $bossborn ]] || { OBJ+=("$BX $BY 0 boss"); bossborn=true; }
+		    [[ $bossborn ]] || { OBJ+=("$BX $BY 0 00 boss"); bossborn=true; }
 
 		    # Health bar
 		    bar=; hp=$[$bosshbar * $bhealth / 100]; hm=$[$endx - 10]
@@ -1613,9 +1595,9 @@ function game_team {
 		    screen+="\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 
 		    # Add enemy
-		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$EX $EY 0 alien" "${OBJ[@]:$IN}"); }
+		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$EX $EY 0 00 alien" "${OBJ[@]:$IN}"); }
 	    else
-		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien" "${OBJ[@]:$IN}"); }
+		    [[ $enumber -lt $enmax && $J -eq 0 && $bhealth -gt 0 ]] && { ((enumber++)); OBJ=("${OBJ[@]::$IN}" "$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 00 alien" "${OBJ[@]:$IN}"); }
 	    fi
 
 	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
@@ -1780,10 +1762,10 @@ XY 2 1 "$SKY                                                " # Erase waiting fo
 sec=$SECONDS # set timer for FPS counter
 
 case $game_type in
-        '') OBJ=("$X $Y 0 hero1"); game_team;;
+        '') OBJ=("$X $Y 0 00 hero1"); game_team;;
     'clnt') game_client;;
-    'team') X2=1        ; Y2=$heroendy                   ; OBJ=("$X $Y 0 hero1" "$X2 $Y2 0 hero1"); game_team;;
-    'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2]; OBJ=("$X $Y 0 hero1" "$X2 $Y2 0 hero1"); game_duel;;
+    'team') X2=1        ; Y2=$heroendy                   ; OBJ=("$X $Y 0 00 hero1" "$X2 $Y2 0 00 hero1"); game_team;;
+    'duel') X2=$heroendx; Y2=$[RANDOM % $[$heroendy-2]+2]; OBJ=("$X $Y 0 00 hero1" "$X2 $Y2 0 00 hero1"); game_duel;;
 esac
 
 # vim: ts=4
