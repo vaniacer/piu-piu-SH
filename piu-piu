@@ -93,6 +93,7 @@ function start_opt {
          DHS=★										# default symbol							(★)
          OBJ=()										# start obj array
          PIU=()										# start piu array
+          BP=0                                      # bitplan
           BJ=10                                     # boss jumps
           BY=$[`tput lines` / 2]					# boss start Y
           BX=$[`tput  cols` + 1]					# boss start X
