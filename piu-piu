@@ -1027,16 +1027,15 @@ function sprite_hero1 {
        width=14
 
     if [[ $life -gt 0 ]]; then
-	    server_read
+        server_read
         HX=$[$X+11]; HY=$[$Y+3] # Hero collide coordinates
     else # when hero1's health goes to 0 it starts to fall, explodes and bounces on the ground
-        spd=0.5; ((X--))
+        sleep 0.1; ((X--))
 	    [[ $Y -lt   $heroendy      && $jump = 'false' ]] && ((Y++)) || { jump=true; ((BJ--)); }
 	    [[ $Y -gt $[$heroendy-$BJ] && $jump = 'true'  ]] && ((Y--)) ||   jump=false
         [[ $X -gt 0 && $L -eq 0 ]] && BOOM $X $Y
         [[ $X -le -$width       ]] && gamend='lose'
     fi
-
          CM4=$SKY$DIM$HC ; CM5=$SKY$HC; CM6=$SKY$BLD$HC; CM7=$SKY$SC$HS$HC$BLD
          CM8=$SKY$DIM$UND; CM9=$SKY$HC$BLD
 
