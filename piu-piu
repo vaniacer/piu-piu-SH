@@ -1206,8 +1206,8 @@ tre3endy=$[$endy-$tree3H-2]
 
 function default { HC=${DHC}; SC=${DSC}; HS=${DHS}; }
 function bye ()  { stty echo; printf "${CON}${DEF}"; clear; ls --color=auto; exit $1; }
-function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); ((NO--)); }
-function remove_piu () { unset PIU[$1]; PIU=("${PIU[@]}"); ((NP--)); screen+="\e[$PY;${PX}H$SKY   "; }
+function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); }
+function remove_piu () { unset PIU[$1]; PIU=("${PIU[@]}"); screen+="\e[$PY;${PX}H$SKY   "; }
 function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+="\e[$[$OY+$k];${OX}H$SKY         "; done; }
 
 function mess () { XY 1 1 ${DEF}; clear
@@ -1467,7 +1467,7 @@ function mover {
 	# alien's collisions with pius
 	case $type in 'alien' | 'boss')
 
-		for (( t=0; t<$NP; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
+		for p in ${!PIU[@]}; do PI=(${PIU[$p]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
 
 			case "$PX $PY" in # hit by bullet
 
@@ -1476,8 +1476,8 @@ function mover {
 					case $type in
 						'alien') case $[RANDOM % $rnd] in 0)  OBJ+=("$OX $OY 0 ${bonuses[$[RANDOM % ${#bonuses[@]}]]} 11");; esac # get bonus
 								 case $owner in 1) ((frags++));; 2) ((frags2++));; esac
-								 ((enumber--)); erase_obj $i $hight; remove_piu $t; boom $OX $OY; return;;
-						'boss' ) remove_piu $t; ((bhealth--)); continue;;
+								 ((enumber--)); erase_obj $i $hight; remove_piu $p; boom $OX $OY; return;;
+						'boss' ) remove_piu $p; ((bhealth--)); continue;;
 					esac
 			esac
 		done
@@ -1497,12 +1497,12 @@ function mover {
 }
 
 function obj_mover {
-    NO=${#OBJ[@]}; for (( i=0; i<$NO; i++ )); do
+    for i in ${!OBJ[@]}; do
 
         OI=(${OBJ[$i]});   OX=${OI[0]};    OY=${OI[1]}
         cuter=${OI[2]};  type=${OI[3]}; speed=${OI[4]}
 
-        sprite_$type; [[ $speed ]] && mover
+        [[ $type ]] && sprite_$type; [[ $speed ]] && mover
     done
 }
 
@@ -1628,13 +1628,13 @@ function game_team {
 	    fi
 
 	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
-	    NP=${#PIU[@]}; for (( t=0; t<${NP}; t++ )); do PI=(${PIU[$t]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
+	    for p in ${!PIU[@]}; do PI=(${PIU[$p]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
 
 		    # Move
 		    ((PX++))
 
 		    # Fly away
-		    [[ $PX -ge $bullendx ]] && { remove_piu $t; continue; } || { PIU[$t]="$PX $PY $owner"; }
+		    [[ $PX -ge $bullendx ]] && { remove_piu $p; continue; } || { [[ $PY ]] && PIU[$p]="$PX $PY $owner" || continue; }
 
 		    # print
 		    screen+="\e[$PY;${PX}H$SKY ${shoot[$L]}"
