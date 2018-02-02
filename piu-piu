@@ -1497,12 +1497,12 @@ function mover {
 }
 
 function obj_mover {
-    for i in ${!OBJ[@]}; do
+    for i in ${!OBJ[@]}; do 
 
         OI=(${OBJ[$i]});   OX=${OI[0]};    OY=${OI[1]}
-        cuter=${OI[2]};  type=${OI[3]}; speed=${OI[4]}
+        cuter=${OI[2]};  type=${OI[3]}; speed=${OI[4]}; [[ $type ]] || continue
 
-        [[ $type ]] && sprite_$type; [[ $speed ]] && mover
+        sprite_$type; [[ $speed ]] && mover
     done
 }
 
@@ -1628,13 +1628,13 @@ function game_team {
 	    fi
 
 	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
-	    for p in ${!PIU[@]}; do PI=(${PIU[$p]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
+	    for p in ${!PIU[@]}; do PI=(${PIU[$p]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}; [[ $PY ]] || continue
 
 		    # Move
 		    ((PX++))
 
 		    # Fly away
-		    [[ $PX -ge $bullendx ]] && { remove_piu $p; continue; } || { [[ $PY ]] && PIU[$p]="$PX $PY $owner" || continue; }
+		    [[ $PX -ge $bullendx ]] && { remove_piu $p; continue; } || PIU[$p]="$PX $PY $owner"
 
 		    # print
 		    screen+="\e[$PY;${PX}H$SKY ${shoot[$L]}"
