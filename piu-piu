@@ -1497,12 +1497,12 @@ function mover {
 }
 
 function obj_mover {
-    for i in ${!OBJ[@]}; do 
+    for i in ${!OBJ[@]}; do
 
-        OI=(${OBJ[$i]});   OX=${OI[0]};    OY=${OI[1]}
-        cuter=${OI[2]};  type=${OI[3]}; speed=${OI[4]}; [[ $type ]] || continue
-
+        OI=(${OBJ[$i]}); [[ $OI ]] || continue
+        OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; speed=${OI[4]}
         sprite_$type; [[ $speed ]] && mover
+
     done
 }
 
@@ -1591,7 +1591,7 @@ function game_team {
     while true; do
 
         #-{ Empty screen, count fps, add backrount objects, set timings and print Sun }----------------------------------
-	    screen=; fps_counter; timings; sprite_Sun
+	    screen=; fps_counter; timings; sprite_Sun; add_backgound
 
 	    #-{ Print moving land }------------------------------------------------------------------------------------------
 	    screen+="\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"; [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
@@ -1628,7 +1628,7 @@ function game_team {
 	    fi
 
 	    #-{ Move\check\print hero bullets }------------------------------------------------------------------------------
-	    for p in ${!PIU[@]}; do PI=(${PIU[$p]}); PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}; [[ $PY ]] || continue
+	    for p in ${!PIU[@]}; do PI=(${PIU[$p]}); [[ $PI ]] || continue; PX=${PI[0]}; PY=${PI[1]}; owner=${PI[2]}
 
 		    # Move
 		    ((PX++))
@@ -1640,8 +1640,6 @@ function game_team {
 		    screen+="\e[$PY;${PX}H$SKY ${shoot[$L]}"
 
 	    done
-
-        add_backgound
 
         if [[ $server ]]; then
 
