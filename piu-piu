@@ -134,6 +134,10 @@ case "$day$month" in
     0228)
         msngr_line1=' Happy birthday '
         msngr_line2='   Matvey !)    ';;
+
+    0703)
+        msngr_line1='The 8th of March'
+        msngr_line2=' is comming...  ';;
 esac
 
 function sprite_help {
