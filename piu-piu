@@ -137,8 +137,8 @@ case "$day$month" in
         msngr_line2='    Matvey !)   ';;
 
     0703)
-        msngr_line1=' Tomorrow is the'
-        msngr_line2='  8th of March! ';;
+        msngr_line1='The 8th of March'
+        msngr_line2='  is comming... ';;
 esac
 
 function sprite_help {
