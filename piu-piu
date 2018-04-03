@@ -142,7 +142,6 @@ case "$day$month" in
     0803)
         msngr_line1=' Hold on guyz $)'
         msngr_line2='                ';;
-
 esac
 
 function sprite_help {
