@@ -139,6 +139,10 @@ case "$day$month" in
     0703)
         msngr_line1='The 8th of March'
         msngr_line2='  is comming... ';;
+
+    0803)
+        msngr_line1=' Hold on guyz $)'
+        msngr_line2='                ';;
 esac
 
 function sprite_help {
@@ -188,27 +192,27 @@ function sprite_win {
 }
 
 #------------------------{ Sprites }------------------------------------------------------------------------------------
-case $month in    0[1-4]|12)    SKY=$DEF$bwht            # winter & early spring sky
-                            LND=$DEF$BLD$WHT$BWHT    # winter & early spring land
-                            CLD=30                    # winter & early spring clouds rnd
-                            TRE=50;;                # winter & early spring trees rnd
+case $month in    0[1-4]|12)    SKY=$DEF$bwht     # winter & early spring sky
+                            LND=$DEF$BLD$WHT$BWHT # winter & early spring land
+                            CLD=30                # winter & early spring clouds rnd
+                            TRE=50;;              # winter & early spring trees rnd
 
-                0[5-8]   )    SKY=$DEF$bcyn            # late spring & summer sky
-                            LND=$DEF$DIM$GRN$bgrn    # late spring & summer land
-                            CLD=50                    # late spring & summer clouds rnd
-                            TRE=20;;                # late spring & summer trees rnd
+                0[5-8]   )    SKY=$DEF$bcyn       # late spring & summer sky
+                            LND=$DEF$DIM$GRN$bgrn # late spring & summer land
+                            CLD=50                # late spring & summer clouds rnd
+                            TRE=20;;              # late spring & summer trees rnd
 
-                09|1[0-1])    SKY=$DEF$BCYN            # autumn sky
-                            LND=$DEF$DIM$YLW$BGRN    # autumn land
-                            CLD=20                    # autumn clouds rnd
-                            TRE=50;;                # autumn trees rnd
+                09|1[0-1])    SKY=$DEF$BCYN       # autumn sky
+                            LND=$DEF$DIM$YLW$BGRN # autumn land
+                            CLD=20                # autumn clouds rnd
+                            TRE=50;;              # autumn trees rnd
 esac
 
          gun=(─ ─ ═ ≡ ≣ 𝄚)
 
-       grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █) # grass types
+       grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █)    # grass types
 
-#------------------------{ Cycle slow }---------------------------------------------------------------------------------
+#------------------------b{ Cycle slow }---------------------------------------------------------------------------------
          big=(' O   O '
               'O   O  '
               '   O   '
@@ -820,13 +824,13 @@ function sprite_alien {
 
          CM1=$SKY$DIM$ylw; CM2=$DIM$UND$grn; CM6=$BLD$RED
 #                                        center point
-  boss_color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY"
-              "$SKY $SKY $SKY $CM1 $CM1 $CM1 $CM2 $CM1 $CM1 $CM1 $SKY $SKY $SKY"
-              "$SKY $SKY $CM1 $CM6 $CM6 $CM6 $CM6 $SKY $CM6 $CM6 $SKY $CM1 $SKY"
-              "$SKY $CM1 $SKY $RED $RED $RED $RED $RED $RED $RED $SKY $CM1 $SKY"
-              "$SKY $SKY $CM1 $RED $RED $RED $RED $RED $RED $RED $SKY $CM1 $SKY"
-              "$SKY $SKY $SKY $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $SKY $SKY"
-              "$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY");;
+  boss_color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY"
+              "$SKY $SKY $CM1 $CM1 $CM1 $CM2 $CM1 $CM1 $CM1 $SKY $SKY $SKY"
+              "$SKY $CM1 $CM6 $CM6 $CM6 $CM6 $SKY $CM6 $CM6 $SKY $CM1 $SKY"
+              "$CM1 $SKY $RED $RED $RED $RED $RED $RED $RED $SKY $CM1 $SKY"
+              "$SKY $CM1 $RED $RED $RED $RED $RED $RED $RED $SKY $CM1 $SKY"
+              "$SKY $SKY $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $SKY $SKY"
+              "$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY");;
 
         *)
         boss=('ZZZ     '
@@ -840,13 +844,13 @@ function sprite_alien {
 
          CM1=$DIM$BLK; CM2=$BLD$BLK; CM3=$SKY$BLK; CM4=$SKY$BLU; CM5=$BLD$YLW; CM6=$BLD$RED; CM7=$BLD$BLU; CM8=$SKY$YLW; CM9=$SKY$RED
 #                                        center point
-  boss_color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY"
-              "$SKY $SKY $SKY $SKY $SKY $CM1 $CM2 $CM1 $SKY $SKY $SKY $SKY $SKY"
-              "$SKY $SKY $SKY $CM1 $CM1 $YLW $CM5 $CM8 $CM1 $CM1 $SKY $SKY $SKY"
-              "$SKY $SKY $CM1 $RED $RED $RED $CM6 $CM9 $RED $RED $CM1 $SKY $SKY"
-              "$SKY $CM1 $SKY $BLU $BLU $BLU $CM7 $CM4 $BLU $BLU $SKY $CM1 $SKY"
-              "$SKY $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $SKY $SKY"
-              "$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY");;
+  boss_color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY"
+              "$SKY $SKY $SKY $SKY $CM1 $CM2 $CM1 $SKY $SKY $SKY $SKY $SKY"
+              "$SKY $SKY $CM1 $CM1 $YLW $CM5 $CM8 $CM1 $CM1 $SKY $SKY $SKY"
+              "$SKY $CM1 $RED $RED $RED $CM6 $CM9 $RED $RED $CM1 $SKY $SKY"
+              "$CM1 $SKY $BLU $BLU $BLU $CM7 $CM4 $BLU $BLU $SKY $CM1 $SKY"
+              "$CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $CM1 $SKY $SKY"
+              "$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY");;
     esac
 
 
@@ -918,7 +922,7 @@ function sprite_boss {
               "Z/${big[$L]}\  "
               "( ${big[$L]} ) "
               'Z`¯¯---¯¯´  '
-              '           ');;
+              '          ');;
     esac
 
     ((cuter++)); OBJ[$i]="$OX $OY $cuter $type 00"
@@ -950,8 +954,9 @@ function sprite_hero1 {
               "__ ${mainrotor[$L]} "
               "|${tailrotor[$L]}"'\___.-╨─｡   '
               '`─´‾‾‷\'"°$HS º¯]${gun[$G]} "
-              "ZZZZZZZ‾‾‾‾‾     "
-              "ZZZZZZ       ")
+              '       ‾‾‾‾‾   '
+              'ZZZZZZ       ')
+
 
     if [[ $life -gt 0 ]]; then
         server_read
@@ -1143,7 +1148,7 @@ function sprite_Sun {
                 #░ ░▒▓▓▓▓ ░ ░░▒▓▓▓▓▓▓ ░ ▒▓▓▓▓▓░
                 # ░ ▒▒ ░ ░ ░ ░▒▒▒▒▒▒ ░ ░░▒▒▒▒░  ░
 
-         piu=(    "$C1   " "░  "    " ░░"    "░ ░" "░  " "   " "░  " "░░ " "   " "  ░" "░  " "░░ " "░$D  " "   "
+         piu=(  "$C1   " "░  "    " ░░"    "░ ░" "░  " "   " "░  " "░░ " "   " "  ░" "░  " "░░ " "░$D  " "   "
                 "$C1 ░ " "  ░" "  $C2▒" "$C3███" "███" " $C1░$C2▒" "$C3███" "███" " $C2▒$C3█" "█$C1░ " " $C2▒$C3█" "█$D  " "   " "   "
                 "$C1   " "░ ░" "░$C2▒$C4▓" "$C3██ " "$C2▒$C4▓$C3█" "█ $C4▓" "▓▓$C3█" "█$C4▓ " "$C1▒$C4▓$C3█" "█ $C1░" "$C2▒$C4▓$C3█" "█$C1░░" " ░$D " "   "
                 "$C1░ ░" " ░░" "$C2▒$C4▓$C3█" "█ $C2▒" "$C4▓$C3██" " $C2▒▒" "▒$C4▓$C3█" "█ $C2░" "▒$C4▓$C3█" "█$C1░ " "$C2▒$C4▓$C3█" "█$C1░$D " "   " "   "
@@ -1160,7 +1165,7 @@ function sprite_Sun {
                 # ▒ ▒▒  ▒▓▓▓▓▒▓███░
                 #    ░░░ ▒▒▒ ░░▒▒░
 
-         arr=(    "   " "   " "   " "   " " $C7░░" " $C3▒▒" "$C6███" "$C7░$D  " ""    ""
+         arr=(  "   " "   " "   " "   " " $C7░░" " $C3▒▒" "$C6███" "$C7░$D  " ""    ""
                 "   " "   " "  $C7░" "░░ " "$C2▒$C8██" "██ " "$C7▒$C3▓$C6█" "██$C7░$D" ""    ""
                 "   " " $C7░ " "▒$C8██" "██$D$C2▒" "$C3▓▓▓" "▓ $C7░" "░$C7▒$C3▓" "▓$C6██" "█ $C7░" "░ ░$D"
                 "   " "$C7░ $C2▒" "$C3▓▓▓" "▓ $C2▒" "$C8███" "█$D$C7░$C3▒" "$C3▓$C6██" "█$C7░░$D" "   " ""
@@ -1521,16 +1526,16 @@ function obj_loop {
 
 function timings {
 
-    [[ $K   -ge 20 ]] && K=0 || ((K++))    # boss' fire rate
-    [[ $L   -ge 3  ]] && L=0 || ((L++))    # sprites animation
-    [[ $J   -ge 5  ]] && J=0 || ((J++))    # boss' bullet animation
-    [[ $M   -ge 10 ]] && M=0 || ((M++))    # enemies born rate
-    [[ $Q   -ge 6  ]] && Q=0 || ((Q++))    # tree1\cloud1(small)  speed
-    [[ $W   -ge 4  ]] && W=0 || ((W++))    # tree2\cloud2(medium) speed
-    [[ $E   -ge 2  ]] && E=0 || ((E++))    # tree3\cloud3(large)  speed
+    [[ $K   -ge 20 ]] && K=0 || ((K++)) # boss' fire rate
+    [[ $L   -ge 3  ]] && L=0 || ((L++)) # sprites animation
+    [[ $J   -ge 5  ]] && J=0 || ((J++)) # boss' bullet animation
+    [[ $M   -ge 10 ]] && M=0 || ((M++)) # enemies born rate
+    [[ $Q   -ge 6  ]] && Q=0 || ((Q++)) # tree1\cloud1(small)  speed
+    [[ $W   -ge 4  ]] && W=0 || ((W++)) # tree2\cloud2(medium) speed
+    [[ $E   -ge 2  ]] && E=0 || ((E++)) # tree3\cloud3(large)  speed
     [[ $CD  -gt 0  ]] && ((CD--))       # hero1 cooldown timer
     [[ $CD2 -gt 0  ]] && ((CD2--))      # hero2 cooldown timer
-    [[ $E   -eq 0  ]] && { ((S+=$SunC)); [[ $S -gt $SunN ]] && S=0; }    # Sun animation
+    [[ $E   -eq 0  ]] && { ((S+=$SunC)); [[ $S -gt $SunN ]] && S=0; } # Sun animation
 }
 
 function server_read {
