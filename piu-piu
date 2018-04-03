@@ -257,7 +257,7 @@ esac
               '▒▓█▓ '
               '▓█▓▒ '); bshootH=1; bshootW=4
 
- bshoot_color=("$ylw $ylw $ylw $ylw")
+ bshoot_color=("$ylw $ylw $ylw $ylw $SKY")
 
 function sprite_bfire {
 
@@ -267,7 +267,7 @@ function sprite_bfire {
       target=("$OX $[$OY+1]" "$[$OX+1] $OY")
 
       sprite="\e[$OY;${OX}H$ylw${bshoot[$J]}$SKY "
-     sprite2="${bshoot[$J]} "
+     sprite2="${bshoot[$J]}"
 }
 
 #------------------------{ Bonuses }------------------------------------------------------------------------------------
@@ -927,29 +927,18 @@ function sprite_boss {
    mainrotor=('___________' '    ___    ' '     _     ' '    ___    ')
    tailrotor=('\\' '─' '/' '|')
 
-         CM4=$SKY$DIM$HC ; CM5=$SKY$HC; CM6=$SKY$BLD$HC; CM7=$SKY$SC$HS$HC$BLD; CM8=$SKY$DIM$UND; CM9=$SKY$HC$BLD
-
- hero1_color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY"  #     new hero
-              "$SKY $CM5 $CM5 $SKY $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $SKY"  # __ ___________
-              "$SKY $CM4 $blk $CM6 $CM5 $CM5 $CM5 $CM5 $CM5 $CM5 $CM5 $CM6 $UND $UND $SKY $SKY"  # |X\___.-╨─｡_
-              "$SKY $CM4 $CM4 $CM4 $CM4 $CM4 $CM4 $CM4 $blk $SC  $SKY $blk $blk $CM9 $BLK $SKY"  # `─´‾‾‷\°★ º¯]─
-              "$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $CM4 $CM4 $CM4 $CM4 $CM4 $SKY $SKY $SKY") #        ‾‾‾‾‾
-
 function sprite_hero1 {
 
        hight=4
        width=14
-       color=("${hero1_color[@]}")
+         CM3=$SKY$HC$UND; CM4=$SKY$DIM$HC; CM5=$SKY$HC; CM6=$SKY$BLD$HC; C61=$SKY$BLD$HC$UND; CM7=$SKY$SC$HS$HC$BLD; CM8=$SKY$DIM$UND; CM9=$SKY$HC$BLD
+       color=("$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY"  #     new hero
+              "$CM5 $CM5 $SKY $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $blk $SKY"  # __ ___________
+              "$CM4 $blk $CM6 $CM3 $CM3 $CM3 $CM5 $CM5 $CM5 $CM5 $C61 $C61 $SKY $SKY $SKY"  # |X\___.-╨─｡_
+              "$CM4 $CM4 $CM4 $CM4 $CM4 $CM4 $CM4 $blk $SC  $SKY $blk $blk $CM9 $BLK $SKY"  # `─´‾‾‷\°★ º¯]─
+              "$SKY $SKY $SKY $SKY $SKY $SKY $SKY $CM4 $CM4 $CM4 $CM4 $CM4 $SKY $SKY $SKY"  #        ‾‾‾‾‾
+              "$SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY $SKY") #
 
-         CM4=$SKY$DIM$HC ; CM5=$SKY$HC
-         CM6=$SKY$BLD$HC ; CM7=$SKY$SC$HS$HC$BLD
-         CM8=$SKY$DIM$UND; CM9=$SKY$HC$BLD
-
-                                   #     new hero
-                                   # __ ___________
-                                   # |X\___.-╨─｡_
-                                   # `─´‾‾‷\°★ º¯]─
-                                   #        ‾‾‾‾‾
       sprite=("\e[$Y;${X}H$SKY                  "
             "\e[$[$Y+1];${X}H$CM5 __ $blk${mainrotor[$L]}$SKY "
             "\e[$[$Y+2];${X}H$CM4 |$blk${tailrotor[$L]}$CM6"'\\'"$CM5${UND}___$CM5.-╨─$CM6$UND｡ $SKY  "
@@ -961,14 +950,14 @@ function sprite_hero1 {
               "__ ${mainrotor[$L]} "
               "|${tailrotor[$L]}"'\___.-╨─｡   '
               '`─´‾‾‷\'"°$HS º¯]${gun[$G]} "
-              'ZZZZZZZ‾‾‾‾‾     '
-              'ZZZZZZ       ')
+              "ZZZZZZZ‾‾‾‾‾     "
+              "ZZZZZZ       ")
 
     if [[ $life -gt 0 ]]; then
         server_read
         HX=$[$X+11]; HY=$[$Y+3] # Hero collide coordinates
     else # when hero1's health goes to 0 it starts to fall, explodes and bounces on the ground
-        sleep 0.1; ((X--))
+        sleep 1; ((X--))
         [[ $Y -lt   $heroendy      && $jump = 'false' ]] && ((Y++)) || { jump=true; ((BJ--)); }
         [[ $Y -gt $[$heroendy-$BJ] && $jump = 'true'  ]] && ((Y--)) ||   jump=false
 #        [[ $X -gt 0 && $L -eq 0 ]] && BOOM $X $Y
@@ -976,7 +965,7 @@ function sprite_hero1 {
         [[ $X -le -$width       ]] && gamend='lose'
     fi
 
-     screen+="${sprite[*]}"; OBJ[$i]="$X $Y 0 hero1"
+    screen+="${sprite[*]}"; OBJ[$i]="$X $Y 0 hero1"
 }
 
 function sprite_hero2 {
@@ -1181,6 +1170,7 @@ function sprite_Sun {
 #------------------------{ Functions }----------------------------------------------------------------------------------
 function cut_in () {
 
+    sprite=()
     for ((h=0; h<$hight; h++)); do spr=
         for ((c=0; c<$cuter; c++)); do
             color2=(${color[$h]})
@@ -1195,6 +1185,7 @@ function cut_in () {
 
 function cut_out () {
 
+    sprite=()
     for ((h=0; h<$hight; h++)); do spr=; stp=1
         for ((w=$[1-$OX]; w<$width; w++)); do ((stp++))
             color2=(${color[$h]})
