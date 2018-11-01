@@ -1,3 +1,4 @@
+
 # piu-piu-SH
 ![screeenshot](https://user-images.githubusercontent.com/18072680/34843658-2207ce84-f720-11e7-858e-83eaec80fea1.gif)
 
@@ -8,12 +9,9 @@ So netcat have to be installed on system if you wish to play with friend.
 Terminals on both hosts have to be with equal dimensions.<br>
 Read about it <a href="https://habrahabr.ru/post/335960">here</a>.
 
+On ubuntu 18.04 you can install it with apt!)
+<pre>sudo apt install -y piu-piu</pre>
+
 [![asciicast](https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj.png)](https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj)
 
 <a href="http://coub.com/view/1283mt">Piu-Piu!)</a>
-
-On ubuntu 18.04 you can install it with apt!)
-
-<pre>
-sudo apt install -y piu-piu
-</pre>
