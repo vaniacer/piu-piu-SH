@@ -11,3 +11,9 @@ Read about it <a href="https://habrahabr.ru/post/335960">here</a>.
 [![asciicast](https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj.png)](https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj)
 
 <a href="http://coub.com/view/1283mt">Piu-Piu!)</a>
+
+On ubuntu 18.04 you can install it with apt!)
+
+<pre>
+sudo apt install -y piu-piu
+</pre>
