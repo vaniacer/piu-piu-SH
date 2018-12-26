@@ -11,6 +11,5 @@ Read about it <a href="https://habrahabr.ru/post/335960">here</a>.
 On ubuntu 18.04 you can install it with apt!)
 <pre>sudo apt install -y piu-piu</pre>
 
-[![asciicast](https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj.png)](https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj)
-
-<a href="http://coub.com/view/1283mt">Piu-Piu!)</a>
+<a href="https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj">piu-piu-asciinema)</a>
+<a href="http://coub.com/view/1283mt">piu-piu-coub)</a>
