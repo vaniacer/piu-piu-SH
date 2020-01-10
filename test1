@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+# check bash version
+case ${BASH_VERSINFO[@]::2} in [1-3]' '[0-9][0-9]|[1-3]' '[0-9]|'4 '[0-1])
+    echo -e "\nYour BASH is too short!) 4.2+ required to run this game, your is - ${BASH_VERSINFO[@]}"
+    exit 1;;
+esac
+
+#--------------------------------------------------------------------+
+#Color picker, usage: printf ${BLD}${CUR}${RED}${BBLU}"Hello!)"${DEF}|
+#-------------------------+--------------------------------+---------+
+#       Text color        |       Background color         |         |
+#-----------+-------------+--------------+-----------------+         |
+# Base color|Lighter shade| Base color   | Lighter shade   |         |
+#-----------+-------------+--------------+-----------------+         |
+BLK='\e[30m'; blk='\e[90m'; BBLK='\e[40m'; bblk='\e[100m' #| Black   |
+RED='\e[31m'; red='\e[91m'; BRED='\e[41m'; bred='\e[101m' #| Red     |
+GRN='\e[32m'; grn='\e[92m'; BGRN='\e[42m'; bgrn='\e[102m' #| Green   |
+YLW='\e[33m'; ylw='\e[93m'; BYLW='\e[43m'; bylw='\e[103m' #| Yellow  |
+BLU='\e[34m'; blu='\e[94m'; BBLU='\e[44m'; bblu='\e[104m' #| Blue    |
+MGN='\e[35m'; mgn='\e[95m'; BMGN='\e[45m'; bmgn='\e[105m' #| Magenta |
+CYN='\e[36m'; cyn='\e[96m'; BCYN='\e[46m'; bcyn='\e[106m' #| Cyan    |
+WHT='\e[37m'; wht='\e[97m'; BWHT='\e[47m'; bwht='\e[107m' #| White   |
+#----------------------------------------------------------+---------+
+# Effects                                                            |
+#--------------------------------------------------------------------+
+DEF='\e[0m'   #Default color and effects                             |
+BLD='\e[1m'   #Bold\brighter                                         |
+DIM='\e[2m'   #Dim\darker                                            |
+CUR='\e[3m'   #Italic font                                           |
+UND='\e[4m'   #Underline                                             |
+INV='\e[7m'   #Inverted                                              |
+COF='\e[?25l' #Cursor Off                                            |
+CON='\e[?25h' #Cursor On                                             |
+#--------------------------------------------------------------------+
+# Text positioning, usage: XY 10 10 "Hello World!"                   |
+XY   () { printf "\e[$2;$1H$3"; } #                                  |
+#--------------------------------------------------------------------+
+# Print line, usage: line - 10 | line -= 20 | line "Hello World!" 20 |
+line () { printf %.s"$1" `seq $2`; } #                               |
+#--------------------------------------------------------------------+
+#------------------------{ Start opt }------------------------{ description }-----------------{ def. values }-----------
+     enumber=0                                        # current enemy counter                      (0)
+       enmax=100                                      # max number of akiens                       (10)
+        FPSL=100                                      # lower FPS initial value                    (100)
+        FPSM=0                                        # maximum FPS initial value                  (0)
+        FPSC=0                                        # FPS counter                                (0)
+         SKY=$DEF
+         spd=0.01                                     # game\read speed                            (0.0001)
+         OBJ=()                                       # start obj array
+           L=0                                        # sprites animation counter
+#------------------------{ Aliens }-------------------------------------------------------------------------------------
+       small=('o  '
+              '   '
+              '  o'
+              ' o ')
+
+       alien=('Z___ '
+              '(   ) '
+              'Z`¯´ ')
+      alienH=${#alien[*]}
+      alienW=${#alien[1]}
+         CM1=$SKY; CM2=$SKY
+ alien_color=("$SKY $CM1 $CM2 $CM1 $SKY $SKY"
+              "$CM1 $red $red $red $CM1 $SKY"
+              "$SKY $CM1 $CM1 $CM1 $SKY $SKY")
+
+function sprite_alien {
+       hight=$alienH
+       width=$alienW
+       color=("${alien_color[@]}")
+      sprite=("\e[$OY;$[$OX+1]H${CM1}_${CM2}_${CM1}_$SKY "
+              "\e[$[$OY+1];${OX}H${CM1}(${red}${small[$L]}${CM1})$SKY "
+              "\e[$[$OY+2];$[$OX+1]H"${CM1}'`¯´'"$SKY ")
+     sprite2=('Z___ '
+              "(${small[$L]}) "
+              'Z`¯´ ')
+}
+#------------------------{ Functions }----------------------------------------------------------------------------------
+function cut_in () {
+    sprite=()
+    for ((h=0; h<$hight; h++)); do spr=
+        for ((c=0; c<$cuter; c++)); do
+            color2=(${color[$h]})
+            symbol=${sprite2[$h]:$c:1}
+            symbol=${symbol//'\'/'\\'}
+            symbol=${symbol//'Z'/"\e[$[$OY+$h];$[$OX+$c+1]H"}
+            spr+="${color2[$c]}$symbol"
+        done
+        sprite[$h]="$SKY\e[$[$OY+$h];${OX}H$spr$SKY"
+    done
+}
+
+function cut_out () {
+    sprite=()
+    for ((h=0; h<$hight; h++)); do spr=; stp=1
+        for ((w=$[1-$OX]; w<$width; w++)); do ((stp++))
+            color2=(${color[$h]})
+            symbol="${sprite2[$h]:$w:1}"
+            symbol=${symbol//'\'/'\\'}
+            symbol=${symbol//'Z'/"\e[$[$OY+$h];${stp}H"}
+            spr+="${color2[$w]}$symbol"
+        done
+        sprite[$h]="\e[$[$OY+$h];1H$spr"
+    done
+}
+
+function get_dimensions {
+    size=( $(stty size) )
+    endx=${size[1]}
+    endy=${size[0]}
+enmyendy=$[$endy-7]
+}
+
+function bye ()  { stty echo; printf "$CON$DEF"; clear; ls --color=auto; exit $1; }
+function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); }
+function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+="\e[$[$OY+$k];${OX}H$SKY         "; done; }
+
+function fps_counter {
+    [[ $SECONDS -gt $sec ]] && {\
+        FPS=$FPSC
+        [[ $FPS -gt $FPSM ]] && FPSM=$FPS
+        [[ $FPS -lt $FPSL ]] && FPSL=$FPS
+        sec=$SECONDS
+        FPSC=0
+    } || ((FPSC++))
+}
+
+function mover {
+    # print
+    [[ $cuter -lt  $width ]] && cut_in
+    [[    $OX -le  1      ]] && cut_out #                fly away                                       or         print
+    [[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || screen+="${sprite[*]}"
+
+    # move
+    CS=${speed::1}; DS=${speed:1}
+    case $CS in
+        0) ((OX--));       ((cuter++)); OBJ[$i]="$OX $OY $cuter $type $DS$DS";;
+        *) [[ $CS -gt 0 ]] && ((CS--)); OBJ[$i]="$OX $OY $cuter $type $CS$DS";;
+    esac
+}
+
+function obj_loop {
+    for i in ${!OBJ[@]}; do
+        OI=(${OBJ[$i]}); [[ $OI ]] || continue
+        OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; speed=${OI[4]}
+        [[ $type  ]] && { sprite_$type; [[ $speed ]] && mover; }
+    done
+}
+
+function game {
+    #======================================{ Main game loop single or server team mode }================================
+    while true; do
+        #-{ Empty screen, count fps, set timings}-----------------------------------------------------------------------
+        [[ $M -ge 10 ]] && M=0 || ((M++)) # enemies born rate
+        [[ $L -ge 3  ]] && L=0 || ((L++)) # sprites animation
+        read -t$spd -s -n1 input &> /dev/null
+        screen=; fps_counter
+        #-{ Print FPS }-------------------------------------------------------------------------------------------------
+        screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL "
+        #-{ Restart aliens }--------------------------------------------------------------------------------------------
+        [[ $enumber -lt $enmax && $M -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien 00"); }
+        #-{ Move\check\print objects }----------------------------------------------------------------------------------
+        obj_loop
+#        screen+="\e[1;1H${OBJ[@]}"
+        printf "$screen"
+    done
+}
+
+#--------------------------------------------------{ Initialisation }---------------------------------------------------
+trap bye INT TERM SIGINT SIGTERM EXIT
+get_dimensions; stty -echo; printf "$COF"; clear
+sec=$SECONDS # set timer for FPS counter
+OBJ=(); game
+
