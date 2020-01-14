@@ -56,40 +56,44 @@ line () { printf %.s"$1" `seq $2`; } #                               |
 sprite_alien () {
        hight=3
        width=5; mov
-       small=("$Y1$X1${RED}o $Y1$X2${SKY}_ $Y1$X3${SKY}_"
-              "$Y1$X1${SKY}_ $Y1$X2${SKY}_ $Y1$X3${SKY}_"
-              "$Y1$X1${SKY}_ $Y1$X2${SKY}_ $Y1$X3${RED}o"
-              "$Y1$X1${SKY}_ $Y1$X2${RED}o $Y1$X3${SKY}_")
-       small=( "${small[L]//_/' '}" )
+       small=(               "$Y1$X1${RED}o    $Y1$X2${SKY}_   $Y1$X3${SKY}_"
+                             "$Y1$X1${SKY}_    $Y1$X2${SKY}_   $Y1$X3${SKY}_"
+                             "$Y1$X1${SKY}_    $Y1$X2${SKY}_   $Y1$X3${RED}o"
+                             "$Y1$X1${SKY}_    $Y1$X2${RED}o   $Y1$X3${SKY}_"); small=( "${small[L]//_/' '}" )
       sprite=( ''            "$Y0$X1${SKY}_"  "$Y0$X2${SKY}_" "$Y0$X3${SKY}_" "$Y0$X4$SKY " ); cut
       sprite=( "$Y1$X0$SKY("                  "${small[@]}"                   "$Y1$X4$SKY)" "$Y1$X5$SKY " ); cut
       sprite=( ''            "$Y2$X1${SKY}\`" "$Y2$X2${SKY}¯" "$Y2$X3${SKY}´" "$Y2$X4$SKY " ); cut
 }
 
 #------------------------{ Functions }----------------------------------------------------------------------------------
-function get_dimensions {
+get_dimensions () {
     size=( $(stty size) )
     endx=${size[1]}
     endy=${size[0]}
-enmyendy=$[$endy-7]
+enmyendy=$[endy-7]
 }
 
-remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); }
-erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+="\e[$[$OY+$k];${OX}H$SKY         "; done; }
+remove_obj () { unset  OBJ[$1]; OBJ=("${OBJ[@]}"); }
+erase_obj  () { remove_obj $1 ; for (( k=0; k<$2; k++ )); do screen+="\e[$[$OY+$k];${OX}H$SKY         "; done; }
 
-bye () { stty echo; printf "$CON$DEF"; clear; ls --color=auto; exit $1; }
+bye () { stty echo; printf "$CON$DEF"; exit $1; }
 cut () { screen+="${sprite[@]:$OS:$OE}"; }
 mov () {
     Y0="\\e[$OY"     ; X0=";${OX}H"
-    Y1="\\e[$[$OY+1]"; X1=";$[$OX+1]H"
-    Y2="\\e[$[$OY+2]"; X2=";$[$OX+2]H"
-    Y3="\\e[$[$OY+3]"; X3=";$[$OX+3]H"
-    Y4="\\e[$[$OY+4]"; X4=";$[$OX+4]H"
-    Y5="\\e[$[$OY+5]"; X5=";$[$OX+5]H"
+    Y1="\\e[$[OY+1]"; X1=";$[OX+1]H"
+    Y2="\\e[$[OY+2]"; X2=";$[OX+2]H"
+    Y3="\\e[$[OY+3]"; X3=";$[OX+3]H"
+    Y4="\\e[$[OY+4]"; X4=";$[OX+4]H"
+    Y5="\\e[$[OY+5]"; X5=";$[OX+5]H"
     [[ $OX -le 0 ]] && ((OS++))    
+    [[ $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; }
+    case $CS in
+        0) ((OX--));          ((OE++)); OBJ[$i]="$OX $OY $OS $OE $type $DS $DS";;
+        *) [[ $CS -gt 0 ]] && ((CS--)); OBJ[$i]="$OX $OY $OS $OE $type $CS $DS";;
+    esac
 }
 
-function fps_counter {
+fps_counter () {
     [[ $SECONDS -gt $sec ]] && {\
         FPS=$FPSC
         [[ $FPS -gt $FPSM ]] && FPSM=$FPS
@@ -102,20 +106,20 @@ function fps_counter {
 mover () {
     [[ $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; }
     case $CS in
-        0) ((OX--)); ((OE++))         ; OBJ[$i]="$OX $OY $OS $OE $type $DS $DS";;
+        0) ((OX--));          ((OE++)); OBJ[$i]="$OX $OY $OS $OE $type $DS $DS";;
         *) [[ $CS -gt 0 ]] && ((CS--)); OBJ[$i]="$OX $OY $OS $OE $type $CS $DS";;
     esac
 }
 
-function obj_loop {
+obj_loop () {
     for i in ${!OBJ[@]}; do
         OI=(${OBJ[$i]})
         OX=${OI[0]}; OY=${OI[1]}; OS=${OI[2]}; OE=${OI[3]}; type=${OI[4]}; CS=${OI[5]}; DS=${OI[6]}
-        [[ $type ]] && { sprite_$type; mover; }
+        [[ $type ]] && sprite_$type
     done
 }
 
-function game {
+game () {
     #======================================{ Main game loop single or server team mode }================================
     while true; do
         #-{ Empty screen, count fps, set timings}-----------------------------------------------------------------------
