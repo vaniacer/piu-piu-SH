@@ -1,0 +1,30 @@
+#!/bin/bash
+
+X=$1
+Y=$2
+P=$3
+
+. ~/SCR/color
+
+cut () { scr+="${spr[@]:$S:$E}$DEF"; }
+mov () {
+    Y0="\\e[$Y"     ; X0=";${X}H"
+    Y1="\\e[$[$Y+1]"; X1=";$[$X+1]H"
+    Y2="\\e[$[$Y+2]"; X2=";$[$X+2]H"
+    Y3="\\e[$[$Y+3]"; X3=";$[$X+3]H"
+    Y4="\\e[$[$Y+4]"; X4=";$[$X+4]H"
+    ((E++)); ((X--)); [[ $X -le 0 ]] && ((S++))
+}
+
+test () {
+    mov
+    spr=( ""              "$Y0$X1${blu}A" "$Y0$X2${red}A" "$Y0$X3${grn}F" "$Y0$X4 " ); cut
+    spr=( "$Y1$X0${grn}b" "$Y1$X1${blu} "              "" "$Y1$X3${ylw}D" "$Y1$X4 " ); cut
+    spr=( "$Y2$X0${grn}c"              "" "$Y2$X2${red}A" "$Y2$X3${mgn}T" "$Y2$X4 " ); cut
+    printf "$scr"
+}
+
+while true; do
+    sleep $P
+    test
+done

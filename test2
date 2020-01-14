@@ -50,61 +50,23 @@ line () { printf %.s"$1" `seq $2`; } #                               |
            L=0                                        # sprites animation counter
 [[ -e ~/.piu.conf ]] && . ~/.piu.conf
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
-       small=('o  '
-              '   '
-              '  o'
-              ' o ')
-
-       alien=('Z___ '
-              '(   ) '
-              'Z`¯´ ')
-      alienH=${#alien[*]}
-      alienW=${#alien[1]}
-         CM1=$SKY; CM2=$SKY
- alien_color=("$SKY $CM1 $CM2 $CM1 $SKY $SKY"
-              "$CM1 $red $red $red $CM1 $SKY"
-              "$SKY $CM1 $CM1 $CM1 $SKY $SKY")
-
-function sprite_alien {
-       hight=$alienH
-       width=$alienW
-       color=("${alien_color[@]}")
-      sprite=("\e[$OY;$[$OX+1]H${CM1}_${CM2}_${CM1}_$SKY "
-              "\e[$[$OY+1];${OX}H${CM1}(${red}${small[$L]}${CM1})$SKY "
-              "\e[$[$OY+2];$[$OX+1]H"${CM1}'`¯´'"$SKY ")
-     sprite2=('Z___ '
-              "(${small[$L]}) "
-              'Z`¯´ ')
+       # ___
+       #( o )
+       # `¯´
+sprite_alien () {
+       hight=3
+       width=5; mov
+       small=("$Y1$X1${RED}o $Y1$X2${SKY}_ $Y1$X3${SKY}_"
+              "$Y1$X1${SKY}_ $Y1$X2${SKY}_ $Y1$X3${SKY}_"
+              "$Y1$X1${SKY}_ $Y1$X2${SKY}_ $Y1$X3${RED}o"
+              "$Y1$X1${SKY}_ $Y1$X2${RED}o $Y1$X3${SKY}_")
+       small=( "${small[L]//_/' '}" )
+      sprite=( ''            "$Y0$X1${SKY}_"  "$Y0$X2${SKY}_" "$Y0$X3${SKY}_" "$Y0$X4$SKY " ); cut
+      sprite=( "$Y1$X0$SKY("                  "${small[@]}"                   "$Y1$X4$SKY)" "$Y1$X5$SKY " ); cut
+      sprite=( ''            "$Y2$X1${SKY}\`" "$Y2$X2${SKY}¯" "$Y2$X3${SKY}´" "$Y2$X4$SKY " ); cut
 }
+
 #------------------------{ Functions }----------------------------------------------------------------------------------
-function cut_in () {
-    sprite=()
-    for ((h=0; h<$hight; h++)); do spr=
-        for ((c=0; c<$cuter; c++)); do
-            color2=(${color[$h]})
-            symbol=${sprite2[$h]:$c:1}
-            symbol=${symbol//'\'/'\\'}
-            symbol=${symbol//'Z'/"\e[$[$OY+$h];$[$OX+$c+1]H"}
-            spr+="${color2[$c]}$symbol"
-        done
-        sprite[$h]="$SKY\e[$[$OY+$h];${OX}H$spr$SKY"
-    done
-}
-
-function cut_out () {
-    sprite=()
-    for ((h=0; h<$hight; h++)); do spr=; stp=1
-        for ((w=$[1-$OX]; w<$width; w++)); do ((stp++))
-            color2=(${color[$h]})
-            symbol="${sprite2[$h]:$w:1}"
-            symbol=${symbol//'\'/'\\'}
-            symbol=${symbol//'Z'/"\e[$[$OY+$h];${stp}H"}
-            spr+="${color2[$w]}$symbol"
-        done
-        sprite[$h]="\e[$[$OY+$h];1H$spr"
-    done
-}
-
 function get_dimensions {
     size=( $(stty size) )
     endx=${size[1]}
@@ -112,9 +74,20 @@ function get_dimensions {
 enmyendy=$[$endy-7]
 }
 
-function bye ()  { stty echo; printf "$CON$DEF"; clear; ls --color=auto; exit $1; }
-function remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); }
-function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+="\e[$[$OY+$k];${OX}H$SKY         "; done; }
+remove_obj () { unset OBJ[$1]; OBJ=("${OBJ[@]}"); }
+erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+="\e[$[$OY+$k];${OX}H$SKY         "; done; }
+
+bye () { stty echo; printf "$CON$DEF"; clear; ls --color=auto; exit $1; }
+cut () { screen+="${sprite[@]:$OS:$OE}"; }
+mov () {
+    Y0="\\e[$OY"     ; X0=";${OX}H"
+    Y1="\\e[$[$OY+1]"; X1=";$[$OX+1]H"
+    Y2="\\e[$[$OY+2]"; X2=";$[$OX+2]H"
+    Y3="\\e[$[$OY+3]"; X3=";$[$OX+3]H"
+    Y4="\\e[$[$OY+4]"; X4=";$[$OX+4]H"
+    Y5="\\e[$[$OY+5]"; X5=";$[$OX+5]H"
+    [[ $OX -le 0 ]] && ((OS++))    
+}
 
 function fps_counter {
     [[ $SECONDS -gt $sec ]] && {\
@@ -126,25 +99,19 @@ function fps_counter {
     } || ((FPSC++))
 }
 
-function mover {
-    # print
-    [[ $cuter -lt  $width ]] && cut_in
-    [[    $OX -le  1      ]] && cut_out #                fly away                                       or         print
-    [[    $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; } || screen+="${sprite[*]}"
-
-    # move
-    CS=${speed::1}; DS=${speed:1}
+mover () {
+    [[ $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; }
     case $CS in
-        0) ((OX--));       ((cuter++)); OBJ[$i]="$OX $OY $cuter $type $DS$DS";;
-        *) [[ $CS -gt 0 ]] && ((CS--)); OBJ[$i]="$OX $OY $cuter $type $CS$DS";;
+        0) ((OX--)); ((OE++))         ; OBJ[$i]="$OX $OY $OS $OE $type $DS $DS";;
+        *) [[ $CS -gt 0 ]] && ((CS--)); OBJ[$i]="$OX $OY $OS $OE $type $CS $DS";;
     esac
 }
 
 function obj_loop {
     for i in ${!OBJ[@]}; do
-        OI=(${OBJ[$i]}); [[ $OI ]] || continue
-        OX=${OI[0]}; OY=${OI[1]}; cuter=${OI[2]}; type=${OI[3]}; speed=${OI[4]}
-        [[ $type  ]] && { sprite_$type; [[ $speed ]] && mover; }
+        OI=(${OBJ[$i]})
+        OX=${OI[0]}; OY=${OI[1]}; OS=${OI[2]}; OE=${OI[3]}; type=${OI[4]}; CS=${OI[5]}; DS=${OI[6]}
+        [[ $type ]] && { sprite_$type; mover; }
     done
 }
 
@@ -159,7 +126,7 @@ function game {
         #-{ Print FPS }-------------------------------------------------------------------------------------------------
         screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL "
         #-{ Restart aliens }--------------------------------------------------------------------------------------------
-        [[ $enumber -lt $enmax && $M -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien 00"); }
+        [[ $enumber -lt $enmax && $M -eq 0 ]] && { ((enumber++)); OBJ+=("$endx $[RANDOM % $enmyendy + 3] 0 0 alien 0 0"); }
         #-{ Move\check\print objects }----------------------------------------------------------------------------------
         obj_loop
 #        screen+="\e[1;1H${OBJ[@]}"
