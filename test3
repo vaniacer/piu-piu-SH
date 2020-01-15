@@ -1,8 +1,9 @@
 #!/bin/bash
 
-X=$1
-Y=$2
-P=$3
+size=( $(stty size) )
+X=${size[1]}; ((X--))
+Y=${size[0]}; Y=$[Y/2]
+P=0.4
 
 . ~/SCR/color
 
