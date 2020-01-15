@@ -15,7 +15,7 @@ esac
          spd=0.01                                     # game\read speed                            (0.0001)
          OBJ=()                                       # start obj array
            L=0                                        # sprites animation counter
-[[ -e ~/.piu.conf ]] && . ~/.piu.conf
+[[ -e ~/.piuconf ]] && . ~/.piuconf
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
        small=('o  '
               '   '
@@ -126,7 +126,7 @@ function game {
         #-{ Print FPS }-------------------------------------------------------------------------------------------------
         screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL "
         #-{ Restart aliens }--------------------------------------------------------------------------------------------
-        [[ $enumber -lt $enmax && $M -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien 00"); }
+        [[ $enumber -lt $enmax && $M -eq 0 ]] && { ((enumber++)); OBJ+=("$[$endx + 1] $[RANDOM % $enmyendy + 3] 0 alien 0$[RANDOM%2]"); }
         #-{ Move\check\print objects }----------------------------------------------------------------------------------
         obj_loop
 #        screen+="\e[1;1H${OBJ[@]}"

@@ -4,7 +4,6 @@ case ${BASH_VERSINFO[@]::2} in [1-3]' '[0-9][0-9]|[1-3]' '[0-9]|'4 '[0-1])
     echo -e "\nYour BASH is too short!) 4.2+ required to run this game, your is - ${BASH_VERSINFO[@]}"
     exit 1;;
 esac
-
 . ~/SCR/color
 #------------------------{ Start opt }------------------------{ description }-----------------{ def. values }-----------
      enumber=0                                        # current enemy counter                      (0)
@@ -16,7 +15,7 @@ esac
          spd=0.01                                     # game\read speed                            (0.0001)
          OBJ=()                                       # start obj array
            L=0                                        # sprites animation counter
-[[ -e ~/.piu.conf ]] && . ~/.piu.conf
+[[ -e ~/.piuconf ]] && . ~/.piuconf
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
        # ___
        #( o )
@@ -71,14 +70,6 @@ fps_counter () {
     } || ((FPSC++))
 }
 
-mover () {
-    [[ $OX -le -$width ]] && { remove_obj $i; case $type in 'alien') ((enumber--));; esac; return; }
-    case $CS in
-        0) ((OX--));          ((OE++)); OBJ[$i]="$OX $OY $OS $OE $type $DS $DS";;
-        *) [[ $CS -gt 0 ]] && ((CS--)); OBJ[$i]="$OX $OY $OS $OE $type $CS $DS";;
-    esac
-}
-
 obj_loop () {
     for i in ${!OBJ[@]}; do
         OI=(${OBJ[$i]})
@@ -98,7 +89,7 @@ game () {
         #-{ Print FPS }-------------------------------------------------------------------------------------------------
         screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL "
         #-{ Restart aliens }--------------------------------------------------------------------------------------------
-        [[ $enumber -lt $enmax && $M -eq 0 ]] && { ((enumber++)); OBJ+=("$endx $[RANDOM % $enmyendy + 3] 0 0 alien 0 0"); }
+        [[ $enumber -lt $enmax && $M -eq 0 ]] && { ((enumber++)); OBJ+=("$endx $[RANDOM%$enmyendy+3] 0 0 alien 0 $[RANDOM%2]"); }
         #-{ Move\check\print objects }----------------------------------------------------------------------------------
         obj_loop
 #        screen+="\e[1;1H${OBJ[@]}"
