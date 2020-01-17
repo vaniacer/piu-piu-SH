@@ -7,7 +7,7 @@ esac
 . ~/SCR/color
 #------------------------{ Start opt }------------------------{ description }-----------------{ def. values }-----------
      enumber=0                                        # current enemy counter                      (0)
-       enmax=10                                       # max number of akiens                       (10)
+       enmax=100                                      # max number of akiens                       (10)
         FPSL=100                                      # lower FPS initial value                    (100)
         FPSM=0                                        # maximum FPS initial value                  (0)
         FPSC=0                                        # FPS counter                                (0)
@@ -23,13 +23,14 @@ esac
 sprite_alien () {
        hight=3
        width=5; mov || return
-       small=(              "$Y1$X1${RED}o    $Y1$X2${SKY}_   $Y1$X3${SKY}_"
-                            "$Y1$X1${SKY}_    $Y1$X2${SKY}_   $Y1$X3${SKY}_"
-                            "$Y1$X1${SKY}_    $Y1$X2${SKY}_   $Y1$X3${RED}o"
-                            "$Y1$X1${SKY}_    $Y1$X2${RED}o   $Y1$X3${SKY}_"); small=( "${small[L]//_/' '}")
-      sprite=(""            "$Y0$X1${SKY}_"  "$Y0$X2${SKY}_" "$Y0$X3${SKY}_" "$Y0$X4$SKY "                 ); cut
-      sprite=("$Y1$X0$SKY("                  "${small[@]}"                   "$Y1$X4$SKY)" "$Y1$X5$SKY "   ); cut
-      sprite=(""            "$Y2$X1${SKY}\`" "$Y2$X2${SKY}¯" "$Y2$X3${SKY}´" "$Y2$X4$SKY "                 ); cut
+       small=(          "$Y1$X1${SKY}_    $Y1$X2${SKY}_   $Y1$X3${RED}o"
+                        "$Y1$X1${SKY}_    $Y1$X2${RED}o   $Y1$X3${SKY}_"
+                        "$Y1$X1${RED}o    $Y1$X2${SKY}_   $Y1$X3${SKY}_"
+                        "$Y1$X1${SKY}_    $Y1$X2${SKY}_   $Y1$X3${SKY}_")
+
+      cut ""            "$Y0$X1${SKY}_"  "$Y0$X2${SKY}_" "$Y0$X3${SKY}_" "$Y0$X4$SKY "
+      cut "$Y1$X0$SKY("                   ${small[AC]//_/}               "$Y1$X4$SKY)" "$Y1$X5$SKY "
+      cut ""            "$Y2$X1${SKY}\`" "$Y2$X2${SKY}¯" "$Y2$X3${SKY}´" "$Y2$X4$SKY "
 }
 
 #------------------------{ Functions }----------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ remove_obj () { unset  OBJ[$1]; OBJ=("${OBJ[@]}"); }
 erase_obj  () { remove_obj $1 ; for (( k=0; k<$2; k++ )); do screen+="\e[$[OY+k];${OX}H$SKY         "; done; }
 
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
-cut () { screen+="${sprite[@]:$OS:$OE}"; }
+cut () { screen+="${@:$OS:$OE}"; }
 mov () {
     [[ $OX -le -$width ]] && {
         [[ $type == 'alien' ]] && ((enumber--))
@@ -58,9 +59,11 @@ mov () {
     Y4="\\e[$[OY+4]"; X4=";$[OX+4]H"
     Y5="\\e[$[OY+5]"; X5=";$[OX+5]H"
     case $CS in
-        0) ((OX--)); ((OE++)); [[ $OX -le 0 ]] && ((OS++)); OBJ[$i]="$OX $OY $type $DS $DS $OE $OS";;
-        *) [[ $CS -gt 0 ]] && ((CS--)); OBJ[$i]="$OX $OY $type $CS $DS $OE $OS";;
+        0) [[ $OX -le 0   ]] && ((OS++)); ((OX--)); ((OE++)); CS=$DS
+           [[ $AC -ge $AD ]] &&   AC=0 || ((AC++));; # sprites animation;;
+        *) [[ $CS -gt 0   ]] && ((CS--));;
     esac
+    OBJ[$i]="$OX $OY $type $CS $DS $OE $OS $AC $AD"
 }
 
 fps_counter () {
@@ -76,7 +79,8 @@ fps_counter () {
 obj_loop () {
     for i in ${!OBJ[@]}; do
         OI=(${OBJ[$i]})
-        OX=${OI[0]}; OY=${OI[1]}; type=${OI[2]}; CS=${OI[3]}; DS=${OI[4]}; OE=${OI[5]}; OS=${OI[6]}
+        OX=${OI[0]}; OY=${OI[1]}; type=${OI[2]}; CS=${OI[3]}; DS=${OI[4]}
+        OE=${OI[5]}; OS=${OI[6]}; AC=${OI[7]};   AD=${OI[8]}
         [[ $type ]] && sprite_$type
     done
 }
@@ -86,13 +90,15 @@ game () {
     while true; do
         #-{ Empty screen, count fps, set timings}-----------------------------------------------------------------------
         [[ $M -ge 10 ]] && M=0 || ((M++)) # enemies born rate
-        [[ $L -ge 3  ]] && L=0 || ((L++)) # sprites animation
         read -t$spd -s -n1 input &> /dev/null
         screen=; fps_counter
         #-{ Print FPS }-------------------------------------------------------------------------------------------------
         screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL "
         #-{ Restart aliens }--------------------------------------------------------------------------------------------
-        [[ $enumber -lt $enmax && $M -eq 0 ]] && { ((enumber++)); OBJ+=("$[endx-1] $[RANDOM%$enmyendy+3] alien 0 $[RANDOM%2]"); }
+        [[ $enumber -lt $enmax && $M -eq 0 ]] && {
+            OBJ+=("$[endx-1] $[RANDOM%$enmyendy+3] alien 0 $[RANDOM%2] 1 1 $[RANDOM%3] 3")
+            ((enumber++))
+        }
         #-{ Move\check\print objects }----------------------------------------------------------------------------------
         obj_loop; printf "$screen"
     done
