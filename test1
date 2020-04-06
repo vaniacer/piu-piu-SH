@@ -86,6 +86,7 @@ function erase_obj  () { remove_obj $1; for (( k=0; k<$2; k++ )); do screen+="\e
 fps_counter () {
     [[ $SECONDS -gt $sec ]] && {\
         FPS=$FPSC AVG+=($FPS)
+        [[ $FPSL ]] || FPSL=$FPS
         [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
         [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
         (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
