@@ -8,9 +8,6 @@ esac
 #------------------------{ Start opt }------------------------{ description }-----------------{ def. values }-----------
      enumber=0                                        # current enemy counter                      (0)
        enmax=100                                      # max number of akiens                       (10)
-        FPSL=100                                      # lower FPS initial value                    (100)
-        FPSM=0                                        # maximum FPS initial value                  (0)
-        FPSC=0                                        # FPS counter                                (0)
          SKY=$DEF
          spd=0.01                                     # game\read speed                            (0.0001)
          OBJ=()                                       # start obj array
@@ -66,6 +63,7 @@ mov () {
 fps_counter () {
     [[ $SECONDS -gt $sec ]] && {\
         FPS=$FPSC AVG+=($FPS)
+        [[ $FPSL ]] || FPSL=$FPS
         [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
         [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
         (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
