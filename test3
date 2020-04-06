@@ -20,18 +20,20 @@ esac
        # ___
        #( o )
        # `¯´
+
+       small=("${SKY}_Z_  ${SKY}_Z_  ${RED}o"
+              "${SKY}_Z_  ${RED}o    ${SKY}_Z_"
+              "${RED}o    ${SKY}_Z_  ${SKY}_Z_"
+              "${SKY}_Z_  ${SKY}_Z_  ${SKY}_Z_")
+
 sprite_alien () {
        hight=3
        width=5
        mov || return
-       small=(          "$Y1$X1${SKY}_    $Y1$X2${SKY}_   $Y1$X3${RED}o"
-                        "$Y1$X1${SKY}_    $Y1$X2${RED}o   $Y1$X3${SKY}_"
-                        "$Y1$X1${RED}o    $Y1$X2${SKY}_   $Y1$X3${SKY}_"
-                        "$Y1$X1${SKY}_    $Y1$X2${SKY}_   $Y1$X3${SKY}_")
 
-      cut ""            "$Y0$X1${SKY}_"  "$Y0$X2${SKY}_" "$Y0$X3${SKY}_" "$Y0$X4$SKY "
-      cut "$Y1$X0$SKY("                   ${small[AC]//_/}               "$Y1$X4$SKY)" "$Y1$X5$SKY "
-      cut ""            "$Y2$X1${SKY}\`" "$Y2$X2${SKY}¯" "$Y2$X3${SKY}´" "$Y2$X4$SKY "
+      cut "\\e[$OY;${SX}H"      "\\e[$OY;$[SX+1]H"      "${SKY}_"  "${SKY}_"  "${SKY}_"
+      cut "\\e[$[OY+1];${SX}H"  "$SKY("                          ${small[AC]}            "${SKY})"
+      cut "\\e[$[OY+2];${SX}H"  "\\e[$[OY+2];$[SX+1]H"  "${SKY}\`" "${SKY}¯"  "${SKY}´"
 }
 
 #------------------------{ Functions }----------------------------------------------------------------------------------
@@ -46,19 +48,14 @@ remove_obj () { unset  OBJ[$1]; OBJ=("${OBJ[@]}"); }
 erase_obj  () { remove_obj $1 ; for (( k=0; k<$2; k++ )); do screen+="\e[$[OY+k];${OX}H$SKY         "; done; }
 
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
-cut () { screen+="${@:$OS:$OE}"; }
+cut () { screen+="$1"; shift; printf -v spr %s "${@:$OS:$OE}"; screen+="${spr//_Z_/ } "; }
 mov () {
+    SX=${OX//-*/0} 
     [[ $OX -le -$width ]] && {
         [[ $type == 'alien' ]] && ((enumber--))
         remove_obj $i
         return 1
     }
-    Y0="\\e[$OY"    ; X0=";${OX}H"
-    Y1="\\e[$[OY+1]"; X1=";$[OX+1]H"
-    Y2="\\e[$[OY+2]"; X2=";$[OX+2]H"
-    Y3="\\e[$[OY+3]"; X3=";$[OX+3]H"
-    Y4="\\e[$[OY+4]"; X4=";$[OX+4]H"
-    Y5="\\e[$[OY+5]"; X5=";$[OX+5]H"
     case $CS in
         0) [[ $OX -le 0   ]] && ((OS++)); ((OX--)); ((OE++)); CS=$DS
            [[ $AC -ge $AD ]] &&   AC=0 || ((AC++));; # sprites animation;;
