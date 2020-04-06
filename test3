@@ -17,23 +17,22 @@ esac
            L=0                                        # sprites animation counter
 [[ -e ~/.piuconf ]] && . ~/.piuconf
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
-       # ___
-       #( o )
-       # `¯´
+# ___
+#( o )
+# `¯´
 
-       small=("${SKY}_Z_  ${SKY}_Z_  ${RED}o"
-              "${SKY}_Z_  ${RED}o    ${SKY}_Z_"
-              "${RED}o    ${SKY}_Z_  ${SKY}_Z_"
-              "${SKY}_Z_  ${SKY}_Z_  ${SKY}_Z_")
+small=("${SKY}_Z_  ${SKY}_Z_  ${RED}o"
+       "${SKY}_Z_  ${RED}o    ${SKY}_Z_"
+       "${RED}o    ${SKY}_Z_  ${SKY}_Z_"
+       "${SKY}_Z_  ${SKY}_Z_  ${SKY}_Z_")
 
 sprite_alien () {
-       hight=3
-       width=5
-       mov || return
-
-      cut "\\e[$OY;${SX}H"      "\\e[$OY;$[SX+1]H"      "${SKY}_"  "${SKY}_"  "${SKY}_"
-      cut "\\e[$[OY+1];${SX}H"  "$SKY("                          ${small[AC]}            "${SKY})"
-      cut "\\e[$[OY+2];${SX}H"  "\\e[$[OY+2];$[SX+1]H"  "${SKY}\`" "${SKY}¯"  "${SKY}´"
+    hight=3
+    width=5
+    mov || return
+    cut "\\e[$OY;${SX}H"      "\\e[$OY;$[SX+1]H"      "${SKY}_"  "${SKY}_"  "${SKY}_"
+    cut "\\e[$[OY+1];${SX}H"  "$SKY("                          ${small[AC]}            "${SKY})"
+    cut "\\e[$[OY+2];${SX}H"  "\\e[$[OY+2];$[SX+1]H"  "${SKY}\`" "${SKY}¯"  "${SKY}´"
 }
 
 #------------------------{ Functions }----------------------------------------------------------------------------------
@@ -50,7 +49,6 @@ erase_obj  () { remove_obj $1 ; for (( k=0; k<$2; k++ )); do screen+="\e[$[OY+k]
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
 cut () { screen+="$1"; shift; printf -v spr %s "${@:$OS:$OE}"; screen+="${spr//_Z_/ } "; }
 mov () {
-    SX=${OX//-*/0} 
     [[ $OX -le -$width ]] && {
         [[ $type == 'alien' ]] && ((enumber--))
         remove_obj $i
@@ -62,6 +60,7 @@ mov () {
         *) [[ $CS -gt 0   ]] && ((CS--));;
     esac
     OBJ[$i]="$OX $OY $type $CS $DS $OE $OS $AC $AD"
+    SX=${OX//-*/0} # SX'll be sprit's X coordinate, if OX less then 0 make it 0
 }
 
 fps_counter () {
