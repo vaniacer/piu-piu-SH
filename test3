@@ -30,6 +30,7 @@ sprite_alien () {
     cut "\\e[$OY;${SX}H"      "\\e[$OY;$[SX+1]H"      "${SKY}_"  "${SKY}_"  "${SKY}_"
     cut "\\e[$[OY+1];${SX}H"  "$SKY("                          ${small[AS]}            "${SKY})"
     cut "\\e[$[OY+2];${SX}H"  "\\e[$[OY+2];$[SX+1]H"  "${SKY}\`" "${SKY}¯"  "${SKY}´"
+    ENM[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL"
 }
 
 #------------------------{ Functions }----------------------------------------------------------------------------------
@@ -56,24 +57,20 @@ mov () {
            [[ $AS -ge $AL ]] &&   AS=0 || ((AS++));; # sprites animation;;
         *) [[ $SC -gt 0   ]] && ((SC--));;
     esac
-    OBJ[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL"
-    SX=${OX//-*/0} # SX'll be sprit's X coordinate, if OX less then 0 make it 0
+    SX=${OX//-*/0} # SX'll be sprite's X coordinate, if OX less then 0 make it 0
 }
 
-obj_loop () {
-    for i in ${!OBJ[@]}; do
-        OI=(${OBJ[$i]})
-        type=${OI[0]} # object type
-        OX=${OI[1]}   # X coordinate
-        OY=${OI[2]}   # Y coordinate
-        SC=${OI[3]}   # speed couter
-        SM=${OI[4]}   # speed max
-        CS=${OI[5]}   # cuting start
-        CL=${OI[6]}   # cuting lenght
-        AS=${OI[7]}   # animation start
-        AL=${OI[8]}   # animation lenght
-        [[ $type ]] && sprite_$type
-    done
+get_obj_data () {
+    type=${OI[0]} # object type
+    OX=${OI[1]}   # X coordinate
+    OY=${OI[2]}   # Y coordinate
+    SC=${OI[3]}   # speed couter
+    SM=${OI[4]}   # speed max
+    CS=${OI[5]}   # cuting start
+    CL=${OI[6]}   # cuting lenght
+    AS=${OI[7]}   # animation start
+    AL=${OI[8]}   # animation lenght
+    [[ $type ]] && sprite_$type
 }
 
 fps_counter () {
@@ -99,11 +96,14 @@ game () {
         screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
         #-{ Restart aliens }--------------------------------------------------------------------------------------------
         [[ $enumber -lt $enmax && $M -eq 0 ]] && {
-            OBJ+=("alien $[endx-1] $[RANDOM%$enmyendy+3] 0 $[RANDOM%2] 1 1 $[RANDOM%3] 3")
+            ENM+=("alien $[endx-1] $[RANDOM%$enmyendy+3] 0 $[RANDOM%2] 1 1 $[RANDOM%3] 3")
             ((enumber++))
         }
-        #-{ Move\check\print objects }----------------------------------------------------------------------------------
-        obj_loop; printf "$screen"
+        #-{ Move\check enemies }----------------------------------------------------------------------------------------
+        for i in ${!ENM[@]}; { OI=(${ENM[$i]}); get_obj_data; }
+
+        #-{ Print everything }------------------------------------------------------------------------------------------
+        printf "$screen"
     done
 }
 
