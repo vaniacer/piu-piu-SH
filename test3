@@ -9,7 +9,7 @@ esac
      enumber=0                                        # current enemy counter                      (0)
        enmax=100                                      # max number of akiens                       (10)
          SKY=$DEF
-         spd=0.1                                     # game\read speed                            (0.0001)
+         spd=0.01                                     # game\read speed                            (0.0001)
          OBJ=()                                       # start obj array
            L=0                                        # sprites animation counter
 [[ -e ~/.piuconf ]] && . ~/.piuconf
@@ -74,7 +74,7 @@ get_obj_data () {
 }
 
 fps_counter () {
-    [[ $SECONDS -gt $sec ]] && {\
+    [[ $SECONDS -gt $sec ]] && {
         FPS=$FPSC AVG+=($FPS)
         [[ $FPSL ]] || FPSL=$FPS
         [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
