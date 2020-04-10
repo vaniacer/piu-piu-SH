@@ -9,7 +9,7 @@ esac
      enumber=0                                        # current enemy counter                      (0)
        enmax=100                                      # max number of akiens                       (10)
          SKY=$DEF
-         spd=0.01                                     # game\read speed                            (0.0001)
+         spd=0.1                                     # game\read speed                            (0.0001)
          OBJ=()                                       # start obj array
            L=0                                        # sprites animation counter
 [[ -e ~/.piuconf ]] && . ~/.piuconf
@@ -28,7 +28,7 @@ sprite_alien () {
     width=5
     mov || return
     cut "\\e[$OY;${SX}H"      "\\e[$OY;$[SX+1]H"      "${SKY}_"  "${SKY}_"  "${SKY}_"
-    cut "\\e[$[OY+1];${SX}H"  "$SKY("                          ${small[AC]}            "${SKY})"
+    cut "\\e[$[OY+1];${SX}H"  "$SKY("                          ${small[AS]}            "${SKY})"
     cut "\\e[$[OY+2];${SX}H"  "\\e[$[OY+2];$[SX+1]H"  "${SKY}\`" "${SKY}¯"  "${SKY}´"
 }
 
@@ -44,20 +44,36 @@ remove_obj () { unset  OBJ[$1]; OBJ=("${OBJ[@]}"); }
 erase_obj  () { remove_obj $1 ; for (( k=0; k<$2; k++ )); do screen+="\e[$[OY+k];${OX}H$SKY         "; done; }
 
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
-cut () { screen+="$1"; shift; printf -v spr %s "${@:$OS:$OE}"; screen+="${spr//_Z_/ } "; }
+cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ } "; }
 mov () {
     [[ $OX -le -$width ]] && {
         [[ $type == 'alien' ]] && ((enumber--))
         remove_obj $i
         return 1
     }
-    case $CS in
-        0) [[ $OX -le 0   ]] && ((OS++)); ((OX--)); ((OE++)); CS=$DS
-           [[ $AC -ge $AD ]] &&   AC=0 || ((AC++));; # sprites animation;;
-        *) [[ $CS -gt 0   ]] && ((CS--));;
+    case $SC in
+        0) [[ $OX -le 0   ]] && ((CS++)); ((OX--)); ((CL++)); SC=$SM
+           [[ $AS -ge $AL ]] &&   AS=0 || ((AS++));; # sprites animation;;
+        *) [[ $SC -gt 0   ]] && ((SC--));;
     esac
-    OBJ[$i]="$OX $OY $type $CS $DS $OE $OS $AC $AD"
+    OBJ[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL"
     SX=${OX//-*/0} # SX'll be sprit's X coordinate, if OX less then 0 make it 0
+}
+
+obj_loop () {
+    for i in ${!OBJ[@]}; do
+        OI=(${OBJ[$i]})
+        type=${OI[0]} # object type
+        OX=${OI[1]}   # X coordinate
+        OY=${OI[2]}   # Y coordinate
+        SC=${OI[3]}   # speed couter
+        SM=${OI[4]}   # speed max
+        CS=${OI[5]}   # cuting start
+        CL=${OI[6]}   # cuting lenght
+        AS=${OI[7]}   # animation start
+        AL=${OI[8]}   # animation lenght
+        [[ $type ]] && sprite_$type
+    done
 }
 
 fps_counter () {
@@ -72,15 +88,6 @@ fps_counter () {
     } || ((FPSC++))
 }
 
-obj_loop () {
-    for i in ${!OBJ[@]}; do
-        OI=(${OBJ[$i]})
-        OX=${OI[0]}; OY=${OI[1]}; type=${OI[2]}; CS=${OI[3]}; DS=${OI[4]}
-        OE=${OI[5]}; OS=${OI[6]}; AC=${OI[7]};   AD=${OI[8]}
-        [[ $type ]] && sprite_$type
-    done
-}
-
 game () {
     #======================================{ Main game loop single or server team mode }================================
     while true; do
@@ -92,7 +99,7 @@ game () {
         screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
         #-{ Restart aliens }--------------------------------------------------------------------------------------------
         [[ $enumber -lt $enmax && $M -eq 0 ]] && {
-            OBJ+=("$[endx-1] $[RANDOM%$enmyendy+3] alien 0 $[RANDOM%2] 1 1 $[RANDOM%3] 3")
+            OBJ+=("alien $[endx-1] $[RANDOM%$enmyendy+3] 0 $[RANDOM%2] 1 1 $[RANDOM%3] 3")
             ((enumber++))
         }
         #-{ Move\check\print objects }----------------------------------------------------------------------------------
