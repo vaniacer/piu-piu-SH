@@ -8,6 +8,7 @@ esac
 #------------------------{ Start opt }------------------------{ description }-----------------{ def. values }-----------
      enumber=0                                        # current enemy counter                      (0)
        enmax=100                                      # max number of akiens                       (10)
+         CLD=30
          SKY=$DEF
          spd=0.01                                     # game\read speed                            (0.0001)
          OBJ=()                                       # start obj array
@@ -26,11 +27,50 @@ small=("${SKY}_Z_  ${SKY}_Z_  ${RED}o"
 sprite_alien () {
     hight=3
     width=5
-    mov || return
-    cut "\\e[$OY;${SX}H"      "\\e[$OY;$[SX+1]H"      "${SKY}_"  "${SKY}_"  "${SKY}_"
+    mov && ENM[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset ENM[$i]; ((enumber--)); return; }
+    cut "\\e[$OY;${SX}H"      "\\e[$OY;$[SX+1]H"      "$SKY"'_'  "${SKY}_"  "${SKY}_"
     cut "\\e[$[OY+1];${SX}H"  "$SKY("                          ${small[AS]}            "${SKY})"
-    cut "\\e[$[OY+2];${SX}H"  "\\e[$[OY+2];$[SX+1]H"  "${SKY}\`" "${SKY}¯"  "${SKY}´"
-    ENM[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL"
+    cut "\\e[$[OY+2];${SX}H"  "\\e[$[OY+2];$[SX+1]H"  "$SKY"'`'  "${SKY}¯"  "${SKY}´"
+}
+
+#------------------------{ Clouds }-------------------------------------------------------------------------------------
+#  ,-.,
+# (    )
+#  `+-`
+
+function sprite_cloud1 {
+    hight=3
+    width=6
+    mov && BG1[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BG1[$i]; return; }
+    cut "\\e[$OY;${SX}H"       "\\e[$OY;$[SX+1]H"      "$SKY,"    "$SKY-"  "$SKY."   "$SKY,"
+    cut "\\e[$[$OY+1];${SX}H"  "$SKY("                 "$SKY "    "$SKY "  "$SKY "   "$SKY "   "$SKY)"
+    cut "\\e[$[$OY+2];${SX}H"  "\\e[$[$OY+2];$[SX+1]H" "$SKY"'`'  "$SKY+"  "$SKY-"   "$SKY"'`'
+}
+
+#  ,-._.,
+# (      )
+#  `-...`
+
+function sprite_cloud2 {
+    hight=3
+    width=8
+    mov && BG2[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BG2[$i]; return; }
+    cut "\\e[$OY;${SX}H"       "\\e[$OY;$[SX+1]H"       "$SKY,"   "$SKY-"  "$SKY."  "${SKY}_" "$SKY."  "$SKY,"
+    cut "\\e[$[$OY+1];${SX}H"  "$SKY("                  "$SKY "   "$SKY "  "$SKY "  "$SKY "   "$SKY "  "$SKY "   "$SKY)"
+    cut "\\e[$[$OY+2];${SX}H"  "\\e[$[$OY+2];$[SX+1]H"  "$SKY"'`' "$SKY-"  "$SKY."  "$SKY."   "$SKY."  "$SKY"'`'
+}
+
+#  ,-¯`.-¯`.
+# (         )
+#  `--.....`
+
+function sprite_cloud3 {
+    hight=3
+    width=11
+    mov && BG3[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BG3[$i]; return; }
+    cut "\\e[$OY;${SX}H"       "\\e[$OY;$[SX+1]H"       "$SKY,"   "$SKY-"  "$SKY¯"  "$SKY"'`' "$SKY."  "$SKY-"  "$SKY¯"  "$SKY"'`' "$SKY."
+    cut "\\e[$[$OY+1];${SX}H"  "$SKY("                  "$SKY "   "$SKY "  "$SKY "  "$SKY "   "$SKY "  "$SKY "  "$SKY "  "$SKY "   "$SKY "   "$SKY)"
+    cut "\\e[$[$OY+2];${SX}H"  "\\e[$[$OY+2];$[SX+1]H"  "$SKY"'`' "$SKY-"  "$SKY-"  "$SKY."   "$SKY."  "$SKY."  "$SKY."  "$SKY."   "$SKY"'`'
 }
 
 #------------------------{ Functions }----------------------------------------------------------------------------------
@@ -41,17 +81,10 @@ get_dimensions () {
 enmyendy=$[endy-7]
 }
 
-remove_obj () { unset  OBJ[$1]; OBJ=("${OBJ[@]}"); }
-erase_obj  () { remove_obj $1 ; for (( k=0; k<$2; k++ )); do screen+="\e[$[OY+k];${OX}H$SKY         "; done; }
-
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
 cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ } "; }
 mov () {
-    [[ $OX -le -$width ]] && {
-        [[ $type == 'alien' ]] && ((enumber--))
-        remove_obj $i
-        return 1
-    }
+    [[ $OX -le -$width ]]    && return 1
     case $SC in
         0) [[ $OX -le 0   ]] && ((CS++)); ((OX--)); ((CL++)); SC=$SM
            [[ $AS -ge $AL ]] &&   AS=0 || ((AS++));; # sprites animation;;
@@ -91,16 +124,33 @@ game () {
         #-{ Empty screen, count fps, set timings}-----------------------------------------------------------------------
         [[ $M -ge 10 ]] && M=0 || ((M++)) # enemies born rate
         read -t$spd -s -n1 input &> /dev/null
+        ENM=("${ENM[@]}")
+        BG1=("${BG1[@]}")
+        BG2=("${BG2[@]}")
+        BG3=("${BG3[@]}")
         screen=; fps_counter
-        #-{ Print FPS }-------------------------------------------------------------------------------------------------
-        screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
-        #-{ Restart aliens }--------------------------------------------------------------------------------------------
+
+        #-{ Add cloud }-------------------------------------------------------------------------------------------------
+        case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
+            0:1) BG1+=("cloud1 $[endx+1] $[RANDOM % 10 + 2] 6 6 1 0 0 0");;
+            0:2) BG2+=("cloud2 $[endx+1] $[RANDOM % 10 + 2] 4 4 1 0 0 0");;
+            0:3) BG3+=("cloud3 $[endx+1] $[RANDOM % 10 + 2] 2 2 1 0 0 0");;
+        esac
+
+        #-{ Add aliens }--------------------------------------------------------------------------------------------
         [[ $enumber -lt $enmax && $M -eq 0 ]] && {
-            ENM+=("alien $[endx-1] $[RANDOM%$enmyendy+3] 0 $[RANDOM%2] 1 1 $[RANDOM%3] 3")
+            ENM+=("alien $[endx+1] $[RANDOM%enmyendy+3] 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3")
             ((enumber++))
         }
-        #-{ Move\check enemies }----------------------------------------------------------------------------------------
+
+        #-{ Print FPS }-------------------------------------------------------------------------------------------------
+        screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
+
+        #-{ Move bitplans }---------------------------------------------------------------------------------------------
+        for i in ${!BG1[@]}; { OI=(${BG1[$i]}); get_obj_data; }
+        for i in ${!BG2[@]}; { OI=(${BG2[$i]}); get_obj_data; }
         for i in ${!ENM[@]}; { OI=(${ENM[$i]}); get_obj_data; }
+        for i in ${!BG3[@]}; { OI=(${BG3[$i]}); get_obj_data; }
 
         #-{ Print everything }------------------------------------------------------------------------------------------
         printf "$screen"
@@ -110,6 +160,5 @@ game () {
 #--------------------------------------------------{ Initialisation }---------------------------------------------------
 trap bye INT TERM SIGINT SIGTERM EXIT
 get_dimensions; stty -echo; printf "$COF"; clear
-sec=$SECONDS # set timer for FPS counter
-OBJ=(); game
+game
 
