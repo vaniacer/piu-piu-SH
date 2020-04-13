@@ -19,18 +19,19 @@ esac
 # ( o )
 #  `¯´
 
-small=("${SKY}_Z_  ${SKY}_Z_  ${RED}o"
-       "${SKY}_Z_  ${RED}o    ${SKY}_Z_"
-       "${RED}o    ${SKY}_Z_  ${SKY}_Z_"
-       "${SKY}_Z_  ${SKY}_Z_  ${SKY}_Z_")
+small=("${SKY}_Z_  ${SKY}_Z_  ${RED}o$SKY"
+       "${SKY}_Z_  ${RED}o    ${SKY}_Z_$SKY"
+       "${RED}o    ${SKY}_Z_  ${SKY}_Z_$SKY"
+       "${SKY}_Z_  ${SKY}_Z_  ${SKY}_Z_$SKY")
 
 sprite_alien () {
     hight=3
     width=5
     mov && ENM[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset ENM[$i]; ((enumber--)); return; }
-    cut "\\e[$OY;${SX}H"      "\\e[$OY;$[SX+1]H"      "$SKY"'_'  "${SKY}_"  "${SKY}_"
-    cut "\\e[$[OY+1];${SX}H"  "$SKY("                          ${small[AS]}            "${SKY})"
-    cut "\\e[$[OY+2];${SX}H"  "\\e[$[OY+2];$[SX+1]H"  "$SKY"'`'  "${SKY}¯"  "${SKY}´"
+    X1="\\e[$OY;$[SX+1]H" X2="\\e[$[OY+2];$[SX+1]H"
+    cut "\\e[$OY;${SX}H$SKY"      '' "$X1"'_' '_'  '_'
+    cut "\\e[$[OY+1];${SX}H$SKY"  '(' ${small[AS]} ')'
+    cut "\\e[$[OY+2];${SX}H$SKY"  '' "$X2"'`' '¯'  '´'
 }
 
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
@@ -42,35 +43,38 @@ function sprite_cloud1 {
     hight=3
     width=6
     mov && BG1[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BG1[$i]; return; }
-    cut "\\e[$OY;${SX}H"       "\\e[$OY;$[SX+1]H"      "$SKY,"    "$SKY-"  "$SKY."   "$SKY,"
-    cut "\\e[$[$OY+1];${SX}H"  "$SKY("                 "$SKY "    "$SKY "  "$SKY "   "$SKY "   "$SKY)"
-    cut "\\e[$[$OY+2];${SX}H"  "\\e[$[$OY+2];$[SX+1]H" "$SKY"'`'  "$SKY+"  "$SKY-"   "$SKY"'`'
+    X1="\\e[$OY;$[SX+1]H" X2="\\e[$[OY+2];$[SX+1]H"
+    cut "\\e[$OY;${SX}H$SKY"       '' "$X1"',' '-' '.' ','
+    cut "\\e[$[$OY+1];${SX}H$SKY"  '('     ' ' ' ' ' ' ' ' ')'
+    cut "\\e[$[$OY+2];${SX}H$SKY"  '' "$X2"'`' '+' '-' '`'
 }
 
 #  ,-._.,
 # (      )
-#  `-...`
+#  `-...´
 
 function sprite_cloud2 {
     hight=3
     width=8
     mov && BG2[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BG2[$i]; return; }
-    cut "\\e[$OY;${SX}H"       "\\e[$OY;$[SX+1]H"       "$SKY,"   "$SKY-"  "$SKY."  "${SKY}_" "$SKY."  "$SKY,"
-    cut "\\e[$[$OY+1];${SX}H"  "$SKY("                  "$SKY "   "$SKY "  "$SKY "  "$SKY "   "$SKY "  "$SKY "   "$SKY)"
-    cut "\\e[$[$OY+2];${SX}H"  "\\e[$[$OY+2];$[SX+1]H"  "$SKY"'`' "$SKY-"  "$SKY."  "$SKY."   "$SKY."  "$SKY"'`'
+    X1="\\e[$OY;$[SX+1]H" X2="\\e[$[OY+2];$[SX+1]H"
+    cut "\\e[$OY;${SX}H$SKY"       '' "$X1"',' '-' '.' '_' '.' ','
+    cut "\\e[$[$OY+1];${SX}H$SKY"  '('         ' ' ' ' ' ' ' ' ' ' ' ' ')'
+    cut "\\e[$[$OY+2];${SX}H$SKY"  '' "$X2"'`' '-' '.' '.' '.' '´'
 }
 
 #  ,-¯`.-¯`.
 # (         )
-#  `--.....`
+#  `--.....´
 
 function sprite_cloud3 {
     hight=3
     width=11
     mov && BG3[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BG3[$i]; return; }
-    cut "\\e[$OY;${SX}H"       "\\e[$OY;$[SX+1]H"       "$SKY,"   "$SKY-"  "$SKY¯"  "$SKY"'`' "$SKY."  "$SKY-"  "$SKY¯"  "$SKY"'`' "$SKY."
-    cut "\\e[$[$OY+1];${SX}H"  "$SKY("                  "$SKY "   "$SKY "  "$SKY "  "$SKY "   "$SKY "  "$SKY "  "$SKY "  "$SKY "   "$SKY "   "$SKY)"
-    cut "\\e[$[$OY+2];${SX}H"  "\\e[$[$OY+2];$[SX+1]H"  "$SKY"'`' "$SKY-"  "$SKY-"  "$SKY."   "$SKY."  "$SKY."  "$SKY."  "$SKY."   "$SKY"'`'
+    X1="\\e[$OY;$[SX+1]H" X2="\\e[$[OY+2];$[SX+1]H"
+    cut "\\e[$OY;${SX}H$SKY"       '' "$X1"',' '-' '¯' '`' '.' '-' '¯' '`' '.'
+    cut "\\e[$[$OY+1];${SX}H$SKY"  '('     ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ')'
+    cut "\\e[$[$OY+2];${SX}H$SKY"  '' "$X2"'`' '-' '-' '.' '.' '.' '.' '.' '´'
 }
 
 #------------------------{ Functions }----------------------------------------------------------------------------------
@@ -82,7 +86,7 @@ enmyendy=$[endy-7]
 }
 
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
-cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ } "; }
+cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ }$SKY "; }
 mov () {
     [[ $OX -le -$width ]]    && return 1
     case $SC in
