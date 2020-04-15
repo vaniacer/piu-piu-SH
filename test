@@ -1,0 +1,152 @@
+#!/bin/bash
+#--{ Start opt }--------------------------------------{ description }-------------------------{ def. values }-----------
+     enumber=0                                        # current enemy counter                      (0)
+       enmax=2                                        # max number of akiens                       (10)
+       month=`date +'%m'`                             # get current month
+         spd=0.0001                                   # game\read speed                            (0.0001)
+          LX=1                                        # grass X counter
+
+[[ -e ~/.piuconf ]] && . ~/.piuconf
+. ~/SCR/color
+case $month in
+    0[1-4]|12)
+        SKY=$DEF$bwht         # winter & early spring sky
+        LND=$DEF$BLD$WHT$BWHT # winter & early spring land
+        CLD=30                # winter & early spring clouds rnd
+        TRE=50;;              # winter & early spring trees rnd
+
+    0[5-8]   )
+        SKY=$DEF$bcyn         # late spring & summer sky
+        LND=$DEF$DIM$GRN$bgrn # late spring & summer land
+        CLD=50                # late spring & summer clouds rnd
+        TRE=20;;              # late spring & summer trees rnd
+
+    09|1[0-1])
+        SKY=$DEF$BCYN         # autumn sky
+        LND=$DEF$DIM$YLW$BGRN # autumn land
+        CLD=20                # autumn clouds rnd
+        TRE=50;;              # autumn trees rnd
+esac
+#------------------------{ Functions }----------------------------------------------------------------------------------
+get_dimensions () {
+    size=( $(stty size) )
+    endx=${size[1]}
+    endy=${size[0]}
+enmyendy=$[endy-7]
+boomendx=$[endx-10]
+bullendx=$[endx-4 ]
+heroendx=$[endx-15]
+heroendy=$[endy-7 ]
+enmyendy=$[endy-7 ]
+bossendx=$[endx-11]
+bossendy=$[endy-7 ]
+bosshbar=$[endx-10]
+lineendy=$[endy-2 ]
+Sunsendx=$[endx-18]
+tre1endy=$[endy-tree1H-2]
+tre2endy=$[endy-tree2H-2]
+tre3endy=$[endy-tree3H-2]
+}
+
+bye () { stty echo; printf "$CON$DEF"; exit $1; }
+cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ }$SKY "; }
+mov () {
+    case $SC in
+        0) [[ $OX -le -$width ]] && return 1
+           [[ $AS -ge $AL ]] && AS=0 || ((AS++)) # sprites animation
+           [[ $OX -le 1   ]] && ((CS++))
+           ((OX--)); ((CL++)); SC=$SM;;
+        *) ((SC--));;
+    esac
+    [[ $OX -le 1 ]] && SX=0 || SX=$OX
+}
+
+get_obj_data () {
+    type=${OI[0]} # object type
+    OX=${OI[1]}   # X coordinate
+    OY=${OI[2]}   # Y coordinate
+    SC=${OI[3]}   # speed couter
+    SM=${OI[4]}   # speed max
+    CS=${OI[5]}   # cuting start
+    CL=${OI[6]}   # cuting lenght
+    AS=${OI[7]}   # animation start
+    AL=${OI[8]}   # animation lenght
+    [[ $type ]] && sprite_$type
+}
+
+fps_counter () {
+    [[ $SECONDS -gt $sec ]] && {
+        FPS=$FPSC AVG+=($FPS)
+        [[ $FPSL ]] || FPSL=$FPS
+        [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
+        [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
+        (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
+        sec=$SECONDS
+        FPSC=0
+    } || ((FPSC++))
+}
+
+fill_screen () {
+    for ((i=0;         i<$lineendy; i++)); do printf "$SKY%${endx}s"; done
+    for ((i=$lineendy; i<$endy;     i++)); do printf "$LND%${endx}s"; done
+}
+
+sprite_alien () {
+    hight=3
+    width=11
+    mov && ENM[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset ENM[$i]; ((enumber--)); return; }
+    X1="\\e[$OY;$[OX+1]H"
+    X2="\\e[$OY;$[OX+5]H"
+    X3="\\e[$OY;$[OX+9]H"
+    X4="\\e[$[OY+1];$[OX+5]H"
+    X5="\\e[$[OY+1];$[OX+10]H"
+    X6="\\e[$[OY+2];$[OX+1]H"
+    X7="\\e[$[OY+2];$[OX+5]H"
+    X8="\\e[$[OY+2];$[OX+9]H"
+    CM1=$BLK
+    #0123456789AB
+    #1 /   |   \
+    #2<    |    >
+    #3 \   |   /
+    #                                 1         2    3   4  5            6   7  8  9                A                B
+    cut "\\e[$OY;${SX}H$SKY$RED"      ''  "$X1"'/'  ' '  '' '' "$X2$BLK"'|' ' ' '' '' "$X3$SKY$WHT"'\\'                  #1
+    cut "\\e[$[OY+1];${SX}H$SKY$RED"  '<'      ' '  ' '  '' '' "$X4$BLK"'|' ' ' '' ''              ''  "$X5$SKY$WHT"'>'  #2
+    cut "\\e[$[OY+2];${SX}H$SKY$RED"  ''  "$X6"'\\' ' '  '' '' "$X7$BLK"'|' ' ' '' '' "$X8$SKY$WTH"'/'                   #3
+}  
+
+game () {
+    #======================================{ Main game loop single or server team mode }================================
+    while true; do
+        #-{ Empty screen, count fps, set timings}------------------------------
+        [[ $M -ge 10 ]] && M=0 || ((M++)) # enemies born rate
+        read -t$spd -s -n1 input &> /dev/null
+        ENM=("${ENM[@]}")
+        screen=; fps_counter
+
+        #-{ Add aliens }-------------------------------------------------------
+        [[ $enumber -lt $enmax && $M -eq 0 ]] && {
+            ENM+=("alien $endx $[RANDOM%enmyendy+3] 0 $[RANDOM%3] 1 0 $[RANDOM%3] 3")
+            ((enumber++))
+        }
+
+        #-{ Print FPS }--------------------------------------------------------
+        screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
+
+        for i in ${!ENM[@]}; { OI=(${ENM[$i]}); get_obj_data; }
+
+        #-{ Print everything }-------------------------------------------------
+        printf "$screen"
+        echo -e "\\e[1;1H${ENM[@]}  "
+    done
+}
+
+#=================================================={ Initialisation }===================================================
+trap : ALRM
+trap bye INT TERM SIGINT SIGTERM EXIT
+get_dimensions; stty -echo; printf "$COF"; clear
+
+#-{ Generate grass }-----------------------------------------------------------
+for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
+
+fill_screen; game
+
