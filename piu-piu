@@ -418,6 +418,3 @@ get_dimensions; stty -echo; printf "$COF"; clear
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
 fill_screen; game
-
-
-

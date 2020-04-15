@@ -10,7 +10,7 @@ esac
 #--{ Start opt }--------------------------------------{ description }-------------------------{ def. values }-----------
      enumber=0                                        # current enemy counter                      (0)
        enmax=100                                      # max number of akiens                       (10)
-       month=`date +'%m'`                             # get current month
+       month=$(date +'%m')                            # get current month
          spd=0.0001                                   # game\read speed                            (0.0001)
           LX=1                                        # grass X counter
 #--------------------------------------------------------------------+
@@ -46,8 +46,8 @@ line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
 #--------------------------------------------------------------------+
 [[ -e ~/.piuconf ]] && . ~/.piuconf
-.  ./sprites   # _SPRITES_
-. ./functions  #_FUNCTIONS_
+.    ./sprites   # _SPRITES_
+.   ./functions  #_FUNCTIONS_
 game () {
     #======================================{ Main game loop single or server team mode }================================
     while true; do
@@ -106,6 +106,3 @@ get_dimensions; stty -echo; printf "$COF"; clear
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 
 fill_screen; game
-
-
-
