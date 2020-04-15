@@ -1,0 +1,67 @@
+#!/bin/bash
+#------------------------{ Functions }----------------------------------------------------------------------------------
+get_dimensions () {
+    size=( $(stty size) )
+    endx=${size[1]}
+    endy=${size[0]}
+enmyendy=$[endy-7]
+boomendx=$[endx-10]
+bullendx=$[endx-4 ]
+heroendx=$[endx-15]
+heroendy=$[endy-7 ]
+enmyendy=$[endy-7 ]
+bossendx=$[endx-11]
+bossendy=$[endy-7 ]
+bosshbar=$[endx-10]
+lineendy=$[endy-2 ]
+Sunsendx=$[endx-18]
+tre1endy=$[endy-tree1H-2]
+tre2endy=$[endy-tree2H-2]
+tre3endy=$[endy-tree3H-2]
+}
+
+bye () { stty echo; printf "$CON$DEF"; exit $1; }
+cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ }$SKY "; }
+mov () {
+    case $SC in
+        0) [[ $OX -le -$OW ]] && return 1
+           [[ $AS -ge $AL ]] && AS=0 || ((AS++)) # sprites animation
+           [[ $OX -le 1   ]] && ((CS++))
+           ((OX--)); ((CL++)); SC=$SM;;
+        *) ((SC--));;
+    esac
+    [[ $OX -le 1 ]] && SX=0 || SX=$OX
+}
+
+get_obj_data () {
+    OT=${OI[0]}   # object type
+    OH=${OI[1]}   # object hight
+    OW=${OI[2]}   # object width
+    OX=${OI[3]}   # X coordinate
+    OY=${OI[4]}   # Y coordinate
+    SC=${OI[5]}   # speed counter
+    SM=${OI[6]}   # speed max
+    CS=${OI[7]}   # cuting start
+    CL=${OI[8]}   # cuting lenght
+    AS=${OI[9]}   # animation start
+    AL=${OI[10]}  # animation lenght
+    [[ $OT ]] && sprite_$OT
+}
+
+fps_counter () {
+    [[ $SECONDS -gt $sec ]] && {
+        FPS=$FPSC AVG+=($FPS)
+        [[ $FPSL ]] || FPSL=$FPS
+        [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
+        [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
+        (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
+        sec=$SECONDS
+        FPSC=0
+    } || ((FPSC++))
+}
+
+fill_screen () {
+    for ((i=0;         i<$lineendy; i++)); do printf "$SKY%${endx}s"; done
+    for ((i=$lineendy; i<$endy;     i++)); do printf "$LND%${endx}s"; done
+}
+

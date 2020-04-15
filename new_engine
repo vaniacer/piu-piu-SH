@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+#------------------------{ Dev info }-----------------------------------------------------------------------------------
+#Created by: Ivan Marov <ie.marov@gmail.com>
+#Source: https://github.com/vaniacer/piu-piu-SH
+# check bash version
+case ${BASH_VERSINFO[@]::2} in [1-3]' '[0-9][0-9]|[1-3]' '[0-9]|'4 '[0-1])
+    echo -e "\nYour BASH is too short!) 4.2+ required to run this game, your is - ${BASH_VERSINFO[@]}"
+    exit 1;;
+esac
+#--{ Start opt }--------------------------------------{ description }-------------------------{ def. values }-----------
+     enumber=0                                        # current enemy counter                      (0)
+       enmax=100                                      # max number of akiens                       (10)
+       month=`date +'%m'`                             # get current month
+         spd=0.0001                                   # game\read speed                            (0.0001)
+          LX=1                                        # grass X counter
+
+[[ -e ~/.piuconf ]] && . ~/.piuconf
+. ~/SCR/color
+. ./sprites
+. ./functions
+game () {
+    #======================================{ Main game loop single or server team mode }================================
+    while true; do
+        #-{ Empty screen, count fps, set timings}------------------------------
+        [[ $M -ge 10 ]] && M=0 || ((M++)) # enemies born rate
+        read -t$spd -s -n1 input &> /dev/null
+        ENM=("${ENM[@]}")
+        BP1=("${BP1[@]}")
+        BP2=("${BP2[@]}")
+        BP3=("${BP3[@]}")
+        screen=; fps_counter
+
+        #-{ Add clouds }-------------------------------------------------------
+        case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
+            0:1) BP1+=("cloud1 3 6  $endx $[RANDOM % 10 + 2] 6 6 1 0 0 0");;
+            0:2) BP2+=("cloud2 3 8  $endx $[RANDOM % 10 + 2] 4 4 1 0 0 0");;
+            0:3) BP3+=("cloud3 3 11 $endx $[RANDOM % 10 + 2] 2 2 1 0 0 0");;
+        esac
+
+        #-{ Add trees }--------------------------------------------------------
+        case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
+            0:1) BP1+=("tree1 3 2 $endx $tre1endy 6 6 1 0 0 0");;
+            0:2) BP2+=("tree2 6 5 $endx $tre2endy 4 4 1 0 0 0");;
+            0:3) BP3+=("tree3 9 9 $endx $tre3endy 2 2 1 0 0 0");;
+        esac
+
+        #-{ Add aliens }-------------------------------------------------------
+        [[ $enumber -lt $enmax && $M -eq 0 ]] && {
+            ENM+=("alien 3 5 $endx $[RANDOM%enmyendy+3] 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3")
+            ((enumber++))
+        }
+
+        #-{ Print moving land }------------------------------------------------
+        screen+="\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"; [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+
+        #-{ Print FPS }--------------------------------------------------------
+        screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
+
+        #-{ Move bitplans }----------------------------------------------------
+        for i1 in ${!BP1[@]}; { OI=(${BP1[i1]}); get_obj_data; }
+        for i2 in ${!BP2[@]}; { OI=(${BP2[i2]}); get_obj_data; }
+        for en in ${!ENM[@]}; { OI=(${ENM[en]}); get_obj_data; }
+        for i3 in ${!BP3[@]}; { OI=(${BP3[i3]}); get_obj_data; }
+
+        #-{ Print everything }-------------------------------------------------
+        printf "$screen"
+    done
+}
+
+#=================================================={ Initialisation }===================================================
+trap : ALRM
+trap bye INT TERM SIGINT SIGTERM EXIT
+get_dimensions; stty -echo; printf "$COF"; clear
+
+#-{ Generate grass }-----------------------------------------------------------
+for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
+
+fill_screen; game
+
+
+
