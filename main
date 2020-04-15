@@ -46,8 +46,9 @@ line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
 #--------------------------------------------------------------------+
 [[ -e ~/.piuconf ]] && . ~/.piuconf
-.    ./sprites   # _SPRITES_
-.   ./functions  #_FUNCTIONS_
+. ./messages  #_MESSAGES_
+. ./sprites   #_SPRITES_
+. ./functions #_FUNCTIONS_
 game () {
     #======================================{ Main game loop single or server team mode }================================
     while true; do

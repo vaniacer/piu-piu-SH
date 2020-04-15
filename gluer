@@ -2,8 +2,9 @@
 
 target=piu-piu
 sed -n '1,/_SPRITES_/p'   main    >  $target
+sed '1d' messages                 >> $target
 sed '1d' sprites                  >> $target
 sed '1d' functions                >> $target
 sed -n '/_FUNCTIONS_/,$p' main    >> $target
-sed -i '/_SPRITES_/d;/_FUNCTIONS_/d' $target
+sed -i '/_SPRITES_/d;/_FUNCTIONS_/d;/_MESSAGES_/d' $target
 chmod +x $target

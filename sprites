@@ -21,6 +21,31 @@ case $month in
 esac
 gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █)    # grass types
+#------------------------{ Ad plane }-----------------------------------------------------------------------------------
+msngrH=${#msngr[*]}
+msngrW=${#msngr[2]}
+
+         CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
+         CM7=$SKY$blk; CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
+
+
+sprite_msngr () {
+         CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
+         CM7=$SKY$blk; CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
+
+#        __  +----------------+
+#  _____/ /_/| Die alien scum |
+# (° \ |_/  \|      DIE!      |
+#     \|     +----------------+
+
+      sprite=("\e[$OY;$[$OX+7]H"$CM5"__$SKY \e[$OY;$[$OX+11]H$blk+----------------+$SKY "
+        "\e[$[$OY+1];$[$OX+1]H"$CM5"_____$CM4/$SKY $CM6/${BLK}_/$blk|$TXT$msngr_line1$CM7|$SKY "
+          "\e[$[$OY+2];${OX}H"$CM5"($CM8° $CM4\ $CM6|$CM8 $CM6/$SKY \e[$[$OY+2];$[$OX+10]H$BLK"'\\'"$blk|$TXT$msngr_line2$CM7|$SKY "
+        "\e[$[$OY+3];$[$OX+4]H$SKY"$CM4'\\'"$CM6|$SKY \e[$[$OY+3];$[$OX+11]H$blk+----------------+$SKY ")
+
+     sprite2=("${msngr[@]}")
+}
+
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
 
 CM1=$SKY$DIM$BLK
