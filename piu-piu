@@ -12,7 +12,9 @@ esac
        enmax=100                                      # max number of akiens                       (10)
        month=$(date +'%m')                            # get current month
          spd=0.0001                                   # game\read speed                            (0.0001)
+         MSN=1111                                     # messanger randomizer                       (1111)
           LX=1                                        # grass X counter
+          ad='testing'
 #--------------------------------------------------------------------+
 #Color picker, usage: printf $BLD$CUR$RED$BBLU'Hello World!'$DEF     |
 #-------------------------+--------------------------------+---------+
@@ -48,33 +50,13 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
 [[ -e ~/.piuconf ]] && . ~/.piuconf
 #------------------------{ Messages }-----------------------------------------------------------------------------------
 case "$day$month" in
-    1101)
-        msngr_line1=' Happy birthday '
-        msngr_line2='     Yura $)    ';;
-
-    0202)
-        msngr_line1=" It's groundhog "
-        msngr_line2='     day !)     ';;
-
-    0228)
-        msngr_line1=' Happy birthday '
-        msngr_line2='    Matvey !)   ';;
-
-    0220)
-        msngr_line1=' Happy birthday '
-        msngr_line2='    Romka !)    ';;
-
-    0630)
-        msngr_line1=' Happy birthday '
-        msngr_line2='   Natusya !)   ';;
-
-    0703)
-        msngr_line1='The 8th of March'
-        msngr_line2='  is comming... ';;
-
-    0803)
-        msngr_line1=' Hold on guyz $)'
-        msngr_line2='                ';;
+    1101) ad='Happy birthday Yura $)';;
+    0202) ad='It is groundhog day !)';;
+    2802) ad='Happy birthday Matvey !)';;
+    2002) ad='Happy birthday Romka !)';;
+    3006) ad='Happy birthday Natusya !)';;
+    0703) ad='The 8th of March is comming...';;
+    0803) ad='Hold on guyz $)';;
 esac
 
 sprite_help () {
@@ -143,28 +125,26 @@ esac
 gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █)    # grass types
 #------------------------{ Ad plane }-----------------------------------------------------------------------------------
-msngrH=${#msngr[*]}
-msngrW=${#msngr[2]}
-
-         CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
-         CM7=$SKY$blk; CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
-
-
+flame1=("$YLW- "      "$red~"       "$red-$RED~" "$ylw-")
+flame2=("$ylw-"       "$red- $RED~" "$red~"      "$YLW~")
+flame3=("$red- $RED~" "$red~"       "$YYLW~"     "$ylw-")
+for ((i=0; i<${#ad}; i++)); do ad_new+="$BLD${ad:$i:1} "; done
+new_ad=( ${ad_new//  /_Z_ } ) line=( ${new_ad[@]//*/$blk-} ) MH=$((19+${#new_ad[@]}))
 sprite_msngr () {
-         CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
-         CM7=$SKY$blk; CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
-
-#        __  +----------------+
-#  _____/ /_/| Die alien scum |
-# (° \ |_/  \|      DIE!      |
-#     \|     +----------------+
-
-      sprite=("\e[$OY;$[$OX+7]H"$CM5"__$SKY \e[$OY;$[$OX+11]H$blk+----------------+$SKY "
-        "\e[$[$OY+1];$[$OX+1]H"$CM5"_____$CM4/$SKY $CM6/${BLK}_/$blk|$TXT$msngr_line1$CM7|$SKY "
-          "\e[$[$OY+2];${OX}H"$CM5"($CM8° $CM4\ $CM6|$CM8 $CM6/$SKY \e[$[$OY+2];$[$OX+10]H$BLK"'\\'"$blk|$TXT$msngr_line2$CM7|$SKY "
-        "\e[$[$OY+3];$[$OX+4]H$SKY"$CM4'\\'"$CM6|$SKY \e[$[$OY+3];$[$OX+11]H$blk+----------------+$SKY ")
-
-     sprite2=("${msngr[@]}")
+    mov && BP2[i2]="msngr 4 $MH $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BP2[i2]; return; }
+    CM1=$SKY$BLD$blk CM2=$SKY$DIM$blk CM3=$SKY$blk
+    X1="\\e[$OY;$[OX+7]H"     X2="\\e[$[OY+1];$[OX+1]H" X3="\\e[$[OY+1];$[OX+12]H"
+    X4="\\e[$[OY+3];$[OX+4]H" X5="\\e[$[OY+3];$[OX+12]H"
+    #0123456789ABCD...
+    #1       __
+    #2 _____/_/   +--------------------+~
+    #3(°_\ |_)---<| Die alien scum DIE! -~
+    #4    \|      +--------------------~
+    #                            1          2   3         4          5         6          7          8   9    A   B   C       D   E   F  ...
+    cut "\\e[$OY;${SX}H$CM1"     ''        ''  ''        ''          ''         ''        ''   "$X1"'_' '_'                                                               #1
+    cut "\\e[$[OY+1];${SX}H$blk" ''   "$X2"'_' '_'       '_'         '_'        '_'       '/'       '_' '/' ' ' ''  '' "$X3"'+' '-' '-' ${line[@]} ${flame1[AS]}      ' ' #2
+    cut "\\e[$[OY+2];${SX}H$blk" '(' "$UND"'°' ' ' "$CM2"'\\'        ' '  "$CM3"'|' "$UND"' ' "$CM3"')' '-' '-' '-' '<'     '|' ' '${new_ad[@]} ' ' $SKY${flame2[AS]} ' ' #3
+    cut "\\e[$[OY+3];${SX}H$blk" ''        ''  ''        '' "$X4$CM2"'\\' "$CM3"'|'       ' '       ''  ''  ''  ''  '' "$X5"'+' ${line[@]} ${flame3[AS]}              ' ' #4
 }
 
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
@@ -470,6 +450,9 @@ game () {
         BP1=("${BP1[@]}")
         BP2=("${BP2[@]}")
         BP3=("${BP3[@]}")
+
+        #-{ Add msngr }-------------------------------------------------------------------------------------------------
+        case $[RANDOM % $MSN] in 0) BP2+=("msngr 4 20 $endx $[RANDOM%enmyendy+3] 0 $[RANDOM%2+1] 1 0 $[RANDOM%3] 3");; esac
 
         #-{ Add clouds }-------------------------------------------------------
         case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
