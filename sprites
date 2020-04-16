@@ -22,28 +22,26 @@ esac
 gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █)    # grass types
 #------------------------{ Ad plane }-----------------------------------------------------------------------------------
-msngrH=${#msngr[*]}
-msngrW=${#msngr[2]}
-
-         CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
-         CM7=$SKY$blk; CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
-
-
+flame1=("$YLW- "      "$red~"       "$red-$RED~" "$ylw-")
+flame2=("$ylw-"       "$red- $RED~" "$red~"      "$YLW~")
+flame3=("$red- $RED~" "$red~"       "$YYLW~"     "$ylw-")
+for ((i=0; i<${#ad}; i++)); do ad_new+="$BLD${ad:$i:1} "; done
+new_ad=( ${ad_new//  /_Z_ } ) line=( ${new_ad[@]//*/$blk-} ) MH=$((19+${#new_ad[@]}))
 sprite_msngr () {
-         CM4=$SKY$DIM$GRN; CM5=$SKY$GRN; CM6=$SKY$BLD$GRN
-         CM7=$SKY$blk; CM8=$SKY$DIM$UND; TXT=$SKY$bwht$RED
-
-#        __  +----------------+
-#  _____/ /_/| Die alien scum |
-# (° \ |_/  \|      DIE!      |
-#     \|     +----------------+
-
-      sprite=("\e[$OY;$[$OX+7]H"$CM5"__$SKY \e[$OY;$[$OX+11]H$blk+----------------+$SKY "
-        "\e[$[$OY+1];$[$OX+1]H"$CM5"_____$CM4/$SKY $CM6/${BLK}_/$blk|$TXT$msngr_line1$CM7|$SKY "
-          "\e[$[$OY+2];${OX}H"$CM5"($CM8° $CM4\ $CM6|$CM8 $CM6/$SKY \e[$[$OY+2];$[$OX+10]H$BLK"'\\'"$blk|$TXT$msngr_line2$CM7|$SKY "
-        "\e[$[$OY+3];$[$OX+4]H$SKY"$CM4'\\'"$CM6|$SKY \e[$[$OY+3];$[$OX+11]H$blk+----------------+$SKY ")
-
-     sprite2=("${msngr[@]}")
+    mov && BP2[i2]="msngr 4 $MH $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BP2[i2]; return; }
+    CM1=$SKY$BLD$blk CM2=$SKY$DIM$blk CM3=$SKY$blk
+    X1="\\e[$OY;$[OX+7]H"     X2="\\e[$[OY+1];$[OX+1]H" X3="\\e[$[OY+1];$[OX+12]H"
+    X4="\\e[$[OY+3];$[OX+4]H" X5="\\e[$[OY+3];$[OX+12]H"
+    #0123456789ABCD...
+    #1       __
+    #2 _____/_/   c--------------------+~
+    #3(°_\ |_,>--<| Die alien scum DIE! -~
+    #4    \|      c--------------------~
+    #                            1          2   3         4          5         6    7        8   9    A   B   C       D   E   F  ...
+    cut "\\e[$OY;${SX}H$CM1"     ''        ''  ''        ''          ''         ''  ''  "$X1"'_' '_'                                                               #1
+    cut "\\e[$[OY+1];${SX}H$blk" ''   "$X2"'_' '_'       '_'         '_'        '_' '/'      '_' '/' ' ' ''  '' "$X3"'c' '-' '-' ${line[@]} ${flame1[AS]}      ' ' #2
+    cut "\\e[$[OY+2];${SX}H$blk" '(' "$UND"'°' ' ' "$CM2"'\\'        ' '  "$CM3"'|' '_'      ',' '>' '-' '-' '<'     '|' ' '${new_ad[@]} ' ' $SKY${flame2[AS]} ' ' #3
+    cut "\\e[$[OY+3];${SX}H$blk" ''        ''  ''        '' "$X4$CM2"'\\' "$CM3"'|' ' '      ''  ''  ''  ''  '' "$X5"'c' ${line[@]} ${flame3[AS]}              ' ' #4
 }
 
 #------------------------{ Aliens }-------------------------------------------------------------------------------------

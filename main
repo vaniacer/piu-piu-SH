@@ -12,7 +12,9 @@ esac
        enmax=100                                      # max number of akiens                       (10)
        month=$(date +'%m')                            # get current month
          spd=0.0001                                   # game\read speed                            (0.0001)
+         MSN=1111                                     # messanger randomizer                       (1111)
           LX=1                                        # grass X counter
+          ad='testing'
 #--------------------------------------------------------------------+
 #Color picker, usage: printf $BLD$CUR$RED$BBLU'Hello World!'$DEF     |
 #-------------------------+--------------------------------+---------+
@@ -60,6 +62,9 @@ game () {
         BP1=("${BP1[@]}")
         BP2=("${BP2[@]}")
         BP3=("${BP3[@]}")
+
+        #-{ Add msngr }-------------------------------------------------------------------------------------------------
+        case $[RANDOM % $MSN] in 0) BP2+=("msngr 4 20 $endx $[RANDOM%enmyendy+3] 0 $[RANDOM%2+1] 1 0 $[RANDOM%3] 3");; esac
 
         #-{ Add clouds }-------------------------------------------------------
         case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
