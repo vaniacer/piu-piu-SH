@@ -45,24 +45,49 @@ sprite_msngr () {
 }
 
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
-
-CM1=$SKY$DIM$BLK
+CM1=$SKY$DIM$BLK CM2=$BLD$BLK
 small=("${SKY}_Z_  ${SKY}_Z_  ${RED}o$CM1"
        "${SKY}_Z_  ${RED}o    ${SKY}_Z_$CM1"
        "${RED}o    ${SKY}_Z_  ${SKY}_Z_$CM1"
        "${SKY}_Z_  ${SKY}_Z_  ${SKY}_Z_$CM1")
 
+CM1=$SKY$BLD$ylw CM2=$SKY$UND$BLD$grn
+pumtop=( "$CM2"'\\'"$CM1" "$CM2"'\\'"$CM1" "$CM2|$CM1" "$CM2|$CM1" "$CM2/$CM1" "$CM2/$CM1")
+pumface=("${RED}O ${RED}… ${RED}o$CM1"
+         "${RED}… ${RED}o _Z_$CM1"
+         "${RED}o _Z_     ${RED}O$CM1"
+         "_Z_     _Z_     _Z_$CM1"
+         "_Z_     _Z_     ${RED}O$CM1"
+         "_Z_     ${RED}O ${RED}…$CM1")
+
 sprite_alien () {
-    mov && ENM[en]="alien 3 5 $OX $OY $SC $SM $CS $CL $AS $AL" || { unset ENM[en]; ((enumber--)); return; }
-    X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
-    #012345
-    #1 ___
-    #2( o )
-    #3 `¯´
-    #                             1        2   3   4   5
-    cut "\\e[$OY;${SX}H$CM1"      '' "$X1"'_' '_' '_'      #1
-    cut "\\e[$[OY+1];${SX}H$CM1"  '('  ${small[AS]}   ')'  #2
-    cut "\\e[$[OY+2];${SX}H$CM1"  '' "$X2"'`' '¯' '´'      #3
+    case "$day$month" in
+        3110)
+        mov && ENM[en]="alien 3 5 $OX $OY $SC $SM $CS $CL $AS 5" || { unset ENM[en]; ((enumber--)); return; }
+        X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
+        CM1=$SKY$BLD$ylw CM2=$SKY$UND$DIM$grn CM3=$SKY$ylw
+        #012345
+        #1 _\_
+        #2(O…o)
+        #3 `¯´
+        #                            1        2   3             4   5
+        cut "\\e[$OY;${SX}H$CM1"     '' "$X1"'_' ${pumtop[AS]} '_'      #1
+        cut "\\e[$[OY+1];${SX}H$CM1" '('         ${pumface[AS]}    ')'  #2
+        cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`' '¯'           '´';;    #3
+
+        *)
+        mov && ENM[en]="alien 3 5 $OX $OY $SC $SM $CS $CL $AS 3" || { unset ENM[en]; ((enumber--)); return; }
+        X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
+        CM1=$SKY$DIM$BLK CM2=$BLD$BLK
+        #012345
+        #1 ___
+        #2( o )
+        #3 `¯´
+        #                            1        2         3         4   5
+        cut "\\e[$OY;${SX}H$CM1"     '' "$X1"'_' "$CM2"'_' "$CM1"'_'      #1
+        cut "\\e[$[OY+1];${SX}H$CM1" '('       ${small[AS]}   ')'         #2
+        cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`'       '¯'       '´';;    #3
+    esac
 }
 
 #------------------------{ Clouds }-------------------------------------------------------------------------------------

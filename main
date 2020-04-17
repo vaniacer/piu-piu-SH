@@ -52,8 +52,8 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
 . ./messages  #_MESSAGES_
 . ./sprites   #_SPRITES_
 . ./functions #_FUNCTIONS_
+#======================================{ Main game loop single or server team mode }====================================
 game () {
-    #======================================{ Main game loop single or server team mode }================================
     while true; do
         #-{ Empty screen, count fps, set timings}------------------------------
         [[ $M -ge 10 ]] && M=0 || ((M++)) # enemies born rate
@@ -85,7 +85,6 @@ game () {
         printf "$screen"
     done
 }
-
 #=================================================={ Initialisation }===================================================
 trap : ALRM
 trap bye INT TERM SIGINT SIGTERM EXIT
