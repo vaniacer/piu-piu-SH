@@ -1,0 +1,55 @@
+#!/bin/bash
+#================================================{ Messages }===========================================================
+case "$day$month" in
+    1101) ad='Happy birthday Yura $)';;
+    0202) ad='It is groundhog day !)';;
+    2802) ad='Happy birthday Matvey !)';;
+    2002) ad='Happy birthday Romka !)';;
+    3006) ad='Happy birthday Natusya !)';;
+    0703) ad='The 8th of March is comming...';;
+    0803) ad='Hold on guyz $)';;
+esac
+
+sprite_help () {
+           x=$[$endx/2-25/2]
+           y=$[$endy/2-5]
+
+      sprite=(         "\e[$y;${x}H                   ^"
+            "\e[$[$y+1];${x}H                   ${RED}W$DEF"
+  "\e[$[$y+2];${x}H${BLD}Control with:$DEF  < ${RED}A S D$DEF >"
+                  "\e[$[$y+3];${x}H                   v"
+  "\e[$[$y+5];${x}H${BLD}Shoot\select with:$DEF ${YLW}P $BLD$red-=$GRN>$DEF")
+}
+
+sprite_lose () {
+           x=$[$endx/2-25/2]
+           y=$[$endy/2-5]
+         CM1=$BLD$red; CM2=$DIM$RED
+      sprite=("\e[$y;${x}H$CM1  ____    _    __  __ _____$DEF"
+         "\e[$[$y+1];${x}H$red / ___|  / \  |  \/  | ____|$DEF"
+         "\e[$[$y+2];${x}H$red| | __  / _ \ | |\/| |  _|$DEF"
+         "\e[$[$y+3];${x}H$RED| |_\ \/ ___ \| |  | | |___$DEF"
+         "\e[$[$y+4];${x}H$CM2 \____/_/   \_\_|__|_|_____|$DEF"
+         "\e[$[$y+5];${x}H$CM1  / _ \ \   / / ____|  _ \ $DEF"
+         "\e[$[$y+6];${x}H$red | | | \ \ / /|  _| | |_) |$DEF"
+         "\e[$[$y+7];${x}H$RED | |_| |\ V / | |___|  _ < $DEF"
+         "\e[$[$y+8];${x}H$CM2  \___/  \_/  |_____|_| \_|$DEF")
+}
+
+sprite_win () {
+
+           x=$[$endx/2-25/2]
+           y=$[$endy/2-5]
+         CM1=$BLD$grn; CM2=$DIM$GRN
+
+      sprite=("\e[$y;${x}H${CM1}__        ______ _    _$DEF"
+           "\e[$[$y+1];${x}H$grn\ \      / /____| |  | |$DEF"
+           "\e[$[$y+2];${x}H$grn \ \ /\ / /  _| | |  | |$DEF"
+           "\e[$[$y+3];${x}H$GRN  \ V  V /| |___| |__| |__$DEF"
+           "\e[$[$y+4];${x}H$CM2 __\_/\_/_|_____|____|____|$DEF"
+           "\e[$[$y+5];${x}H$CM1|  _ \ / _ \| \ | | ____| |$DEF"
+           "\e[$[$y+6];${x}H$grn| | | | | | |  \| |  _| | |$DEF"
+           "\e[$[$y+7];${x}H$GRN| |_| | |_| | |\  | |___|_|$DEF"
+           "\e[$[$y+8];${x}H$CM2|____/ \___/|_| \_|_____(_)$DEF")
+}
+

@@ -1,5 +1,5 @@
 #!/bin/bash
-#------------------------{ Functions }----------------------------------------------------------------------------------
+#================================================{ Functions }==========================================================
 get_dimensions () {
     size=( $(stty size) )
     endx=${size[1]}
@@ -65,3 +65,24 @@ fill_screen () {
     for ((i=$lineendy; i<$endy;     i++)); do printf "$LND%${endx}s"; done
 }
 
+add_backgound () {
+    #-{ Add msngr }------------------------------------------------------------
+    case $[RANDOM % $MSN] in 0) BP2+=("msngr 4 20 $endx $[RANDOM%enmyendy+3] 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3");; esac
+
+    #-{ Add clouds }-----------------------------------------------------------
+    case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
+        0:1) BP1+=("cloud1 3 6  $endx $[RANDOM % 10 + 2] 6 6 1 0 0 0");;
+        0:2) BP2+=("cloud2 3 8  $endx $[RANDOM % 10 + 2] 4 4 1 0 0 0");;
+        0:3) BP3+=("cloud3 3 11 $endx $[RANDOM % 10 + 2] 2 2 1 0 0 0");;
+    esac
+
+    #-{ Add trees }------------------------------------------------------------
+    case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
+        0:1) BP1+=("tree1 3 2 $endx $tre1endy 6 6 1 0 0 0");;
+        0:2) BP2+=("tree2 6 5 $endx $tre2endy 4 4 1 0 0 0");;
+        0:3) BP3+=("tree3 9 9 $endx $tre3endy 2 2 1 0 0 0");;
+    esac
+
+    #-{ Print moving land }----------------------------------------------------
+    screen+="\e[$lineendy;1H$LND${land:$[1-$LX]:$endx}"; [[ $LX -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+}

@@ -1,5 +1,5 @@
 #!/bin/bash
-#------------------------{ Sprites }------------------------------------------------------------------------------------
+#================================================{ Sprites }============================================================
 case $month in
     0[1-4]|12)
         SKY=$DEF$bwht         # winter & early spring sky
@@ -71,7 +71,6 @@ case $month in
     0[5-8]   ) C1C=$SKY$DIM$WHT;; # late spring & summer
     09|1[0-1]) C1C=$SKY$blk    ;; # autumn
 esac
-
 sprite_cloud1 () {
     mov && BP1[i1]="cloud1 3 6 $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BP1[i1]; return; }
     X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
@@ -85,6 +84,11 @@ sprite_cloud1 () {
     cut "\\e[$[$OY+2];${SX}H$C1C"  '' "$X2"'`' '+' '-' '´'     #3
 }
 
+case $month in
+    0[1-4]|12) C2C=$SKY$CYN;; # winter & early spring
+    0[5-8]   ) C2C=$SKY$WHT;; # late spring & summer
+    09|1[0-1]) C2C=$SKY$BLK;; # autumn
+esac
 sprite_cloud2 () {
     mov && BP2[i2]="cloud2 3 8 $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BP2[i2]; return; }
     X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
@@ -93,11 +97,16 @@ sprite_cloud2 () {
     #2(      )
     #3 `-...´
     #                              1        2   3   4   5   6   7   8
-    cut "\\e[$OY;${SX}H$C1C"       '' "$X1"',' '-' '.' '_' '.' '.'     #1   
-    cut "\\e[$[$OY+1];${SX}H$C1C"  '('     ' ' ' ' ' ' ' ' ' ' ' ' ')' #2
-    cut "\\e[$[$OY+2];${SX}H$C1C"  '' "$X2"'`' '-' '.' '.' '.' '´'     #3
+    cut "\\e[$OY;${SX}H$C2C"       '' "$X1"',' '-' '.' '_' '.' '.'     #1   
+    cut "\\e[$[$OY+1];${SX}H$C2C"  '('     ' ' ' ' ' ' ' ' ' ' ' ' ')' #2
+    cut "\\e[$[$OY+2];${SX}H$C2C"  '' "$X2"'`' '-' '.' '.' '.' '´'     #3
 }
 
+case $month in
+    0[1-4]|12) C3C=$SKY$BLD$CYN;; # winter & early spring
+    0[5-8]   ) C3C=$SKY$BLD$WHT;; # late spring & summer
+    09|1[0-1]) C3C=$SKY$DIM$BLK;; # autumn
+esac
 sprite_cloud3 () {
     mov && BP3[i3]="cloud3 3 11 $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BP3[i3]; return; }
     X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
@@ -106,9 +115,9 @@ sprite_cloud3 () {
     #2(         )
     #3 `--.,,.-´
     #                              1        2   3   4   5   6   7   8   9   A   B
-    cut "\\e[$OY;${SX}H$C1C"       '' "$X1"',' '+' '¯' '`' '.' '-' '¯' '`' '.'     #1
-    cut "\\e[$[$OY+1];${SX}H$C1C"  '('     ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ')' #2
-    cut "\\e[$[$OY+2];${SX}H$C1C"  '' "$X2"'`' '-' '-' '.' ',' ',' '.' '-' '´'     #3
+    cut "\\e[$OY;${SX}H$C3C"       '' "$X1"',' '+' '¯' '`' '.' '-' '¯' '`' '.'     #1
+    cut "\\e[$[$OY+1];${SX}H$C3C"  '('     ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ')' #2
+    cut "\\e[$[$OY+2];${SX}H$C3C"  '' "$X2"'`' '-' '-' '.' ',' ',' '.' '-' '´'     #3
 }
 
 #------------------------{ Trees }--------------------------------------------------------------------------------------
