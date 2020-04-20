@@ -95,7 +95,7 @@ H1C=${DHC}; S1C=${DSC}; H1S=${DHS};
 #-{ Generate grass }-----------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 fill_screen
-H1X=2 H1Y=10 BP2+=("hero1 6 14 $H1X $H1Y 0 0 1 15 0 3")
+H1X=10 H1Y=10 BP2[0]="hero1 6 14 $H1X $H1Y 0 0 1 15 0 3"
 game
 
 

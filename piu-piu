@@ -133,25 +133,25 @@ mainrotor=(" ${blk}_   ${blk}_   ${blk}_   ${blk}_  ${blk}_ ${blk}_ ${blk}_  ${b
            "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY"
            "_Z_ _Z_ _Z_ _Z_ _Z_ ${blk}_ _Z_ _Z_ _Z_ _Z_ _Z_$SKY"
            "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY")
-tailrotor=("${blk}"'\\'"$SKY$BLD$H1C" "${blk}─$SKY$BLD$H1C" "${blk}/$SKY$BLD$H1C" "${blk}|$SKY$BLD$H1C")
+tailrotor=("${blk}"'\\' "${blk}─" "${blk}/" "${blk}|")
 sprite_hero1 () {
-    mov && BP2[i2]="hero1 4 14 $H1X $H1Y $SC $SM $CS $CL $AS $AL"
-    CM1=$SKY$H1C$UND CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND CM5=$SKY$H1C$BLD
-    X1="\\e[$[H1Y+5];$[H1X+6]H"
-    #0123456789ABCDE
+    mov && BP2[i2]="hero1 6 14 $H1X $H1Y $SC $SM $CS $CL $AS $AL"
+    CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
+    X1="\\e[$[H1Y+5];$[H1X+7]H"
+    #0123456789ABCDEF
     #1              
-    #2__ ___________
-    #3|X\___.-╨─｡_
-    #4`─´‾‾‷\°★ º¯]─
-    #5       ‾‾‾‾‾
+    #2 __ ___________
+    #3 |X\___.-╨─｡_
+    #4 `─´‾‾‷\°★ º¯]─
+    #5        ‾‾‾‾‾
     #6
-    #                                1                    2          3         4         5         6         7          8         9         A         B         C          D    E
-    cut "\\e[$H1Y;${H1X}H$SKY"      ' '                  ' '        ' '       ' '       ' '       ' '       ' '        ' '       ' '       ' '       ' '       ' '        ' '  ' '                    #1   
-    cut "\\e[$[$H1Y+1];${H1X}H$CM3" '_'                  '_'        ' '                                          ${mainrotor[AS]}                                                                     #2
-    cut "\\e[$[$H1Y+2];${H1X}H$CM2" '|' ${tailrotor[AS]} '\\' "$CM1"'_' "$CM1"'_' "$CM1"'_' "$CM3"'.' "$CM3"'-'  "$CM3"'╨' "$CM3"'─' "$CM4"'｡' "$CM4"'_'                                              #3
-    cut "\\e[$[$H1Y+3];${H1X}H$CM2" '`'                  '─'        '´'       '‾'       '‾'       '‷'       '\\' "$blk"'°' "$S1C"'★' "$SKY"' ' "$blk"'º' "$blk"'¯'  "$CM5"']'  $SKY$BLK${gun[$G]}$SKY #4
-    cut "\\e[$[$H1Y+4];${H1X}H$CM2" ' '                  ' '        ' '       ' '       ' '       ' '       ' '        '‾'       '‾'       '‾'       '‾'       '‾'  "$SKY"' '                         #5
-    cut "\\e[$[$H1Y+5];${H1X}H$SKY" ''                   ''         ''        ''        ''        ''   "$X1"' '        ' '       ' '       ' '       ' '       ' '        ' '                         #6
+    #                               1   2                          3          4         5         6         7         8          9         A         B         C         D          E    F
+    cut "\\e[$H1Y;${H1X}H$SKY"     ' ' ' '                        ' '        ' '       ' '       ' '       ' '       ' '        ' '       ' '       ' '       ' '       ' '        ' '  ' '                    #1   
+    cut "\\e[$[H1Y+1];${H1X}H$CM3" ' ' '_'                        '_'        ' '                                          ${mainrotor[AS]}                                                                     #2
+    cut "\\e[$[H1Y+2];${H1X}H$CM2" ' ' '|' ${tailrotor[AS]} "$CM1"'\\' "$CM1"'_' "$CM1"'_' "$CM1"'_' "$CM3"'.' "$CM3"'-'  "$CM3"'╨' "$CM4"'─' "$CM4"'｡' "$CM1"'_' "$SKY"' '  "$SKY"' '                         #3
+    cut "\\e[$[H1Y+3];${H1X}H$CM2" ' ' '`'                        '─'        '´'       '‾'       '‾'       '‷'       '\\' "$blk"'°' "$S1C"'★' "$SKY"' ' "$blk"'º' "$blk"'¯'  "$CM1"']'  $SKY$BLK${gun[$G]}$SKY #4
+    cut "\\e[$[H1Y+4];${H1X}H$CM2" ' ' ' '                        ' '        ' '       ' '       ' '       ' '       ' '        '‾'       '‾'       '‾'       '‾'       '‾'  "$SKY"' '  ' '                    #5
+    cut "\\e[$[H1Y+5];${H1X}H$SKY" ''  ''                         ''         ''        ''        ''        ''   "$X1"' '        ' '       ' '       ' '       ' '       ' '        ' '                         #6
 #        server_read
 #        HX=$[$X+11]; HY=$[$Y+3] # Hero collide coordinates
 }
@@ -172,10 +172,10 @@ sprite_msngr () {
     #3(°_\ |_)---<| Die alien scum DIE! -~
     #4    \|      +--------------------~
     #                            1          2   3         4       5         6          7         8   9   A   B   C       D   E   F  ...
-    cut "\\e[$OY;${SX}H$CM1"     ''        ''  ''        ''      ''         ''        ''   "$X1"'_' '_'                                                               #1
-    cut "\\e[$[OY+1];${SX}H$CM2" ''   "$X2"'_' '_'       '_'     '_'        '_'       '/'       '_' '/' ' ' ''  '' "$X3"'+' '-' '-' ${line[@]} ${flame1[AS]}      ' ' #2
-    cut "\\e[$[OY+2];${SX}H$CM1" '(' "$UND"'°' ' ' "$CM2"'\\'    ' '  "$CM3"'|' "$UND"' ' "$CM3"')' '-' '-' '-' '<'     '|' ' '${new_ad[@]} ' ' $SKY${flame2[AS]} ' ' #3
-    cut "\\e[$[OY+3];${SX}H$CM2" ''        ''  ''        '' "$X4"'\\' "$CM3"'|'       ' '       ''  ''  ''  ''  '' "$X5"'+' ${line[@]} ${flame3[AS]}              ' ' #4
+    cut "\\e[$OY;${SX}H$CM1"     ''        ''  ''        ''      ''         ''        ''   "$X1"'_' '_'                                                                #1
+    cut "\\e[$[OY+1];${SX}H$CM2" ''   "$X2"'_' '_'       '_'     '_'        '_'       '/'       '_' '/' ' ' ''  '' "$X3"'+' '-' '-' ${line[@]} ${flame1[AS]}       ' ' #2
+    cut "\\e[$[OY+2];${SX}H$CM1" '(' "$UND"'°' ' ' "$CM2"'\\'    ' '  "$CM3"'|' "$UND"' ' "$CM3"')' '-' '-' '-' '<'     '|' ' ' ${new_ad[@]} ' ' $SKY${flame2[AS]} ' ' #3
+    cut "\\e[$[OY+3];${SX}H$CM2" ''        ''  ''        '' "$X4"'\\' "$CM3"'|'       ' '       ''  ''  ''  ''  '' "$X5"'+' ${line[@]} ${flame3[AS]}               ' ' #4
 }
 
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
@@ -564,5 +564,9 @@ get_dimensions; stty -echo; printf "$COF"; clear
 H1C=${DHC}; S1C=${DSC}; H1S=${DHS};
 #-{ Generate grass }-----------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
-H1X=3 H1Y=10 BP2[1]="hero1 4 14 $H1X $H1Y 0 0 0 15 0 3"
-fill_screen; game
+fill_screen
+H1X=10 H1Y=10 BP2[0]="hero1 6 14 $H1X $H1Y 0 0 1 15 0 3"
+game
+
+
+
