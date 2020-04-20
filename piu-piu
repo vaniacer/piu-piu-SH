@@ -7,15 +7,6 @@ case ${BASH_VERSINFO[@]::2} in [1-3]' '[0-9][0-9]|[1-3]' '[0-9]|'4 '[0-1])
     echo -e "\nYour BASH is too short!) 4.2+ required to run this game, your is - ${BASH_VERSINFO[@]}"
     exit 1;;
 esac
-#--{ Start opt }--------------------------------------{ description }-------------------------{ def. values }-----------
-  background=true                                     # background objects visibility              (true)
-     enumber=0                                        # current enemy counter                      (0)
-       enmax=100                                      # max number of akiens                       (10)
-       month=$(date +'%m')                            # get current month
-         spd=0.0001                                   # game\read speed                            (0.0001)
-         MSN=1111                                     # messanger randomizer                       (1111)
-          LX=1                                        # grass X counter
-          ad='Die alien scum!'
 #--------------------------------------------------------------------+
 #Color picker, usage: printf $BLD$CUR$RED$BBLU'Hello World!'$DEF     |
 #-------------------------+--------------------------------+---------+
@@ -47,7 +38,19 @@ XY () { printf "\e[$2;${1}H$3"; }                                   #|
 line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 # Create sequence like {0..(X-1)}                                    |
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
-#--------------------------------------------------------------------+
+#--{ Start opt }--------------------------------------{ description  }------------------------{ def. values }-----------
+  background=true                                     # background objects visibility             (true)
+     enumber=0                                        # current enemy counter                     (0)
+       enmax=100                                      # max number of akiens                      (10)
+       month=$(date +'%m')                            # get current month                       
+         DHC=$BLK                                     # default hero color                        ($BLK)
+         DSC=$RED                                     # default symbol color                      ($RED)
+         DHS=★                                        # default symbol                            (★)
+         spd=0.0001                                   # game\read speed                           (0.0001)
+         MSN=1111                                     # messanger randomizer                      (1111)
+          LX=1                                        # grass X counter                         
+          ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
+           G=1                                        # gun                                       (1)(max 5)
 [[ -e ~/.piuconf ]] && . ~/.piuconf
 #================================================{ Messages }===========================================================
 case "$day$month" in
@@ -125,14 +128,41 @@ case $month in
 esac
 gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █)    # grass types
+#------------------------{ Hero1 }--------------------------------------------------------------------------------------
+mainrotor=(" ${blk}_   ${blk}_   ${blk}_   ${blk}_  ${blk}_ ${blk}_ ${blk}_  ${blk}_   ${blk}_   ${blk}_   ${blk}_$SKY"
+           "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY"
+           "_Z_ _Z_ _Z_ _Z_ _Z_ ${blk}_ _Z_ _Z_ _Z_ _Z_ _Z_$SKY"
+           "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY")
+tailrotor=("${blk}"'\\'"$SKY$BLD$H1C" "${blk}─$SKY$BLD$H1C" "${blk}/$SKY$BLD$H1C" "${blk}|$SKY$BLD$H1C")
+sprite_hero1 () {
+    mov && BP2[i2]="hero1 4 14 $H1X $H1Y $SC $SM $CS $CL $AS $AL"
+    CM1=$SKY$H1C$UND CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND CM5=$SKY$H1C$BLD
+    X1="\\e[$[H1Y+5];$[H1X+6]H"
+    #0123456789ABCDE
+    #1              
+    #2__ ___________
+    #3|X\___.-╨─｡_
+    #4`─´‾‾‷\°★ º¯]─
+    #5       ‾‾‾‾‾
+    #6
+    #                                1                    2          3         4         5         6         7          8         9         A         B         C          D    E
+    cut "\\e[$H1Y;${H1X}H$SKY"      ' '                  ' '        ' '       ' '       ' '       ' '       ' '        ' '       ' '       ' '       ' '       ' '        ' '  ' '                    #1   
+    cut "\\e[$[$H1Y+1];${H1X}H$CM3" '_'                  '_'        ' '                                          ${mainrotor[AS]}                                                                     #2
+    cut "\\e[$[$H1Y+2];${H1X}H$CM2" '|' ${tailrotor[AS]} '\\' "$CM1"'_' "$CM1"'_' "$CM1"'_' "$CM3"'.' "$CM3"'-'  "$CM3"'╨' "$CM3"'─' "$CM4"'｡' "$CM4"'_'                                              #3
+    cut "\\e[$[$H1Y+3];${H1X}H$CM2" '`'                  '─'        '´'       '‾'       '‾'       '‷'       '\\' "$blk"'°' "$S1C"'★' "$SKY"' ' "$blk"'º' "$blk"'¯'  "$CM5"']'  $SKY$BLK${gun[$G]}$SKY #4
+    cut "\\e[$[$H1Y+4];${H1X}H$CM2" ' '                  ' '        ' '       ' '       ' '       ' '       ' '        '‾'       '‾'       '‾'       '‾'       '‾'  "$SKY"' '                         #5
+    cut "\\e[$[$H1Y+5];${H1X}H$SKY" ''                   ''         ''        ''        ''        ''   "$X1"' '        ' '       ' '       ' '       ' '       ' '        ' '                         #6
+#        server_read
+#        HX=$[$X+11]; HY=$[$Y+3] # Hero collide coordinates
+}
 #------------------------{ Ad plane }-----------------------------------------------------------------------------------
-flame1=("$YLW- "      "$red~"       "$red-$RED~" "$ylw-")
-flame2=("$ylw-"       "$red- $RED~" "$red~"      "$YLW~")
-flame3=("$red- $RED~" "$red~"       "$YYLW~"     "$ylw-")
-for ((i=0; i<${#ad}; i++)); do ad_new+="$BLD${ad:$i:1} "; done
-new_ad=( ${ad_new//  /_Z_ } ) line=( ${new_ad[@]//*/$blk-} ) MH=$((19+${#new_ad[@]}))
+flame1=("$red-"       "$ylw~"       "$red- $RED~" "$ylw-")
+flame2=("$ylw-"       "$red- $RED~" "$red~"       "$YLW~")
+flame3=("$red- $RED~" "$red~"       "$YLW~"       "$ylw-")
+for ((i=0; i<${#ad}; i++)); do ad_new+="$BLD$red${ad:$i:1} "; done
+new_ad=( ${ad_new//  /_Z_ } ) line=( ${new_ad[@]//*/$blk-} ) width=$((19+${#new_ad[@]}))
 sprite_msngr () {
-    mov && BP2[i2]="msngr 4 $MH $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BP2[i2]; return; }
+    mov && BP2[i2]="msngr 4 $width $OX $OY $SC $SM $CS $CL $AS $AL" || { unset BP2[i2]; return; }
     CM1=$SKY$BLD$blk CM2=$SKY$DIM$blk CM3=$SKY$blk
     X1="\\e[$OY;$[OX+7]H"     X2="\\e[$[OY+1];$[OX+1]H" X3="\\e[$[OY+1];$[OX+12]H"
     X4="\\e[$[OY+3];$[OX+4]H" X5="\\e[$[OY+3];$[OX+12]H"
@@ -141,32 +171,57 @@ sprite_msngr () {
     #2 _____/_/   +--------------------+~
     #3(°_\ |_)---<| Die alien scum DIE! -~
     #4    \|      +--------------------~
-    #                            1          2   3         4          5         6          7          8   9    A   B   C       D   E   F  ...
-    cut "\\e[$OY;${SX}H$CM1"     ''        ''  ''        ''          ''         ''        ''   "$X1"'_' '_'                                                               #1
-    cut "\\e[$[OY+1];${SX}H$blk" ''   "$X2"'_' '_'       '_'         '_'        '_'       '/'       '_' '/' ' ' ''  '' "$X3"'+' '-' '-' ${line[@]} ${flame1[AS]}      ' ' #2
-    cut "\\e[$[OY+2];${SX}H$blk" '(' "$UND"'°' ' ' "$CM2"'\\'        ' '  "$CM3"'|' "$UND"' ' "$CM3"')' '-' '-' '-' '<'     '|' ' '${new_ad[@]} ' ' $SKY${flame2[AS]} ' ' #3
-    cut "\\e[$[OY+3];${SX}H$blk" ''        ''  ''        '' "$X4$CM2"'\\' "$CM3"'|'       ' '       ''  ''  ''  ''  '' "$X5"'+' ${line[@]} ${flame3[AS]}              ' ' #4
+    #                            1          2   3         4       5         6          7         8   9   A   B   C       D   E   F  ...
+    cut "\\e[$OY;${SX}H$CM1"     ''        ''  ''        ''      ''         ''        ''   "$X1"'_' '_'                                                               #1
+    cut "\\e[$[OY+1];${SX}H$CM2" ''   "$X2"'_' '_'       '_'     '_'        '_'       '/'       '_' '/' ' ' ''  '' "$X3"'+' '-' '-' ${line[@]} ${flame1[AS]}      ' ' #2
+    cut "\\e[$[OY+2];${SX}H$CM1" '(' "$UND"'°' ' ' "$CM2"'\\'    ' '  "$CM3"'|' "$UND"' ' "$CM3"')' '-' '-' '-' '<'     '|' ' '${new_ad[@]} ' ' $SKY${flame2[AS]} ' ' #3
+    cut "\\e[$[OY+3];${SX}H$CM2" ''        ''  ''        '' "$X4"'\\' "$CM3"'|'       ' '       ''  ''  ''  ''  '' "$X5"'+' ${line[@]} ${flame3[AS]}              ' ' #4
 }
 
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
-
-CM1=$SKY$DIM$BLK
+CM1=$SKY$DIM$BLK CM2=$BLD$BLK
 small=("${SKY}_Z_  ${SKY}_Z_  ${RED}o$CM1"
        "${SKY}_Z_  ${RED}o    ${SKY}_Z_$CM1"
        "${RED}o    ${SKY}_Z_  ${SKY}_Z_$CM1"
        "${SKY}_Z_  ${SKY}_Z_  ${SKY}_Z_$CM1")
 
+CM1=$SKY$BLD$ylw CM2=$SKY$UND$BLD$grn
+pumtop=( "$CM2"'\\'"$CM1" "$CM2"'\\'"$CM1" "$CM2|$CM1" "$CM2|$CM1" "$CM2/$CM1" "$CM2/$CM1")
+pumface=("${RED}O ${RED}… ${RED}o$CM1"
+         "${RED}… ${RED}o _Z_$CM1"
+         "${RED}o _Z_     ${RED}O$CM1"
+         "_Z_     _Z_     _Z_$CM1"
+         "_Z_     _Z_     ${RED}O$CM1"
+         "_Z_     ${RED}O ${RED}…$CM1")
+
 sprite_alien () {
-    mov && ENM[en]="alien 3 5 $OX $OY $SC $SM $CS $CL $AS $AL" || { unset ENM[en]; ((enumber--)); return; }
-    X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
-    #012345
-    #1 ___
-    #2( o )
-    #3 `¯´
-    #                             1        2   3   4   5
-    cut "\\e[$OY;${SX}H$CM1"      '' "$X1"'_' '_' '_'      #1
-    cut "\\e[$[OY+1];${SX}H$CM1"  '('  ${small[AS]}   ')'  #2
-    cut "\\e[$[OY+2];${SX}H$CM1"  '' "$X2"'`' '¯' '´'      #3
+    case "$day$month" in
+        3110)
+        mov && ENM[en]="alien 3 5 $OX $OY $SC $SM $CS $CL $AS 5" || { unset ENM[en]; ((enumber--)); return; }
+        X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
+        CM1=$SKY$BLD$ylw CM2=$SKY$UND$DIM$grn CM3=$SKY$ylw
+        #012345
+        #1 _\_
+        #2(O…o)
+        #3 `¯´
+        #                            1        2   3             4   5
+        cut "\\e[$OY;${SX}H$CM1"     '' "$X1"'_' ${pumtop[AS]} '_'      #1
+        cut "\\e[$[OY+1];${SX}H$CM1" '('         ${pumface[AS]}    ')'  #2
+        cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`' '¯'           '´';;    #3
+
+        *)
+        mov && ENM[en]="alien 3 5 $OX $OY $SC $SM $CS $CL $AS 3" || { unset ENM[en]; ((enumber--)); return; }
+        X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
+        CM1=$SKY$DIM$BLK CM2=$BLD$BLK
+        #012345
+        #1 ___
+        #2( o )
+        #3 `¯´
+        #                            1        2         3         4   5
+        cut "\\e[$OY;${SX}H$CM1"     '' "$X1"'_' "$CM2"'_' "$CM1"'_'      #1
+        cut "\\e[$[OY+1];${SX}H$CM1" '('       ${small[AS]}   ')'         #2
+        cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`'       '¯'       '´';;    #3
+    esac
 }
 
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
@@ -409,8 +464,8 @@ cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_
 mov () {
     case $SC in
         0) [[ $OX -le -$OW ]] && return 1
-           [[ $AS -ge $AL ]] && AS=0 || ((AS++)) # sprites animation
-           [[ $OX -le 1   ]] && ((CS++))
+           [[ $AS -ge  $AL ]] && AS=0 || ((AS++)) # sprites animation
+           [[ $OX -le  1   ]] && ((CS++))
            ((OX--)); ((CL++)); SC=$SM;;
         *) ((SC--));;
     esac
@@ -481,7 +536,6 @@ game () {
         BP1=("${BP1[@]}")
         BP2=("${BP2[@]}")
         BP3=("${BP3[@]}")
-
         [[ $background ]] && add_backgound
 
         #-{ Add aliens }-------------------------------------------------------
@@ -507,8 +561,8 @@ game () {
 trap : ALRM
 trap bye INT TERM SIGINT SIGTERM EXIT
 get_dimensions; stty -echo; printf "$COF"; clear
-
+H1C=${DHC}; S1C=${DSC}; H1S=${DHS};
 #-{ Generate grass }-----------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
-
+H1X=3 H1Y=10 BP2[1]="hero1 4 14 $H1X $H1Y 0 0 0 15 0 3"
 fill_screen; game

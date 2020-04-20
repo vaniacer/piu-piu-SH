@@ -25,8 +25,8 @@ cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_
 mov () {
     case $SC in
         0) [[ $OX -le -$OW ]] && return 1
-           [[ $AS -ge $AL ]] && AS=0 || ((AS++)) # sprites animation
-           [[ $OX -le 1   ]] && ((CS++))
+           [[ $AS -ge  $AL ]] && AS=0 || ((AS++)) # sprites animation
+           [[ $OX -le  1   ]] && ((CS++))
            ((OX--)); ((CL++)); SC=$SM;;
         *) ((SC--));;
     esac

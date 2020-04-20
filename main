@@ -7,15 +7,6 @@ case ${BASH_VERSINFO[@]::2} in [1-3]' '[0-9][0-9]|[1-3]' '[0-9]|'4 '[0-1])
     echo -e "\nYour BASH is too short!) 4.2+ required to run this game, your is - ${BASH_VERSINFO[@]}"
     exit 1;;
 esac
-#--{ Start opt }--------------------------------------{ description }-------------------------{ def. values }-----------
-  background=true                                     # background objects visibility              (true)
-     enumber=0                                        # current enemy counter                      (0)
-       enmax=100                                      # max number of akiens                       (10)
-       month=$(date +'%m')                            # get current month
-         spd=0.0001                                   # game\read speed                            (0.0001)
-         MSN=1111                                     # messanger randomizer                       (1111)
-          LX=1                                        # grass X counter
-          ad='Die alien scum!'
 #--------------------------------------------------------------------+
 #Color picker, usage: printf $BLD$CUR$RED$BBLU'Hello World!'$DEF     |
 #-------------------------+--------------------------------+---------+
@@ -47,7 +38,19 @@ XY () { printf "\e[$2;${1}H$3"; }                                   #|
 line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 # Create sequence like {0..(X-1)}                                    |
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
-#--------------------------------------------------------------------+
+#--{ Start opt }--------------------------------------{ description  }------------------------{ def. values }-----------
+  background=true                                     # background objects visibility             (true)
+     enumber=0                                        # current enemy counter                     (0)
+       enmax=100                                      # max number of akiens                      (10)
+       month=$(date +'%m')                            # get current month                       
+         DHC=$BLK                                     # default hero color                        ($BLK)
+         DSC=$RED                                     # default symbol color                      ($RED)
+         DHS=★                                        # default symbol                            (★)
+         spd=0.0001                                   # game\read speed                           (0.0001)
+         MSN=1111                                     # messanger randomizer                      (1111)
+          LX=1                                        # grass X counter                         
+          ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
+           G=1                                        # gun                                       (1)(max 5)
 [[ -e ~/.piuconf ]] && . ~/.piuconf
 . ./messages  #_MESSAGES_
 . ./sprites   #_SPRITES_
@@ -63,7 +66,6 @@ game () {
         BP1=("${BP1[@]}")
         BP2=("${BP2[@]}")
         BP3=("${BP3[@]}")
-
         [[ $background ]] && add_backgound
 
         #-{ Add aliens }-------------------------------------------------------
@@ -89,8 +91,12 @@ game () {
 trap : ALRM
 trap bye INT TERM SIGINT SIGTERM EXIT
 get_dimensions; stty -echo; printf "$COF"; clear
-
+H1C=${DHC}; S1C=${DSC}; H1S=${DHS};
 #-{ Generate grass }-----------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
+fill_screen
+H1X=2 H1Y=10 BP2+=("hero1 6 14 $H1X $H1Y 0 0 1 15 0 3")
+game
 
-fill_screen; game
+
+
