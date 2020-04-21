@@ -60,9 +60,9 @@ game () {
     while true; do
         #-{ Empty screen, count fps, set timings}------------------------------
         [[ $M -ge 10 ]] && M=0 || ((M++)) # enemies born rate
-        read -t$spd -s -n1 input &> /dev/null
         screen=; fps_counter
         ENM=("${ENM[@]}")
+        HER=("${HER[@]}")
         BP1=("${BP1[@]}")
         BP2=("${BP2[@]}")
         BP3=("${BP3[@]}")
@@ -80,6 +80,7 @@ game () {
         #-{ Move bitplans }----------------------------------------------------
         for i1 in ${!BP1[@]}; { OI=(${BP1[i1]}); get_obj_data; }
         for i2 in ${!BP2[@]}; { OI=(${BP2[i2]}); get_obj_data; }
+        for he in ${!HER[@]}; { OI=(${HER[he]}); get_obj_data; }
         for en in ${!ENM[@]}; { OI=(${ENM[en]}); get_obj_data; }
         for i3 in ${!BP3[@]}; { OI=(${BP3[i3]}); get_obj_data; }
 
@@ -95,7 +96,7 @@ H1C=${DHC}; S1C=${DSC}; H1S=${DHS};
 #-{ Generate grass }-----------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 fill_screen
-H1X=10 H1Y=10 BP2[0]="hero1 6 14 $H1X $H1Y 0 0 1 15 0 3"
+H1X=10 H1Y=10 HER[0]="hero1 6 14 $H1X $H1Y 0 0 1 15 0 3"
 game
 
 

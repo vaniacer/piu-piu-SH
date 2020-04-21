@@ -48,6 +48,24 @@ get_obj_data () {
     [[ $OT ]] && sprite_$OT
 }
 
+server_read () {
+    read -t$spd -srn1 input &> /dev/null
+    XY 1 1 $input
+    case $input in
+        [wW]) [[ $H1Y    -gt 1             ]] && ((H1Y--));;
+        [aA]) [[ $H1X    -gt 1             ]] && ((H1X--));;
+        [sS]) [[ $H1Y    -lt $heroendy     ]] && ((H1Y++));;
+        [dD]) [[ $H1X    -lt $heroendx     ]] && ((H1X++));;
+        [pP]) [[ $ammo -ge $G && $CD -eq 0 ]] && { CD=7; case $G in
+            1) PIU+=("$H1CX $H1CY 1");;
+            2) PIU+=("$H1CX $[$H1CY+1] 1" "$H1CX $[$H1CY-1] 1");;
+            3) PIU+=("$H1CX $[$H1CY+1] 1" "$H1CX $[$H1CY-1] 1" "$[$H1CX+1] $H1CY 1");;
+            4) PIU+=("$[$H1CX+1] $[$H1CY+1] 1" "$[$H1CX+1] $[$H1CY-1] 1" "$H1CX $[$H1CY+2] 1" "$H1CX $[$H1CY-2] 1");;
+            5) PIU+=("$[$H1CX+1] $[$H1CY+1] 1" "$[$H1CX+1] $[$H1CY-1] 1" "$H1CX $[$H1CY+2] 1" "$H1CX $[$H1CY-2] 1" "$[$H1CX+2] $H1CY 1");;
+        esac; ((ammo-=$G)); };;
+    esac
+}
+
 fps_counter () {
     [[ $SECONDS -gt $sec ]] && {
         FPS=$FPSC AVG+=($FPS)

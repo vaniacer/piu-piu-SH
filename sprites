@@ -28,9 +28,11 @@ mainrotor=(" ${blk}_   ${blk}_   ${blk}_   ${blk}_  ${blk}_ ${blk}_ ${blk}_  ${b
            "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY")
 tailrotor=("${blk}"'\\' "${blk}─" "${blk}/" "${blk}|")
 sprite_hero1 () {
-    mov && BP2[i2]="hero1 6 14 $H1X $H1Y $SC $SM $CS $CL $AS $AL"
+    mov && HER[he]="hero1 6 14 $H1X $H1Y $SC $SM $CS $CL $AS $AL"
     CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
+    H1CX=$[$H1X+11]; H1CY=$[$H1Y+3] # Hero1 collide coordinates
     X1="\\e[$[H1Y+5];$[H1X+7]H"
+    server_read
     #0123456789ABCDEF
     #1              
     #2 __ ___________
@@ -45,8 +47,6 @@ sprite_hero1 () {
     cut "\\e[$[H1Y+3];${H1X}H$CM2" ' ' '`'                        '─'        '´'       '‾'       '‾'       '‷'       '\\' "$blk"'°' "$S1C"'★' "$SKY"' ' "$blk"'º' "$blk"'¯'  "$CM1"']'  $SKY$BLK${gun[$G]}$SKY #4
     cut "\\e[$[H1Y+4];${H1X}H$CM2" ' ' ' '                        ' '        ' '       ' '       ' '       ' '       ' '        '‾'       '‾'       '‾'       '‾'       '‾'  "$SKY"' '  ' '                    #5
     cut "\\e[$[H1Y+5];${H1X}H$SKY" ''  ''                         ''         ''        ''        ''        ''   "$X1"' '        ' '       ' '       ' '       ' '       ' '        ' '                         #6
-#        server_read
-#        HX=$[$X+11]; HY=$[$Y+3] # Hero collide coordinates
 }
 #------------------------{ Ad plane }-----------------------------------------------------------------------------------
 flame1=("$red-"       "$ylw~"       "$red- $RED~" "$ylw-")
