@@ -28,14 +28,12 @@ mainrotor=(" ${blk}_   ${blk}_   ${blk}_   ${blk}_  ${blk}_ ${blk}_ ${blk}_  ${b
            "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY")
 tailrotor=("${blk}"'\\' "${blk}─" "${blk}/" "${blk}|")
 sprite_hero1 () {
+    server_read
     mov && HER[i]="hero1 $H1X $H1Y 6 14 $SC $SM $CS $CL $AS $AL"
     CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
-#    H1CX=$[H1X+13]   H1CY=$[H1Y+3] # Hero1 collide coordinates
     X1="\\e[$[H1Y+5];$[H1X+7]H"
-    re="alien $[H1X+13] $[H1Y+2] .*"
-#    [[ ${ENM[@]} =~ $re ]] && { target=($BASH_REMATCH ); XY 1 1 ''; echo "${target[@]::12}  "; }
+    re="alien $[H1X+13] $[H1Y+2] .*|alien $[H1X+12] $[H1Y+2] .*|alien $[H1X+12] $[H1Y+1] .*|alien $[H1X+11] $[H1Y+1] .*"
     [[ ${ENM[@]} =~ $re ]] && { T=($BASH_REMATCH); e=${T[@]:11:1}; x=${T[@]:1:1}; y=${T[@]:2:1}; unset ENM[e]; boom $x $y; }
-    server_read
     #0123456789ABCDEF
     #1              
     #2 __ ___________
@@ -349,15 +347,15 @@ sprite_boom () {
         #  ´ ¯ `
         #(       )
         # +  _ .' 
-        "\e[$OY;$[OX+1]H$DIM$RED"'´ ¯ `'"$SKY\e[$[OY+1];$[OX-1]H$DIM$RED(       )$SKY\e[$[OY+2];${OX}H$DIM$RED+  _ .'"$SKY
+        "\e[$OY;$[OX+2]H$DIM$RED"'´ ¯ `'"$SKY\e[$[OY+1];${OX}H$DIM$RED(       )$SKY\e[$[OY+2];$[OX+1]H$DIM$RED+  _ .'"$SKY
         #  .     .
         #
         #-         -
         #
         # '   .   `
-        "\e[$[OY-1];${OX}H$RED.     .\e[$OY;${OX}H$SKY        \e[$[OY+1];$[OX-2]H$red-         -$SKY\e[$[OY+2];${OX}H$SKY           $SKY\e[$[OY+3];$[OX-1]H$red'   .   "'`'$SKY
+        "\e[$[OY-1];$[OX+1]H$RED.     .\e[$OY;$[OX+1]H$SKY        \e[$[OY+1];$[OX-1]H$red-         -$SKY\e[$[OY+2];$[OX+1]H$SKY           $SKY\e[$[OY+3];${OX}H$red'   .   "'`'$SKY
         #eraser
-        "\e[$[OY-1];${OX}H$SKY        \e[$OY;${OX}H$SKY         \e[$[OY+1];$[OX-2]H$SKY            $SKY\e[$[OY+2];${OX}H$SKY            $SKY\e[$[OY+3];$[OX-1]H$SKY          "$SKY)
+        "\e[$[OY-1];$[OX+1]H$SKY        \e[$OY;$[OX+1]H$SKY         \e[$[OY+1];$[OX-1]H$SKY            $SKY\e[$[OY+2];$[OX+1]H$SKY            $SKY\e[$[OY+3];${OX}H$SKY          "$SKY)
     screen+="${boom[AS]}"
 }
 
