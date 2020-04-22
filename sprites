@@ -334,28 +334,46 @@ sprite_tree3 () {
 #------------------------{ BOOM }---------------------------------------------------------------------------------------
 sprite_boom () {
     BX=$OX BY=$OY
-    [[ $AS -ge $AL ]] && { unset BP3[i]; return; } || { mov; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"; }
+    [[ $AS -ge $AL ]] && { unset BP3[i]; return; }
     boom=(
         # .-.
         #(   )'
-        # `-`
-        "\e[$OY;$[OX+3]H$red.-.$SKY\e[$[OY+1];$[OX+2]H$red(   )$SKY\e[$[OY+2];$[OX+3]H$red"'`-`'$SKY
+        # `-´
+             "\e[$BY;$[BX+3]H$red.-.$SKY"
+        "\e[$[BY+1];$[BX+2]H$red(   )$SKY"
+       "\e[$[BY+2];$[BX+3]H$red"'`-´'$SKY
+        '' ''
         # , - .
         #(     )
         # . _ .
-        "\e[$OY;$[OX+2]H$RED, - .$SKY\e[$[OY+1];$[OX+1]H$RED(     )$SKY\e[$[OY+2];$[OX+2]H$RED. _ ."$SKY
+            "\e[$BY;$[BX+2]H$RED, - .$SKY"
+       "\e[$[BY+1];$[BX+1]H$RED(     )$SKY"
+        "\e[$[BY+2];$[BX+2]H$RED. _ .$SKY"
+        '' ''
         #  ´ ¯ `
         #(       )
         # +  _ .' 
-        "\e[$OY;$[OX+2]H$DIM$RED"'´ ¯ `'"$SKY\e[$[OY+1];${OX}H$DIM$RED(       )$SKY\e[$[OY+2];$[OX+1]H$DIM$RED+  _ .'"$SKY
+      "\e[$BY;$[BX+2]H$DIM$RED"'´ ¯ `'$SKY
+    "\e[$[BY+1];${BX}H$DIM$RED(       )$SKY"
+   "\e[$[BY+2];$[BX+1]H$DIM$RED+  _ .'"$SKY
+        '' ''
         #  .     .
         #
         #-         -
         #
         # '   .   `
-        "\e[$[OY-1];$[OX+1]H$RED.     .\e[$OY;$[OX+1]H$SKY        \e[$[OY+1];$[OX-1]H$red-         -$SKY\e[$[OY+2];$[OX+1]H$SKY           $SKY\e[$[OY+3];${OX}H$red'   .   "'`'$SKY
+       "\e[$[BY-1];$[BX+1]H$RED.     .$SKY"
+          "\e[$BY;$[BX+1]H$SKY         $SKY"
+     "\e[$[BY+1];$[BX-1]H$red-         -$SKY"
+     "\e[$[BY+2];$[BX+1]H$SKY           $SKY"
+        "\e[$[BY+3];${BX}H$red'   .   "'`'$SKY
         #eraser
-        "\e[$[OY-1];$[OX+1]H$SKY        \e[$OY;$[OX+1]H$SKY         \e[$[OY+1];$[OX-1]H$SKY            $SKY\e[$[OY+2];$[OX+1]H$SKY            $SKY\e[$[OY+3];${OX}H$SKY          "$SKY)
-    screen+="${boom[AS]}"
+       "\e[$[BY-1];$[BX+1]H$SKY       "
+          "\e[$BY;$[BX+1]H$SKY         "
+     "\e[$[BY+1];$[BX-1]H$SKY           "
+     "\e[$[BY+2];$[BX+1]H$SKY           "
+        "\e[$[BY+3];${BX}H$SKY         ")
+    screen+="${boom[@]:$((AS*5)):5}"
+    mov; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
 }
 

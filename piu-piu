@@ -38,11 +38,13 @@ XY () { printf "\e[$2;${1}H$3"; }                                   #|
 line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 # Create sequence like {0..(X-1)}                                    |
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
-#--{ Start opt }--------------------------------------{ description  }------------------------{ def. values }-----------
+#----{ Start opt }------------------------------------{ description  }---------------------{ def. values }--------------
   background=true                                     # background objects visibility             (true)
      enumber=0                                        # current enemy counter                     (0)
        enmax=100                                      # max number of akiens                      (10)
        month=$(date +'%m')                            # get current month                       
+        life=3                                        # life counter                              (3)
+        ammo=100                                      # ammo counter                              (100)
          DHC=$BLK                                     # default hero color                        ($BLK)
          DSC=$RED                                     # default symbol color                      ($RED)
          DHS=★                                        # default symbol                            (★)
@@ -138,10 +140,8 @@ sprite_hero1 () {
     server_read
     mov && HER[i]="hero1 $H1X $H1Y 6 14 $SC $SM $CS $CL $AS $AL"
     CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
-#    H1CX=$[H1X+13]   H1CY=$[H1Y+3] # Hero1 collide coordinates
     X1="\\e[$[H1Y+5];$[H1X+7]H"
     re="alien $[H1X+13] $[H1Y+2] .*|alien $[H1X+12] $[H1Y+2] .*|alien $[H1X+12] $[H1Y+1] .*|alien $[H1X+11] $[H1Y+1] .*"
-#    [[ ${ENM[@]} =~ $re ]] && { target=($BASH_REMATCH ); XY 1 1 ''; echo "${target[@]::12}  "; }
     [[ ${ENM[@]} =~ $re ]] && { T=($BASH_REMATCH); e=${T[@]:11:1}; x=${T[@]:1:1}; y=${T[@]:2:1}; unset ENM[e]; boom $x $y; }
     #0123456789ABCDEF
     #1              
@@ -443,29 +443,47 @@ sprite_tree3 () {
 #------------------------{ BOOM }---------------------------------------------------------------------------------------
 sprite_boom () {
     BX=$OX BY=$OY
-    [[ $AS -ge $AL ]] && { unset BP3[i]; return; } || { mov; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"; }
+    [[ $AS -ge $AL ]] && { unset BP3[i]; return; }
     boom=(
         # .-.
         #(   )'
-        # `-`
-        "\e[$OY;$[OX+3]H$red.-.$SKY\e[$[OY+1];$[OX+2]H$red(   )$SKY\e[$[OY+2];$[OX+3]H$red"'`-`'$SKY
+        # `-´
+             "\e[$BY;$[BX+3]H$red.-.$SKY"
+        "\e[$[BY+1];$[BX+2]H$red(   )$SKY"
+       "\e[$[BY+2];$[BX+3]H$red"'`-´'$SKY
+        '' ''
         # , - .
         #(     )
         # . _ .
-        "\e[$OY;$[OX+2]H$RED, - .$SKY\e[$[OY+1];$[OX+1]H$RED(     )$SKY\e[$[OY+2];$[OX+2]H$RED. _ ."$SKY
+            "\e[$BY;$[BX+2]H$RED, - .$SKY"
+       "\e[$[BY+1];$[BX+1]H$RED(     )$SKY"
+        "\e[$[BY+2];$[BX+2]H$RED. _ .$SKY"
+        '' ''
         #  ´ ¯ `
         #(       )
         # +  _ .' 
-        "\e[$OY;$[OX+2]H$DIM$RED"'´ ¯ `'"$SKY\e[$[OY+1];${OX}H$DIM$RED(       )$SKY\e[$[OY+2];$[OX+1]H$DIM$RED+  _ .'"$SKY
+      "\e[$BY;$[BX+2]H$DIM$RED"'´ ¯ `'$SKY
+    "\e[$[BY+1];${BX}H$DIM$RED(       )$SKY"
+   "\e[$[BY+2];$[BX+1]H$DIM$RED+  _ .'"$SKY
+        '' ''
         #  .     .
         #
         #-         -
         #
         # '   .   `
-        "\e[$[OY-1];$[OX+1]H$RED.     .\e[$OY;$[OX+1]H$SKY        \e[$[OY+1];$[OX-1]H$red-         -$SKY\e[$[OY+2];$[OX+1]H$SKY           $SKY\e[$[OY+3];${OX}H$red'   .   "'`'$SKY
+       "\e[$[BY-1];$[BX+1]H$RED.     .$SKY"
+          "\e[$BY;$[BX+1]H$SKY         $SKY"
+     "\e[$[BY+1];$[BX-1]H$red-         -$SKY"
+     "\e[$[BY+2];$[BX+1]H$SKY           $SKY"
+        "\e[$[BY+3];${BX}H$red'   .   "'`'$SKY
         #eraser
-        "\e[$[OY-1];$[OX+1]H$SKY        \e[$OY;$[OX+1]H$SKY         \e[$[OY+1];$[OX-1]H$SKY            $SKY\e[$[OY+2];$[OX+1]H$SKY            $SKY\e[$[OY+3];${OX}H$SKY          "$SKY)
-    screen+="${boom[AS]}"
+       "\e[$[BY-1];$[BX+1]H$SKY       "
+          "\e[$BY;$[BX+1]H$SKY         "
+     "\e[$[BY+1];$[BX-1]H$SKY           "
+     "\e[$[BY+2];$[BX+1]H$SKY           "
+        "\e[$[BY+3];${BX}H$SKY         ")
+    screen+="${boom[@]:$((AS*5)):5}"
+    mov; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
 }
 
 #================================================{ Functions }==========================================================
@@ -543,11 +561,11 @@ boom () {
 BOOM () {
     XB=$1 YB=$2
     [[ $XB -gt $boomendx ]] && XB=$boomendx
-    OBJ+=("  $XB      $YB    0   boom"
-          "$[$XB+5]   $YB    0   boom"
-          "$[$XB+1] $[$YB+2] 0   boom"
-          "$[$XB+5] $[$YB+2] 0   boom"
-          "  $XB    $[$YB+1] 0   boom")
+    BP3+=("boom  $XB     $YB    0 0 0 $[RANDOM%3] 0 0 0 5"
+          "boom $[XB+5]  $YB    0 0 0 $[RANDOM%3] 0 0 0 5"
+          "boom $[XB+1] $[YB+2] 0 0 0 $[RANDOM%3] 0 0 0 5"
+          "boom $[XB+5] $[YB+2] 0 0 0 $[RANDOM%3] 0 0 0 5"
+          "boom  $XB    $[YB+1] 0 0 0 $[RANDOM%3] 0 0 0 5")
 }
 
 fps_counter () {

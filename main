@@ -38,11 +38,13 @@ XY () { printf "\e[$2;${1}H$3"; }                                   #|
 line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 # Create sequence like {0..(X-1)}                                    |
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
-#--{ Start opt }--------------------------------------{ description  }------------------------{ def. values }-----------
+#----{ Start opt }------------------------------------{ description  }---------------------{ def. values }--------------
   background=true                                     # background objects visibility             (true)
      enumber=0                                        # current enemy counter                     (0)
        enmax=100                                      # max number of akiens                      (10)
        month=$(date +'%m')                            # get current month                       
+        life=3                                        # life counter                              (3)
+        ammo=100                                      # ammo counter                              (100)
          DHC=$BLK                                     # default hero color                        ($BLK)
          DSC=$RED                                     # default symbol color                      ($RED)
          DHS=★                                        # default symbol                            (★)
