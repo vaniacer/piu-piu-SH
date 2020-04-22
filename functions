@@ -35,10 +35,10 @@ mov () {
 
 get_obj_data () {
     OT=${OI[0]}   # object type
-    OH=${OI[1]}   # object hight
-    OW=${OI[2]}   # object width
-    OX=${OI[3]}   # X coordinate
-    OY=${OI[4]}   # Y coordinate
+    OX=${OI[1]}   # X coordinate
+    OY=${OI[2]}   # Y coordinate
+    OH=${OI[3]}   # object hight
+    OW=${OI[4]}   # object width
     SC=${OI[5]}   # speed counter
     SM=${OI[6]}   # speed max
     CS=${OI[7]}   # cuting start
@@ -50,7 +50,6 @@ get_obj_data () {
 
 server_read () {
     read -t$spd -srn1 input &> /dev/null
-    XY 1 1 $input
     case $input in
         [wW]) [[ $H1Y    -gt 1             ]] && ((H1Y--));;
         [aA]) [[ $H1X    -gt 1             ]] && ((H1X--));;
@@ -64,6 +63,22 @@ server_read () {
             5) PIU+=("$[$H1CX+1] $[$H1CY+1] 1" "$[$H1CX+1] $[$H1CY-1] 1" "$H1CX $[$H1CY+2] 1" "$H1CX $[$H1CY-2] 1" "$[$H1CX+2] $H1CY 1");;
         esac; ((ammo-=$G)); };;
     esac
+}
+
+boom () {
+    XB=$1 YB=$2
+    [[ $XB -gt $boomendx ]] && XB=$boomendx
+    BP3+=("boom $XB $YB 0 0 0 2 0 0 0 5")
+}
+
+BOOM () {
+    XB=$1 YB=$2
+    [[ $XB -gt $boomendx ]] && XB=$boomendx
+    OBJ+=("  $XB      $YB    0   boom"
+          "$[$XB+5]   $YB    0   boom"
+          "$[$XB+1] $[$YB+2] 0   boom"
+          "$[$XB+5] $[$YB+2] 0   boom"
+          "  $XB    $[$YB+1] 0   boom")
 }
 
 fps_counter () {
@@ -85,20 +100,20 @@ fill_screen () {
 
 add_backgound () {
     #-{ Add msngr }------------------------------------------------------------
-    case $[RANDOM % $MSN] in 0) BP2+=("msngr 4 20 $endx $[RANDOM%enmyendy+3] 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3");; esac
+    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $[RANDOM%enmyendy+3] 4 20 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3");; esac
 
     #-{ Add clouds }-----------------------------------------------------------
     case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
-        0:1) BP1+=("cloud1 3 6  $endx $[RANDOM % 10 + 2] 6 6 1 0 0 0");;
-        0:2) BP2+=("cloud2 3 8  $endx $[RANDOM % 10 + 2] 4 4 1 0 0 0");;
-        0:3) BP3+=("cloud3 3 11 $endx $[RANDOM % 10 + 2] 2 2 1 0 0 0");;
+        0:1) BP1+=("cloud1 $endx $[RANDOM % 10 + 2] 3 6  6 6 1 0 0 0");;
+        0:2) BP2+=("cloud2 $endx $[RANDOM % 10 + 2] 3 8  4 4 1 0 0 0");;
+        0:3) BP3+=("cloud3 $endx $[RANDOM % 10 + 2] 3 11 2 2 1 0 0 0");;
     esac
 
     #-{ Add trees }------------------------------------------------------------
     case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
-        0:1) BP1+=("tree1 3 2 $endx $tre1endy 6 6 1 0 0 0");;
-        0:2) BP2+=("tree2 6 5 $endx $tre2endy 4 4 1 0 0 0");;
-        0:3) BP3+=("tree3 9 9 $endx $tre3endy 2 2 1 0 0 0");;
+        0:1) BP1+=("tree1 $endx $tre1endy 3 2 6 6 1 0 0 0");;
+        0:2) BP2+=("tree2 $endx $tre2endy 6 5 4 4 1 0 0 0");;
+        0:3) BP3+=("tree3 $endx $tre3endy 9 9 2 2 1 0 0 0");;
     esac
 
     #-{ Print moving land }----------------------------------------------------

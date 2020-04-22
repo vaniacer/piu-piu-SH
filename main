@@ -70,7 +70,7 @@ game () {
 
         #-{ Add aliens }-------------------------------------------------------
         [[ $enumber -lt $enmax && $M -eq 0 ]] && {
-            ENM+=("alien 3 5 $endx $[RANDOM%enmyendy+3] 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3")
+            ENM+=("alien $endx $[RANDOM%enmyendy+3] 3 5 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3")
             ((enumber++))
         }
 
@@ -78,11 +78,11 @@ game () {
         screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
 
         #-{ Move bitplans }----------------------------------------------------
-        for i1 in ${!BP1[@]}; { OI=(${BP1[i1]}); get_obj_data; }
-        for i2 in ${!BP2[@]}; { OI=(${BP2[i2]}); get_obj_data; }
-        for he in ${!HER[@]}; { OI=(${HER[he]}); get_obj_data; }
-        for en in ${!ENM[@]}; { OI=(${ENM[en]}); get_obj_data; }
-        for i3 in ${!BP3[@]}; { OI=(${BP3[i3]}); get_obj_data; }
+        for i in ${!BP1[@]}; { OI=(${BP1[i]}); get_obj_data; }
+        for i in ${!BP2[@]}; { OI=(${BP2[i]}); get_obj_data; }
+        for i in ${!HER[@]}; { OI=(${HER[i]}); get_obj_data; }
+        for i in ${!ENM[@]}; { OI=(${ENM[i]}); get_obj_data; }
+        for i in ${!BP3[@]}; { OI=(${BP3[i]}); get_obj_data; }
 
         #-{ Print everything }-------------------------------------------------
         printf "$screen"
