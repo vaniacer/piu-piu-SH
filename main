@@ -62,8 +62,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
 game () {
     while true; do
         #-{ Empty screen, count fps, set timings}------------------------------
-        [[ $M -ge 10 ]] && M=0 || ((M++)) # enemies born rate
-        screen=
+        timings; screen=
 
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound
@@ -76,6 +75,7 @@ game () {
         #-{ Move bitplans }----------------------------------------------------
         BP1=("${BP1[@]}"); for i in ${!BP1[@]}; { OI=(${BP1[i]}); get_obj_data; }
         BP2=("${BP2[@]}"); for i in ${!BP2[@]}; { OI=(${BP2[i]}); get_obj_data; }
+        PIU=("${PIU[@]}"); for i in ${!PIU[@]}; { OI=(${PIU[i]}); get_obj_data; }
         HER=("${HER[@]}"); for i in ${!HER[@]}; { OI=(${HER[i]}); get_obj_data; }
         ENM=("${ENM[@]}"); for i in ${!ENM[@]}; { OI=(${ENM[i]}); get_obj_data; }
         BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); get_obj_data; }

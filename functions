@@ -21,13 +21,16 @@ get_dimensions () {
 }
 
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
-cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ }$SKY "; }
+cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ }"; }
 mov () {
+    case $1 in '-') cuter=++;; '+') cuter=--;; esac
     case $SC in
-        0) [[ $OX -le -$OW ]] && return 1
-           [[ $AS -ge  $AL ]] && AS=0 || ((AS++)) # sprites animation
-           [[ $OX -le  1   ]] && ((CS++))
-           ((OX--)); ((CL++)); SC=$SM;;
+        0) [[ $OX -le -$OW   ]] && return 1
+           [[ $OX -gt  $endx ]] && return 1
+           [[ $AS -ge  $AL   ]] && AS=0 || ((AS++)) # sprites animation
+           [[ $OX -le  1     ]] && ((CS++))
+           ((OX$1$1)); ((CL$cuter)); SC=$SM
+           [[ $CL -lt 0 ]] && CL=0;;
         *) ((SC--));;
     esac
     [[ $OX -le 1 ]] && SX=0 || SX=$OX
@@ -56,13 +59,39 @@ server_read () {
         [sS]) [[ $H1Y    -lt $heroendy     ]] && ((H1Y++));;
         [dD]) [[ $H1X    -lt $heroendx     ]] && ((H1X++));;
         [pP]) [[ $ammo -ge $G && $CD -eq 0 ]] && { CD=7; case $G in
-            1) PIU+=("$H1CX $H1CY 1");;
-            2) PIU+=("$H1CX $[$H1CY+1] 1" "$H1CX $[$H1CY-1] 1");;
-            3) PIU+=("$H1CX $[$H1CY+1] 1" "$H1CX $[$H1CY-1] 1" "$[$H1CX+1] $H1CY 1");;
-            4) PIU+=("$[$H1CX+1] $[$H1CY+1] 1" "$[$H1CX+1] $[$H1CY-1] 1" "$H1CX $[$H1CY+2] 1" "$H1CX $[$H1CY-2] 1");;
-            5) PIU+=("$[$H1CX+1] $[$H1CY+1] 1" "$[$H1CX+1] $[$H1CY-1] 1" "$H1CX $[$H1CY+2] 1" "$H1CX $[$H1CY-2] 1" "$[$H1CX+2] $H1CY 1");;
+            1) PIU+=("piu1 $[H1X+12] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
+
+            2) PIU+=("piu1 $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3"    # -=>
+                                                                                           #
+                     "piu1 $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
+
+            3) PIU+=("piu1 $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3"    # -=>
+                     "piu1 $[H1X+13] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
+                     "piu1 $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
+
+            4) PIU+=("piu1 $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3"    # -=>
+                     "piu1 $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
+                                                                                           #
+                     "piu1 $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
+                     "piu1 $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
+
+            5) PIU+=("piu1 $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3"    # -=>
+                     "piu1 $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
+                     "piu1 $[H1X+14] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+14)] $[RANDOM%3] 3"    #   -=>
+                     "piu1 $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
+                     "piu1 $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
         esac; ((ammo-=$G)); };;
     esac
+}
+
+timings () {
+    [[ $M  -ge 10 ]] && M=0 || ((M++)) # enemies born rate
+    [[ $CD -gt 0  ]] && ((CD--))       # hero1 cooldown timer
+#    [[ $CD2 -gt 0  ]] && ((CD2--))      # hero2 cooldown timer
+#    [[ $K   -ge 20 ]] && K=0 || ((K++)) # boss' fire rate
+#    [[ $L   -ge 3  ]] && L=0 || ((L++)) # sprites animation
+#    [[ $J   -ge 5  ]] && J=0 || ((J++)) # boss' bullet animation
+#    [[ $E   -eq 0  ]] && { ((S+=$SunC)); [[ $S -gt $SunN ]] && S=0; } # Sun animation
 }
 
 boom () {
