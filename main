@@ -42,7 +42,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
   background=true                                     # background objects visibility             (true)
      enumber=0                                        # current enemy counter                     (0)
        enmax=100                                      # max number of akiens                      (10)
-       month=$(date +'%m')                            # get current month                       
+       month=$(date +'%m')                            # get current month
         life=3                                        # life counter                              (3)
         ammo=100                                      # ammo counter                              (100)
          DHC=$BLK                                     # default hero color                        ($BLK)
@@ -50,7 +50,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
          DHS=★                                        # default symbol                            (★)
          spd=0.0001                                   # game\read speed                           (0.0001)
          MSN=1111                                     # messanger randomizer                      (1111)
-          LX=1                                        # grass X counter                         
+          LX=1                                        # grass X counter
           ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
            G=1                                        # gun                                       (1)(max 5)
 [[ -e ~/.piuconf ]] && . ~/.piuconf
@@ -100,6 +100,3 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 fill_screen
 H1X=10 H1Y=10 HER[0]="hero1 6 14 $H1X $H1Y 0 0 1 15 0 3"
 game
-
-
-
