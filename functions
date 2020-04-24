@@ -136,6 +136,11 @@ fps_counter () {
     screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
 }
 
+status () {
+    #-{ Print game status }----------------------------------------------------
+    screen+="\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
+}
+
 fill_screen () {
     for ((i=0;         i<$lineendy; i++)); do printf "$SKY%${endx}s"; done
     for ((i=$lineendy; i<$endy;     i++)); do printf "$LND%${endx}s"; done

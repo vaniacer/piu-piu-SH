@@ -62,7 +62,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
 game () {
     while true; do
         #-{ Empty screen, count fps, set timings}------------------------------
-        timings; screen=
+        timings; screen=; status
 
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound

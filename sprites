@@ -41,7 +41,7 @@ sprite_hero1 () {
     CM1=$SKY$H1C$BLD    CM2=$SKY$DIM$H1C      CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
     TR=${tailrotor[AS]} GN=$BLD$BLK${gun[$G]} X1="\\e[$[H1Y+5];$[H1X+7]H"
     re="n $[H1X+13] $[H1Y+2] .*|n $[H1X+12] $[H1Y+2] .*|n $[H1X+12] $[H1Y+1] .*|n $[H1X+11] $[H1Y+1] .*"
-    colision_aliens "$re" && BOOM $H1X $H1Y
+    colision_aliens "$re" && { BOOM $H1X $H1Y; ((frags++)); ((life--)); }
     #0123456789ABCDEFG
     #1
     #2 __ ___________
@@ -376,7 +376,7 @@ shoot1=(
 sprite_piu1 () {
     CM1=$SKY$BLD$GRN
     mov + && PIU[i]="piu1 $OX $OY 1 4 $SC $SM $CS $CL $AS 3 $i" || { unset PIU[i]; return; }
-    colision_aliens "n $OX $[OY-1] .*|n $[OX+1] $[OY-1] .*"     && { unset PIU[i]; return; }
+    colision_aliens "n $OX $[OY-1] .*|n $[OX+1] $[OY-1] .*"     && { unset PIU[i]; ((frags++)); return; }
     #01234
     #1 -=>
     #                         1      2     3          4
