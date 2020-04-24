@@ -42,7 +42,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
   background=true                                     # background objects visibility             (true)
      enumber=0                                        # current enemy counter                     (0)
        enmax=100                                      # max number of akiens                      (10)
-       month=$(date +'%m')                            # get current month                       
+       month=$(date +'%m')                            # get current month
         life=3                                        # life counter                              (3)
         ammo=100                                      # ammo counter                              (100)
          DHC=$BLK                                     # default hero color                        ($BLK)
@@ -50,7 +50,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
          DHS=★                                        # default symbol                            (★)
          spd=0.0001                                   # game\read speed                           (0.0001)
          MSN=1111                                     # messanger randomizer                      (1111)
-          LX=1                                        # grass X counter                         
+          LX=1                                        # grass X counter
           ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
            G=1                                        # gun                                       (1)(max 5)
 [[ -e ~/.piuconf ]] && . ~/.piuconf
@@ -107,7 +107,6 @@ sprite_win () {
            "\e[$[$y+7];${x}H$GRN| |_| | |_| | |\  | |___|_|$DEF"
            "\e[$[$y+8];${x}H$CM2|____/ \___/|_| \_|_____(_)$DEF")
 }
-
 #================================================{ Sprites }============================================================
 case $month in
     0[1-4]|12)
@@ -131,20 +130,28 @@ esac
 gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █)    # grass types
 #------------------------{ Hero1 }--------------------------------------------------------------------------------------
-mainrotor=(" ${blk}_   ${blk}_   ${blk}_   ${blk}_  ${blk}_ ${blk}_ ${blk}_  ${blk}_   ${blk}_   ${blk}_   ${blk}_$SKY"
-           "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY"
-           "_Z_ _Z_ _Z_ _Z_ _Z_ ${blk}_ _Z_ _Z_ _Z_ _Z_ _Z_$SKY"
-           "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY")
+#    mainrotor
+#  '___________'
+#  '    ___    '
+#  '     _     '
+#  '    ___    '
+#
+#    tailrotor
+# '\' '─' '/' '|'
+mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_$SKY"
+           "    _Z_     _Z_     _Z_     _Z_ ${blk}_ ${blk}_ ${blk}_     _Z_     _Z_     _Z_     _Z_$SKY"
+           "    _Z_     _Z_     _Z_     _Z_     _Z_ ${blk}_     _Z_     _Z_     _Z_     _Z_     _Z_$SKY"
+           "    _Z_     _Z_     _Z_     _Z_ ${blk}_ ${blk}_ ${blk}_     _Z_     _Z_     _Z_     _Z_$SKY")
 tailrotor=("${blk}"'\\' "${blk}─" "${blk}/" "${blk}|")
 sprite_hero1 () {
     server_read
     mov && HER[i]="hero1 $H1X $H1Y 6 14 $SC $SM $CS $CL $AS $AL"
     CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
     X1="\\e[$[H1Y+5];$[H1X+7]H"
-    re="alien $[H1X+13] $[H1Y+2] .*|alien $[H1X+12] $[H1Y+2] .*|alien $[H1X+12] $[H1Y+1] .*|alien $[H1X+11] $[H1Y+1] .*"
-    [[ ${ENM[@]} =~ $re ]] && { T=($BASH_REMATCH); e=${T[@]:11:1}; x=${T[@]:1:1}; y=${T[@]:2:1}; unset ENM[e]; boom $x $y; }
+    re="n $[H1X+13] $[H1Y+2] .*|n $[H1X+12] $[H1Y+2] .*|n $[H1X+12] $[H1Y+1] .*|n $[H1X+11] $[H1Y+1] .*"
+    [[ ${ENM[@]} =~ $re ]] && { T=($BASH_REMATCH); e=${T[@]:11:1}; x=${T[@]:1:1}; y=${T[@]:2:1}; unset ENM[e]; boom $x $y; BOOM $H1X $H1Y; }
     #0123456789ABCDEF
-    #1              
+    #1
     #2 __ ___________
     #3 |X\___.-╨─｡_
     #4 `─´‾‾‷\°★ º¯]─
@@ -259,7 +266,7 @@ sprite_cloud2 () {
     #2(      )
     #3 `-...´
     #                              1        2   3   4   5   6   7   8
-    cut "\\e[$OY;${SX}H$C2C"       '' "$X1"',' '-' '.' '_' '.' '.'     #1   
+    cut "\\e[$OY;${SX}H$C2C"       '' "$X1"',' '-' '.' '_' '.' '.'     #1
     cut "\\e[$[$OY+1];${SX}H$C2C"  '('     ' ' ' ' ' ' ' ' ' ' ' ' ')' #2
     cut "\\e[$[$OY+2];${SX}H$C2C"  '' "$X2"'`' '-' '.' '.' '.' '´'     #3
 }
@@ -441,51 +448,50 @@ sprite_tree3 () {
     esac
 }
 #------------------------{ BOOM }---------------------------------------------------------------------------------------
+#     _
+#    (_)
+#
+#    .-.
+#   (   )
+#    `-´
+#     _
+#   -   +
+#  (     )
+#   + _ -
+#
+#    - -
+#  ´     `
+# '       '
+#  `  _  ´
+#
+boom0 () {
+    cut "\e[$BY;$[BX+3]H$YLW"              '_'
+    cut "\e[$[BY+1];$[BX+2]H$YLW"         '(_)'; }
+boom1 () {
+    cut "\e[$BY;$[BX+2]H$RED"             '.-.'
+    cut "\e[$[BY+1];$[BX+1]H$RED"        '(   )'
+    cut "\e[$[BY+2];$[BX+1]H$RED"         '`-´'; }
+boom2 () {
+    cut "\e[$[BY-1];$[BX+2]H$red"          '_'
+    cut "\e[$BY;$[BX+1]H$red"            '-   +'
+    cut "\e[$[BY+1];${BX}H$red"         '(     )'
+    cut "\e[$[BY+2];$[BX+1]H$red"        '+ _ -'; }
+boom3 () {
+    cut "\e[$[BY-1];$[BX+1]H$DIM$RED"     '- -'
+    cut "\e[$BY;${BX}H$DIM$RED"         '´     `'
+    cut "\e[$[BY+1];$[BX-1]H$DIM$RED"  "'       '"
+    cut "\e[$[BY+2];${BX}H$DIM$RED"     '`  _  ´'; }
+boom4 () { # eraser
+    cut "\e[$[BY-1];$[BX+1]H$SKY"         '   '
+    cut "\e[$BY;${BX}H$SKY"             '       '
+    cut "\e[$[BY+1];$[BX-1]H$SKY"      '         '
+    cut "\e[$[BY+2];${BX}H$SKY"         '       '; }
+
 sprite_boom () {
     BX=$OX BY=$OY
     [[ $AS -ge $AL ]] && { unset BP3[i]; return; }
-    boom=(
-        # .-.
-        #(   )'
-        # `-´
-             "\e[$BY;$[BX+3]H$red.-.$SKY"
-        "\e[$[BY+1];$[BX+2]H$red(   )$SKY"
-       "\e[$[BY+2];$[BX+3]H$red"'`-´'$SKY
-        '' ''
-        # , - .
-        #(     )
-        # . _ .
-            "\e[$BY;$[BX+2]H$RED, - .$SKY"
-       "\e[$[BY+1];$[BX+1]H$RED(     )$SKY"
-        "\e[$[BY+2];$[BX+2]H$RED. _ .$SKY"
-        '' ''
-        #  ´ ¯ `
-        #(       )
-        # +  _ .' 
-      "\e[$BY;$[BX+2]H$DIM$RED"'´ ¯ `'$SKY
-    "\e[$[BY+1];${BX}H$DIM$RED(       )$SKY"
-   "\e[$[BY+2];$[BX+1]H$DIM$RED+  _ .'"$SKY
-        '' ''
-        #  .     .
-        #
-        #-         -
-        #
-        # '   .   `
-       "\e[$[BY-1];$[BX+1]H$RED.     .$SKY"
-          "\e[$BY;$[BX+1]H$SKY         $SKY"
-     "\e[$[BY+1];$[BX-1]H$red-         -$SKY"
-     "\e[$[BY+2];$[BX+1]H$SKY           $SKY"
-        "\e[$[BY+3];${BX}H$red'   .   "'`'$SKY
-        #eraser
-       "\e[$[BY-1];$[BX+1]H$SKY       "
-          "\e[$BY;$[BX+1]H$SKY         "
-     "\e[$[BY+1];$[BX-1]H$SKY           "
-     "\e[$[BY+2];$[BX+1]H$SKY           "
-        "\e[$[BY+3];${BX}H$SKY         ")
-    screen+="${boom[@]:$((AS*5)):5}"
-    mov; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
+    boom$AS; mov; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
 }
-
 #================================================{ Functions }==========================================================
 get_dimensions () {
     size=( $(stty size) )
@@ -555,17 +561,17 @@ server_read () {
 boom () {
     XB=$1 YB=$2
     [[ $XB -gt $boomendx ]] && XB=$boomendx
-    BP3+=("boom $XB $YB 0 0 0 2 0 0 0 5")
+    BP3+=("boom $XB $YB 0 0 0 2 1 9 0 5")
 }
 
 BOOM () {
     XB=$1 YB=$2
     [[ $XB -gt $boomendx ]] && XB=$boomendx
-    BP3+=("boom  $XB     $YB    0 0 0 $[RANDOM%3] 0 0 0 5"
-          "boom $[XB+5]  $YB    0 0 0 $[RANDOM%3] 0 0 0 5"
-          "boom $[XB+1] $[YB+2] 0 0 0 $[RANDOM%3] 0 0 0 5"
-          "boom $[XB+5] $[YB+2] 0 0 0 $[RANDOM%3] 0 0 0 5"
-          "boom  $XB    $[YB+1] 0 0 0 $[RANDOM%3] 0 0 0 5")
+    BP3+=("boom  $XB     $YB    0 0 0 $[RANDOM%3] 1 9 0 5"
+          "boom $[XB+5]  $YB    0 0 0 $[RANDOM%3] 1 9 0 5"
+          "boom $[XB+1] $[YB+2] 0 0 0 $[RANDOM%3] 1 9 0 5"
+          "boom $[XB+5] $[YB+2] 0 0 0 $[RANDOM%3] 1 9 0 5"
+          "boom  $XB    $[YB+1] 0 0 0 $[RANDOM%3] 1 9 0 5")
 }
 
 fps_counter () {
@@ -649,6 +655,3 @@ for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; la
 fill_screen
 H1X=10 H1Y=10 HER[0]="hero1 6 14 $H1X $H1Y 0 0 1 15 0 3"
 game
-
-
-
