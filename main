@@ -40,6 +40,7 @@ line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
 #----{ Start opt }------------------------------------{ description  }---------------------{ def. values }--------------
   background=true                                     # background objects visibility             (true)
+     showfps=true                                     # show FPS counter if set                   (true)
      enumber=0                                        # current enemy counter                     (0)
        enmax=100                                      # max number of akiens                      (10)
        month=$(date +'%m')                            # get current month
@@ -62,29 +63,25 @@ game () {
     while true; do
         #-{ Empty screen, count fps, set timings}------------------------------
         [[ $M -ge 10 ]] && M=0 || ((M++)) # enemies born rate
-        screen=; fps_counter
-        ENM=("${ENM[@]}")
-        HER=("${HER[@]}")
-        BP1=("${BP1[@]}")
-        BP2=("${BP2[@]}")
-        BP3=("${BP3[@]}")
+        screen=
+
+        #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound
 
         #-{ Add aliens }-------------------------------------------------------
         [[ $enumber -lt $enmax && $M -eq 0 ]] && {
-            ENM+=("alien $endx $[RANDOM%enmyendy+3] 3 5 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3")
-            ((enumber++))
+            ENM+=("alien $endx $[RANDOM%enmyendy+3] 3 5 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3"); ((enumber++))
         }
 
-        #-{ Print FPS }--------------------------------------------------------
-        screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
-
         #-{ Move bitplans }----------------------------------------------------
-        for i in ${!BP1[@]}; { OI=(${BP1[i]}); get_obj_data; }
-        for i in ${!BP2[@]}; { OI=(${BP2[i]}); get_obj_data; }
-        for i in ${!HER[@]}; { OI=(${HER[i]}); get_obj_data; }
-        for i in ${!ENM[@]}; { OI=(${ENM[i]}); get_obj_data; }
-        for i in ${!BP3[@]}; { OI=(${BP3[i]}); get_obj_data; }
+        BP1=("${BP1[@]}"); for i in ${!BP1[@]}; { OI=(${BP1[i]}); get_obj_data; }
+        BP2=("${BP2[@]}"); for i in ${!BP2[@]}; { OI=(${BP2[i]}); get_obj_data; }
+        HER=("${HER[@]}"); for i in ${!HER[@]}; { OI=(${HER[i]}); get_obj_data; }
+        ENM=("${ENM[@]}"); for i in ${!ENM[@]}; { OI=(${ENM[i]}); get_obj_data; }
+        BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); get_obj_data; }
+
+        #-{ Print FPS }--------------------------------------------------------
+        [[ $showfps ]] && fps_counter
 
         #-{ Print everything }-------------------------------------------------
         printf "$screen"

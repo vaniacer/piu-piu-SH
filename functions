@@ -91,6 +91,7 @@ fps_counter () {
         sec=$SECONDS
         FPSC=0
     } || ((FPSC++))
+    screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
 }
 
 fill_screen () {
