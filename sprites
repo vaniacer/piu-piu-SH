@@ -22,10 +22,18 @@ esac
 gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █)    # grass types
 #------------------------{ Hero1 }--------------------------------------------------------------------------------------
-mainrotor=(" ${blk}_   ${blk}_   ${blk}_   ${blk}_  ${blk}_ ${blk}_ ${blk}_  ${blk}_   ${blk}_   ${blk}_   ${blk}_$SKY"
-           "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY"
-           "_Z_ _Z_ _Z_ _Z_ _Z_ ${blk}_ _Z_ _Z_ _Z_ _Z_ _Z_$SKY"
-           "_Z_ _Z_ _Z_ _Z_ ${blk}_ ${blk}_ ${blk}_ _Z_ _Z_ _Z_ _Z_$SKY")
+#    mainrotor
+#  '___________'
+#  '    ___    '
+#  '     _     '
+#  '    ___    '
+#
+#    tailrotor
+# '\' '─' '/' '|'
+mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_$SKY"
+           "    _Z_     _Z_     _Z_     _Z_ ${blk}_ ${blk}_ ${blk}_     _Z_     _Z_     _Z_     _Z_$SKY"
+           "    _Z_     _Z_     _Z_     _Z_     _Z_ ${blk}_     _Z_     _Z_     _Z_     _Z_     _Z_$SKY"
+           "    _Z_     _Z_     _Z_     _Z_ ${blk}_ ${blk}_ ${blk}_     _Z_     _Z_     _Z_     _Z_$SKY")
 tailrotor=("${blk}"'\\' "${blk}─" "${blk}/" "${blk}|")
 sprite_hero1 () {
     server_read
@@ -332,22 +340,6 @@ sprite_tree3 () {
     esac
 }
 #------------------------{ BOOM }---------------------------------------------------------------------------------------
-#    .-.
-#   (   )
-#    `-´
-#   , - .
-#  (     )
-#   . _ .
-
-#   ´ ¯ `
-# (       )
-#  +  _ .'
- 
-#  .     .
-#
-#-         -
-#
-# '   .   `
 #     _
 #    (_)
 #
@@ -364,76 +356,28 @@ sprite_tree3 () {
 # '       '
 #  `  _  ´
 #
-
 boom0 () {
-    cut "\e[$BY;$[BX+3]H$YLW"      '_'
-    cut "\e[$[BY+1];$[BX+2]H$YLW" '(_)'
-}
-
+    cut "\e[$BY;$[BX+3]H$YLW"              '_'
+    cut "\e[$[BY+1];$[BX+2]H$YLW"         '(_)'; }
 boom1 () {
-    cut "\e[$BY;$[BX+2]H$RED"      '.-.'
-    cut "\e[$[BY+1];$[BX+1]H$RED" '(   )'
-    cut "\e[$[BY+2];$[BX+1]H$RED"  '`-´'
-}
-
+    cut "\e[$BY;$[BX+2]H$RED"             '.-.'
+    cut "\e[$[BY+1];$[BX+1]H$RED"        '(   )'
+    cut "\e[$[BY+2];$[BX+1]H$RED"         '`-´'; }
 boom2 () {
-    cut "\e[$[BY-1];$[BX+2]H$red"    '_'
-    cut "\e[$BY;$[BX+1]H$red"      '-   +'
-    cut "\e[$[BY+1];${BX}H$red"   '(     )'
-    cut "\e[$[BY+2];$[BX+1]H$red"  '+ _ -'
-}
-
+    cut "\e[$[BY-1];$[BX+2]H$red"          '_'
+    cut "\e[$BY;$[BX+1]H$red"            '-   +'
+    cut "\e[$[BY+1];${BX}H$red"         '(     )'
+    cut "\e[$[BY+2];$[BX+1]H$red"        '+ _ -'; }
 boom3 () {
     cut "\e[$[BY-1];$[BX+1]H$DIM$RED"     '- -'
     cut "\e[$BY;${BX}H$DIM$RED"         '´     `'
     cut "\e[$[BY+1];$[BX-1]H$DIM$RED"  "'       '"
-    cut "\e[$[BY+2];${BX}H$DIM$RED"     '`  _  ´'
-}
-
-boom4 () {
-    cut "\e[$[BY-1];$[BX+1]H$SKY"     '   '
-    cut "\e[$BY;${BX}H$SKY"         '       '
-    cut "\e[$[BY+1];$[BX-1]H$SKY"  '         '
-    cut "\e[$[BY+2];${BX}H$SKY"     '       '
-}
-
-#boom0 () {
-
-#    cut "\e[$BY;$[BX+3]H$red"      '.-.'
-#    cut "\e[$[BY+1];$[BX+2]H$red" '(   )'
-#    cut "\e[$[BY+2];$[BX+3]H$red"  '`-´'
-#}
-
-#boom1 () {
-
-#    cut "\e[$BY;$[BX+2]H$RED"      ', - .'
-#    cut "\e[$[BY+1];$[BX+1]H$RED" '(     )'
-#    cut "\e[$[BY+2];$[BX+2]H$RED"  '. _ .'
-#}
-
-#boom2 () {
-
-#    cut "\e[$BY;$[BX+2]H$DIM$RED"       '´ ¯ `'
-#    cut "\e[$[BY+1];${BX}H$DIM$RED"   '(       )'
-#    cut "\e[$[BY+2];$[BX+1]H$DIM$RED"  "+  _ .'"
-#}
-#boom3 () {
-
-#    cut "\e[$[BY-1];$[BX+1]H$RED"   '.     .'
-#    cut "\e[$BY;$[BX+1]H$SKY"      '         '
-#    cut "\e[$[BY+1];$[BX-1]H$red" '-         -'
-#    cut "\e[$[BY+2];$[BX+1]H$SKY" '           '
-#    cut "\e[$[BY+3];${BX}H$red"    "'   .   \`"
-#}
-
-#boom4 () {
-#    #eraser
-#    cut "\e[$[BY-1];$[BX+1]H$SKY"   '       '
-#    cut "\e[$BY;$[BX+1]H$SKY"      '         '
-#    cut "\e[$[BY+1];$[BX-1]H$SKY" '           '
-#    cut "\e[$[BY+2];$[BX+1]H$SKY" '           '
-#    cut "\e[$[BY+3];${BX}H$SKY"    '         '
-#}
+    cut "\e[$[BY+2];${BX}H$DIM$RED"     '`  _  ´'; }
+boom4 () { # eraser
+    cut "\e[$[BY-1];$[BX+1]H$SKY"         '   '
+    cut "\e[$BY;${BX}H$SKY"             '       '
+    cut "\e[$[BY+1];$[BX-1]H$SKY"      '         '
+    cut "\e[$[BY+2];${BX}H$SKY"         '       '; }
 
 sprite_boom () {
     BX=$OX BY=$OY
