@@ -1419,14 +1419,16 @@ function main_menu {
 }
 
 function fps_counter {
-
-    [[ $SECONDS -gt $sec ]] && {\
-        FPS=$FPSC
-        [[ $FPS -gt $FPSM ]] && FPSM=$FPS
-        [[ $FPS -lt $FPSL ]] && FPSL=$FPS
+    [[ $SECONDS -gt $sec ]] && {
+        FPS=$FPSC AVG+=($FPS)
+        [[ $FPSL ]] || FPSL=$FPS
+        [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
+        [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
+        (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
         sec=$SECONDS
         FPSC=0
     } || ((FPSC++))
+    screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
 }
 
 function mover {
@@ -1598,10 +1600,8 @@ function game_team {
         [[ $server ]] && {
             screen+="\e[$endy;2H$LND$SC2$HS2 ${BLK}killed aliens: $LND$RED$frags2$LND  ${BLK}Life: $LND$RED$life2$LND  ${BLK}Ammo: $LND$RED$ammo2$LND "
             screen+="\e[1;2H$SKY$SC$HS ${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
-            screen+="\e[$endy;$[$endx-10]H$LND${BLK}FPS: $RED$FPS  "
         } || {
             screen+="\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
-            screen+="\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}FPS max: $RED$FPSM ${BLK}FPS low: $RED$FPSL "
         }
 
         #-{ Move\check\print objects }----------------------------------------------------------------------------------

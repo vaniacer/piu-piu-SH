@@ -84,6 +84,19 @@ server_read () {
     esac
 }
 
+colision_aliens () {
+    [[ ${ENM[@]} =~ $1 ]] && {
+        T=($BASH_REMATCH)
+        e=${T[@]:11:1}
+        x=${T[@]:1:1}
+        y=${T[@]:2:1}
+        unset ENM[e]
+        ((enumber--))
+        boom $x $y
+        return 0
+    }
+}
+
 timings () {
     [[ $M  -ge 10 ]] && M=0 || ((M++)) # enemies born rate
     [[ $CD -gt 0  ]] && ((CD--))       # hero1 cooldown timer
