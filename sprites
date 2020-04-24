@@ -33,7 +33,7 @@ sprite_hero1 () {
     CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
     X1="\\e[$[H1Y+5];$[H1X+7]H"
     re="n $[H1X+13] $[H1Y+2] .*|n $[H1X+12] $[H1Y+2] .*|n $[H1X+12] $[H1Y+1] .*|n $[H1X+11] $[H1Y+1] .*"
-    [[ ${ENM[@]} =~ $re ]] && { T=($BASH_REMATCH); e=${T[@]:11:1}; x=${T[@]:1:1}; y=${T[@]:2:1}; unset ENM[e]; boom $x $y; }
+    [[ ${ENM[@]} =~ $re ]] && { T=($BASH_REMATCH); e=${T[@]:11:1}; x=${T[@]:1:1}; y=${T[@]:2:1}; unset ENM[e]; boom $x $y; BOOM $H1X $H1Y; }
     #0123456789ABCDEF
     #1              
     #2 __ ___________
@@ -332,48 +332,57 @@ sprite_tree3 () {
     esac
 }
 #------------------------{ BOOM }---------------------------------------------------------------------------------------
+boom0 () {
+    # .-.
+    #(   )'
+    # `-´
+    cut "\e[$BY;$[BX+3]H$red"      '.-.'
+    cut "\e[$[BY+1];$[BX+2]H$red" '(   )'
+    cut "\e[$[BY+2];$[BX+3]H$red"  '`-´'
+}
+
+boom1 () {
+    # , - .
+    #(     )
+    # . _ .
+    cut "\e[$BY;$[BX+2]H$RED"      ', - .'
+    cut "\e[$[BY+1];$[BX+1]H$RED" '(     )'
+    cut "\e[$[BY+2];$[BX+2]H$RED"  '. _ .'
+}
+
+boom2 () {
+    #  ´ ¯ `
+    #(       )
+    # +  _ .' 
+    cut "\e[$BY;$[BX+2]H$DIM$RED"       '´ ¯ `'
+    cut "\e[$[BY+1];${BX}H$DIM$RED"   '(       )'
+    cut "\e[$[BY+2];$[BX+1]H$DIM$RED"  "+  _ .'"
+}
+boom3 () {
+    #  .     .
+    #
+    #-         -
+    #
+    # '   .   `
+    cut "\e[$[BY-1];$[BX+1]H$RED"   '.     .'
+    cut "\e[$BY;$[BX+1]H$SKY"      '         '
+    cut "\e[$[BY+1];$[BX-1]H$red" '-         -'
+    cut "\e[$[BY+2];$[BX+1]H$SKY" '           '
+    cut "\e[$[BY+3];${BX}H$red"    "'   .   \`"
+}
+
+boom4 () {
+    #eraser
+    cut "\e[$[BY-1];$[BX+1]H$SKY"   '       '
+    cut "\e[$BY;$[BX+1]H$SKY"      '         '
+    cut "\e[$[BY+1];$[BX-1]H$SKY" '           '
+    cut "\e[$[BY+2];$[BX+1]H$SKY" '           '
+    cut "\e[$[BY+3];${BX}H$SKY"    '         '
+}
+
 sprite_boom () {
     BX=$OX BY=$OY
     [[ $AS -ge $AL ]] && { unset BP3[i]; return; }
-    boom=(
-        # .-.
-        #(   )'
-        # `-´
-             "\e[$BY;$[BX+3]H$red.-.$SKY"
-        "\e[$[BY+1];$[BX+2]H$red(   )$SKY"
-       "\e[$[BY+2];$[BX+3]H$red"'`-´'$SKY
-        '' ''
-        # , - .
-        #(     )
-        # . _ .
-            "\e[$BY;$[BX+2]H$RED, - .$SKY"
-       "\e[$[BY+1];$[BX+1]H$RED(     )$SKY"
-        "\e[$[BY+2];$[BX+2]H$RED. _ .$SKY"
-        '' ''
-        #  ´ ¯ `
-        #(       )
-        # +  _ .' 
-      "\e[$BY;$[BX+2]H$DIM$RED"'´ ¯ `'$SKY
-    "\e[$[BY+1];${BX}H$DIM$RED(       )$SKY"
-   "\e[$[BY+2];$[BX+1]H$DIM$RED+  _ .'"$SKY
-        '' ''
-        #  .     .
-        #
-        #-         -
-        #
-        # '   .   `
-       "\e[$[BY-1];$[BX+1]H$RED.     .$SKY"
-          "\e[$BY;$[BX+1]H$SKY         $SKY"
-     "\e[$[BY+1];$[BX-1]H$red-         -$SKY"
-     "\e[$[BY+2];$[BX+1]H$SKY           $SKY"
-        "\e[$[BY+3];${BX}H$red'   .   "'`'$SKY
-        #eraser
-       "\e[$[BY-1];$[BX+1]H$SKY       "
-          "\e[$BY;$[BX+1]H$SKY         "
-     "\e[$[BY+1];$[BX-1]H$SKY           "
-     "\e[$[BY+2];$[BX+1]H$SKY           "
-        "\e[$[BY+3];${BX}H$SKY         ")
-    screen+="${boom[@]:$((AS*5)):5}"
-    mov; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
+    boom$AS; mov; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
 }
 

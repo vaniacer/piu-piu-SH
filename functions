@@ -68,17 +68,17 @@ server_read () {
 boom () {
     XB=$1 YB=$2
     [[ $XB -gt $boomendx ]] && XB=$boomendx
-    BP3+=("boom $XB $YB 0 0 0 2 0 0 0 5")
+    BP3+=("boom $XB $YB 0 0 0 2 1 9 0 5")
 }
 
 BOOM () {
     XB=$1 YB=$2
     [[ $XB -gt $boomendx ]] && XB=$boomendx
-    BP3+=("boom  $XB     $YB    0 0 0 $[RANDOM%3] 0 0 0 5"
-          "boom $[XB+5]  $YB    0 0 0 $[RANDOM%3] 0 0 0 5"
-          "boom $[XB+1] $[YB+2] 0 0 0 $[RANDOM%3] 0 0 0 5"
-          "boom $[XB+5] $[YB+2] 0 0 0 $[RANDOM%3] 0 0 0 5"
-          "boom  $XB    $[YB+1] 0 0 0 $[RANDOM%3] 0 0 0 5")
+    BP3+=("boom  $XB     $YB    0 0 0 $[RANDOM%3] 1 9 0 5"
+          "boom $[XB+5]  $YB    0 0 0 $[RANDOM%3] 1 9 0 5"
+          "boom $[XB+1] $[YB+2] 0 0 0 $[RANDOM%3] 1 9 0 5"
+          "boom $[XB+5] $[YB+2] 0 0 0 $[RANDOM%3] 1 9 0 5"
+          "boom  $XB    $[YB+1] 0 0 0 $[RANDOM%3] 1 9 0 5")
 }
 
 fps_counter () {
