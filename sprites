@@ -42,7 +42,7 @@ sprite_hero1 () {
     TR=${tailrotor[AS]} GN=$BLD$BLK${gun[$G]} X1="\\e[$[H1Y+5];$[H1X+7]H"
     re="n $[H1X+13] $[H1Y+2] .*|n $[H1X+12] $[H1Y+2] .*|n $[H1X+12] $[H1Y+1] .*|n $[H1X+11] $[H1Y+1] .*"
     colision_aliens "$re" && BOOM $H1X $H1Y
-    #0123456789ABCDEF
+    #0123456789ABCDEFG
     #1
     #2 __ ___________
     #3 |X\___.-╨─｡_
@@ -102,7 +102,7 @@ sprite_alien () {
         mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 5 $i" || { unset ENM[i]; ((enumber--)); return; }
         X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
         CM1=$SKY$BLD$ylw CM2=$SKY$UND$DIM$grn CM3=$SKY$ylw
-        #012345
+        #0123456
         #1 _\_
         #2(O…o)
         #3 `¯´
@@ -115,11 +115,11 @@ sprite_alien () {
         mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; ((enumber--)); return; }
         X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
         CM1=$SKY$DIM$BLK CM2=$BLD$BLK
-        #012345
+        #0123456
         #1 ___
         #2( o )
         #3 `¯´
-        #                            1        2         3         4   5
+        #                            1        2         3         4   5   6
         cut "\\e[$OY;${SX}H$CM1"     '' "$X1"'_' "$CM2"'_' "$CM1"'_' ' '     #1
         cut "\\e[$[OY+1];${SX}H$CM1" '('          ${small[AS]}       ')' ' ' #2
         cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`'       '¯'       '´' ' ';;   #3
@@ -135,7 +135,7 @@ esac
 sprite_cloud1 () {
     mov - && BP1[i]="cloud1 $OX $OY 3 6 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
     X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
-    #0123456
+    #01234567
     #1 ,-+.
     #2(    )
     #3 `+-´
@@ -153,7 +153,7 @@ esac
 sprite_cloud2 () {
     mov - && BP2[i]="cloud2 $OX $OY 3 8 $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
     X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
-    #012345678
+    #0123456789
     #1 ,-._..
     #2(      )
     #3 `-...´
@@ -171,7 +171,7 @@ esac
 sprite_cloud3 () {
     mov - && BP3[i]="cloud3 $OX $OY 3 11 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
     X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
-    #0123456789AB
+    #0123456789ABC
     #1 ,+¯`.-¯`.
     #2(         )
     #3 `--.,,.-´
@@ -192,7 +192,7 @@ sprite_tree1 () {
         0[1-4]|12)
         mov - && BP1[i]="tree1 $OX $OY 3 2 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
         X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H" CM1="$DIM$blk"
-        #0123
+        #01234
         #1 |/
         #2\|
         #3 |
@@ -204,7 +204,7 @@ sprite_tree1 () {
         *)
         mov - && BP1[i]="tree1 $OX $OY 4 2 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
         X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+3];$[OX+1]H" CM1="$DIM$blk"
-        #0123
+        #01234
         #1 _
         #2/ \
         #3\|/
@@ -227,7 +227,7 @@ sprite_tree2 () {
         0[1-4]|12)
         mov - && BP2[i]="tree2 $OX $OY 5 5 $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
         X1="\\e[$OY;$[OX+3]H" X2="\\e[$[OY+2];$[OX+1]H" X3="\\e[$[OY+3];$[OX+2]H" X4="\\e[$[OY+4];$[OX+2]H"
-        #012345
+        #0123456
         #1   |_
         #2\||/
         #3 \║|_
@@ -243,7 +243,7 @@ sprite_tree2 () {
         *)
         mov - && BP2[i]="tree2 $OX $OY 6 5 $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
         X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+3];$[OX+1]H" X3="\\e[$[OY+4];$[OX+2]H" X4="\\e[$[OY+5];$[OX+2]H"
-        #012345
+        #0123456
         #1 _._
         #2/   \
         #3\ | /
@@ -271,7 +271,7 @@ sprite_tree3 () {
         mov - && BP3[i]="tree3 $OX $OY 8 12 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
         X1="\\e[$OY;$[OX+6]H"     X2="\\e[$[OY+1];$[OX+4]H" X3="\\e[$[OY+2];$[OX+4]H" X4="\\e[$[OY+3];$[OX+4]H"
         X5="\\e[$[OY+4];$[OX+2]H" X6="\\e[$[OY+5];$[OX+2]H" X7="\\e[$[OY+7];$[OX+6]H"
-        #0123456789ABC
+        #0123456789ABCD
         #1      ★
         #2    _❅|●
         #3    -/○\❄-
@@ -294,7 +294,7 @@ sprite_tree3 () {
         mov - && BP3[i]="tree3 $OX $OY 8 9 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
         X1="\\e[$OY;$[OX+2]H"     X2="\\e[$[OY+1];$[OX+3]H" X3="\\e[$[OY+3];$[OX+1]H" X4="\\e[$[OY+4];$[OX+3]H"
         X5="\\e[$[OY+5];$[OX+4]H" X6="\\e[$[OY+6];$[OX+4]H" X7="\\e[$[OY+7];$[OX+4]H"
-        #0123456789
+        #0123456789A
         #1  \|
         #2   \| |_
         #3_\_ ║/
@@ -317,7 +317,7 @@ sprite_tree3 () {
         mov - && BP3[i]="tree3 $OX $OY 9 9 $SC $SM $CS $CL $AS $AL" || { unset B3[i]; return; }
         X1="\\e[$OY;$[OX+3]H"     X2="\\e[$[OY+1];$[OX+2]H" X3="\\e[$[OY+2];$[OX+1]H" X4="\\e[$[OY+5];$[OX+3]H"
         X5="\\e[$[OY+6];$[OX+4]H" X6="\\e[$[OY+7];$[OX+4]H" X7="\\e[$[OY+8];$[OX+4]H"
-        #0123456789
+        #0123456789A
         #1   _._
         #2  /   \
         #3 _\ | /
@@ -327,7 +327,7 @@ sprite_tree3 () {
         #7    ║/
         #8    ║
         #9    ║
-        #                             1       2          3          4          5         6         7         8   9
+        #                             1       2          3          4          5         6         7         8   9    A
         cut "\\e[$OY;${SX}H$T3C"      ''      ''        ''    "$X1"'_'        '.'       '_'       ' '                    #1
         cut "\\e[$[$OY+1];${SX}H$T3C" ''      ''   "$X2"'/'        ' '        ' '       ' '       '\\'      ' '          #2
         cut "\\e[$[$OY+2];${SX}H$T3C" '' "$X3"'_'       '\\'       ' '  "$BLK"'|'       ' ' "$T3C"'/'       ' '          #3
@@ -340,45 +340,28 @@ sprite_tree3 () {
     esac
 }
 #------------------------{ BOOM }---------------------------------------------------------------------------------------
-#     _
-#    (_)
-#
-#    .-.
-#   (   )
-#    `-´
-#     _
-#   -   +
-#  (     )
-#   + _ -
-#
-#    - -
-#  ´     `
-# '       '
-#  `  _  ´
-#
 boom0 () {
-    cut "\e[$BY;$[BX+3]H$YLW"             '_'
-    cut "\e[$[BY+1];$[BX+2]H$YLW"        '(_)'; }
-boom1 () {                            
-    cut "\e[$BY;$[BX+2]H$RED"            '.-.'
-    cut "\e[$[BY+1];$[BX+1]H$RED"       '(   )'
-    cut "\e[$[BY+2];$[BX+1]H$RED"        '`-´'; }
-boom2 () {                            
-    cut "\e[$[BY-1];$[BX+2]H$red"         '_'
-    cut "\e[$BY;$[BX+1]H$red"           '-   +'
-    cut "\e[$[BY+1];${BX}H$red"        '(     )'
-    cut "\e[$[BY+2];$[BX+1]H$red"       '+ _ -'; }
-boom3 () {                            
-    cut "\e[$[BY-1];$[BX+1]H$DIM$RED"    '- -'
-    cut "\e[$BY;${BX}H$DIM$RED"        '´     `'
-    cut "\e[$[BY+1];$[BX-1]H$DIM$RED" "'       '"
-    cut "\e[$[BY+2];${BX}H$DIM$RED"    '`  _  ´'; }
-boom4 () { # eraser                   
+    cut "\e[$BY;$[BX+3]H$YLW"             '_'       #     _
+    cut "\e[$[BY+1];$[BX+2]H$YLW"        '(_)'; }   #    (_)
+boom1 () {                                          #
+    cut "\e[$BY;$[BX+2]H$RED"            '.-.'      #    .-.
+    cut "\e[$[BY+1];$[BX+1]H$RED"       '(   )'     #   (   )
+    cut "\e[$[BY+2];$[BX+1]H$RED"        '`-´'; }   #    `-´
+boom2 () {                                          #
+    cut "\e[$[BY-1];$[BX+2]H$red"         '_'       #     _
+    cut "\e[$BY;$[BX+1]H$red"           '-   +'     #   -   +
+    cut "\e[$[BY+1];${BX}H$red"        '(     )'    #  (     )
+    cut "\e[$[BY+2];$[BX+1]H$red"       '+ _ -'; }  #   + _ -
+boom3 () {                                          #
+    cut "\e[$[BY-1];$[BX+1]H$DIM$RED"    '- -'      #    - -
+    cut "\e[$BY;${BX}H$DIM$RED"        '´     `'    #  ´     `
+    cut "\e[$[BY+1];$[BX-1]H$DIM$RED" "'       '"   # '       '
+    cut "\e[$[BY+2];${BX}H$DIM$RED"    '`  _  ´'; } #  `  _  ´
+boom4 () { # eraser                                 #
     cut "\e[$[BY-1];$[BX+1]H$SKY"        '   '
     cut "\e[$BY;${BX}H$SKY"            '       '
     cut "\e[$[BY+1];$[BX-1]H$SKY"     '         '
     cut "\e[$[BY+2];${BX}H$SKY"        '       '; }
-
 sprite_boom () {
     BX=$OX BY=$OY
     [[ $AS -ge $AL ]] && { unset BP3[i]; return; }
@@ -393,8 +376,7 @@ shoot1=(
 sprite_piu1 () {
     CM1=$SKY$BLD$GRN
     mov + && PIU[i]="piu1 $OX $OY 1 4 $SC $SM $CS $CL $AS 3 $i" || { unset PIU[i]; return; }
-    re="n $OX $[OY-1] .*|n $[OX+1] $[OY-1] .*"
-    colision_aliens "$re" && { unset PIU[i]; return; }
+    colision_aliens "n $OX $[OY-1] .*|n $[OX+1] $[OY-1] .*"     && { unset PIU[i]; return; }
     #01234
     #1 -=>
     #                         1      2     3          4
