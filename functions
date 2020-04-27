@@ -1,10 +1,10 @@
 #!/bin/bash
 #================================================{ Functions }==========================================================
 get_dimensions () {
-        size=( $(stty size) )
-        endx=${size[1]}
-        endy=${size[0]}
-    enmyendy=$[endy-7]
+    size=($(stty size))
+    endx=${size[1]}
+    endy=${size[0]}
+    enmyendy=$[endy-7 ]
     boomendx=$[endx-10]
     bullendx=$[endx-4 ]
     heroendx=$[endx-15]
@@ -86,12 +86,12 @@ server_read () {
 
 colision_aliens () {
     [[ ${ENM[@]} =~ $1 ]] && {
-        T=($BASH_REMATCH)
-        e=${T[@]:11:1}
-        x=${T[@]:1:1}
-        y=${T[@]:2:1}
-        unset ENM[e]
+        match=($BASH_REMATCH)
+        a=${match[@]:11:1}
+        x=${match[@]:1:1}
+        y=${match[@]:2:1}
         ((enumber--))
+        unset ENM[a]
         boom $x $y
         return 0
     }
@@ -133,6 +133,7 @@ fps_counter () {
         sec=$SECONDS
         FPSC=0
     } || ((FPSC++))
+    #-{ Print FPS }------------------------------------------------------------
     screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
 }
 
@@ -148,14 +149,17 @@ fill_screen () {
 
 add_backgound () {
     #-{ Add msngr }------------------------------------------------------------
-    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $[RANDOM%enmyendy+3] 4 20 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3");; esac
+#    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $[RANDOM%(endy-10)+3] 4 20 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3");; esac
+
+    #-{ Add birds }------------------------------------------------------------
+    case $[RANDOM % $MSN] in 0) BP1+=("bird $endx $[RANDOM%10+2] 2 2 0 $[RANDOM%3+3] 1 0 $[RANDOM%2] 2");; esac
 
     #-{ Add clouds }-----------------------------------------------------------
-    case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
-        0:1) BP1+=("cloud1 $endx $[RANDOM % 10 + 2] 3 6  6 6 1 0 0 0");;
-        0:2) BP2+=("cloud2 $endx $[RANDOM % 10 + 2] 3 8  4 4 1 0 0 0");;
-        0:3) BP3+=("cloud3 $endx $[RANDOM % 10 + 2] 3 11 2 2 1 0 0 0");;
-    esac
+#    case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
+#        0:1) BP1+=("cloud1 $endx $[RANDOM % 10 + 2] 3 6  6 6 1 0 0 0");;
+#        0:2) BP2+=("cloud2 $endx $[RANDOM % 10 + 2] 3 8  4 4 1 0 0 0");;
+#        0:3) BP3+=("cloud3 $endx $[RANDOM % 10 + 2] 3 11 2 2 1 0 0 0");;
+#    esac
 
     #-{ Add trees }------------------------------------------------------------
     case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in

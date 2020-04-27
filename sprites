@@ -339,33 +339,44 @@ sprite_tree3 () {
         cut "\\e[$[$OY+8];${SX}H$BLK" ''      ''        ''         ''    "$X7"'║' ' ';;                                  #9
     esac
 }
-#------------------------{ BOOM }-------------------+-------------------------------------------------------------------
-boom0 () {                                          #
-    cut "\e[$BY;$[BX+3]H$YLW"             '_'       #     _
-    cut "\e[$[BY+1];$[BX+2]H$YLW"        '(_)'; }   #    (_)
-boom1 () {                                          #
-    cut "\e[$BY;$[BX+2]H$RED"            '.-.'      #    .-.
-    cut "\e[$[BY+1];$[BX+1]H$RED"       '(   )'     #   (   )
-    cut "\e[$[BY+2];$[BX+1]H$RED"        '`-´'; }   #    `-´
-boom2 () {                                          #
-    cut "\e[$[BY-1];$[BX+2]H$red"         '_'       #     _
-    cut "\e[$BY;$[BX+1]H$red"           '-   +'     #   -   +
-    cut "\e[$[BY+1];${BX}H$red"        '(     )'    #  (     )
-    cut "\e[$[BY+2];$[BX+1]H$red"       '+ _ -'; }  #   + _ -
-boom3 () {                                          #
-    cut "\e[$[BY-1];$[BX+1]H$DIM$RED"    '- -'      #    - -
-    cut "\e[$BY;${BX}H$DIM$RED"        '´     `'    #  ´     `
-    cut "\e[$[BY+1];$[BX-1]H$DIM$RED" "'       '"   # '       '
-    cut "\e[$[BY+2];${BX}H$DIM$RED"    '`  _  ´'; } #  `  _  ´
-boom4 () { #---------------------------{ eraser }---+
-    cut "\e[$[BY-1];$[BX+1]H$SKY"        '   '
-    cut "\e[$BY;${BX}H$SKY"            '       '
-    cut "\e[$[BY+1];$[BX-1]H$SKY"     '         '
-    cut "\e[$[BY+2];${BX}H$SKY"        '       '; }
+#------------------------{ Bird }---------------------------------------------------------------------------------------
+# ⌄ _ 
+#     ^
+sprite_bird () {
+    mov - && BP1[i]="bird $OX $OY 2 2 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
+    case $AS in
+          0) cut "\\e[$OY;${SX}H$SKY$blk"      '⌄' ' '
+             cut "\\e[$[$OY+1];${SX}H$SKY"     ' ' ' ';;
+          1) cut "\\e[$OY;${SX}H$SKY$blk"      '_' ' '
+             cut "\\e[$[$OY+1];${SX}H$SKY"     ' ' ' ';;
+          2) cut "\\e[$OY;${SX}H$SKY"          ' ' ' '
+             cut "\\e[$[$OY+1];${SX}H$SKY$blk" '^' ' ';;
+    esac
+}
+#------------------------{ BOOM }---------------------------------------------------------------------------------------
 sprite_boom () {
     BX=$OX BY=$OY
     [[ $AS -ge $AL ]] && { unset BP3[i]; return; }
-    boom$AS; mov -; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
+    case $AS in
+          0) cut "\e[$BY;$[BX+3]H$YLW"             '_'      #     _
+             cut "\e[$[BY+1];$[BX+2]H$YLW"        '(_)';;   #    (_)
+          1) cut "\e[$BY;$[BX+2]H$RED"            '.-.'     #    .-.
+             cut "\e[$[BY+1];$[BX+1]H$RED"       '(   )'    #   (   )
+             cut "\e[$[BY+2];$[BX+1]H$RED"        '`-´';;   #    `-´
+          2) cut "\e[$[BY-1];$[BX+2]H$red"         '_'      #     _
+             cut "\e[$BY;$[BX+1]H$red"           '-   +'    #   -   +
+             cut "\e[$[BY+1];${BX}H$red"        '(     )'   #  (     )
+             cut "\e[$[BY+2];$[BX+1]H$red"       '+ _ -';;  #   + _ -
+          3) cut "\e[$[BY-1];$[BX+1]H$DIM$RED"    '- -'     #    - -
+             cut "\e[$BY;${BX}H$DIM$RED"        '´     `'   #  ´     `
+             cut "\e[$[BY+1];$[BX-1]H$DIM$RED" "'       '"  # '       '
+             cut "\e[$[BY+2];${BX}H$DIM$RED"    '`  _  ´';; #  `  _  ´
+          4) cut "\e[$[BY-1];$[BX+1]H$SKY"        '   '     #  eraser
+             cut "\e[$BY;${BX}H$SKY"            '       '   #
+             cut "\e[$[BY+1];$[BX-1]H$SKY"     '         '  #
+             cut "\e[$[BY+2];${BX}H$SKY"        '       ';; #
+    esac
+    mov -; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
 }
 #------------------------{ Shoots }-------------------------------------------------------------------------------------
 shoot1=(
