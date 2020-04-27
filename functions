@@ -149,23 +149,23 @@ fill_screen () {
 
 add_backgound () {
     #-{ Add msngr }------------------------------------------------------------
-#    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $[RANDOM%(endy-10)+3] 4 20 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3");; esac
+    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $[3+RANDOM%(endy-10)] 4 20 0 $[RANDOM%2]   1 0 $[RANDOM%3] 3");; esac
 
     #-{ Add birds }------------------------------------------------------------
-    case $[RANDOM % $MSN] in 0) BP1+=("bird $endx $[RANDOM%10+2] 2 2 0 $[RANDOM%3+3] 1 0 $[RANDOM%2] 2");; esac
+    case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $[3+RANDOM%enmyendy]  2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
 
     #-{ Add clouds }-----------------------------------------------------------
-#    case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
-#        0:1) BP1+=("cloud1 $endx $[RANDOM % 10 + 2] 3 6  6 6 1 0 0 0");;
-#        0:2) BP2+=("cloud2 $endx $[RANDOM % 10 + 2] 3 8  4 4 1 0 0 0");;
-#        0:3) BP3+=("cloud3 $endx $[RANDOM % 10 + 2] 3 11 2 2 1 0 0 0");;
-#    esac
+    case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
+        0:1) BP1+=("cloud1 $endx $[RANDOM % 10 + 2] 3 6  6 $[6+RANDOM%2] 1 0 0 0");;
+        0:2) BP2+=("cloud2 $endx $[RANDOM % 10 + 2] 3 8  4 $[4+RANDOM%2] 1 0 0 0");;
+        0:3) BP3+=("cloud3 $endx $[RANDOM % 10 + 2] 3 11 2 $[2+RANDOM%2] 1 0 0 0");;
+    esac
 
     #-{ Add trees }------------------------------------------------------------
     case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
-        0:1) BP1+=("tree1 $endx $tre1endy 3 2 6 6 1 0 0 0");;
-        0:2) BP2+=("tree2 $endx $tre2endy 6 5 4 4 1 0 0 0");;
-        0:3) BP3+=("tree3 $endx $tre3endy 9 9 2 2 1 0 0 0");;
+        0:1) BP1+=("tree1 $endx $tre1endy 3 2 6 $[6+RANDOM%2] 1 0 0 0");;
+        0:2) BP2+=("tree2 $endx $tre2endy 6 5 4 $[4+RANDOM%2] 1 0 0 0");;
+        0:3) BP3+=("tree3 $endx $tre3endy 9 9 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
 
     #-{ Print moving land }----------------------------------------------------
