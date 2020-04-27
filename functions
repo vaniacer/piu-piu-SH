@@ -15,6 +15,10 @@ get_dimensions () {
     bosshbar=$[endx-10]
     lineendy=$[endy-2 ]
     Sunsendx=$[endx-18]
+    hos1endy=$[endy-4 ]
+    hos2endy=$[endy-11]
+    hos3endy=$[endy-6 ]
+    msgrendy=$[endy-10]
     tre1endy=$[endy-tree1H-2]
     tre2endy=$[endy-tree2H-2]
     tre3endy=$[endy-tree3H-2]
@@ -148,11 +152,11 @@ fill_screen () {
 }
 
 add_backgound () {
-    #-{ Add msngr }------------------------------------------------------------
-    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $[3+RANDOM%(endy-10)] 4 20 0 $[RANDOM%2]   1 0 $[RANDOM%3] 3");; esac
-
     #-{ Add birds }------------------------------------------------------------
-    case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $[3+RANDOM%enmyendy]  2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
+    case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $[3+RANDOM%enmyendy] 2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
+
+    #-{ Add msngr }------------------------------------------------------------
+    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $[3+RANDOM%msgrendy] 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
 
     #-{ Add clouds }-----------------------------------------------------------
     case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
@@ -161,7 +165,14 @@ add_backgound () {
         0:3) BP3+=("cloud3 $endx $[RANDOM % 10 + 2] 3 11 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
 
-    #-{ Add trees }------------------------------------------------------------
+    #-{ Add house }------------------------------------------------------------
+    case $[RANDOM % $HOU]:$[RANDOM % 3 + 1] in
+        0:1) BP1+=("house1 $endx $hos1endy 2 6  6 $[6+RANDOM%2] 1 0 0 0");;
+        0:2) BP2+=("house2 $endx $hos2endy 9 30 4 $[4+RANDOM%2] 1 0 0 0");;
+        0:3) BP3+=("house3 $endx $hos3endy 4 17 2 $[2+RANDOM%2] 1 0 0 0");;
+    esac
+
+#    #-{ Add trees }------------------------------------------------------------
     case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
         0:1) BP1+=("tree1 $endx $tre1endy 3 2 6 $[6+RANDOM%2] 1 0 0 0");;
         0:2) BP2+=("tree2 $endx $tre2endy 6 5 4 $[4+RANDOM%2] 1 0 0 0");;
