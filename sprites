@@ -335,14 +335,14 @@ sprite_tree3 () {
 # ⌄ _ 
 #     ^
 sprite_bird () {
-    mov - && BP1[i]="bird $OX $OY 2 2 $SC $S $CS $CL $AS $AL" || { unset BP1[i]; return; }
+    mov - && BP1[i]="bird $OX $OY 2 2 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
     case $AS in
-          0) cut "\\e[$OY;${SX}H$SKY$blk"     '⌄' ' '
-             cut "\\e[$[$OY+1];${SX}H$SKY"    ' ' ' ';;
-          1) cut "\\e[$OY;${SX}H$SKY$blk"     '_' ' '
-             cut "\\e[$[$OY+1];${SX}H$SKY"    ' ' ' ';;
-          2) cut "\\e[$OY;${SX}H$SKY"         ' ' ' '
-             cut "\\e[$[$OY+1];${X}H$SKY$blk" '^' ' ';;
+          0) cut "\\e[$OY;${SX}H$SKY$blk"      '⌄' ' '
+             cut "\\e[$[$OY+1];${SX}H$SKY"     ' ' ' ';;
+          1) cut "\\e[$OY;${SX}H$SKY$blk"      '_' ' '
+             cut "\\e[$[$OY+1];${SX}H$SKY"     ' ' ' ';;
+          2) cut "\\e[$OY;${SX}H$SKY"          ' ' ' '
+             cut "\\e[$[$OY+1];${SX}H$SKY$blk" '^' ' ';;
     esac
 }
 #------------------------{ House }--------------------------------------------------------------------------------------
