@@ -92,31 +92,29 @@ pumface=("${RED}O ${RED}… ${RED}o$CM1"
 
 sprite_alien () {
     case "$day$month" in
-        3110)
-        mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 5 $i" || { unset ENM[i]; ((enumber--)); return; }
-        X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
-        CM1=$SKY$BLD$ylw CM2=$SKY$UND$DIM$grn CM3=$SKY$ylw
-        #0123456
-        #1 _\_
-        #2(O…o)
-        #3 `¯´
-        ############################  1       2        3        4   5   6  #0
-        cut "\\e[$OY;${SX}H$CM1"     '' "$X1"'_' ${pumtop[AS]} '_' ' '     #1
-        cut "\\e[$[OY+1];${SX}H$CM1" '('         ${pumface[AS]}    ')' ' ' #2
-        cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`'      '¯'      '´' ' ';;   #3
+        3110) mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 5 $i" || { unset ENM[i]; ((enumber--)); return; }
+              X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
+              CM1=$SKY$BLD$ylw CM2=$SKY$UND$DIM$grn CM3=$SKY$ylw
+              #0123456
+              #1 _\_
+              #2(O…o)
+              #3 `¯´
+              ############################  1       2        3        4   5   6  #0
+              cut "\\e[$OY;${SX}H$CM1"     '' "$X1"'_' ${pumtop[AS]} '_' ' '     #1
+              cut "\\e[$[OY+1];${SX}H$CM1" '('         ${pumface[AS]}    ')' ' ' #2
+              cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`'      '¯'      '´' ' ';;   #3
 
-        *)
-        mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; ((enumber--)); return; }
-        X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
-        CM1=$SKY$DIM$BLK CM2=$BLD$BLK
-        #0123456
-        #1 ___
-        #2( o )
-        #3 `¯´
-        ############################  1       2         3         4   5   6  #0
-        cut "\\e[$OY;${SX}H$CM1"     '' "$X1"'_' "$CM2"'_' "$CM1"'_' ' '     #1
-        cut "\\e[$[OY+1];${SX}H$CM1" '('          ${small[AS]}       ')' ' ' #2
-        cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`'       '¯'       '´' ' ';;   #3
+        *)    mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; ((enumber--)); return; }
+              X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
+              CM1=$SKY$DIM$BLK CM2=$BLD$BLK
+              #0123456
+              #1 ___
+              #2( o )
+              #3 `¯´
+              ############################  1       2         3         4   5   6  #0
+              cut "\\e[$OY;${SX}H$CM1"     '' "$X1"'_' "$CM2"'_' "$CM1"'_' ' '     #1
+              cut "\\e[$[OY+1];${SX}H$CM1" '('          ${small[AS]}       ')' ' ' #2
+              cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`'       '¯'       '´' ' ';;   #3
     esac
 }
 #------------------------{ Bonuses }------------------------------------------------------------------------------------

@@ -113,10 +113,10 @@ colision_aliens () {
         unset ENM[a]
         boom $x $y
         case $match in
-            'alien') return 0;;
-            'gunup') ((G++))      ; return 1;;
-            'life' ) ((life++))   ; return 1;;
-            'ammo' ) ((ammo+=100)); return 1;;
+             'alien') return 0;;
+             'life' ) ((life++))   ; return 1;;
+             'ammo' ) ((ammo+=100)); return 1;;
+             'gunup') [[ $G -lt 5 ]] && ((G++)); return 1;;
         esac
     }
 }
