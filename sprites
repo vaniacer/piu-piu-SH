@@ -33,7 +33,7 @@ sprite_hero1 () {
     [[ $life -gt 0 ]] && { CS=1; CL=16; OX=$H1X; OY=$H1Y; } || { H1X=$SX; H1Y=$OY; }
     CM1=$SKY$H1C$BLD    CM2=$SKY$DIM$H1C      CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
     TR=${tailrotor[AS]} GN=$BLD$BLK${gun[$G]} X1="\\e[$[H1Y+5];$[OX+7]H"
-    re="n $[H1X+13] $[H1Y+2] .*|n $[H1X+12] $[H1Y+2] .*|n $[H1X+12] $[H1Y+1] .*|n $[H1X+11] $[H1Y+1] .*"
+    re="alien ($[H1X+12]|$[H1X+13]) ($[H1Y+1]|$[H1Y+2]) .*|(life|ammo|gunup) ($[H1X+12]|$[H1X+13]) ($[H1Y+1]|$[H1Y+2]|$[H1Y+3]|$[H1Y+4]) .*"
     colision_aliens "$re" && { BOOM $H1X $H1Y; ((frags++)); ((life--)); }
     #0123456789ABCDEFG
     #1
@@ -119,7 +119,72 @@ sprite_alien () {
         cut "\\e[$[OY+2];${SX}H$CM1" '' "$X2"'`'       '¯'       '´' ' ';;   #3
     esac
 }
+#------------------------{ Bonuses }------------------------------------------------------------------------------------
+sprite_ammo () {
+    mov - && ENM[i]="ammo $OX $OY 3 4 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; return; }
+    CM1=$SKY$BLD$red CM2=$SKY$GRN
+    #01234
+    #1-=>
+    #2-=>
+    #3-=>
+    ############################  1   2         3         4  #0
+    cut "\\e[$OY;${SX}H$CM1"     '-' '=' "$CM2"'>' "$SKY"' ' #1
+    cut "\\e[$[OY+1];${SX}H$CM1" '-' '=' "$CM2"'>' "$SKY"' ' #2
+    cut "\\e[$[OY+2];${SX}H$CM1" '-' '=' "$CM2"'>' "$SKY"' ' #3
+}
+sprite_life () {
+    mov - && ENM[i]="life $OX $OY 3 4 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; return; }
+    CM1=$SKY$RED X1="\\e[$[OY+2];$[OX+1]H"
+    #01234
+    #1/V\
+    #2\ /
+    #3 V
+    ############################  1        2         3          4  #0
+    cut "\\e[$OY;${SX}H$CM1"     '/'      'V'       '\\' "$SKY"' ' #1
+    cut "\\e[$[OY+1];${SX}H$CM1" '\\'     ' '       '/'  "$SKY"' ' #2
+    cut "\\e[$[OY+2];${SX}H$CM1" ''  "$X1"'V' "$SKY"' '            #3
+}
+sprite_gunup () {
+    mov - && ENM[i]="gunup $OX $OY 3 4 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; return; }
+    CM1=$SKY$BLK CM2=$SKY$blk CM3=$SKY$UND$blk
+    case ${G} in
+        1) #01234
+           #1‖——
+           #2‖
+           #3‖——
+           ############################  1         2         3         4    #0
+           cut "\\e[$OY;${SX}H$CM1"     '‖' "$CM2"'—' "$CM2"'—' "$SKY"' '   #1
+           cut "\\e[$[OY+1];${SX}H$CM1" '‖' "$SKY"' '                       #2
+           cut "\\e[$[OY+2];${SX}H$CM1" '‖' "$CM2"'—' "$CM2"'—' "$SKY"' ';; #3
 
+        2) #01234
+           #1‖——
+           #2‖——
+           #3‖——
+           ############################  1         2         3         4    #0
+           cut "\\e[$OY;${SX}H$CM1"     '‖' "$CM2"'—' "$CM2"'—' "$SKY"' '   #1
+           cut "\\e[$[OY+1];${SX}H$CM1" '‖' "$CM2"'—' "$CM2"'—' "$SKY"' '   #2
+           cut "\\e[$[OY+2];${SX}H$CM1" '‖' "$CM2"'—' "$CM2"'—' "$SKY"' ';; #3
+
+        3) #01234
+           #1‖==
+           #2‖
+           #3‖==
+           ############################  1         2         3         4    #0
+           cut "\\e[$OY;${SX}H$CM1"     '‖' "$CM3"'—' "$CM3"'—' "$SKY"' '   #1
+           cut "\\e[$[OY+1];${SX}H$CM1" '‖' "$SKY"' '                       #2
+           cut "\\e[$[OY+2];${SX}H$CM1" '‖' "$CM3"'—' "$CM3"'—' "$SKY"' ';; #3
+
+        *) #01234
+           #1‖==
+           #2‖——
+           #3‖==
+           ############################  1         2         3         4    #0
+           cut "\\e[$OY;${SX}H$CM1"     '‖' "$CM3"'—' "$CM3"'—' "$SKY"' '   #1
+           cut "\\e[$[OY+1];${SX}H$CM1" '‖' "$CM2"'—' "$CM2"'—' "$SKY"' '   #2
+           cut "\\e[$[OY+2];${SX}H$CM1" '‖' "$CM3"'—' "$CM3"'—' "$SKY"' ';; #3
+    esac
+}
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
 case $month in
     0[1-4]|12) C1C=$SKY$DIM$CYN;; # winter & early spring
@@ -469,7 +534,7 @@ shoot1=(
 sprite_piu1 () {
     CM1=$SKY$BLD$GRN
     mov + && PIU[i]="piu1 $OX $OY 1 4 $SC $SM $CS $CL $AS 3 $i" || { unset PIU[i]; return; }
-    colision_aliens "n $OX $[OY-1] .*|n $[OX+1] $[OY-1] .*"     && { unset PIU[i]; ((frags++)); return; }
+    colision_aliens "alien ($OX|$[OX+1]) $[OY-1] .*" && { unset PIU[i]; ((frags++)); bonus; return; }
     #01234
     #1 -=>
     ########################  1      2     3          4  #0
