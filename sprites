@@ -351,7 +351,7 @@ sprite_bird () {
 # ╨ ╩ ╪ ╫ ╬ ╭ ╮ ╯ ▀ ▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▉ ▊ ▋ ▌ ▍ ▎ ▏▐ ░ ▒ ▓ ▔ ▕ ▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟
 sprite_house1 () {
     mov - && BP1[i]="house1 $OX $OY 2 6 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
-    CM1=$SKY$DIM$red CM2=$SKY$blk
+    CM1=$SKY$DIM$GRN CM2=$SKY$blk
     #0123456
     #1▁▂▃▂▁
     #2│▘▝▝|
@@ -387,7 +387,7 @@ sprite_house2 () {
 }
 sprite_house3 () {
     mov - && BP3[i]="house3 $OX $OY 4 17 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
-    CM1=$DIM$red CM2=$SKY$blk CM3=$SKY$grn
+    CM1=$SKY$DIM$MGN CM2=$SKY$blk CM3=$SKY$DIM$CYN
     X1="\\e[$OY;$[OX+5]H" X2="\\e[$[OY+1];$[OX+2]H" X3="\\e[$[OY+2];$[OX+2]H"
     #0123456789ABCDEFJH
     #1     ▖ 
@@ -424,6 +424,39 @@ sprite_boom () {
              cut "\e[$[BY+2];${BX}H$SKY"        '       ';; #
     esac
     mov -; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
+}
+#------------------------{ Sun }----------------------------------------------------------------------------------------
+sprite_Sun () {
+    mov -; BP1[i]="Sun $Sunsendx 1 9 18 $SC 7 $CS $CL $AS $AL"
+    case $AS in
+          0) cut "\e[1;${Sunsendx}H$SKY$YLW"     '       ___ |       '
+             cut "\e[2;${Sunsendx}H$SKY$YLW"     '---````    \       '
+             cut "\e[3;${Sunsendx}H$SKY$YLW"     '           _`.     '
+             cut "\e[4;${Sunsendx}H$SKY$BLD$YLW" '        ../   `..__'
+             cut "\e[5;${Sunsendx}H$SKY$YLW"     '     ../        /  '
+             cut "\e[6;${Sunsendx}H$SKY$YLW"     '    /          /   '
+             cut "\e[7;${Sunsendx}H$SKY$BLD$YLW" '              /    '
+             cut "\e[8;${Sunsendx}H$SKY$YLW"     '              /    '
+             cut "\e[9;${Sunsendx}H$SKY$YLW"     '             /     ';;
+          1) cut "\e[1;${Sunsendx}H$SKY$YLW"     '_...---``  |       '
+             cut "\e[2;${Sunsendx}H$SKY$BLD$YLW" '        _.-\       '
+             cut "\e[3;${Sunsendx}H$SKY$YLW"     '   _.--`    `.     '
+             cut "\e[4;${Sunsendx}H$SKY$YLW"     ' -`          ,`..__'
+             cut "\e[5;${Sunsendx}H$SKY$BLD$YLW" '           ,`     |'
+             cut "\e[6;${Sunsendx}H$SKY$YLW"     '         ,`       |'
+             cut "\e[7;${Sunsendx}H$SKY$YLW"     '       _`        | '
+             cut "\e[8;${Sunsendx}H$SKY$BLD$YLW" '                 | '
+             cut "\e[9;${Sunsendx}H$SKY$YLW"     '                 | ';;
+          2) cut "\e[1;${Sunsendx}H$SKY$BLD$YLW" '     _...--|       '
+             cut "\e[2;${Sunsendx}H$SKY$YLW"     '..--`      \       '
+             cut "\e[3;${Sunsendx}H$SKY$BLD$YLW" '         .. `.     '
+             cut "\e[4;${Sunsendx}H$SKY$YLW"     '     _.-`     `..__'
+             cut "\e[5;${Sunsendx}H$SKY$YLW"     '  ..`         .`   '
+             cut "\e[6;${Sunsendx}H$SKY$BLD$YLW" '             /     '
+             cut "\e[7;${Sunsendx}H$SKY$YLW"     '            /      '
+             cut "\e[8;${Sunsendx}H$SKY$BLD$YLW" '          .`       '
+             cut "\e[9;${Sunsendx}H$SKY$YLW"     '         `         ';;
+    esac
 }
 #------------------------{ Shoots }-------------------------------------------------------------------------------------
 shoot1=(
