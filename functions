@@ -24,7 +24,7 @@ get_dimensions () {
     tre3endy=$[endy-tree3H-2]
 }
 
-bonus () { # get bonus on alien or not
+bonus () { # get random bonus from alien or not
     case $[RANDOM % $rnd] in
         0) ENM+=("${bonuses[$[RANDOM % ${#bonuses[@]}]]} $OX $OY 3 5 0 2 1 0 0 0")
     esac
