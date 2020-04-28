@@ -27,12 +27,10 @@ mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${bl
            "    _Z_     _Z_     _Z_     _Z_     _Z_ ${blk}_     _Z_     _Z_     _Z_     _Z_     _Z_"  # '     _     '
            "    _Z_     _Z_     _Z_     _Z_ ${blk}_ ${blk}_ ${blk}_     _Z_     _Z_     _Z_     _Z_") # '    ___    '
 tailrotor=("${blk}"'\\' "${blk}─" "${blk}/" "${blk}|") # '\' '─' '/' '|'
-
 sprite_hero1 () {
     server_read
     mov - || mess 'lose'
     [[ $life -gt 0 ]] && { CS=1; CL=16; OX=$H1X; OY=$H1Y; } || { H1X=$SX; H1Y=$OY; }
-    HER[i]="hero1 $OX $OY 6 14 $SC $SM $CS $CL $AS $AL"
     CM1=$SKY$H1C$BLD    CM2=$SKY$DIM$H1C      CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
     TR=${tailrotor[AS]} GN=$BLD$BLK${gun[$G]} X1="\\e[$[H1Y+5];$[OX+7]H"
     re="n $[H1X+13] $[H1Y+2] .*|n $[H1X+12] $[H1Y+2] .*|n $[H1X+12] $[H1Y+1] .*|n $[H1X+11] $[H1Y+1] .*"
@@ -51,6 +49,7 @@ sprite_hero1 () {
     cut "\\e[$[H1Y+3];${SX}H$CM2" ' ' '`'           '─'        '´'       '‾'       '‾'       '‷'       '\\' "$blk"'°'  $S1C$H1S "$SKY"' ' "$blk"'º' "$blk"'¯'  "$CM1"']' $GN ' ' #4
     cut "\\e[$[H1Y+4];${SX}H$CM2" ' ' ' '           ' '        ' '       ' '       ' '       ' '       ' '        '‾'       '‾'       '‾'       '‾'       '‾'  "$SKY"' ' ' '     #5
     cut "\\e[$[H1Y+5];${SX}H$SKY" ''  ''            ''         ''        ''        ''        ''   "$X1"' '        ' '       ' '       ' '       ' '       ' '        ' '         #6
+    HER[i]="hero1 $OX $OY 6 14 $SC $SM $CS $CL $AS $AL"
 }
 #------------------------{ Ad plane }-----------------------------------------------------------------------------------
 flame1=("$red-"       "$ylw~"       "$red- $RED~" "$ylw-")
