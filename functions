@@ -24,6 +24,15 @@ get_dimensions () {
     tre3endy=$[endy-tree3H-2]
 }
 
+mess () {
+    XY 1 1 ${DEF}; clear
+    case $1 in
+        "win" )    sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
+        "lose")    sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
+        "help")    sprite_help; printf "${sprite[*]}";;
+    esac
+}
+
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
 cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ }"; }
 mov () {
