@@ -29,7 +29,9 @@ mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${bl
 tailrotor=("${blk}"'\\' "${blk}─" "${blk}/" "${blk}|") # '\' '─' '/' '|'
 
 sprite_hero1 () {
-    server_read; mov - || mess 'lose'; [[ $life -gt 0 ]] && { CS=1; CL=16; OX=$H1X; OY=$H1Y; } || { H1X=$SX; H1Y=$OY; }
+    server_read
+    mov - || mess 'lose'
+    [[ $life -gt 0 ]] && { CS=1; CL=16; OX=$H1X; OY=$H1Y; } || { H1X=$SX; H1Y=$OY; }
     HER[i]="hero1 $OX $OY 6 14 $SC $SM $CS $CL $AS $AL"
     CM1=$SKY$H1C$BLD    CM2=$SKY$DIM$H1C      CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND
     TR=${tailrotor[AS]} GN=$BLD$BLK${gun[$G]} X1="\\e[$[H1Y+5];$[OX+7]H"
