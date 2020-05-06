@@ -82,7 +82,7 @@ function start_opt {
            J=0                                        # boss' bullet animation counter
            K=0                                        # boss' fire rate counter
            S=0                                        # Sun animation counter
-           G=1                                        # gun                                        (1)(max 5)
+           G=5                                        # gun                                        (1)(max 5)
 
 #--------------------{ Multipleyer config }-------------------{ description }-----------------{ def. values }-----------
       server=                                         # if server

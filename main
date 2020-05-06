@@ -40,6 +40,9 @@ line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
 #----{ Start opt }------------------------------------{ description  }---------------------{ def. values }--------------
   background=true                                     # background objects visibility             (true)
+    bossborn=                                         # boss starter
+    tillboss=100                                      # frags needed to fight with boss            (100)
+     bhealth=100                                      # boss' health                               (100)
      showfps=true                                     # show FPS counter if set                   (true)
      enumber=0                                        # current enemy counter                     (0)
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")    # bonuses, more ammo, less life ang gunup
@@ -55,7 +58,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
          MSN=1111                                     # messanger randomizer                      (1111)
          HOU=1111                                     # houses randomizer                         (1111)
          BRD=77                                       # birds randomizer                          (77)
-          LX=1                                        # grass X counter
+          BJ=10                                       # boss jumps                                (10)
           ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
            G=1                                        # gun                                       (1)(max 5)
 [[ -e ~/.piuconf ]] && . ~/.piuconf
@@ -65,24 +68,37 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|
 #======================================{ Main game loop single or server team mode }====================================
 game () {
     while true; do
-        #-{ Empty screen, count fps, set timings}------------------------------
-        timings; screen=; status
+        #-{ Empty screen, count fps}-------------------------------------------
+        screen=; status
 
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound
 
-        #-{ Add aliens }-------------------------------------------------------
-        [[ $enumber -lt $enmax && $M -eq 0 ]] && {
-            ENM+=("alien $endx $[RANDOM%enmyendy+3] 3 5 0 $[RANDOM%2] 1 0 $[RANDOM%3] 3"); ((enumber++))
-        }
+        #-{ BOSS }------------------------------------------------------------------------------------------------------
+        if [[ $[frags+frags2] -ge $tillboss ]]; then
+
+            # add boss object
+            [[ $bossborn ]] || { ENM+=("boss $endx $halfendy 6 14 0 0 1 0 $[RANDOM%3] 3 20"); bossborn=true; }
+
+            # Health bar
+            bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
+            for (( i=0  ; i<hp; i++ )); do bar="█$bar"; done
+            for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
+            screen+="\e[$[$endy - 1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
+
+            #-{ Add aliens }---------------------------------------------------
+            [[ $bhealth -gt 0 ]] && add_enm $EX $EY 5
+        else
+            add_enm $endx $[4+RANDOM%enmyendy]
+        fi
 
         #-{ Move bitplans }----------------------------------------------------
-        BP1=("${BP1[@]}"); for i in ${!BP1[@]}; { OI=(${BP1[i]}); get_obj_data; }
-        BP2=("${BP2[@]}"); for i in ${!BP2[@]}; { OI=(${BP2[i]}); get_obj_data; }
-        PIU=("${PIU[@]}"); for i in ${!PIU[@]}; { OI=(${PIU[i]}); get_obj_data; }
-        HER=("${HER[@]}"); for i in ${!HER[@]}; { OI=(${HER[i]}); get_obj_data; }
-        ENM=("${ENM[@]}"); for i in ${!ENM[@]}; { OI=(${ENM[i]}); get_obj_data; }
-        BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); get_obj_data; }
+        BP1=("${BP1[@]}"); for i in ${!BP1[@]}; { OI=(${BP1[i]}); get_obj_data; } # small(far) background objects
+        BP2=("${BP2[@]}"); for i in ${!BP2[@]}; { OI=(${BP2[i]}); get_obj_data; } # medium background objects
+        PIU=("${PIU[@]}"); for i in ${!PIU[@]}; { OI=(${PIU[i]}); get_obj_data; } # heroes fire
+        HER=("${HER[@]}"); for i in ${!HER[@]}; { OI=(${HER[i]}); get_obj_data; } # heroes
+        ENM=("${ENM[@]}"); for i in ${!ENM[@]}; { OI=(${ENM[i]}); get_obj_data; } # enemies
+        BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); get_obj_data; } # big(closer) background objects
 
         #-{ Print FPS }--------------------------------------------------------
         [[ $showfps ]] && fps_counter
