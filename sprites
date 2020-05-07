@@ -61,8 +61,9 @@ shoot1=(
     "$RED-           _Z_") # - >
 sprite_piu1 () {
     CM1=$SKY$BLD$GRN
-    mov + && PIU[i]="piu1 $OX $OY 1 4 $SC $SM $CS $CL $AS 3 $i"  ||  { unset    PIU[i]; return; }
-    collision 1 "alien ($OX|$[OX+1]) $[OY-1].*" && { unset PIU[i]; ((frags++)); bonus; return; }
+    mov + && PIU[i]="piu1 $OX $OY 1 4 $SC $SM $CS $CL $AS 3 $i" || { unset PIU[i]; return; }
+    re="alien ($OX|$[OX+1]) $[OY-1].*|boss ($OX|$[OX+1]) ($[OY-2]|$[OY-3]|$[OY-4]).*"
+    collision a "$re" $OX $[OY-1] && { unset PIU[i]; return; }
     #01234
     #1 -=>
     ########################  1      2     3        4  #0
@@ -160,31 +161,27 @@ sprite_alien () {
     esac
 }
 sprite_boss () {
-    # kill client first
-    [[ $H2Y ]] && HY=$[H2Y-1] || HY=$[H1Y-1]
-
+    [[ $H2Y ]] && HY=$[H2Y-1] || HY=$[H1Y-1] # kill client first
     if [[ $bhealth -gt 0 ]]; then
-        BX=$OX EX=$[BX+2] EY=$[OY+5]; [[ $EY -gt $enmyendy ]] && EY=$enmyendy
-#        CS=1; CL=14; OX=$BX
-        # Boss fire
-        [[ $OY -eq $HY && $C1 -eq 0 ]] && { ENM+=("bfire $[BX-4] $[OY+4] 1 5 0 0 1 5 $[RANDOM%5] 5"); C1=20; }
-
-        # Boss move
+        #-{ Boss fire }--------------------------------------------------------
+        [[ $OY -eq $HY && $C1 -eq 0 ]] && { ENM+=("bfire $[OX-4] $[OY+4] 1 5 0 0 1 5 $[RANDOM%5] 5 ${#ENM[@]}"); C1=20; }
+        #-{ Boss move }--------------------------------------------------------
         [[ $OY -lt $HY                            ]] && ((OY++))
         [[ $OY -gt $HY                            ]] && ((OY--))
-        [[ $BX -gt $halfendx && $goback = 'false' ]] && ((BX--)) || goback=true
-        [[ $BX -lt $bossendx && $goback = 'true'  ]] && ((BX++)) || goback=false
+        [[ $OX -gt $halfendx && $goback = 'false' ]] && mov - || goback=true
+        [[ $OX -lt $bossendx && $goback = 'true'  ]] && mov + || goback=false
+        #-{ Aliens out }-------------------------------------------------------
+        EX=$[OX+2] EY=$[OY+5]; [[ $EY -gt $[enmyendy+3] ]] && EY=$[enmyendy+3]
     else # when boss' health goes to 0 it starts to fall, explodes and bounces on the ground
-        BX=$SX
-        spd=0.1; ((OX--))
-        [[ $OY -lt   $bossendy      && $jump = 'false' ]] && ((OY++)) || { jump=true; ((BJ--)); }
-        [[ $OY -gt $[$bossendy-$BJ] && $jump = 'true'  ]] && ((OY--)) ||   jump=false
-        [[ $OX -gt 0 && $L -eq 0 ]] && BOOM $BX $OY
+        AS=0; mov - || mess 'win'
+        [[ $OY -lt  $bossendy     && $jump = 'false' ]] && ((OY++)) || { jump=true; ((BJ--)); }
+        [[ $OY -gt $[bossendy-BJ] && $jump = 'true'  ]] && ((OY--)) ||   jump=false
+        [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $OX $OY; C1=8; }
     fi
-    [[ $C1 -gt 0  ]] && ((C1--))
-    mov - || mess 'win'
+    [[ $C1 -gt 0 ]] && ((C1--))
     CM1=$SKY$DIM$BLK CM2=$BLD$BLK
-    X1="\\e[$OY;$[BX+4]H" X2="\\e[$[OY+1];$[BX+2]H" X3="\\e[$[OY+2];$[BX+1]H" X4="\\e[$[OY+6];$[BX+1]H"
+    ENM[i]="boss $OX $OY 6 14 $SC $SM $CS $CL $AS $AL $C1"
+    X1="\\e[$OY;$[OX+4]H" X2="\\e[$[OY+1];$[OX+2]H" X3="\\e[$[OY+2];$[OX+1]H" X4="\\e[$[OY+6];$[OX+1]H"
     #0123456789ABCD
     #1             
     #2     ___          
@@ -194,14 +191,13 @@ sprite_boss () {
     #6  `¯¯---¯¯´  
     #7             
     ############################   1     2     3   4     5    6   7   8       9    A   B       C   D  #0
-    cut "\\e[$OY;${BX}H$SKY"      ''    ''    ''  '' $X1' '  ' ' ' ' ' '     ' '                      #1
-    cut "\\e[$[OY+1];${BX}H$CM2"  ''    '' $X2' ' ' '   ' '  '_' '_' '_'     ' '  ' '                 #2
-    cut "\\e[$[OY+2];${BX}H$CM1"  '' $X3' '   ' ' '_'   '/' ${small[AS]} $CM2'\\' ' ' ' '     ' '     #3
-    cut "\\e[$[OY+3];${BX}H$CM1"  ' '   ' '   '/'            ${big1[AS]}          $CM2'\\'    ' ' ' ' #4
-    cut "\\e[$[OY+4];${BX}H$CM1"  ' '   '('   ' '            ${big2[AS]}              ' ' $CM2')' ' ' #5
-    cut "\\e[$[OY+5];${BX}H$CM1"  ' '   ' '   '`' '¯'   '¯'  '-' '-' '-'     '¯'  '¯' '´'     ' ' ' ' #6
-    cut "\\e[$[OY+6];${BX}H$SKY"  '' $X4' '   ' ' ' '   ' '  ' ' ' ' ' '     ' '  ' ' ' '     ' '     #7
-    ENM[i]="boss $BX $OY 6 14 $SC $SM $CS $CL $AS $AL $C1"
+    cut "\\e[$OY;${SX}H$SKY"      ''    ''    ''  '' $X1' '  ' ' ' ' ' '     ' '                      #1
+    cut "\\e[$[OY+1];${SX}H$CM2"  ''    '' $X2' ' ' '   ' '  '_' '_' '_'     ' '  ' ' ' '             #2
+    cut "\\e[$[OY+2];${SX}H$CM1"  '' $X3' '   ' ' '_'   '/' ${small[AS]} $CM2'\\' '_' ' '     ' '     #3
+    cut "\\e[$[OY+3];${SX}H$CM1"  ' '   ' '   '/'            ${big1[AS]}          $CM2'\\'    ' ' ' ' #4
+    cut "\\e[$[OY+4];${SX}H$CM1"  ' '   '('   ' '            ${big2[AS]}              ' ' $CM2')' ' ' #5
+    cut "\\e[$[OY+5];${SX}H$CM1"  ' '   ' '   '`' '¯'   '¯'  '-' '-' '-'     '¯'  '¯' '´'     ' ' ' ' #6
+    cut "\\e[$[OY+6];${SX}H$SKY"  '' $X4' '   ' ' ' '   ' '  ' ' ' ' ' '     ' '  ' ' ' '     ' '     #7
 }
 #------------------------{ Bonuses }------------------------------------------------------------------------------------
 sprite_ammo () {

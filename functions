@@ -28,11 +28,11 @@ get_dimensions () {
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
 cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ }"; }
 mov () {
-    case $1 in '-') cuter=++;; '+') cuter=--;; esac
+    case $1 in -) cuter=++;; +) cuter=--;; esac
     case $SC in
         0) [[ $OX -le -$OW   ]] && return 1
            [[ $OX -gt  $endx ]] && return 1
-           [[ $AS -ge  $AL   ]] && AS=0 || ((AS++)) # sprites animation
+           [[ $AS -ge  $AL   ]] && AS=0  || ((AS++)) # sprites animation
            [[ $OX -le  1     ]] && ((CS++))
            ((OX$1$1)); ((CL$cuter)); SC=$SM
            [[ $CL -lt 0 ]] && CL=0;;
@@ -44,23 +44,23 @@ mov () {
 add_enm () {
     [[ $BR -gt 0 ]] && ((BR--))
     [[ $enumber -lt $enmax && $BR -eq 0 ]] || return
-    ENM+=("alien $1 $2 3 5 0 $[RANDOM%2] 1 ${3:-0} $[RANDOM%3] 3")
+    ENM+=("alien $1 $2 3 5 0 $[RANDOM%2] 1 ${3:-0} $[RANDOM%3] 3 ${#ENM[@]}")
     ((enumber++))
     BR=20
 }
 
 bonus () { # get random bonus from alien or not
     case $[RANDOM % $rnd] in
-        0) ENM+=("${bonuses[$[RANDOM % ${#bonuses[@]}]]} $OX $OY 3 5 0 2 1 0 0 0")
+        0) ENM+=("${bonuses[$[RANDOM%${#bonuses[@]}]]} $OX $[OY-1] 3 5 0 2 1 0 0 0 ${#ENM[@]}")
     esac
 }
 
 mess () {
     XY 1 1 ${DEF}; clear
     case $1 in
-        "win" )    sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
-        "lose")    sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
-        "help")    sprite_help; printf "${sprite[*]}";;
+        "win" ) sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
+        "lose") sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
+        "help") sprite_help; printf "${sprite[*]}";;
     esac
 }
 
@@ -117,21 +117,22 @@ collision () {
     hero=$1 re="$2"
     [[ ${ENM[@]} =~ $re ]] && {
         match=($BASH_REMATCH)
-        a=${match[@]:11:1}
-        x=${match[@]:1:1}
-        y=${match[@]:2:1}
-        ((enumber--))
-        unset ENM[a]
-        boom  $x $y
+        obj_i=${match[@]:11:1}
+        obj_x=${match[@]:1:1}
+        obj_y=${match[@]:2:1}
         case $match:$hero in
-              alien:*) return 0;;
-              bfire:*) return 0;;
+               boss:*) ((bhealth--))   ; boom $3   $4; return 0;;
+                  *:*) unset ENM[obj_i]; boom $obj_x $obj_y;;&
+              gunup:1) [[ $G  -lt 5 ]] && ((G++)) ; return 1;;
+              gunup:2) [[ $G2 -lt 5 ]] && ((G2++)); return 1;;
                life:1) ((life++))    ; return 1;;
                life:2) ((life2++))   ; return 1;;
                ammo:1) ((ammo+=100)) ; return 1;;
                ammo:2) ((ammo2+=100)); return 1;;
-              gunup:1) [[ $G  -lt 5 ]] && ((G++)) ; return 1;;
-              gunup:2) [[ $G2 -lt 5 ]] && ((G2++)); return 1;;
+              alien:a) ((enumber--)) ;((frags++)) ; bonus; return 0;;
+              alien:b) ((enumber--)) ;((frags2++)); bonus; return 0;;
+              alien:*) ((enumber--)) ; return 0;;
+              bfire:*) return 0;;
         esac
     }
 }
@@ -144,6 +145,7 @@ boom () {
 
 BOOM () {
     XB=$1 YB=$2
+    [[ $XB -lt 1 ]] && XB=1
     [[ $XB -gt $boomendx ]] && XB=$boomendx
     BP3+=("boom  $XB     $YB    0 0 0 $[RANDOM%3] 1 9 0 5"
           "boom $[XB+5]  $YB    0 0 0 $[RANDOM%3] 1 9 0 5"
@@ -177,17 +179,18 @@ fill_screen () {
 }
 
 add_backgound () {
+    rndy=$[2+RANDOM%10]; [[ $rndy -gt $[3+enmyendy] ]] && rndy=$[3+enmyendy]
     #-{ Add birds }------------------------------------------------------------
-    case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $[3+RANDOM%enmyendy] 2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
+    case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $rndy 2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
 
     #-{ Add msngr }------------------------------------------------------------
-    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $[3+RANDOM%msgrendy] 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
+    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $rndy 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
 
     #-{ Add clouds }-----------------------------------------------------------
     case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
-        0:1) BP1+=("cloud1 $endx $[RANDOM % 10 + 2] 3 6  6 $[6+RANDOM%2] 1 0 0 0");;
-        0:2) BP2+=("cloud2 $endx $[RANDOM % 10 + 2] 3 8  4 $[4+RANDOM%2] 1 0 0 0");;
-        0:3) BP3+=("cloud3 $endx $[RANDOM % 10 + 2] 3 11 2 $[2+RANDOM%2] 1 0 0 0");;
+        0:1) BP1+=("cloud1 $endx $rndy 3 6  6 $[6+RANDOM%2] 1 0 0 0");;
+        0:2) BP2+=("cloud2 $endx $rndy 3 8  4 $[4+RANDOM%2] 1 0 0 0");;
+        0:3) BP3+=("cloud3 $endx $rndy 3 11 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
 
     #-{ Add house }------------------------------------------------------------
