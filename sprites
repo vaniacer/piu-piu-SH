@@ -11,7 +11,7 @@ case $month in
         SKY=$DEF$bcyn         # late spring & summer sky
         LND=$DEF$DIM$GRN$bgrn # late spring & summer land
         CLD=50                # late spring & summer clouds rnd
-        TRE=20;;              # late spring & summer trees rnd
+        TRE=30;;              # late spring & summer trees rnd
 
     09|1[0-1])
         SKY=$DEF$BCYN         # autumn sky
@@ -36,12 +36,12 @@ sprite_hero1 () {
     X1="\\e[$[H1Y+5];$[OX+6]H"
     re="bfire ($[H1X+12]|$[H1X+13]) ($[H1Y+2]|$[H1Y+3]).*|alien ($[H1X+12]|$[H1X+13]) ($[H1Y+1]|$[H1Y+2]).*|(life|ammo|gunup) ($[H1X+12]|$[H1X+13]) ($[H1Y+1]|$[H1Y+2]|$[H1Y+3]|$[H1Y+4]).*"
     collision 1 "$re" && { BOOM $H1X $H1Y; ((life--)); }
-    #0123456789ABCDEFG
-    #1                
-    #2 __ ___________ 
-    #3 |X\___.-╨─｡_   
-    #4 `─´‾‾‷\°★ º¯]─ 
-    #5        ‾‾‾‾‾   
+    #0123456789ABCDEFG                                                                                                                          ___
+    #1                                                 █▓▒░                                       ___                                         _/ o \_
+    #2 __ ___________                                                 ___                        (  o)                                       /O   O  \
+    #3 |X\___.-╨─｡_                         -=>                      ( o )                        `¯´            █▓▒░     ___               (   O    O)
+    #4 `─´‾‾‷\°★ º¯]─         - >                              ->     `¯´                                                (o  )               `¯¯---¯¯´
+    #5        ‾‾‾‾‾                                                                                                       `¯´
     #6                
     #############################  1   2   3       4        5       6       7       8        9       A        B       C       D       E   F   G  #0
     cut "\\e[$H1Y;${SX}H$SKY"     ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #1
@@ -84,35 +84,48 @@ sprite_bfire () {
     ######################## 1   2   3   4  5  #0
     cut "\\e[$OY;${SX}H$CM1" ${bshoot[AS]} ' ' #1
 }
-
-#------------------------{ Ad plane }-----------------------------------------------------------------------------------
-flame1=("$red-"       "$ylw~"       "$red- $RED~" "$ylw-")
-flame2=("$ylw-"       "$red- $RED~" "$red~"       "$YLW~")
-flame3=("$red- $RED~" "$red~"       "$YLW~"       "$ylw-")
-for ((i=0; i<${#ad}; i++)); do ad_new+="$BLD$red${ad:$i:1} "; done
-new_ad=( ${ad_new//  /_Z_ } ) line=( ${new_ad[@]//*/$blk-} ) width=$((19+${#new_ad[@]}))
-sprite_msngr () {
-    mov - && BP2[i]="msngr $OX $OY 4 $width $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
-    CM1=$SKY$BLD$blk CM2=$SKY$DIM$blk CM3=$SKY$blk
-    X1="\\e[$OY;$[OX+7]H"     X2="\\e[$[OY+1];$[OX+1]H" X3="\\e[$[OY+1];$[OX+12]H"
-    X4="\\e[$[OY+3];$[OX+4]H" X5="\\e[$[OY+3];$[OX+12]H"
-    #0123456789ABCD...
-    #1       __    
-    #2 _____/_/   +------------------+~
-    #3(°_\ |_)---<| Die alien scum! -~
-    #4    \|      +-----------------~
-    ############################  1       2   3       4      5        6       7       8   9   A   B   C     D   E   F  ...                                    #0
-    cut "\\e[$OY;${SX}H$CM1"     ''      ''  ''      ''     ''       ''      ''   $X1'_' '_' ' '                                                              #1
-    cut "\\e[$[OY+1];${SX}H$CM2" ''   $X2'_' '_'     '_'    '_'      '_'     '/'     '_' '/' ' ' ''  '' $X3'+' '-' '-' ${line[@]} ${flame1[AS]}   ' ' ' '     #2
-    cut "\\e[$[OY+2];${SX}H$CM1" '(' $UND'°' ' ' $CM2'\\'   ' '  $CM3'|' $UND' ' $CM3')' '-' '-' '-' '<'   '|' ' ' ${new_ad[@]} ' ' $SKY${flame2[AS]} ' ' ' ' #3
-    cut "\\e[$[OY+3];${SX}H$CM2" ''      ''  ''       '' $X4'\\' $CM3'|'     ' '     ''  ''  ''  ''  '' $X5'+' ${line[@]} ${flame3[AS]}           ' ' ' '     #4
-}
-
 #------------------------{ Aliens }-------------------------------------------------------------------------------------
 small=("${SKY}_Z_  ${SKY}_Z_  ${RED}o"
        "${SKY}_Z_  ${RED}o    ${SKY}_Z_"
        "${RED}o    ${SKY}_Z_  ${SKY}_Z_"
        "${SKY}_Z_  ${SKY}_Z_  ${SKY}_Z_")
+
+CM1=$SKY$UND$BLD$grn
+pumtop=( "$CM1"'\\' "$CM1"'\\' "$CM1|" "$CM1|" "$CM1/" "$CM1/")
+pumface=("${RED}O ${RED}… ${RED}o"
+         "${RED}… ${RED}o _Z_"
+         "${RED}o _Z_     ${RED}O"
+         "_Z_     _Z_     _Z_$CM1"
+         "_Z_     _Z_     ${RED}O"
+         "_Z_     ${RED}O ${RED}…")
+
+sprite_alien () {
+    case "$day$month" in
+        3110) mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 5 $i" || { unset ENM[i]; ((enumber--)); return; }
+              X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
+              CM1=$SKY$BLD$ylw CM2=$SKY$UND$DIM$grn CM3=$SKY$ylw
+              #0123456
+              #1 _\_  
+              #2(O…o) 
+              #3 `¯´  
+              ############################  1     2        3            4   5   6  #0
+              cut "\\e[$OY;${SX}H$CM1"     '' $X1'_' ${pumtop[AS]} $CM1'_' ' '     #1
+              cut "\\e[$[OY+1];${SX}H$CM1" '('       ${pumface[AS]}  "$CM1"')' ' ' #2
+              cut "\\e[$[OY+2];${SX}H$CM1" '' $X2'`'      '¯'          '´' ' ';;   #3
+
+        *)    mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; ((enumber--)); return; }
+              X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
+              CM1=$SKY$DIM$BLK CM2=$BLD$BLK
+              #0123456
+              #1 ___  
+              #2( o ) 
+              #3 `¯´  
+              ############################  1     2       3       4    5   6  #0
+              cut "\\e[$OY;${SX}H$CM1"     '' $X1'_' $CM2'_' $CM1'_'  ' '     #1
+              cut "\\e[$[OY+1];${SX}H$CM1" '('     ${small[AS]} "$CM1"')' ' ' #2
+              cut "\\e[$[OY+2];${SX}H$CM1" '' $X2'`'     '¯'     '´'  ' ';;   #3
+    esac
+}
 
 big1=("_Z_     _Z_     ${YLW}O _Z_     _Z_     _Z_     ${YLW}O"
       "_Z_     _Z_     _Z_ $BLD${YLW}O _Z_     _Z_     _Z_"
@@ -124,80 +137,84 @@ big2=("_Z_     ${BLU}O _Z_     _Z_     _Z_     ${BLU}O _Z_"
       "_Z_     _Z_     _Z_ $BLU${BLD}O _Z_     _Z_     _Z_"
       "_Z_     _Z_     ${BLU}O _Z_     _Z_     _Z_     ${BLU}O")
 
-CM1=$SKY$BLD$ylw CM2=$SKY$UND$BLD$grn
-pumtop=( "$CM2"'\\'"$CM1" "$CM2"'\\'"$CM1" "$CM2|$CM1" "$CM2|$CM1" "$CM2/$CM1" "$CM2/$CM1")
-pumface=("${RED}O ${RED}… ${RED}o$CM1"
-         "${RED}… ${RED}o _Z_$CM1"
-         "${RED}o _Z_     ${RED}O$CM1"
-         "_Z_     _Z_     _Z_$CM1"
-         "_Z_     _Z_     ${RED}O$CM1"
-         "_Z_     ${RED}O ${RED}…$CM1")
+mouthtop=("${RED}/ ${RED}V ${RED}V ${RED}V ${RED}V ${RED}V $RED"'\\'
+          "${RED}/ ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v $RED"'\\'
+          "${RED}. ${RED}- ${RED}- ${RED}- ${RED}- ${RED}- ${RED}."
+          "_Z_     _Z_     _Z_     _Z_     _Z_     _Z_     _Z_"
+          "${RED}. ${RED}- ${RED}- ${RED}- ${RED}- ${RED}- ${RED}."
+          "${RED}/ ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}"'\\'
+          "${RED}/ ${RED}V ${RED}V ${RED}V ${RED}V ${RED}V ${RED}"'\\')
 
-sprite_alien () {
-    case "$day$month" in
-        3110) mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 5 $i" || { unset ENM[i]; ((enumber--)); return; }
-              X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
-              CM1=$SKY$BLD$ylw CM2=$SKY$UND$DIM$grn CM3=$SKY$ylw
-              #0123456
-              #1 _\_  
-              #2(O…o) 
-              #3 `¯´  
-              ############################  1     2        3        4      5   6  #0
-              cut "\\e[$OY;${SX}H$CM1"     '' $X1'_' ${pumtop[AS]} '_'    ' '     #1
-              cut "\\e[$[OY+1];${SX}H$CM1" '('       ${pumface[AS]} "$CM1"')' ' ' #2
-              cut "\\e[$[OY+2];${SX}H$CM1" '' $X2'`'      '¯'      '´'    ' ';;   #3
+mouthlow=("${RED}V   ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}V"
+          "${RED}V   ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}V"
+          ${RED}'`'" ${RED}¯ ${RED}¯ ${RED}¯ ${RED}¯ ${RED}¯ ${RED}´"
+          "_Z_       ${RED}‾ ${RED}‾ ${RED}‾ ${RED}‾ ${RED}‾ _Z_"
+          ${RED}'`'" ${RED}- ${RED}- ${RED}- ${RED}- ${RED}- ${RED}´"
+          "${RED}V   ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}V"
+          "${RED}V   ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}V")
 
-        *)    mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; ((enumber--)); return; }
-              X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+2];$[OX+1]H"
-              CM1=$SKY$DIM$BLK CM2=$BLD$BLK
-              #0123456
-              #1 ___  
-              #2( o ) 
-              #3 `¯´  
-              ############################  1     2        3        4    5   6  #0
-              cut "\\e[$OY;${SX}H$CM1"     '' $X1'_'  $CM2'_'  $CM1'_'  ' '     #1
-              cut "\\e[$[OY+1];${SX}H$CM1" '('       ${small[AS]} "$CM1"')' ' ' #2
-              cut "\\e[$[OY+2];${SX}H$CM1" '' $X2'`'      '¯'      '´'  ' ';;   #3
-    esac
-}
+TX=$halfendx TY=$bossendy
 sprite_boss () {
     [[ $H2Y ]] && HY=$[H2Y-1] || HY=$[H1Y-1] # kill client first
     if [[ $bhealth -gt 0 ]]; then
         #-{ Boss fire }--------------------------------------------------------
         [[ $OY -eq $HY && $C1 -eq 0 ]] && { ENM+=("bfire $[OX-4] $[OY+4] 1 5 0 0 1 5 $[RANDOM%5] 5 ${#ENM[@]}"); C1=20; }
         #-{ Boss move }--------------------------------------------------------
-        [[ $OY -lt $HY                            ]] && ((OY++))
-        [[ $OY -gt $HY                            ]] && ((OY--))
-        [[ $OX -gt $halfendx && $goback = 'false' ]] && mov - || goback=true
-        [[ $OX -lt $bossendx && $goback = 'true'  ]] && mov + || goback=false
+        [[ $OY -lt $HY ]] && ((OY++))
+        [[ $OY -gt $HY ]] && ((OY--)) # this is a black magic
+        [[ $OX -gt $TX ]] && mov - || { TX=$bossendx; SX=$OX; }
+        [[ $OX -lt $TX ]] && mov + || { TX=$halfendx; SX=$OX; }
         #-{ Aliens out }-------------------------------------------------------
         EX=$[OX+2] EY=$[OY+5]; [[ $EY -gt $[enmyendy+3] ]] && EY=$[enmyendy+3]
     else # when boss' health goes to 0 it starts to fall, explodes and bounces on the ground
-        AS=0; mov - || mess 'win'
-        [[ $OY -lt  $bossendy     && $jump = 'false' ]] && ((OY++)) || { jump=true; ((BJ--)); }
-        [[ $OY -gt $[bossendy-BJ] && $jump = 'true'  ]] && ((OY--)) ||   jump=false
-        [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $OX $OY; C1=8; }
+        AS=0; SM=3; mov - || mess 'win'
+        [[ $OY -lt $TY ]] && ((OY++))  || { TY=$[bossendy-BJ]; ((BJ--)); }
+        [[ $OY -gt $TY ]] && ((OY--))  ||   TY=$bossendy
+        [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $OX $OY; C1=15; }
     fi
     [[ $C1 -gt 0 ]] && ((C1--))
-    CM1=$SKY$DIM$BLK CM2=$BLD$BLK
-    ENM[i]="boss $OX $OY 6 14 $SC $SM $CS $CL $AS $AL $C1"
-    X1="\\e[$OY;$[OX+4]H" X2="\\e[$[OY+1];$[OX+2]H" X3="\\e[$[OY+2];$[OX+1]H" X4="\\e[$[OY+6];$[OX+1]H"
-    #0123456789ABCD
-    #1             
-    #2     ___          
-    #3   _/   \_   
-    #4  /       \  
-    #5 (         ) 
-    #6  `¯¯---¯¯´  
-    #7             
-    ############################   1     2     3   4     5    6   7   8       9    A   B       C   D  #0
-    cut "\\e[$OY;${SX}H$SKY"      ''    ''    ''  '' $X1' '  ' ' ' ' ' '     ' '                      #1
-    cut "\\e[$[OY+1];${SX}H$CM2"  ''    '' $X2' ' ' '   ' '  '_' '_' '_'     ' '  ' ' ' '             #2
-    cut "\\e[$[OY+2];${SX}H$CM1"  '' $X3' '   ' ' '_'   '/' ${small[AS]} $CM2'\\' '_' ' '     ' '     #3
-    cut "\\e[$[OY+3];${SX}H$CM1"  ' '   ' '   '/'            ${big1[AS]}          $CM2'\\'    ' ' ' ' #4
-    cut "\\e[$[OY+4];${SX}H$CM1"  ' '   '('   ' '            ${big2[AS]}              ' ' $CM2')' ' ' #5
-    cut "\\e[$[OY+5];${SX}H$CM1"  ' '   ' '   '`' '¯'   '¯'  '-' '-' '-'     '¯'  '¯' '´'     ' ' ' ' #6
-    cut "\\e[$[OY+6];${SX}H$SKY"  '' $X4' '   ' ' ' '   ' '  ' ' ' ' ' '     ' '  ' ' ' '     ' '     #7
+    case "$day$month$virus" in
+        3110)
+        CM1=$SKY$BLD$ylw CM2=$BLD$RED EYE="$CM2( $CM2⁐ $CM2)"
+        X1="\\e[$OY;$[OX+1]H" X2="\\e[$[OY+1];$[OX+1]H" X3="\\e[$[OY+5];$[OX+1]H" X4="\\e[$[OY+6];$[OX+2]H"
+        #0123456789ABCD
+        #1             
+        #2   .-./.-.   
+        #3  /(_) (_)\  
+        #4 ❲ /VVVVV\ ❳ 
+        #5  \VvvvvvV/ 
+        #6   `¯---¯´  
+        #7             
+        ############################  1     2     3   4   5   6         7           8   9   A   B       C   D  #0
+        cut "\\e[$OY;${SX}H$SKY"     '' $X1' '   ' ' ' ' ' ' ' '       ' '         ' ' ' ' ' ' ' '     ' '     #1
+        cut "\\e[$[OY+1];${SX}H$CM1" '' $X2' '   ' ' '.' '-' '.' ${pumtop[AS]} $CM1'.' '-' '.' ' '     ' ' ' ' #2
+        cut "\\e[$[OY+2];${SX}H$CM1" ' '   ' '   '/'    $EYE           ' '            $EYE $CM1'\\'    ' ' ' ' #3
+        cut "\\e[$[OY+3];${SX}H$CM1" ' '   '❲'   ' '           ${mouthtop[AS]}                 ' ' $CM1'❳' ' ' #4
+        cut "\\e[$[OY+4];${SX}H$CM1" ' '   ' '   '\\'          ${mouthlow[AS]}             $CM1'/'     ' ' ' ' #5
+        cut "\\e[$[OY+5];${SX}H$CM1" '' $X3' '   ' ' '`' '¯' '-'       '-'         '-' '¯' '´' ' '     ' '     #6
+        cut "\\e[$[OY+6];${SX}H$SKY" ''    '' $X4' ' ' ' ' ' ' '       ' '         ' ' ' ' ' ' ' '             #7
+        ENM[i]="boss $OX $OY 6 14 $SC $SM $CS $CL $AS 6 $C1";;
+        *)
+        CM1=$SKY$DIM$BLK CM2=$BLD$BLK
+        X1="\\e[$OY;$[OX+4]H" X2="\\e[$[OY+1];$[OX+2]H" X3="\\e[$[OY+2];$[OX+1]H" X4="\\e[$[OY+6];$[OX+1]H"
+        #0123456789ABCD
+        #1             
+        #2     ___          
+        #3   _/   \_   
+        #4  /       \  
+        #5 (         ) 
+        #6  `¯¯---¯¯´  
+        #7             
+        ############################   1     2     3   4     5    6   7   8       9    A   B         C   D  #0
+        cut "\\e[$OY;${SX}H$SKY"      ''    ''    ''  '' $X1' '  ' ' ' ' ' '     ' '                        #1
+        cut "\\e[$[OY+1];${SX}H$CM2"  ''    '' $X2' ' ' '   ' '  '_' '_' '_'     ' '  ' ' ' '               #2
+        cut "\\e[$[OY+2];${SX}H$CM1"  '' $X3' '   ' ' '_'   '/' ${small[AS]} $CM2'\\' '_' ' '       ' '     #3
+        cut "\\e[$[OY+3];${SX}H$CM1"  ' '   ' '   '/'            ${big1[AS]}          $CM2'\\'      ' ' ' ' #4
+        cut "\\e[$[OY+4];${SX}H$CM1"  ' '   '('   ' '            ${big2[AS]}              ' ' "$CM2"')' ' ' #5
+        cut "\\e[$[OY+5];${SX}H$CM1"  ' '   ' '   '`' '¯'   '¯'  '-' '-' '-'     '¯'  '¯' '´'       ' ' ' ' #6
+        cut "\\e[$[OY+6];${SX}H$SKY"  '' $X4' '   ' ' ' '   ' '  ' ' ' ' ' '     ' '  ' ' ' '       ' '     #7
+        ENM[i]="boss $OX $OY 6 14 $SC $SM $CS $CL $AS $AL $C1";;
+    esac
 }
 #------------------------{ Bonuses }------------------------------------------------------------------------------------
 sprite_ammo () {
@@ -264,6 +281,28 @@ sprite_gunup () {
            cut "\\e[$[OY+1];${SX}H$CM1" '‖' $CM2'—' $CM2'—'     ' '   #2
            cut "\\e[$[OY+2];${SX}H$CM1" '‖' $CM3'‾' $CM3'‾' $SKY' ';; #3
     esac
+}
+#------------------------{ Ad plane }-----------------------------------------------------------------------------------
+flame1=("$red-"       "$ylw~"       "$red- $RED~" "$ylw-")
+flame2=("$ylw-"       "$red- $RED~" "$red~"       "$YLW~")
+flame3=("$red- $RED~" "$red~"       "$YLW~"       "$ylw-")
+for ((i=0; i<${#ad}; i++)); do ad_new+="$BLD$red${ad:$i:1} "; done
+new_ad=( ${ad_new//  /_Z_ } ) line=( ${new_ad[@]//*/$blk-} ) width=$((19+${#new_ad[@]}))
+sprite_msngr () {
+    mov - && BP2[i]="msngr $OX $OY 4 $width $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
+    CM1=$SKY$BLD$blk CM2=$SKY$DIM$blk CM3=$SKY$blk
+    X1="\\e[$OY;$[OX+7]H"     X2="\\e[$[OY+1];$[OX+1]H" X3="\\e[$[OY+1];$[OX+12]H"
+    X4="\\e[$[OY+3];$[OX+4]H" X5="\\e[$[OY+3];$[OX+12]H"
+    #0123456789ABCD...
+    #1       __    
+    #2 _____/_/   +------------------+~
+    #3(°_\ |_)---<| Die alien scum! -~
+    #4    \|      +-----------------~
+    ############################  1       2   3       4      5        6       7       8   9   A   B   C     D   E   F  ...                                    #0
+    cut "\\e[$OY;${SX}H$CM1"     ''      ''  ''      ''     ''       ''      ''   $X1'_' '_' ' '                                                              #1
+    cut "\\e[$[OY+1];${SX}H$CM2" ''   $X2'_' '_'     '_'    '_'      '_'     '/'     '_' '/' ' ' ''  '' $X3'+' '-' '-' ${line[@]} ${flame1[AS]}   ' ' ' '     #2
+    cut "\\e[$[OY+2];${SX}H$CM1" '(' $UND'°' ' ' $CM2'\\'   ' '  $CM3'|' $UND' ' $CM3')' '-' '-' '-' '<'   '|' ' ' ${new_ad[@]} ' ' $SKY${flame2[AS]} ' ' ' ' #3
+    cut "\\e[$[OY+3];${SX}H$CM2" ''      ''  ''       '' $X4'\\' $CM3'|'     ' '     ''  ''  ''  ''  '' $X5'+' ${line[@]} ${flame3[AS]}           ' ' ' '     #4
 }
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
 case $month in
@@ -401,7 +440,7 @@ sprite_tree2 () {
 
 case $month in
     0[1-4]|12) T3C=$SKY$BLD$cyn tree3H=8;; # winter & early spring
-    0[5-8]   ) T3C=$SKY$BLD$GRN tree3H=9;; # late spring & summer
+    0[5-8]   ) T3C=$SKY$GRN     tree3H=9;; # late spring & summer
     09|1[0-1]) T3C=$SKY$DIM$red tree3H=9;; # autumn
 esac
 sprite_tree3 () {
@@ -556,15 +595,15 @@ sprite_boom () {
           1) cut "\e[$BY;$[BX+2]H$RED"            '.-.'     #    .-.
              cut "\e[$[BY+1];$[BX+1]H$RED"       '(   )'    #   (   )
              cut "\e[$[BY+2];$[BX+1]H$RED"        '`-´';;   #    `-´
-          2) cut "\e[$[BY-1];$[BX+2]H$red"         '_'      #     _
+          2) cut "\e[$[BY-1];$[BX+3]H$red"         '_'      #     _
              cut "\e[$BY;$[BX+1]H$red"           '-   +'    #   -   +
              cut "\e[$[BY+1];${BX}H$red"        '(     )'   #  (     )
              cut "\e[$[BY+2];$[BX+1]H$red"       '+ _ -';;  #   + _ -
-          3) cut "\e[$[BY-1];$[BX+1]H$DIM$RED"    '- -'     #    - -
+          3) cut "\e[$[BY-1];$[BX+2]H$DIM$RED"    '- -'     #    - -
              cut "\e[$BY;${BX}H$DIM$RED"        '´     `'   #  ´     `
              cut "\e[$[BY+1];$[BX-1]H$DIM$RED" "'       '"  # '       '
              cut "\e[$[BY+2];${BX}H$DIM$RED"    '`  _  ´';; #  `  _  ´
-          4) cut "\e[$[BY-1];$[BX+1]H$SKY"        '   '     #  eraser
+          4) cut "\e[$[BY-1];$[BX+2]H$SKY"        '   '     #  eraser
              cut "\e[$BY;${BX}H$SKY"            '       '   #
              cut "\e[$[BY+1];$[BX-1]H$SKY"     '         '  #
              cut "\e[$[BY+2];${BX}H$SKY"        '       ';; #
@@ -576,14 +615,14 @@ sprite_Sun () {
     mov -; BP1[i]="Sun $Sunsendx 1 9 18 $SC 7 $CS $CL $AS $AL"
     case $AS in
           0) cut "\e[1;${Sunsendx}H$SKY$YLW"     '       ___ |       '
-             cut "\e[2;${Sunsendx}H$SKY$YLW"     '---````    \       '
+             cut "\e[2;${Sunsendx}H$SKY$BLD$YLW" '---````    \       '
              cut "\e[3;${Sunsendx}H$SKY$YLW"     '           _`.     '
              cut "\e[4;${Sunsendx}H$SKY$BLD$YLW" '        ../   `..__'
              cut "\e[5;${Sunsendx}H$SKY$YLW"     '     ../        /  '
              cut "\e[6;${Sunsendx}H$SKY$YLW"     '    /          /   '
              cut "\e[7;${Sunsendx}H$SKY$BLD$YLW" '              /    '
              cut "\e[8;${Sunsendx}H$SKY$YLW"     '              /    '
-             cut "\e[9;${Sunsendx}H$SKY$YLW"     '             /     ';;
+             cut "\e[9;${Sunsendx}H$SKY$BLD$YLW" '             /     ';;
           1) cut "\e[1;${Sunsendx}H$SKY$YLW"     '_...---``  |       '
              cut "\e[2;${Sunsendx}H$SKY$BLD$YLW" '        _.-\       '
              cut "\e[3;${Sunsendx}H$SKY$YLW"     '   _.--`    `.     '
@@ -594,10 +633,10 @@ sprite_Sun () {
              cut "\e[8;${Sunsendx}H$SKY$BLD$YLW" '                 | '
              cut "\e[9;${Sunsendx}H$SKY$YLW"     '                 | ';;
           2) cut "\e[1;${Sunsendx}H$SKY$BLD$YLW" '     _...--|       '
-             cut "\e[2;${Sunsendx}H$SKY$YLW"     '..--`      \       '
+             cut "\e[2;${Sunsendx}H$SKY$BLD$YLW" '..--`      \       '
              cut "\e[3;${Sunsendx}H$SKY$BLD$YLW" '         .. `.     '
              cut "\e[4;${Sunsendx}H$SKY$YLW"     '     _.-`     `..__'
-             cut "\e[5;${Sunsendx}H$SKY$YLW"     '  ..`         .`   '
+             cut "\e[5;${Sunsendx}H$SKY$BLD$YLW" '  ..`         .`   '
              cut "\e[6;${Sunsendx}H$SKY$BLD$YLW" '             /     '
              cut "\e[7;${Sunsendx}H$SKY$YLW"     '            /      '
              cut "\e[8;${Sunsendx}H$SKY$BLD$YLW" '          .`       '

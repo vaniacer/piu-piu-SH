@@ -11,7 +11,7 @@ get_dimensions () {
     heroendx=$[endx-15]
     heroendy=$[endy-8 ]
     enmyendy=$[endy-9 ]
-    bossendx=$[endx-12]
+    bossendx=$[endx-14]
     bossendy=$[endy-7 ]
     bosshbar=$[endx-10]
     lineendy=$[endy-2 ]
@@ -28,7 +28,7 @@ get_dimensions () {
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
 cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ }"; }
 mov () {
-    case $1 in -) cuter=++;; +) cuter=--;; esac
+    case $1  in -) cuter=++;; +) cuter=--;; esac
     case $SC in
         0) [[ $OX -le -$OW   ]] && return 1
            [[ $OX -gt  $endx ]] && return 1
