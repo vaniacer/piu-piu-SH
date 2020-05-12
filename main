@@ -10,46 +10,47 @@ esac      #                                                                  ░
 #--------------------------------------------------------------------+ ░   ░░░░ ░░░░▒▒▒▒ ▒▒▒▓ ▓▓▓▒▒▒▒▒▒▒░░░░ ░░░░ ░ ░ ░
 # Color picker, usage: printf $BLD$CUR$RED$BBLU'Hello World!'$DEF    |   ░
 #-------------------------+--------------------------------+---------+        ░   ░░░ ░░     ░  ░░      ░░  ░░ ░
-#       Text color        |       Background color         |         |      ░   ░  ▒██████ ░▒██████ ▒██░  ▒██
-#-----------+-------------+--------------+-----------------+         |        ░ ░░▒▓██ ▒▓██ ▓▓▓██▓ ▒▓██ ░▒▓██░░ ░
+#       Text color        |       Background color         |         |      ░   ░  ▒██████ ░▒██████ ▒██░  ▒██       ░
+#-----------+-------------+--------------+-----------------+         |░       ░ ░░▒▓██ ▒▓██ ▓▓▓██▓ ▒▓██ ░▒▓██░░ ░
 # Base color|Lighter shade| Base color   | Lighter shade   |         |     ░ ░ ░░▒▓██ ▒▓██ ▒▒▒▓██ ░▒▓██░ ▒▓██░
-#-----------+-------------+--------------+-----------------+         |           ▒▓██████░ ░▒▓██ ░▒▓██ ░▒▓██░░ ░ ░
-BLK='\e[30m'; blk='\e[90m'; BBLK='\e[40m'; bblk='\e[100m' #| Black   |       ░  ▒▓██▓▓▓▓  ░ ▒▓██░ ▒▓██░░▒▓██ ░
+#-----------+-------------+--------------+-----------------+         |  ░ ░      ▒▓██████░ ░▒▓██ ░▒▓██ ░▒▓██░░ ░ ░
+BLK='\e[30m'; blk='\e[90m'; BBLK='\e[40m'; bblk='\e[100m' #| Black   |       ░  ▒▓██▓▓▓▓  ░ ▒▓██░ ▒▓██░░▒▓██ ░     ░ ░
 RED='\e[31m'; red='\e[91m'; BRED='\e[41m'; bred='\e[101m' #| Red     |        ▒▓████▒▒▒░ ░ ▓██████ ▒▓██████░░ ░
 GRN='\e[32m'; grn='\e[92m'; BGRN='\e[42m'; bgrn='\e[102m' #| Green   |     ░ ░▒▓▓▓▓ ░ ░░▒▓▓▓▓▓▓ ░ ▒▓▓▓▓▓░
 YLW='\e[33m'; ylw='\e[93m'; BYLW='\e[43m'; bylw='\e[103m' #| Yellow  |      ░ ▒▒ ░ ░ ░ ░▒▒▒▒▒▒ ░ ░░▒▒▒▒░  ░
-BLU='\e[34m'; blu='\e[94m'; BBLU='\e[44m'; bblu='\e[104m' #| Blue    |
-MGN='\e[35m'; mgn='\e[95m'; BMGN='\e[45m'; bmgn='\e[105m' #| Magenta |                       ░░ ▒▒███░
-CYN='\e[36m'; cyn='\e[96m'; BCYN='\e[46m'; bcyn='\e[106m' #| Cyan    |                  ░░░ ▒████ ▒▓███░
-WHT='\e[37m'; wht='\e[97m'; BWHT='\e[47m'; bwht='\e[107m' #| White   |              ░ ▒████▒▓▓▓▓ ░░▒▓▓███ ░░ ░
+BLU='\e[34m'; blu='\e[94m'; BBLU='\e[44m'; bblu='\e[104m' #| Blue    |  ░ ░                                      ░     ░
+MGN='\e[35m'; mgn='\e[95m'; BMGN='\e[45m'; bmgn='\e[105m' #| Magenta |░                      ░░ ▒▒███░              ░
+CYN='\e[36m'; cyn='\e[96m'; BCYN='\e[46m'; bcyn='\e[106m' #| Cyan    |     ░ ░ ░        ░░░ ▒████ ▒▓███░             ░
+WHT='\e[37m'; wht='\e[97m'; BWHT='\e[47m'; bwht='\e[107m' #| White   |  ░ ░ ░        ░ ▒████▒▓▓▓▓ ░░▒▓▓███ ░░ ░
 #-------------------------{ Effects }----------------------+---------+             ░ ▒▓▓▓▓ ▒████░▒▓███░░
-DEF='\e[0m'   #Default color and effects                             |              ▒ ▒▒  ▒▓▓▓▓▒▓███░
-BLD='\e[1m'   #Bold\brighter                                         |                 ░░░ ▒▒▒ ░░▒▒░
-DIM='\e[2m'   #Dim\darker                                            |
+DEF='\e[0m'   #Default color and effects                             |              ▒ ▒▒  ▒▓▓▓▓▒▓███░              ░
+BLD='\e[1m'   #Bold\brighter                                         |     ░ ░         ░░░ ▒▒▒ ░░▒▒░
+DIM='\e[2m'   #Dim\darker                                            |░ ░
 CUR='\e[3m'   #Italic font                                           |          ░   ░░░ ░░     ░  ░░      ░░  ░░ ░
-UND='\e[4m'   #Underline                                             |        ░   ░  ▒██████ ░▒██████ ▒██░  ▒██
-INV='\e[7m'   #Inverted                                              |          ░ ░░▒▓██ ▒▓██ ▓▓▓██▓ ▒▓██ ░▒▓██░░ ░
-COF='\e[?25l' #Cursor Off                                            |       ░ ░ ░░▒▓██ ▒▓██ ▒▒▒▓██ ░▒▓██░ ▒▓██░
+UND='\e[4m'   #Underline                                             |        ░   ░  ▒██████ ░▒██████ ▒██░  ▒██        ░
+INV='\e[7m'   #Inverted                                              |   ░ ░    ░ ░░▒▓██ ▒▓██ ▓▓▓██▓ ▒▓██ ░▒▓██░░ ░
+COF='\e[?25l' #Cursor Off                                            |       ░ ░ ░░▒▓██ ▒▓██ ▒▒▒▓██ ░▒▓██░ ▒▓██░    ░
 CON='\e[?25h' #Cursor On                                             |             ▒▓██████░ ░▒▓██ ░▒▓██ ░▒▓██░░ ░ ░
-#------------------------{ Functions }-------------------------------+         ░  ▒▓██▓▓▓▓  ░ ▒▓██░ ▒▓██░░▒▓██ ░
+#------------------------{ Functions }-------------------------------+░        ░  ▒▓██▓▓▓▓  ░ ▒▓██░ ▒▓██░░▒▓██ ░
 # Text positioning, usage: XY 10 10 'Hello World!'                   |          ▒▓████▒▒▒░ ░ ▓██████ ▒▓██████░░ ░
 XY () { printf "\e[$2;${1}H$3"; }                                   #|       ░ ░▒▓▓▓▓ ░ ░░▒▓▓▓▓▓▓ ░ ▒▓▓▓▓▓░
-# Print line, usage: line - 10 | line -= 20 | line 'Hello World!' 20 |        ░ ▒▒ ░ ░ ░ ░▒▒▒▒▒▒ ░ ░░▒▒▒▒░  ░
+# Print line, usage: line - 10 | line -= 20 | line 'Hello World!' 20 |  ░     ░ ▒▒ ░ ░ ░ ░▒▒▒▒▒▒ ░ ░░▒▒▒▒░  ░       ░
 line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 # Create sequence like {0..(X-1)}                                    | ░ ░ ░ ░░░░░░▒▒▒▒ ▒▒▒▓ ▓▓▓▒▒▒▒▒░░░░░░ ░ ░ ░ ░ ░
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ ░ ░░░ ░ ░░ ░░░▒ ▒▒▒░░░░░░░ ░ ░
 #----{ Start opt }------------------------------------{ description  }---------------------{ def. values }--------------
   background=true                                     # background objects visibility             (true)
     bossborn=                                         # boss starter
-    tillboss=100                                      # frags needed to fight with boss            (100)
-     bhealth=100                                      # boss' health                               (100)
+    tillboss=100                                      # frags needed to fight with boss           (100)
+     bhealth=100                                      # boss' health                              (100)
      showfps=true                                     # show FPS counter if set                   (true)
-     enumber=0                                        # current enemy counter                     (0)
+     enumber=0                                        # enemies counter                           (0)
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")    # bonuses, more ammo, less life ang gunup
-       enmax=100                                      # max number of akiens                      (10)
+       enmax=100                                      # max number of enemies                     (10)
        month=$(date +'%m')                            # get current month
         life=3                                        # life counter                              (3)
         ammo=100                                      # ammo counter                              (100)
+         day=$(date +'%d')                            # get current  day
          DHC=$BLK                                     # default hero color                        ($BLK)
          DSC=$RED                                     # default symbol color                      ($RED)
          rnd=10                                       # random seed 4 bonuses                     (10)
@@ -58,7 +59,6 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ �
          MSN=1111                                     # messanger randomizer                      (1111)
          HOU=1111                                     # houses randomizer                         (1111)
          BRD=77                                       # birds randomizer                          (77)
-          BJ=10                                       # boss jumps                                (10)
           ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
            G=1                                        # gun                                       (1)(max 5)
 [[ -e ~/.piuconf ]] && . ~/.piuconf
@@ -70,28 +70,8 @@ game () {
     while true; do
         #-{ Empty screen, count fps}-------------------------------------------
         screen=; status
-
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound
-
-        #-{ BOSS }------------------------------------------------------------------------------------------------------
-        if [[ $[frags+frags2] -ge $tillboss ]]; then
-
-            # add boss object
-            [[ $bossborn ]] || { ENM+=("boss $endx $halfendy 6 14 0 0 1 0 $[RANDOM%3] 3 20"); bossborn=true; }
-
-            # Health bar
-            bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
-            for (( i=0  ; i<hp; i++ )); do bar="█$bar"; done
-            for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
-            screen+="\e[$[endy-1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
-
-            #-{ Add aliens }---------------------------------------------------
-            [[ $bhealth -gt 0 ]] && add_enm $EX $EY 5
-        else
-            add_enm $endx $[4+RANDOM%enmyendy]
-        fi
-
         #-{ Move bitplans }----------------------------------------------------
         BP1=("${BP1[@]}"); for i in ${!BP1[@]}; { OI=(${BP1[i]}); get_obj_data; } # small(far) background objects
         BP2=("${BP2[@]}"); for i in ${!BP2[@]}; { OI=(${BP2[i]}); get_obj_data; } # medium background objects
@@ -99,10 +79,24 @@ game () {
         HER=("${HER[@]}"); for i in ${!HER[@]}; { OI=(${HER[i]}); get_obj_data; } # heroes
         ENM=("${ENM[@]}"); for i in ${!ENM[@]}; { OI=(${ENM[i]}); get_obj_data; } # enemies
         BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); get_obj_data; } # big(closer) background objects
-
+        #-{ BOSS }-------------------------------------------------------------
+        if [[ $[frags+frags2] -ge $tillboss ]]; then
+            # add boss object
+            [[ $bossborn ]] || { ENM+=("boss $endx $halfendy 6 14 0 0 1 0 $[RANDOM%3] 3 20 10"); bossborn=true; }
+            # Health bar
+            bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
+            for (( i=0  ; i<hp; i++ )); do bar="█$bar"; done
+            for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
+            screen+="\e[$[endy-1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
+            #-{ Add aliens }---------------------------------------------------
+            [[ $bhealth -gt 0 ]] && add_enm $EX $EY 5
+        else
+            add_enm $endx $[4+RANDOM%enmyendy]
+        fi
         #-{ Print FPS }--------------------------------------------------------
         [[ $showfps ]] && fps_counter
-
+        #-{ If there are no heroes then this is the end }----------------------
+        [[ $HER ]] || mess lose
         #-{ Print everything }-------------------------------------------------
         printf "$screen"
     done
@@ -116,6 +110,6 @@ H1C=${DHC}; S1C=${DSC}; H1S=${DHS};
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 fill_screen
 H1X=2 H1Y=2
-HER[0]="hero1 $H1X      $H1Y 6 14 0 0 1 15 0 3"
+HER[0]="hero1 $H1X      $H1Y 6 14 0 0 1 15 0 3 15 10"
 BP1[0]="Sun   $Sunsendx 1    9 18 0 7 1 20 0 2"
 game

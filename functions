@@ -77,6 +77,7 @@ get_obj_data () {
     AS=${OI[9]}   # animation start
     AL=${OI[10]}  # animation lenght
     C1=${OI[11]}  # custom obj parameter 1
+    C2=${OI[12]}  # custom obj parameter 2
     [[ $OT ]] && sprite_$OT
 }
 
@@ -170,7 +171,10 @@ fps_counter () {
 
 status () {
     #-{ Print game status }----------------------------------------------------
-    screen+="\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY  ${BLK}Life: $SKY$RED$life$SKY  ${BLK}Ammo: $SKY$RED$ammo$SKY "
+    case "$day$month$virus" in
+        *covid-19) screen+="\e[1;2H$SKY${BLK}killed viruses: $SKY$RED$frags$SKY ${BLK}Life: $SKY$RED$life$SKY ${BLK}Meds: $SKY$RED$ammo$SKY ";;
+                *) screen+="\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY ${BLK}Life: $SKY$RED$life$SKY ${BLK}Ammo: $SKY$RED$ammo$SKY " ;;
+    esac
 }
 
 fill_screen () {

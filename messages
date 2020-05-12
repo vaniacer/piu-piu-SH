@@ -6,14 +6,13 @@ case "$day$month" in
     2802) ad='Happy birthday Matvey !)';;
     2002) ad='Happy birthday Romka !)';;
     3006) ad='Happy birthday Natusya !)';;
-    0703) ad='The 8th of March is comming...';;
     0803) ad='Hold on guyz $)';;
+    0905) ad='День победы!';;
 esac
 
 sprite_help () {
            x=$[$endx/2-25/2]
            y=$[$endy/2-5]
-
       sprite=(         "\e[$y;${x}H                   ^"
             "\e[$[$y+1];${x}H                   ${RED}W$DEF"
   "\e[$[$y+2];${x}H${BLD}Control with:$DEF  < ${RED}A S D$DEF >"
@@ -37,7 +36,6 @@ sprite_lose () {
 }
 
 sprite_win () {
-
            x=$[$endx/2-25/2]
            y=$[$endy/2-5]
          CM1=$BLD$grn; CM2=$DIM$GRN
