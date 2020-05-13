@@ -26,7 +26,15 @@ get_dimensions () {
 }
 
 bye () { stty echo; printf "$CON$DEF"; exit $1; }
-cut () { screen+="$1"; shift; printf -v spr %s "${@:$CS:$CL}"; screen+="${spr//_Z_/ }"; }
+
+cut () {
+    xcord=$1 ycord=$2 color=$3; shift 3
+    screen+="\e[$ycord;${xcord}H$color"
+    printf -v spr %s "${@:$CS:$CL}"
+    spr="${spr//_Y_/'\e['$ycord;}"
+    screen+="${spr//_Z_/ }"
+}
+
 mov () {
     case $1  in -) cuter=++;; +) cuter=--;; esac
     case $SC in
@@ -84,33 +92,66 @@ get_obj_data () {
 server_read () {
     read -t$spd -srn1 input &> /dev/null
     case $input in
-        [wW]) [[ $H1Y    -gt 2             ]] && ((H1Y--));;
-        [aA]) [[ $H1X    -gt 1             ]] && ((H1X--));;
-        [sS]) [[ $H1Y    -lt $heroendy     ]] && ((H1Y++));;
-        [dD]) [[ $H1X    -lt $heroendx     ]] && ((H1X++));;
+        [wW]) [[ $H1Y  -gt 2               ]] && ((H1Y--));;
+        [aA]) [[ $H1X  -gt 1               ]] && ((H1X--));;
+        [sS]) [[ $H1Y  -lt $heroendy       ]] && ((H1Y++));;
+        [dD]) [[ $H1X  -lt $heroendx       ]] && ((H1X++));;
         [pP]) [[ $ammo -ge $G && $C1 -eq 0 ]] && { C1=7; case $G in
-            1) PIU+=("piu1 $[H1X+12] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
+            1) PIU+=("piu $[H1X+12] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
 
-            2) PIU+=("piu1 $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3"    # -=>
-                                                                                           #
-                     "piu1 $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
+            2) PIU+=("piu $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a"    # -=>
+                                                                                            #
+                     "piu $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
 
-            3) PIU+=("piu1 $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3"    # -=>
-                     "piu1 $[H1X+13] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
-                     "piu1 $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
+            3) PIU+=("piu $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a"    # -=>
+                     "piu $[H1X+13] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
+                     "piu $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
 
-            4) PIU+=("piu1 $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3"    # -=>
-                     "piu1 $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
-                                                                                           #
-                     "piu1 $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
-                     "piu1 $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
+            4) PIU+=("piu $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a"    # -=>
+                     "piu $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
+                                                                                            #
+                     "piu $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
+                     "piu $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
 
-            5) PIU+=("piu1 $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3"    # -=>
-                     "piu1 $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
-                     "piu1 $[H1X+14] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+14)] $[RANDOM%3] 3"    #   -=>
-                     "piu1 $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3"    #  -=>
-                     "piu1 $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3");; # -=>
+            5) PIU+=("piu $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a"    # -=>
+                     "piu $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
+                     "piu $[H1X+14] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+14)] $[RANDOM%3] 3 a"    #   -=>
+                     "piu $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
+                     "piu $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
         esac; ((ammo-=$G)); };;
+    esac
+}
+
+client_read () {
+    input2=$(nc -l -p $sport)
+    case $input2 in
+        [wW]) [[ $H2Y   -gt 2                ]] && ((H2Y--));;
+        [aA]) [[ $H2X   -gt 1                ]] && ((H2X--));;
+        [sS]) [[ $H2Y   -lt $heroendy        ]] && ((H2Y++));;
+        [dD]) [[ $H2X   -lt $heroendx        ]] && ((H2X++));;
+        [pP]) [[ $ammo2 -ge $G2 && $C1 -eq 0 ]] && { C1=7; case $G2 in
+            1) PIU+=("piu $[H1X+12] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
+
+            2) PIU+=("piu $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b"    # -=>
+                                                                                            #
+                     "piu $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
+
+            3) PIU+=("piu $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b"    # -=>
+                     "piu $[H1X+13] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
+                     "piu $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
+
+            4) PIU+=("piu $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b"    # -=>
+                     "piu $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
+                                                                                            #
+                     "piu $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
+                     "piu $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
+
+            5) PIU+=("piu $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b"    # -=>
+                     "piu $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
+                     "piu $[H1X+14] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+14)] $[RANDOM%3] 3 b"    #   -=>
+                     "piu $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
+                     "piu $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
+        esac; ((ammo2-=$G2)); };;
     esac
 }
 
