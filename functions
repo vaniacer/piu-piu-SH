@@ -72,7 +72,7 @@ mess () {
     esac
 }
 
-get_obj_data () {
+print_sprite () {
     OT=${OI[0]}   # object type
     OX=${OI[1]}   # X coordinate
     OY=${OI[2]}   # Y coordinate
@@ -254,4 +254,60 @@ add_backgound () {
 
     #-{ Print moving land }----------------------------------------------------
     screen+="\e[$lineendy;1H$LND${land:$[1-${LX:-1}]:$endx}"; [[ ${LX:-1} -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+}
+
+#------------------------{ Intro }--------------------------------------------------------------------------------------
+intro () {
+    i=0
+    INT=("PIU $endx 3 9 41 0 0 1 0          0 0 $[endx/2-35]"
+         "PIU $endx 3 9 41 0 0 1 0          0 0 $[endx/2-1]"
+         "ARR 1    12 6 28 0 0 0 $[endx-29] 0 0 $[endx/2-16]")
+    while true; do
+        sleep $spd; screen=
+        OI=(${INT[i]})
+        print_sprite || ((i++))
+        printf "$screen"
+        [[ $i -gt ${#INT[@]} ]] && break
+    done
+}
+
+item=1
+selector () {
+    read -t$spd -srn1 input &> /dev/null
+    case $input in
+        [wW]) [[ $item -gt 1 ]] && ((item--));;
+        [aA]) :;;
+        [sS]) [[ $item -lt $[${#items[@]}-1] ]] && ((item++));;
+        [dD]) :;;
+        [pP]) return $item;; # -=>
+    esac;     return 0
+}
+
+eraser="                                        "
+
+clr    () { for i in ${!items[@]}; { XY $[$endx/2-(${#eraser}/2)] $[$endy-5+i] "$eraser"; }; }
+back   () { menu; }
+start  () { return 1; }
+team   () { type=duel; multiplayer; }
+duel   () { type=team; multiplayer; }
+server () { game=server; clr; menu; }
+client () { clr; game=client; enter_server; clr; menu; }
+multiplayer  () { clr; items=('' "server" 'client' "$type" 'back'); }
+enter_server () {
+    XY $[$endx/2-10] $[$endy-4] "${RED}Enter server IP: "
+    XY $[$endx/2-10] $[$endy-3] "$CON$BLD$WHT"
+    stty echo; read -p ' ' -e saddr; printf "$COF"; stty -echo
+}
+
+game=single
+type=team
+menu () {
+    items=('' "start  $game" 'multiplayer' 'configure' 'exit')
+    while true; do
+        selector || ${items[$?]// */} || break
+        for i in ${!items[@]}; {
+            [[ $i -eq $item ]] && selected=$BLD$RED || selected=$DEF
+            XY $[$endx/2-(${#items[i]}/2)] $[$endy-5+i] "$selected${items[i]}"
+        }
+    done
 }

@@ -73,12 +73,12 @@ game () {
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound
         #-{ Move bitplans }----------------------------------------------------
-        BP1=("${BP1[@]}"); for i in ${!BP1[@]}; { OI=(${BP1[i]}); get_obj_data; } # small(far) background objects
-        BP2=("${BP2[@]}"); for i in ${!BP2[@]}; { OI=(${BP2[i]}); get_obj_data; } # medium background objects
-        PIU=("${PIU[@]}"); for i in ${!PIU[@]}; { OI=(${PIU[i]}); get_obj_data; } # heroes fire
-        HER=("${HER[@]}"); for i in ${!HER[@]}; { OI=(${HER[i]}); get_obj_data; } # heroes
-        ENM=("${ENM[@]}"); for i in ${!ENM[@]}; { OI=(${ENM[i]}); get_obj_data; } # enemies
-        BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); get_obj_data; } # big(closer) background objects
+        BP1=("${BP1[@]}"); for i in ${!BP1[@]}; { OI=(${BP1[i]}); print_sprite; } # small(far) background objects
+        BP2=("${BP2[@]}"); for i in ${!BP2[@]}; { OI=(${BP2[i]}); print_sprite; } # medium background objects
+        PIU=("${PIU[@]}"); for i in ${!PIU[@]}; { OI=(${PIU[i]}); print_sprite; } # heroes fire
+        HER=("${HER[@]}"); for i in ${!HER[@]}; { OI=(${HER[i]}); print_sprite; } # heroes
+        ENM=("${ENM[@]}"); for i in ${!ENM[@]}; { OI=(${ENM[i]}); print_sprite; } # enemies
+        BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); print_sprite; } # big(closer) background objects
         #-{ BOSS }-------------------------------------------------------------
         if [[ $[frags+frags2] -ge $tillboss ]]; then
             # add boss object
@@ -102,9 +102,11 @@ game () {
     done
 }
 #=================================================={ Initialisation }===================================================
-trap : ALRM
-trap bye INT TERM SIGINT SIGTERM EXIT
-get_dimensions; stty -echo; printf "$COF"; clear
+trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT; get_dimensions
+clear; mess "help"; sleep 2; stty -echo; printf "$COF"
+clear; intro; menu
+clear; fill_screen
+stty -echo; printf "$COF"
 H1C=${DHC}; S1C=${DSC}; H1S=${DHS};
 #-{ Generate grass }-----------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
