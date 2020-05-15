@@ -103,14 +103,13 @@ game () {
 }
 #=================================================={ Initialisation }===================================================
 trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT; get_dimensions
-clear; mess "help"; sleep 2; stty -echo; printf "$COF"
+clear; mess "help"; sleep 2
 clear; intro; menu
 clear; fill_screen
-stty -echo; printf "$COF"
+cursor off
 H1C=${DHC}; S1C=${DSC}; H1S=${DHS};
 #-{ Generate grass }-----------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
-fill_screen
 H1X=2 H1Y=2
 HER[0]="hero1 $H1X      $H1Y 6 14 0 0 1 15 0 3 15 10"
 BP1[0]="Sun   $Sunsendx 1    9 18 0 7 1 20 0 2"

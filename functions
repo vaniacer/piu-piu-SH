@@ -25,14 +25,19 @@ get_dimensions () {
     tre3endy=$[endy-tree3H-2]
 }
 
-bye () { stty echo; printf "$CON$DEF"; exit $1; }
-
+cursor () {
+    case $1 in
+         on) stty  echo; printf "$CON";;
+        off) stty -echo; printf "$COF";;
+    esac
+}
+bye () { cursor on; exit $1; }
 cut () {
     xcord=$1 ycord=$2 color=$3; shift 3
     screen+="\e[$ycord;${xcord}H$color"
     printf -v spr %s "${@:$CS:$CL}"
     spr="${spr//_Y_/'\e['$ycord;}"
-    screen+="${spr//_Z_/ }"
+    screen+="${spr//⎕/ }"
 }
 
 mov () {
@@ -64,11 +69,12 @@ bonus () { # get random bonus from alien or not
 }
 
 mess () {
+    cursor off
     XY 1 1 ${DEF}; clear
     case $1 in
-        "win" ) sprite_win ; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
-        "lose") sprite_lose; printf "${sprite[*]}"; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
-        "help") sprite_help; printf "${sprite[*]}";;
+        "win" ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
+        "lose") sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
+        "help") sprite_help;;
     esac
 }
 
@@ -271,6 +277,25 @@ intro () {
     done
 }
 
+hero_config () {
+    hero_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT); HCN=${#hero_color[*]}; HCI=0;
+    star_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT); SCN=${#star_color[*]}; SCI=0;
+    hero_star=(★ ☭ ✚ ✙ ✠ ✡ ✦ ✧ ✩ ✪ ☘ ☠ ☢ ☣ ☯ ❃ ❂ ❁ ✿ ❀ ✣ ♣ ♠ ♥ ♦ ❤ ● ☻ ♀ ♂)
+    HSI=0 HSN=${#hero_star[*]} H1C=${H1C:-$DHC} H1S=${H1S:-$DHS} S1C=${S1C:-$DSC}
+
+    [[ $AS -gt 0 ]] && ((AS--)) || AS=3
+    CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND TR=${tailrotor[AS]} SX=$[$endx/2-9] OY=$[$endy/2-6] CS=1 CL=20
+    # Using the same 'cut' function to print hero as in the game to preserve this nicely done tabled structure
+    ######X####Y#####CLR  1   2   3       4        5       6       7       8        9       A        B       C       D       E   F   G  #0
+    cut $SX  $OY    $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #1
+    cut $SX $[OY+1] $CM1 ' ' '_' '_'     ' '                                         ${mainrotor[AS]}                               ' ' #2
+    cut $SX $[OY+2] $CM2 ' ' '|' $TR $CM1'\\' $CM1'_' $CM1'_' $CM1'_' $CM3'.'  $CM3'-' $CM3'╨'  $CM4'─' $CM4'｡' $CM1'_' $SKY' ' ' ' ' ' #3
+    cut $SX $[OY+3] $CM2 ' ' '`' '─'     '´'      '‾'     '‾'     '‷'     '\\' $blk'°' $S1C$H1S $SKY' ' $blk'º' $blk'¯' $CM1']' '─' ' ' #4
+    cut $SX $[OY+4] $CM2 ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      '‾'     '‾'      '‾'     '‾'     '‾' $SKY' ' ' ' ' ' #5
+    cut $SX $[OY+5] $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #6
+    printf "$screen"
+}
+
 item=1
 selector () {
     read -t$spd -srn1 input &> /dev/null
@@ -283,31 +308,36 @@ selector () {
     esac;     return 0
 }
 
-eraser="                                        "
-
-clr    () { for i in ${!items[@]}; { XY $[$endx/2-(${#eraser}/2)] $[$endy-5+i] "$eraser"; }; }
-back   () { menu; }
-start  () { return 1; }
+printf -v eraser %20s
+clr    () { for i in ${!items[@]}; { XY $[$endx/4] $[$endy-6+i] "$eraser"; }; }
+back   () { clr; menu; }
+start  () { return  1; }
 team   () { type=duel; multiplayer; }
 duel   () { type=team; multiplayer; }
 server () { game=server; clr; menu; }
+single () { game=single; clr; menu; }
+cancel () { apply; H1C=$DHC; H1S=$DHS; S1C=$DSC; }
 client () { clr; game=client; enter_server; clr; menu; }
-multiplayer  () { clr; items=('' "server" 'client' "$type" 'back'); }
+apply  () { printf "$DEF "; clear; intro; show_hero=; item=1; items=('' "start $game" 'multiplayer' 'configure' 'exit'); }
+configure    () { clear; show_hero=1; items=('' 'Hero  sign' 'Sign color' 'Hero color' 'apply' 'cancel'); }
+multiplayer  () { clr; items=('' 'server' 'client' 'single' "$type" 'back'); }
 enter_server () {
     XY $[$endx/2-10] $[$endy-4] "${RED}Enter server IP: "
-    XY $[$endx/2-10] $[$endy-3] "$CON$BLD$WHT"
-    stty echo; read -p ' ' -e saddr; printf "$COF"; stty -echo
+    XY $[$endx/2-10] $[$endy-3] "$BLD$WHT"
+    cursor on; read -p ' ' -e saddr; cursor off
 }
 
 game=single
 type=team
 menu () {
-    items=('' "start  $game" 'multiplayer' 'configure' 'exit')
+     item=1 MX=$[$endx/4] MY=$[$endy-6]
+    items=('' "start $game" 'multiplayer' 'configure' 'exit')
     while true; do
         selector || ${items[$?]// */} || break
+        [[ $show_hero ]] && hero_config
         for i in ${!items[@]}; {
             [[ $i -eq $item ]] && selected=$BLD$RED || selected=$DEF
-            XY $[$endx/2-(${#items[i]}/2)] $[$endy-5+i] "$selected${items[i]}"
+            XY $MX $[MY+i] "$selected${items[i]}"
         }
     done
 }
