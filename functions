@@ -337,7 +337,7 @@ menu () {
         [[ $show_hero ]] && hero_config
         for i in ${!items[@]}; {
             [[ $i -eq $item ]] && selected=$BLD$RED || selected=$DEF
-            XY $MX $[MY+i] "$selected${items[i]}"
+            XY $MX $[MY+i] "$selected${items[i]}$DEF"
         }
     done
 }
