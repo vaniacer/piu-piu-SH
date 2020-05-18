@@ -1,23 +1,26 @@
 #!/bin/bash
 #================================================{ Sprites }============================================================
 case $month in
-    0[1-4]|12)
-        SKY=$DEF$bwht         # winter & early spring sky
-        LND=$DEF$BLD$WHT$BWHT # winter & early spring land
-        CLD=30                # winter & early spring clouds rnd
-        TRE=50;;              # winter & early spring trees rnd
+    0[1-4]|12) # winter & early spring
+        SKY=$DEF$bwht         # sky color
+        LND=$DEF$BLD$WHT$BWHT #land color
+        BRD=200               # birds rnd
+        CLD=30                # clouds rnd
+        TRE=50;;              # trees rnd
 
-    0[5-8]   )
-        SKY=$DEF$bcyn         # late spring & summer sky
-        LND=$DEF$DIM$GRN$bgrn # late spring & summer land
-        CLD=50                # late spring & summer clouds rnd
-        TRE=30;;              # late spring & summer trees rnd
+    0[5-8]   ) # late spring & summer
+        SKY=$DEF$bcyn         # sky color
+        LND=$DEF$DIM$GRN$bgrn # land color
+        BRD=150               # birds rnd
+        CLD=50                # clouds rnd
+        TRE=40;;              # trees rnd
 
-    09|1[0-1])
-        SKY=$DEF$BCYN         # autumn sky
-        LND=$DEF$DIM$YLW$BGRN # autumn land
-        CLD=20                # autumn clouds rnd
-        TRE=50;;              # autumn trees rnd
+    09|1[0-1]) # autumn
+        SKY=$DEF$BCYN         # sky color
+        LND=$DEF$DIM$YLW$BGRN # land color
+        BRD=100               # birds rnd
+        CLD=20                # clouds rnd
+        TRE=50;;              # trees rnd
 esac
                               # ⎕ - space
   gun=(─ ─ ═ ≡ ≣ 𝄚)
@@ -29,6 +32,7 @@ mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕ ${blk}_ ${blk}_ ${
            "      ⎕       ⎕       ⎕       ⎕ ${blk}_       ⎕ ${blk}_       ⎕       ⎕       ⎕       ⎕"  # '    _ _    '
            "      ⎕       ⎕       ⎕ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕       ⎕       ⎕") # '   _____   '
 tailrotor=("$blk|" "$blk/" "$blk─" $blk'\\') # '|' '/' '─' '\'
+[[ $virus ]] && { DHS=☢ DHC=$RED DSC=$YLW; }
 sprite_hero1 () {
     server_read
     mov - || { unset HER[i]; return; }
@@ -95,7 +99,7 @@ sprite_hero2 () {
     cut $SX  $OY    $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #1
     cut $SX $[OY+1] $CM1 ' ' '_' '_'     ' '                                         ${mainrotor[AS]}                               ' ' #2
     cut $SX $[OY+2] $CM2 ' ' '|' $TR $CM1'\\' $CM1'_' $CM1'_' $CM1'_' $CM3'.'  $CM3'-' $CM3'╨'  $CM4'─' $CM4'｡' $CM1'_' $SKY' ' ' ' ' ' #3
-    cut $SX $[OY+3] $CM2 ' ' '`' '─'     '´'      '‾'     '‾'     '‷'     '\\' $blk'°' $S1C$H1S $SKY' ' $blk'º' $blk'¯' $CM1']' $GN ' ' #4
+    cut $SX $[OY+3] $CM2 ' ' '`' '─'     '´'      '‾'     '‾'     '‷'     '\\' $blk'°' $S2C$H1S $SKY' ' $blk'º' $blk'¯' $CM1']' $GN ' ' #4
     cut $SX $[OY+4] $CM2 ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      '‾'     '‾'      '‾'     '‾'     '‾' $SKY' ' ' ' ' ' #5
     cut $SX $[OY+5] $SKY ''  ''  ''      ''       ''      ''   $X1' '     ' '      ' '     ' '      ' '     ' '     ' '     ' '         #6
     [[ $C1 -gt 0  ]] && ((C1--))
@@ -335,7 +339,7 @@ sprite_ammo () {
     case "$day$month$virus" in
         *covid-19)
             mov - && ENM[i]="ammo $OX $OY 3 6 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; return; }
-            CM1=$SKY$BLD$red CM2=$SKY$BLUX1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H" 
+            CM1=$SKY$BLD$red CM2=$SKY$BLU X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H" 
             #0123456
             #1 _ _  
             #2(_|_) 

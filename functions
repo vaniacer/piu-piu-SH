@@ -31,7 +31,9 @@ cursor () {
         off) stty -echo; printf "$COF";;
     esac
 }
+
 bye () { cursor on; exit $1; }
+
 cut () {
     xcord=$1 ycord=$2 color=$3; shift 3
     screen+="\e[$ycord;${xcord}H$color"
@@ -264,7 +266,7 @@ add_backgound () {
 
 #------------------------{ Intro }--------------------------------------------------------------------------------------
 intro () {
-    i=0
+    i=0  #    start X                           target X
     INT=("PIU $endx 3 9 41 0 0 1 0          0 0 $[endx/2-35]"
          "PIU $endx 3 9 41 0 0 1 0          0 0 $[endx/2-1]"
          "ARR 1    12 6 28 0 0 0 $[endx-29] 0 0 $[endx/2-16]")
@@ -277,12 +279,12 @@ intro () {
     done
 }
 
+HCI=0 SCI=1 HSI=0 H1C=${H1C:-$DHC} H1S=${H1S:-$DHS} S1C=${S1C:-$DSC}
+hero_sign=(★ ☭ ✚ ✙ ✠ ✡ ✦ ✧ ✩ ✪ ☘ ☠ ☢ ☣ ☯ ❃ ❂ ❁ ✿ ❀ ✣ ♣ ♠ ♥ ♦ ❤ ● ☻ ♀ ♂)
+hero_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT)
+sign_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT)
 hero_config () {
-    hero_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT); HCN=${#hero_color[*]}; HCI=0;
-    star_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT); SCN=${#star_color[*]}; SCI=0;
-    hero_star=(★ ☭ ✚ ✙ ✠ ✡ ✦ ✧ ✩ ✪ ☘ ☠ ☢ ☣ ☯ ❃ ❂ ❁ ✿ ❀ ✣ ♣ ♠ ♥ ♦ ❤ ● ☻ ♀ ♂)
-    HSI=0 HSN=${#hero_star[*]} H1C=${H1C:-$DHC} H1S=${H1S:-$DHS} S1C=${S1C:-$DSC}
-
+    screen=
     [[ $AS -gt 0 ]] && ((AS--)) || AS=3
     CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND TR=${tailrotor[AS]} SX=$[$endx/2-9] OY=$[$endy/2-6] CS=1 CL=20
     # Using the same 'cut' function to print hero as in the game to preserve this nicely done tabled structure
@@ -294,6 +296,31 @@ hero_config () {
     cut $SX $[OY+4] $CM2 ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      '‾'     '‾'      '‾'     '‾'     '‾' $SKY' ' ' ' ' ' #5
     cut $SX $[OY+5] $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #6
     printf "$screen"
+
+    for i in ${!hero_sign[@]}; {
+        [[ $i -eq $HSI ]] && selected=$DEF$BLD$RED || selected=$DEF
+        XY $[MX+12+i*2] $[MY+1] "$selected${hero_sign[i]}$DEF"
+    }
+    for i in ${!sign_color[@]}; {
+        [[ $i -eq $SCI ]] && selected=$BLD || selected=$DEF
+        XY $[MX+12+i*2] $[MY+2] "$selected${sign_color[i]}●$DEF"
+    }
+    for i in ${!hero_color[@]}; {
+        [[ $i -eq $HCI ]] && selected=$BLD || selected=$DEF
+        XY $[MX+12+i*2] $[MY+3] "$selected${hero_color[i]}●$DEF"
+    }
+}
+
+submenu () {
+    case "${items[item]}$1" in
+        'Hero  sign+') [[ $HSI -lt $[${#hero_sign[@]}-1] ]] && ((HSI++));;
+        'Hero  sign-') [[ $HSI -gt 0 ]] && ((HSI--));;
+        'Sign color+') [[ $SCI -lt $[${#sign_color[@]}-1] ]] && ((SCI++));;
+        'Sign color-') [[ $SCI -gt 0 ]] && ((SCI--));;
+        'Hero color+') [[ $HCI -lt $[${#hero_color[@]}-1] ]] && ((HCI++));;
+        'Hero color-') [[ $HCI -gt 0 ]] && ((HCI--));;
+    esac
+    H1C=${hero_color[HCI]} H1S=${hero_sign[HSI]} S1C=${sign_color[SCI]}
 }
 
 item=1
@@ -301,15 +328,17 @@ selector () {
     read -t$spd -srn1 input &> /dev/null
     case $input in
         [wW]) [[ $item -gt 1 ]] && ((item--));;
-        [aA]) :;;
+        [aA]) submenu -;;
         [sS]) [[ $item -lt $[${#items[@]}-1] ]] && ((item++));;
-        [dD]) :;;
-        [pP]) return $item;; # -=>
+        [dD]) submenu +;;
+        [pP]) return $item;;
     esac;     return 0
 }
 
 printf -v eraser %20s
 clr    () { for i in ${!items[@]}; { XY $[$endx/4] $[$endy-6+i] "$eraser"; }; }
+Hero   () { :; }
+Sign   () { :; }
 back   () { clr; menu; }
 start  () { return  1; }
 team   () { type=duel; multiplayer; }

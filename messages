@@ -1,13 +1,14 @@
 #!/bin/bash
 #================================================{ Messages }===========================================================
-case "$day$month" in
-    1101) ad='Happy birthday Yura $)';;
-    0202) ad='It is groundhog day !)';;
-    2002) ad='Happy birthday Romka !)';;
-    2802) ad='Happy birthday Matvey !)';;
-    3006) ad='Happy birthday Natusya !)';;
-    0803) ad='Hold on guyz $)';;
-    0905) ad='День победы!';;
+case "$day$month$virus" in
+    *covid-19) ad='Stay at home!';;&
+        1101*) ad='Happy birthday Yura $)';;
+        0202*) ad='It is groundhog day !)';;
+        2002*) ad='Happy birthday Romka !)';;
+        2802*) ad='Happy birthday Matvey !)';;
+        3006*) ad='Happy birthday Natusya !)';;
+        0803*) ad='Hold on guyz $)';;
+        0905*) ad='День победы!';;
 esac
 #↑ ↓ ← → ▲ ▼ ▶ ◀ ▷ ◁ △ ▽
 sprite_help () {

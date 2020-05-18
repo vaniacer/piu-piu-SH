@@ -58,7 +58,6 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    â–‘ â–
          spd=0.0001                                   # game\read speed                           (0.0001)
          MSN=1111                                     # messanger randomizer                      (1111)
          HOU=1111                                     # houses randomizer                         (1111)
-         BRD=77                                       # birds randomizer                          (77)
           ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
            G=1                                        # gun                                       (1)(max 5)
 [[ -e ~/.piuconf ]] && . ~/.piuconf
@@ -107,7 +106,6 @@ clear; mess "help"; sleep 2
 clear; intro; menu
 clear; fill_screen
 cursor off
-H1C=${DHC}; S1C=${DSC}; H1S=${DHS};
 #-{ Generate grass }-----------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 H1X=2 H1Y=2
