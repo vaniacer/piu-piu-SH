@@ -22,6 +22,8 @@ case $month in
         CLD=20                # clouds rnd
         TRE=50;;              # trees rnd
 esac
+case $game in server) BRD=400 CLD=100 TRE=100;; esac
+        
                               # ⎕ - space
   gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █) # grass types
@@ -34,7 +36,7 @@ mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕ ${blk}_ ${blk}_ ${
 tailrotor=("$blk|" "$blk/" "$blk─" $blk'\\') # '|' '/' '─' '\'
 [[ $virus ]] && { DHS=☢ DHC=$RED DSC=$YLW; }
 sprite_hero1 () {
-    server_read
+    control_hero1
     mov - || { unset HER[i]; return; }
     GN=$SKY$BLD$BLK${gun[$G]}; [[ $G -eq 5 ]] && GN=$SKY$BLD$BLK${gun[$G]}⎕
     if [[ $life -gt 0 ]]; then
@@ -70,10 +72,10 @@ sprite_hero1 () {
     HER[i]="hero1 $OX $OY 6 14 $SC $SM $CS $CL $AS $AL $C1 $C2"
 }
 sprite_hero2 () {
-    client_read
-    mov - || { unset HER[i]; return; }
+    control_hero2
+    mov - || { unset HER[i]; H2Y=; return; }
     GN=$SKY$BLD$BLK${gun[$G2]}; [[ $G2 -eq 5 ]] && GN=$SKY$BLD$BLK${gun[$G2]}⎕
-    if [[ $life -gt 0 ]]; then
+    if [[ $life2 -gt 0 ]]; then
         CS=1; CL=16; OX=$H2X; OY=$H2Y
     else # when heros health goes to 0 it starts to fall, explodes and bounces on the ground
         AS=0; SM=3
@@ -267,7 +269,7 @@ sprite_boss () {
         #-{ Aliens out }-------------------------------------------------------
         EX=$[OX+2] EY=$[OY+5]; [[ $EY -gt $[enmyendy+3] ]] && EY=$[enmyendy+3]
     else # when boss' health goes to 0 it starts to fall, explodes and bounces on the ground
-        AS=0; SM=3; mov - || mess 'win'
+        AS=0; SM=3; mov - || the_end=win
         [[ $OY -lt $TY ]] && ((OY++))  || { TY=$[bossendy-C2]; ((C2--)); }
         [[ $OY -gt $TY ]] && ((OY--))  ||   TY=$bossendy
         [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $OX $OY; C1=15; }

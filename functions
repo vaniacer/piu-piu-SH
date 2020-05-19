@@ -97,69 +97,55 @@ print_sprite () {
     [[ $OT ]] && sprite_$OT
 }
 
-server_read () {
-    read -t$spd -srn1 input &> /dev/null
+read_input () { read -t$spd -srn1 input &> /dev/null; }
+sender     () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do :; done; }
+listener   () { input2=$(nc -l -p $sport); }
+
+add_piu () {
+    PX=$1 PY=$2 PS=$3
+    case $PS in
+        1) PIU+=("piu $[PX+12] $[PY+3] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3 a");; # -=>
+
+        2) PIU+=("piu $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3 a"    # -=>
+                                                                                     #
+                 "piu $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3 a");; # -=>
+
+        3) PIU+=("piu $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3 a"    # -=>
+                 "piu $[PX+13] $[PY+3] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3 a"    #  -=>
+                 "piu $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3 a");; # -=>
+
+        4) PIU+=("piu $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3 a"    # -=>
+                 "piu $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3 a"    #  -=>
+                                                                                     #
+                 "piu $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3 a"    #  -=>
+                 "piu $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3 a");; # -=>
+
+        5) PIU+=("piu $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3 a"    # -=>
+                 "piu $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3 a"    #  -=>
+                 "piu $[PX+14] $[PY+3] 1 4 0 0 1 $[endx-(PX+14)] $[RANDOM%3] 3 a"    #   -=>
+                 "piu $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3 a"    #  -=>
+                 "piu $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3 a");; # -=>
+    esac
+}
+
+control_hero1 () {
+    read_input
     case $input in
         [wW]) [[ $H1Y  -gt 2               ]] && ((H1Y--));;
         [aA]) [[ $H1X  -gt 1               ]] && ((H1X--));;
         [sS]) [[ $H1Y  -lt $heroendy       ]] && ((H1Y++));;
         [dD]) [[ $H1X  -lt $heroendx       ]] && ((H1X++));;
-        [pP]) [[ $ammo -ge $G && $C1 -eq 0 ]] && { C1=7; case $G in
-            1) PIU+=("piu $[H1X+12] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
-
-            2) PIU+=("piu $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a"    # -=>
-                                                                                            #
-                     "piu $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
-
-            3) PIU+=("piu $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a"    # -=>
-                     "piu $[H1X+13] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
-                     "piu $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
-
-            4) PIU+=("piu $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a"    # -=>
-                     "piu $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
-                                                                                            #
-                     "piu $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
-                     "piu $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
-
-            5) PIU+=("piu $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a"    # -=>
-                     "piu $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
-                     "piu $[H1X+14] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+14)] $[RANDOM%3] 3 a"    #   -=>
-                     "piu $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 a"    #  -=>
-                     "piu $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 a");; # -=>
-        esac; ((ammo-=$G)); };;
+        [pP]) [[ $ammo -ge $G && $C1 -eq 0 ]] && { C1=7; add_piu $H1X $H1Y $G; ((ammo-=$G)); };;
     esac
 }
 
-client_read () {
-    input2=$(nc -l -p $sport)
+control_hero2 () {
     case $input2 in
         [wW]) [[ $H2Y   -gt 2                ]] && ((H2Y--));;
         [aA]) [[ $H2X   -gt 1                ]] && ((H2X--));;
         [sS]) [[ $H2Y   -lt $heroendy        ]] && ((H2Y++));;
         [dD]) [[ $H2X   -lt $heroendx        ]] && ((H2X++));;
-        [pP]) [[ $ammo2 -ge $G2 && $C1 -eq 0 ]] && { C1=7; case $G2 in
-            1) PIU+=("piu $[H1X+12] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
-
-            2) PIU+=("piu $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b"    # -=>
-                                                                                            #
-                     "piu $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
-
-            3) PIU+=("piu $[H1X+12] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b"    # -=>
-                     "piu $[H1X+13] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
-                     "piu $[H1X+12] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
-
-            4) PIU+=("piu $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b"    # -=>
-                     "piu $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
-                                                                                            #
-                     "piu $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
-                     "piu $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
-
-            5) PIU+=("piu $[H1X+12] $[H1Y+1] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b"    # -=>
-                     "piu $[H1X+13] $[H1Y+2] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
-                     "piu $[H1X+14] $[H1Y+3] 1 4 0 0 1 $[endx-(H1X+14)] $[RANDOM%3] 3 b"    #   -=>
-                     "piu $[H1X+13] $[H1Y+4] 1 4 0 0 1 $[endx-(H1X+13)] $[RANDOM%3] 3 b"    #  -=>
-                     "piu $[H1X+12] $[H1Y+5] 1 4 0 0 1 $[endx-(H1X+12)] $[RANDOM%3] 3 b");; # -=>
-        esac; ((ammo2-=$G2)); };;
+        [pP]) [[ $ammo2 -ge $G2 && $C1 -eq 0 ]] && { C1=7; add_piu $H2X $H2Y $G2; ((ammo2-=$G2)); };;
     esac
 }
 
@@ -215,14 +201,18 @@ fps_counter () {
         FPSC=0
     } || ((FPSC++))
     #-{ Print FPS }------------------------------------------------------------
-    screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
+    case $game in
+        'server') screen+="\e[$endy;$[endx-9]H${DEF}FPS: $RED$FPS ";;
+               *) screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL ${DEF}avg: $RED$FPSA ";;
+    esac
 }
 
 status () {
     #-{ Print game status }----------------------------------------------------
-    case "$day$month$virus" in
-        *covid-19) screen+="\e[1;2H$SKY${BLK}killed viruses: $SKY$RED$frags$SKY ${BLK}Life: $SKY$RED$life$SKY ${BLK}Meds: $SKY$RED$ammo$SKY ";;
-                *) screen+="\e[1;2H$SKY${BLK}killed aliens: $SKY$RED$frags$SKY ${BLK}Life: $SKY$RED$life$SKY ${BLK}Ammo: $SKY$RED$ammo$SKY " ;;
+    [[ $virus ]] && { enemy=viruses bullets=Meds; } || { enemy=aliens bullets=Ammo; }
+    screen+="\e[1;2H$SKY${BLK}Killed $enemy: $SKY$RED$frags$SKY ${BLK}Life: $SKY$RED$life$SKY ${BLK}$bullets: $SKY$RED$ammo$SKY "
+    case $game in 'server')
+        screen+="\e[$endy;2H$LND${BLK}Killed $enemy: $LND$RED$frags2$LND ${BLK}Life: $LND$RED$life2$LND ${BLK}$bullets: $LND$RED$ammo2$LND ";;
     esac
 }
 
@@ -299,7 +289,9 @@ hero_config () {
 
     for i in ${!hero_sign[@]}; {
         [[ $i -eq $HSI ]] && selected=$DEF$BLD$RED || selected=$DEF
-        XY $[MX+12+i*2] $[MY+1] "$selected${hero_sign[i]}$DEF"
+        [[ $i -lt $[${#hero_sign[@]}/2] ]] \
+            && XY $[MX+12+i*2] $MY     "$selected${hero_sign[i]}$DEF" \
+            || XY $[MX+12+i*2-${#hero_sign[@]}] $[MY+1] "$selected${hero_sign[i]}$DEF"
     }
     for i in ${!sign_color[@]}; {
         [[ $i -eq $SCI ]] && selected=$BLD || selected=$DEF
@@ -335,8 +327,8 @@ selector () {
     esac;     return 0
 }
 
-printf -v eraser %20s
-clr    () { for i in ${!items[@]}; { XY $[$endx/4] $[$endy-6+i] "$eraser"; }; }
+printf -v eraser %40s
+clr    () { for i in ${!items[@]}; { XY $MX $[MY+i] "$eraser"; }; }
 Hero   () { :; }
 Sign   () { :; }
 back   () { clr; menu; }
@@ -347,7 +339,7 @@ server () { game=server; clr; menu; }
 single () { game=single; clr; menu; }
 cancel () { apply; H1C=$DHC; H1S=$DHS; S1C=$DSC; }
 client () { clr; game=client; enter_server; clr; menu; }
-apply  () { printf "$DEF "; clear; intro; show_hero=; item=1; items=('' "start $game" 'multiplayer' 'configure' 'exit'); }
+apply  () { printf "$DEF"; clear; intro; show_hero=; item=1; items=('' "start $game" 'multiplayer' 'configure' 'exit'); }
 configure    () { clear; show_hero=1; items=('' 'Hero  sign' 'Sign color' 'Hero color' 'apply' 'cancel'); }
 multiplayer  () { clr; items=('' 'server' 'client' 'single' "$type" 'back'); }
 enter_server () {
@@ -359,7 +351,7 @@ enter_server () {
 game=single
 type=team
 menu () {
-     item=1 MX=$[$endx/4] MY=$[$endy-6]
+     item=1 MX=$[$endx/4+4] MY=$[$endy-6]
     items=('' "start $game" 'multiplayer' 'configure' 'exit')
     while true; do
         selector || ${items[$?]// */} || break
