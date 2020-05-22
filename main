@@ -74,11 +74,11 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    â–‘ â–
 . ./messages  #_MESSAGES_
 . ./sprites   #_SPRITES_
 . ./functions #_FUNCTIONS_
-#======================================{ Main game loop single or server team mode }====================================
+#=================================={ Main game loop single or server team mode }========================================
 game () {
     while true; do
         #-{ Empty screen, count fps}-------------------------------------------
-        screen=; status
+        screen=; #status
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound
         #-{ Move bitplans }----------------------------------------------------
@@ -104,18 +104,22 @@ game () {
         fi
         #-{ Print FPS }--------------------------------------------------------
         [[ $showfps ]]  && fps_counter
-        #-{ If there are no heroes then this is the end }----------------------
-        [[ ${HER[@]} ]] || the_end=lose
         #-{ Print everything }-------------------------------------------------
         printf "$screen"
-        case $game in 'server') listener; sender $caddr $cport "$screen";; esac
+        #-{ Check the end/send data to client }--------------------------------
+        case $game$type in
+               *team) [[ ${HER[@]} ]] || the_end=lose;;&
+               *duel) [[ ${HER[1]} ]] || if [[ $life -gt 0 ]]; then listener; sender $caddr $cport lose; mess win
+                                                               else listener; sender $caddr $cport win; mess lose; fi;;&
+             server*) listener; sender $caddr $cport "$screen";;
+        esac
         if [[ $the_end ]]; then
             case $game in 'server') listener; sender $caddr $cport $the_end;; esac
             mess $the_end
         fi
     done
 }
-#======================================{ Main game loop client mode }===================================================
+#========================================{ Main game loop client mode }=================================================
 game_client () {
     while true; do
         read_input
@@ -127,7 +131,7 @@ game_client () {
         esac
     done
 }
-#=================================================={ Initialisation }===================================================
+#============================================{ Initialisation }=========================================================
 trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT; get_dimensions
 clear; mess "help"; sleep 2
 clear; intro; menu
@@ -135,24 +139,24 @@ clear; fill_screen
 cursor off
 #-{ Generate grass }-----------------------------------------------------------
 for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
-
-H1X=2 H1Y=2 HER+=("hero1 $H1X $H1Y 6 14 0 0 1 15 0 3 15 10")
-BP1+=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")
+#-{ Add hero1 and the Sun }----------------------------------------------------
+H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10")
+BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")
 #-{ If server }---------------------------------------------------------------------------------------------------------
-case $game in
-    'server')
-        XY 2 1 $SKY$RED"Server mode. Waiting for client..."
-        H2X=2 H2Y=8 HER+=("hero2 $H2X $H2Y 6 14 0 0 1 15 0 3 15 10")
-        clnt=( $(nc -l -p $sport) )
-        caddr=${clnt[0]}
-        cport=${clnt[1]}
-        H2C=${clnt[2]}
-        H2S=${clnt[3]}
-        S2C=${clnt[4]};;
+case $game$type in
+      *team) H2X=1         H2Y=8;;&
+      *duel) H2X=$heroendx H2Y=2 enmax=0;;&
+    server*) XY 2 1 $SKY$RED"Server mode. Waiting for client..."
+             HER+=("hero2 $H2X $H2Y 6 16 0 0 1 15 0 3 15 10")
+             clnt=( $(nc -l -p $sport) )
+             caddr=${clnt[0]}
+             cport=${clnt[1]}
+             H2C=${clnt[2]:-$DHC}
+             H2S=${clnt[3]:-$DHS}
+             S2C=${clnt[4]:-$DSC};;
 #-{ If client }---------------------------------------------------------------------------------------------------------
-    'client')
-        XY 2 1 $SKY$RED"Client mode. Waiting for server..."
-        sender $saddr $sport "${caddr[0]} $cport $H1C $H1S $S1C"
-        game_client;;
+    client*) XY 2 1 $SKY$RED"Client mode. Waiting for server..."
+             sender $saddr $sport "${caddr[0]} $cport $H1C $H1S $S1C"
+             game_client;;
 esac
 game
