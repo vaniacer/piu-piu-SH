@@ -41,7 +41,7 @@ sprite_hero1 () {
     if [[ $life -gt 0 ]]; then
         CS=1 CL=16 OX=$H1X OY=$H1Y
     else # when heros health goes to 0 it starts to fall, explodes and bounces on the ground
-        AS=0 SM=3  spd=0.1
+        AS=0 SM=3  #spd=0.1
         [[ $OY -lt $TY ]] && ((OY++))  || { TY=$[heroendy-C2+2]; ((C2--)); }
         [[ $OY -gt $TY ]] && ((OY--))  ||   TY=$[heroendy+2]
         [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $SX $[OY-2]; C1=15; }
@@ -49,7 +49,7 @@ sprite_hero1 () {
     fi
     case $type in
      'duel')
-         re="(life|ammo|gunup) ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]|$[OY+3]|$[OY+4]).*";;
+         re="crate ($[OX+7]|$[OX+8]|$[OX+9]|$[OX+10]|$[OX+11]) ($[OY+2]|$[OY+3]|$[OY+4]|$[OY+5]|$[OY+6]).*";;
      'team')
          re="(life|ammo|gunup) ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]|$[OY+3]|$[OY+4]).*|"
         re+="alien ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]).*|"
@@ -88,9 +88,10 @@ sprite_hero2 () {
         screen+="\\e[$[endy-1];$[OX+OW]H$LND "
     fi
     CM1=$SKY$H2C$BLD CM2=$SKY$DIM$H2C CM3=$SKY$H2C CM4=$SKY$BLD$H2C$UND TR=${tailrotor[AS]} GN=$SKY$BLD$BLK${gun[$G2]}
+
     case $type in
-     'duel') control_hero2 $H2X $H2Y
-        re="(life|ammo|gunup) ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]|$[OY+3]|$[OY+4]).*"
+     'duel') control_hero2 $[H2X-10] $H2Y
+        re="crate ($[OX-4]|$[OX-3]|$[OX-2]|$[OX-1]|$OX) ($[OY+2]|$[OY+3]|$[OY+4]|$[OY+5]|$[OY+6]).*"
         X1="_Y_$[OX+2]H"; [[ $G2 -eq 5 ]] && GN=$SKY$BLD$BLK⎕${gun[$G2]}
         #0123456789ABCDEFG
         #1                
@@ -106,7 +107,7 @@ sprite_hero2 () {
         cut $SX $[OY+3] $CM2 ' ' $GN $CM2'[' $blk'¯' $blk'º' $SKY' ' $S2C$H2S $blk'°' $CM2'/'     '‷' '‾' '‾' '`' '─'     '´' ' ' #4
         cut $SX $[OY+4] $CM2 ' ' ' '     ' '     '‾'     '‾'     '‾'     '‾'      '‾'     ' '     ' ' ' ' ' ' ' ' ' '     ' ' ' ' #5
         cut $SX $[OY+5] $SKY ''  ''   $X1' '     ' '     ' '     ' '     ' '      ' '     ' ';;                                   #6
-     'team') control_hero2 $[H2X-12] $H2Y
+     'team') control_hero2 $H2X $H2Y
          X1="_Y_$[OX+6]H"; [[ $G2 -eq 5 ]] && GN=$SKY$BLD$BLK${gun[$G2]}⎕
          re="(life|ammo|gunup) ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]|$[OY+3]|$[OY+4]).*|"
         re+="alien ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]).*|"
@@ -143,7 +144,7 @@ sprite_piu1 () {
         'team') re="alien ($OX|$[OX+1]) $[OY-1].*|boss ($OX|$[OX+1]) ($[OY-2]|$[OY-3]|$[OY-4]).*";;
     esac
     mov + && PIU[i]="piu1 $OX $OY 1 4 $SC $SM $CS $CL $AS 3" || { unset PIU[i]; return; }
-    case "$day$month$virus$type" in
+    case "$day$month$virus" in
         *covid-19)
             #0123
             #1 ==
@@ -156,7 +157,7 @@ sprite_piu1 () {
             ################  1      2    3        4    #0
             cut $OX $OY $SKY ' ' ${shoot[AS]} $CM1'>';; #1
     esac
-    collision 1 "$re" $OX $[OY-1] && { unset PIU[i]; return; }
+    collision 1 "$re" $OX $[OY-1] && unset PIU[i]
 }
 sprite_piu2 () {
     case $type in
@@ -176,14 +177,13 @@ sprite_piu2 () {
             #1 ==
             ################  1       2       3    #0
             cut $OX $OY $SKY ' ' $RED'=' $BLU'=';; #1
-        *)
-            CM1=$SKY$BLD$GRN
+        *)  CM1=$SKY$BLD$BLU
             #01234
             #1 -=>
             ################  1      2    3        4    #0
             cut $OX $OY $SKY ' ' ${shoot[AS]} $CM1'>';; #1
     esac
-    collision 2 "$re" $OX $[OY-1] && { unset PIU[i]; return; }
+    collision 2 "$re" $OX $[OY-1] && unset PIU[i]
 }
 
 bshoot=('█ ▓ ▒ ░'
@@ -241,7 +241,7 @@ sprite_alien () {
             CM1=$SKY$DIM$BLK X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H"
             #0123456
             #1 ._,  
-            #2-( )- 
+            #2-(*)- 
             #3 ´‾`  
             ####################  1           2         3          4    5          6  #0
             cut $SX  $OY    $CM1 '' $X1${top1[AS]} $CM1'_' ${top2[AS]} ' '            #1
@@ -344,8 +344,8 @@ sprite_boss () {
             #1             
             #2   . ___,   
             #3   /`   `\  
-            #4 +|       |+
-            #5  \       /  
+            #4 +| *   o |+
+            #5  \   +   /  
             #6  *`-.,.-`+  
             #7             
             ####################  1        2      3        4           5   6   7   8       9       A       B       C       D  #0
@@ -459,14 +459,12 @@ sprite_gunup () {
 flame1=("$red- ⎕"       "$ylw~ ⎕"       "$red- $RED~ ⎕" "$ylw- ⎕ ⎕")
 flame2=("$ylw- ⎕"       "$red- $RED~ ⎕" "$red~ ⎕ ⎕"       "$YLW~ ⎕")
 flame3=("$red- $RED~ ⎕" "$red~ ⎕ ⎕"       "$YLW~ ⎕"       "$ylw- ⎕")
-CM4= CM5=; case "$day$month" in 0905) CM4=$bylw CM5=$bblk;; esac
-for ((i=0; i<${#ad}; i++)); do ad_new+="$CM5$BLD$red${ad:$i:1} "; done
-new_ad=( ${ad_new//  /⎕ } ) line=( ${new_ad[@]//*/$CM4$blk-} ) width=$((19+${#new_ad[@]}))
 sprite_msngr () {
     mov - && BP2[i]="msngr $OX $OY 4 $width $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
     X1="_Y_$[OX+7]H" X2="_Y_$[OX+1]H" X3="_Y_$[OX+12]H" X4="_Y_$[OX+4]H" X5="_Y_$[OX+12]H"
-    CM1=$SKY$BLD$blk CM2=$SKY$DIM$blk CM3=$SKY$blk CM4= CM5=
+    CM1=$SKY$BLD$blk CM2=$SKY$DIM$blk CM3=$SKY$blk CM4= CM5= CM6=$BLD$red
     case "$day$month" in 0905) CM4=$bylw CM5=$bblk;; esac
+    drop_crate
     #0123456789ABCD...
     #1       __    
     #2 _____/_/   +------------------+~
@@ -477,6 +475,19 @@ sprite_msngr () {
     cut $SX $[OY+1] $CM2 ''   $X2'_' '_'     '_'    '_'      '_'     '/'     '_' '/' ' ' ''  '' $X3$CM4'+' $CM4'-' $CM4'-' ${line[@]}  $SKY${flame1[AS]}  #2
     cut $SX $[OY+2] $CM1 '(' $UND'°' ' ' $CM2'\\'   ' '  $CM3'|' $UND' ' $CM3')' '-' '-' '-' '<'   $CM5'|' $CM5' ' ${new_ad[@]} $CM5' ' $SKY${flame2[AS]} #3
     cut $SX $[OY+3] $CM2 ''      ''  ''       '' $X4'\\' $CM3'|'     ' '     ''  ''  ''  ''  '' $X5$CM4'+' ${line[@]} $SKY${flame3[AS]}                   #4
+}
+
+sprite_crate () {
+    movy && ENM[$i]="crate $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i" || { unset ENM[$i]; boom $OX $boomendy; boom $OX $[boomendy-3]; crate=0; }
+    CM1=$SKY$ylw CM2=$SKY$blk CM3=$SKY$BLU SS="$RED ? $CM3"
+    ########################1234567###01234567
+    cuty  $OX    $OY 7 $SKY'       ' #1       
+    cuty  $OX    $OY 6 $CM1' ¸.—.¸ ' #2 ¸.—.¸ 
+    cuty  $OX    $OY 5 $CM1'(︹_︹)'  #3(︹_︹)
+    cuty $[OX+1] $OY 4  $CM2'╲╱ ╲╱'  #4 ╲╱ ╲╱ 
+    cuty $[OX+1] $OY 3  $CM3'╔╧╦╧╗'  #5 ╔╧╦╧╗ 
+    cuty $[OX+1] $OY 2  $CM3"╠$SS╣"  #6 ╠ ? ╣ 
+    cuty $[OX+1] $OY 1  $CM3'╚═╩═╝'  #7 ╚═╩═╝ 
 }
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
 case $month in
@@ -604,8 +615,8 @@ sprite_tree2 () {
             cut $SX  $OY    $T2C '' $X1'_'      '.'     '_'     ' '      #1
             cut $SX $[OY+1] $T2C '/'   ' '      ' '     ' '     '\\' ' ' #2
             cut $SX $[OY+2] $T2C '\\'  ' '  $blk'|'     ' ' $T2C'/'  ' ' #3
-            cut $SX $[OY+3] $T2C '' $X2'\\' $blk'║' $T2C'/'     '\\' ' ' #4
-            cut $SX $[OY+4] $blk ''    ''    $X3'║' $T2C'_'     '/'  ' ' #5
+            cut $SX $[OY+3] $T2C '' $X2'\\' $blk'║' $T2C'/' $T2C'\\' ' ' #4
+            cut $SX $[OY+4] $blk ''    ''    $X3'║' $T2C'_' $T2C'/'  ' ' #5
             cut $SX $[OY+5] $blk ''    ''    $X4'║'     ' ';;            #6
     esac
 }

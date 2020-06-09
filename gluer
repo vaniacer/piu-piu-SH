@@ -1,5 +1,4 @@
 #!/bin/bash
-
 target=piu-piu
 sed -n '1,/_SPRITES_/p'   main    >  $target
 sed '1d' messages                 >> $target

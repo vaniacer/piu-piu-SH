@@ -48,8 +48,10 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    â–‘ â–
      bonuses=("ammo" "life" "ammo" "gunup" "ammo")    # bonuses, more ammo, less life ang gunup
        enmax=100                                      # max number of enemies                     (10)
        month=$(date +'%m')                            # get current month
-        life=3                                        # life counter                              (3)
-        ammo=100                                      # ammo counter                              (100)
+       crate=0                                        # crate drop                                (0)
+       frags=0                                        # hero1 frags counter                       (0)
+        life=3                                        # hero1 life counter                        (3)
+        ammo=100                                      # hero1 ammo counter                        (100)
          day=$(date +'%d')                            # get current  day
          DHC=$BLK                                     # default hero color                        ($BLK)
          DSC=$RED                                     # default symbol color                      ($RED)
@@ -74,11 +76,11 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    â–‘ â–
 . ./messages  #_MESSAGES_
 . ./sprites   #_SPRITES_
 . ./functions #_FUNCTIONS_
-#=================================={ Main game loop single or server team mode }========================================
+#======================================{ Main game loop single or server mode }=========================================
 game () {
     while true; do
-        #-{ Empty screen, count fps}-------------------------------------------
-        screen=; #status
+        #-{ Empty screen, print game status adnd FPS }-------------------------
+        screen=; status; [[ $showfps ]] && fps_counter
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound
         #-{ Move bitplans }----------------------------------------------------
@@ -89,29 +91,22 @@ game () {
         ENM=("${ENM[@]}"); for i in ${!ENM[@]}; { OI=(${ENM[i]}); print_sprite; } # enemies
         BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); print_sprite; } # big(closer) background objects
         #-{ BOSS }-------------------------------------------------------------
-        if [[ $[frags+frags2] -ge $tillboss ]]; then
-            # add boss object
+        if [[ $[frags+frags2] -ge $tillboss ]]; then # add boss object
             [[ $bossborn ]] || { ENM+=("boss $endx $halfendy 6 14 0 0 1 0 $[RANDOM%3] 3 20 10"); bossborn=true; }
-            # Health bar
-            bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
-            for (( i=0  ; i<hp; i++ )); do bar="â–ˆ$bar"; done
-            for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
-            screen+="\e[$[endy-1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
+            boss_health # Print boss' health bar
             #-{ Add aliens }---------------------------------------------------
-            [[ $bhealth -gt 0 ]] && add_enm $EX $EY 5
-        else
-            add_enm $endx $[4+RANDOM%enmyendy]
+            [[ $bhealth -gt 0 ]] && add_enm $EX $EY 5 # aliens come out from boss
+        else                                          #
+            add_enm $endx $[4+RANDOM%enmyendy]        # aliens come out from edge
         fi
-        #-{ Print FPS }--------------------------------------------------------
-        [[ $showfps ]]  && fps_counter
         #-{ Print everything }-------------------------------------------------
         printf "$screen"
-        #-{ Check the end/send data to client }--------------------------------
+        #-{ Check the end and send data to client }----------------------------
         case $game$type in
-               *team) [[ ${HER[@]} ]] || the_end=lose;;&
-               *duel) [[ ${HER[1]} ]] || if [[ $life -gt 0 ]]; then listener; sender $caddr $cport lose; mess win
-                                                               else listener; sender $caddr $cport win; mess lose; fi;;&
-             server*) listener; sender $caddr $cport "$screen";;
+              *team) [[ ${HER[@]} ]] || the_end=lose;;&
+              *duel) [[ ${HER[1]} ]] || if [[ $life -gt 0 ]]; then listener; sender $caddr $cport lose; mess win
+                                                              else listener; sender $caddr $cport win ; mess lose; fi;;&
+            server*) listener; sender $caddr $cport "$screen";;
         esac
         if [[ $the_end ]]; then
             case $game in 'server') listener; sender $caddr $cport $the_end;; esac
@@ -137,26 +132,26 @@ clear; mess "help"; sleep 2
 clear; intro; menu
 clear; fill_screen
 cursor off
-#-{ Generate grass }-----------------------------------------------------------
-for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
-#-{ Add hero1 and the Sun }----------------------------------------------------
-H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10")
+#-{ Add hero1 and the Sun }--------------------------------
 BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")
+H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10")
+#-------------------{ Generate grass }----------------------------------------------------------------------------------
+for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 #-{ If server }---------------------------------------------------------------------------------------------------------
-case $game$type in
-      *team) H2X=1         H2Y=8;;&
-      *duel) H2X=$heroendx H2Y=2 enmax=0;;&
-    server*) XY 2 1 $SKY$RED"Server mode. Waiting for client..."
-             HER+=("hero2 $H2X $H2Y 6 16 0 0 1 15 0 3 15 10")
-             clnt=( $(nc -l -p $sport) )
-             caddr=${clnt[0]}
-             cport=${clnt[1]}
-             H2C=${clnt[2]:-$DHC}
-             H2S=${clnt[3]:-$DHS}
-             S2C=${clnt[4]:-$DSC};;
+case $game:$type in
+    server:team) H2X=1         H2Y=$[halfendy-2];;&
+    server:duel) H2X=$heroendx H2Y=$[halfendy-2] H1Y=$[halfendy-2] enmax=0; ad_plane_text;;&
+    server:*   ) XY 2 1 $SKY$RED"Server mode. Waiting for client..."
+                 HER+=("hero2 $H2X $H2Y 6 16 0 0 1 15 0 3 15 10")
+                 clnt=( $(nc -l -p $sport) )
+                 caddr=${clnt[0]}
+                 cport=${clnt[1]}
+                 H2C=${clnt[2]:-$DHC}
+                 H2S=${clnt[3]:-$DHS}
+                 S2C=${clnt[4]:-$DSC};;
 #-{ If client }---------------------------------------------------------------------------------------------------------
-    client*) XY 2 1 $SKY$RED"Client mode. Waiting for server..."
-             sender $saddr $sport "${caddr[0]} $cport $H1C $H1S $S1C"
-             game_client;;
+    client:*   ) XY 2 1 $SKY$RED"Client mode. Waiting for server..."
+                 sender $saddr $sport "${caddr[0]} $cport $H1C $H1S $S1C"
+                 game_client;;
 esac
 game

@@ -28,6 +28,20 @@ case $month in
         TRE=50;;              # autumn trees rnd
 esac
 #------------------------{ Functions }----------------------------------------------------------------------------------
+bye () { stty echo; printf "$CON$DEF"; exit $1; }
+
+fps_counter () {
+    [[ $SECONDS -gt $sec ]] && {
+        FPS=$FPSC AVG+=($FPS)
+        [[ $FPSL ]] || FPSL=$FPS
+        [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
+        [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
+        (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
+        sec=$SECONDS
+        FPSC=0
+    } || ((FPSC++))
+}
+
 get_dimensions () {
     size=( $(stty size) )
     endx=${size[1]}
@@ -43,46 +57,39 @@ bossendy=$[endy-7 ]
 bosshbar=$[endx-10]
 lineendy=$[endy-2 ]
 Sunsendx=$[endx-18]
+cratendx=$[endx-7 ]
+cratendy=$[endy-7 ]
 tre1endy=$[endy-tree1H-2]
 tre2endy=$[endy-tree2H-2]
 tre3endy=$[endy-tree3H-2]
 }
 
-bye () { stty echo; printf "$CON$DEF"; exit $1; }
+print_sprite () {
+    OT=${OI[0]}   # object type
+    OX=${OI[1]}   # X coordinate
+    OY=${OI[2]}   # Y coordinate
+    OH=${OI[3]}   # object hight
+    OW=${OI[4]}   # object width
+    SC=${OI[5]}   # speed counter
+    SM=${OI[6]}   # speed max
+    CS=${OI[7]}   # cuting start
+    CL=${OI[8]}   # cuting lenght
+    AS=${OI[9]}   # animation start
+    AL=${OI[10]}  # animation lenght
+    C1=${OI[11]}  # custom obj parameter 1
+    C2=${OI[12]}  # custom obj parameter 2
+    [[ $OT ]] && sprite_$OT
+}
+
 mov () {
     case $SC in
-        0) [[ $OX -le -$width ]] && return 1
-           [[ $AS -ge $AL ]] && AS=0 || ((AS++)) # sprites animation
-           [[ $OX -le 1   ]] && ((CS++))
+        0) [[ $OX -le -$OW ]] && return 1
+           [[ $AS -ge  $AL ]] && AS=0 || ((AS++))
+           [[ $OX -le  1   ]] && ((CS++))
            ((OX--)); ((CL++)); SC=$SM;;
         *) ((SC--));;
     esac
     [[ $OX -le 1 ]] && SX=0 || SX=$OX
-}
-
-get_obj_data () {
-    type=${OI[0]} # object type
-    OX=${OI[1]}   # X coordinate
-    OY=${OI[2]}   # Y coordinate
-    SC=${OI[3]}   # speed couter
-    SM=${OI[4]}   # speed max
-    CS=${OI[5]}   # cuting start
-    CL=${OI[6]}   # cuting lenght
-    AS=${OI[7]}   # animation start
-    AL=${OI[8]}   # animation lenght
-    [[ $type ]] && sprite_$type
-}
-
-fps_counter () {
-    [[ $SECONDS -gt $sec ]] && {
-        FPS=$FPSC AVG+=($FPS)
-        [[ $FPSL ]] || FPSL=$FPS
-        [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
-        [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
-        (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
-        sec=$SECONDS
-        FPSC=0
-    } || ((FPSC++))
 }
 
 fill_screen () {
@@ -98,10 +105,36 @@ cut () {
     screen+="${spr//_Z_/ }"
 }
 
+movy () {
+    case $SC in
+        0) [[ $OY -ge $[endy-2] ]]    && return 1
+           [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
+           [[ $CS -le $OH  ]] && ((CS++))
+           ((OY++)); SC=$SM;;
+        *) ((SC--));;
+    esac
+}
+
+cuty () {
+    xcord=$1 ycord=$2 cuter=$3; shift 3
+    [[ $CS -ge $cuter ]] && screen+="\e[$[ycord-cuter];${xcord}H$@"
+}
+
+sprite_crate () {
+    movy && ENM[$i]="crate $OX $OY $OH $OW $SC $SM $CS $CL" || unset ENM[$i]
+    CM1=$SKY$ylw CM2=$SKY$blk CM3=$SKY$BLU SS="$RED ? $CM3"
+    ########################1234567###01234567
+    cuty  $OX    $OY 7 $SKY'       ' #1       
+    cuty  $OX    $OY 6 $CM1' ¸.—.¸ ' #2 ¸.—.¸ 
+    cuty  $OX    $OY 5 $CM1'(︹_︹)'  #3(︹_︹)
+    cuty $[OX+1] $OY 4  $CM2'╲╱ ╲╱'  #4 ╲╱ ╲╱ 
+    cuty $[OX+1] $OY 3  $CM3'╔╧╦╧╗'  #5 ╔╧╦╧╗ 
+    cuty $[OX+1] $OY 2  $CM3"╠$SS╣"  #6 ╠ ? ╣ 
+    cuty $[OX+1] $OY 1  $CM3'╚═╩═╝'  #7 ╚═╩═╝ 
+}
+
 sprite_alien () {
-    hight=3
-    width=11
-    mov && ENM[$i]="$type $OX $OY $SC $SM $CS $CL $AS $AL" || { unset ENM[$i]; ((enumber--)); return; }
+    mov && ENM[$i]="alien $OX $OY $OH $OW $SC $SM $CS $CL $AS $AL" || { unset ENM[$i]; ((enumber--)); return; }
     CM1=$SKY$RED CM2=$SKY$BLK CM3=$SKY$BLD$WHT X1=_Y_$[OX+1]H X2=_Y_$[OX+5]H X3=_Y_$[OX+9]H X4=_Y_$[OX+10]H
     #0123456789ABC
     #1 /   |   \  
@@ -111,7 +144,7 @@ sprite_alien () {
     cut $SX  $OY    $CM1 ''  $X1'/'  ' ' ''  ''  $X2$CM2'|'     ' '     ''      '' $X3$CM3'\\'       ' '     #1
     cut $SX $[OY+1] $CM1 '<'    '-'  '-' '-' '-' $X2$CM2'+' $CM3'-' $CM3'-' $CM3'-'   $CM3'-' $X4$CM3'>' ' ' #2
     cut $SX $[OY+2] $CM1 ''  $X1'\\' ' ' ''  ''  $X2$CM2'|'     ' '     ''      '' $X3$CM3'/'        ' '     #3
-}  
+}
 
 game () {
     #======================================{ Main game loop single or server team mode }================================
@@ -124,18 +157,19 @@ game () {
 
         #-{ Add aliens }-------------------------------------------------------
         [[ $enumber -lt $enmax && $M -eq 0 ]] && {
-            ENM+=("alien $endx $[RANDOM%enmyendy+3] 0 $[RANDOM%3] 1 0 $[RANDOM%3] 3")
+            ENM+=("alien $endx $[RANDOM%enmyendy+3] 3 12 0 $[RANDOM%3]   1 0 $[RANDOM%3] 3")
+            ENM+=("crate $[1+RANDOM%(endx-8)] 5     7 7  0 $[RANDOM%5+5] 0")
             ((enumber++))
         }
 
         #-{ Print FPS }--------------------------------------------------------
         screen+="\e[$endy;2H${DEF}FPS:$RED$FPS ${DEF}max:$RED$FPSM ${DEF}low:$RED$FPSL ${DEF}avg:$RED$FPSA "
 
-        for i in ${!ENM[@]}; { OI=(${ENM[$i]}); get_obj_data; }
+        for i in ${!ENM[@]}; { OI=(${ENM[$i]}); print_sprite; }
 
         #-{ Print everything }-------------------------------------------------
         printf "$screen"
-        echo -e "\\e[1;1H${ENM[@]}  "
+#        echo -e "\\e[$[endy-2];1H${ENM[@]}  "
     done
 }
 
@@ -143,9 +177,5 @@ game () {
 trap : ALRM
 trap bye INT TERM SIGINT SIGTERM EXIT
 get_dimensions; stty -echo; printf "$COF"; clear
-
-#-{ Generate grass }-----------------------------------------------------------
-for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
-
 fill_screen; game
 

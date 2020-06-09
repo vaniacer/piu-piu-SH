@@ -7,6 +7,7 @@ get_dimensions () {
     halfendx=$[endx/2 ]
     halfendy=$[endy/2 ]
     boomendx=$[endx-10]
+    boomendy=$[endy-4 ]
     bullendx=$[endx-4 ]
     heroendx=$[endx-15]
     heroendy=$[endy-8 ]
@@ -25,21 +26,13 @@ get_dimensions () {
     tre3endy=$[endy-tree3H-2]
 }
 
+bye () { cursor on; exit $1; }
+
 cursor () {
     case $1 in
          on) stty  echo; printf "$CON";;
         off) stty -echo; printf "$COF";;
     esac
-}
-
-bye () { cursor on; exit $1; }
-
-cut () {
-    xcord=$1 ycord=$2 color=$3; shift 3
-    screen+="\e[$ycord;${xcord}H$color"
-    printf -v spr %s "${@:$CS:$CL}"
-    spr="${spr//_Y_/'\e['$ycord;}"
-    screen+="${spr//⎕/ }"
 }
 
 mov () {
@@ -56,12 +49,27 @@ mov () {
     [[ $OX -le 1 ]] && SX=0 || SX=$OX
 }
 
-add_enm () {
-    [[ $BR -gt 0 ]] && ((BR--))
-    [[ $enumber -lt $enmax && $BR -eq 0 ]] || return
-    ENM+=("alien $1 $2 3 5 0 $[RANDOM%2] 1 ${3:-0} $[RANDOM%3] 3 ${#ENM[@]}")
-    ((enumber++))
-    BR=20
+cut () {
+    xcord=$1 ycord=$2 color=$3; shift 3
+    screen+="\e[$ycord;${xcord}H$color"
+    printf -v spr %s "${@:$CS:$CL}"
+    spr="${spr//_Y_/'\e['$ycord;}"
+    screen+="${spr//⎕/ }"
+}
+
+movy () { # used in bonus crate
+    case $SC in
+        0) [[ $OY -ge $[endy-2] ]]    && return 1
+           [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
+           [[ $CS -le $OH  ]] && ((CS++))
+           ((OY++)); SC=$SM;;
+        *) ((SC--));;
+    esac
+}
+
+cuty () { # used in bonus crate
+    xcord=$1 ycord=$2 cuter=$3; shift 3
+    [[ $CS -ge $cuter ]] && screen+="\e[$[ycord-cuter];${xcord}H$@"
 }
 
 bonus () { # get random bonus from alien or not
@@ -101,6 +109,137 @@ listener   () { input2=$(nc -l -p $sport); }
 read_input () { read -t$spd -srn1 input &> /dev/null; }
 sender     () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do :; done; }
 
+control_hero1 () {
+    read_input
+    case $input in
+        [wW]) [[ $H1Y  -gt 2               ]] && ((H1Y--));;
+        [aA]) [[ $H1X  -gt 1               ]] && ((H1X--));;
+        [sS]) [[ $H1Y  -lt $heroendy       ]] && ((H1Y++));;
+        [dD]) [[ $H1X  -lt $heroendx       ]] && ((H1X++));;
+        [pP]) [[ $ammo -ge $G && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 1 $G; ((ammo-=$G)); };;
+    esac
+}
+
+control_hero2 () {
+    case $input2 in
+        [wW]) [[ $H2Y   -gt 2                ]] && ((H2Y--));;
+        [aA]) [[ $H2X   -gt 1                ]] && ((H2X--));;
+        [sS]) [[ $H2Y   -lt $heroendy        ]] && ((H2Y++));;
+        [dD]) [[ $H2X   -lt $heroendx        ]] && ((H2X++));;
+        [pP]) [[ $ammo2 -ge $G2 && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 2 $G2; ((ammo2-=$G2)); };;
+    esac
+}
+
+rndmbonus () {
+    case $1:$[RANDOM%3] in
+          1:0) ((life++)) ;;
+          2:0) ((life2++));;
+          1:1) ((ammo+=100)) ;;
+          2:1) ((ammo2+=100));;
+          1:2) [[ $G  -lt 5 ]] && ((G++)) ;;
+          2:2) [[ $G2 -lt 5 ]] && ((G2++));;
+    esac
+}
+collbooom () { unset ENM[obj_i]; boom $obj_x $obj_y; }
+collision () {
+    hero=$1 re="$2"
+    case $type in
+        'duel') target=("${HER[@]}" "${ENM[@]}");;
+             *) target=("${ENM[@]}");;
+    esac
+    [[ ${target[@]} =~ $re ]] && {
+        match=($BASH_REMATCH)
+        obj_i=${match[@]:11:1}
+        obj_x=${match[@]:1:1}
+        obj_y=${match[@]:2:1}
+        case $match:$hero in
+              bfire:*) collbooom; return 0;;
+               boss:*) ((bhealth--)); boom $3 $4; return 0;;
+               life:1) collbooom; ((life++))    ; return 1;;
+               life:2) collbooom; ((life2++))   ; return 1;;
+               ammo:1) collbooom; ((ammo+=100)) ; return 1;;
+               ammo:2) collbooom; ((ammo2+=100)); return 1;;
+#              alien:*) collbooom; ((enumber--)) ; return 0;;
+              gunup:1) collbooom; [[ $G  -lt 5 ]] && ((G++))  ; return 1;;
+              gunup:2) collbooom; [[ $G2 -lt 5 ]] && ((G2++)) ; return 1;;
+              alien:1) collbooom; ((enumber--)) ; ((frags++)) ; bonus; return 0;;
+              alien:2) collbooom; ((enumber--)) ; ((frags2++)); bonus; return 0;;
+              hero1:2) ((frags2++)); ((life--)) ; BOOM $obj_x $obj_y ; return 0;;
+              hero2:1) ((frags++)) ; ((life2--)); BOOM $obj_x $obj_y ; return 0;;
+              crate:*) collbooom; crate=0; boom $obj_x $[obj_y-3]; boom $obj_x $[obj_y-6]; rndmbonus $hero; return 1;;
+        esac
+    }
+}
+
+boom () {
+    XB=$1 YB=$2
+    [[ $XB -lt     2     ]] && XB=2
+    [[ $XB -gt $boomendx ]] && XB=$boomendx
+    BP3+=("boom $XB $YB 0 0 0 $[RANDOM%3] 1 9 0 5")
+}
+
+BOOM () {  XB=$1   YB=$2
+    boom  $XB    $[YB+1]
+    boom $[XB+4]  $YB
+    boom $[XB+1] $[YB+1]
+    boom $[XB+3]  $YB
+    boom  $XB    $[YB+1]
+}
+
+fps_counter () { #-{ Print FPS }-----------------------------------------------
+    [[ $SECONDS -gt $sec ]] && {
+        FPS=$FPSC AVG+=($FPS)
+        [[ $FPSL ]] || FPSL=$FPS
+        [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
+        [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
+        (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
+        sec=$SECONDS
+        FPSC=0
+    } || ((FPSC++))
+    case $game in
+        'server') screen+="\e[$endy;$[endx-9]H${DEF}FPS: $RED$FPS ";;
+               *) screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL ${DEF}avg: $RED$FPSA ";;
+    esac
+}
+
+status () { #-{ Print game status }--------------------------------------------
+    case $type:$virus in
+         (duel:*       ) enemy=rival   bullets=Ammo;;
+         (   *:covid-19) enemy=viruses bullets=Meds;;
+         (team:*       ) enemy=aliens  bullets=Ammo;;
+    esac
+    screen+="\e[1;2H$SKY${BLK}Killed $enemy: $SKY$RED$frags$SKY ${BLK}Life: $SKY$RED$life$SKY ${BLK}$bullets: $SKY$RED$ammo$SKY "
+    case $game in 'server')
+        screen+="\e[$endy;2H$LND${BLK}Killed $enemy: $LND$RED$frags2$LND ${BLK}Life: $LND$RED$life2$LND ${BLK}$bullets: $LND$RED$ammo2$LND ";;
+    esac
+}
+
+boss_health () {
+    bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
+    for (( i=0  ; i<hp; i++ )); do bar="█$bar"; done
+    for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
+    screen+="\e[$[endy-1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
+}
+
+fill_screen () {
+    for ((i=0;        i<lineendy; i++)); do printf "$SKY%${endx}s"; done
+    for ((i=lineendy; i<endy;     i++)); do printf "$LND%${endx}s"; done
+}
+
+drop_crate () { # in duel mode ad plane'll drop bonus crate
+    case $type:$crate in duel:0)
+        [[ $OX -eq $halfendx ]] && { crate=1 ENM+=("crate $[halfendx-1] 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
+    esac
+}
+
+add_enm () {
+    [[ $BR -gt 0 ]] && ((BR--))
+    [[ $enumber -lt $enmax && $BR -eq 0 ]] || return
+    ENM+=("alien $1 $2 3 5 0 $[RANDOM%2] 1 ${3:-0} $[RANDOM%3] 3 ${#ENM[@]}")
+    ((enumber++))
+    BR=20
+}
+
 add_piu () {
     PX=$1 PY=$2 PH=$3 PS=$4
     case $PS in
@@ -128,114 +267,14 @@ add_piu () {
     esac
 }
 
-control_hero1 () {
-    read_input
-    case $input in
-        [wW]) [[ $H1Y  -gt 2               ]] && ((H1Y--));;
-        [aA]) [[ $H1X  -gt 1               ]] && ((H1X--));;
-        [sS]) [[ $H1Y  -lt $heroendy       ]] && ((H1Y++));;
-        [dD]) [[ $H1X  -lt $heroendx       ]] && ((H1X++));;
-        [pP]) [[ $ammo -ge $G && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 1 $G; ((ammo-=$G)); };;
-    esac
-}
-
-control_hero2 () {
-    case $input2 in
-        [wW]) [[ $H2Y   -gt 2                ]] && ((H2Y--));;
-        [aA]) [[ $H2X   -gt 1                ]] && ((H2X--));;
-        [sS]) [[ $H2Y   -lt $heroendy        ]] && ((H2Y++));;
-        [dD]) [[ $H2X   -lt $heroendx        ]] && ((H2X++));;
-        [pP]) [[ $ammo2 -ge $G2 && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 2 $G2; ((ammo2-=$G2)); };;
-    esac
-}
-
-collision () {
-    hero=$1 re="$2"
-    case $type in
-        'duel') target="${HER[@]}";;
-             *) target="${ENM[@]}";;
-    esac
-    [[ $target =~ $re ]] && {
-        match=($BASH_REMATCH)
-        obj_i=${match[@]:11:1}
-        obj_x=${match[@]:1:1}
-        obj_y=${match[@]:2:1}
-        case $match:$hero in
-               boss:*) ((bhealth--))   ; boom $3   $4; return 0;;
-                  *:*) unset ENM[obj_i]; boom $obj_x $obj_y;;&
-              gunup:1) [[ $G  -lt 5 ]] && ((G++)) ; return 1;;
-              gunup:2) [[ $G2 -lt 5 ]] && ((G2++)); return 1;;
-               life:1) ((life++))    ; return 1;;
-               life:2) ((life2++))   ; return 1;;
-               ammo:1) ((ammo+=100)) ; return 1;;
-               ammo:2) ((ammo2+=100)); return 1;;
-              alien:1) ((enumber--)) ; ((frags++)) ; bonus; return 0;;
-              alien:2) ((enumber--)) ; ((frags2++)); bonus; return 0;;
-              hero1:2) ((frags2++))  ; ((life--))  ; BOOM $obj_x $obj_y; return 0;;
-              hero2:1) ((frags++))   ; ((life2--)) ; BOOM $obj_x $obj_y; return 0;;
-              alien:*) ((enumber--)) ; return 0;;
-              bfire:*) return 0;;
-        esac
-    }
-}
-
-boom () {
-    XB=$1 YB=$2
-    [[ $XB -lt     2     ]] && XB=2
-    [[ $XB -gt $boomendx ]] && XB=$boomendx
-    BP3+=("boom $XB $YB 0 0 0 $[RANDOM%3] 1 9 0 5")
-}
-
-BOOM () {  XB=$1   YB=$2
-    boom  $XB    $[YB+1]
-    boom $[XB+4]  $YB
-    boom $[XB+1] $[YB+1]
-    boom $[XB+3]  $YB
-    boom  $XB    $[YB+1]
-}
-
-fps_counter () {
-    [[ $SECONDS -gt $sec ]] && {
-        FPS=$FPSC AVG+=($FPS)
-        [[ $FPSL ]] || FPSL=$FPS
-        [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
-        [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
-        (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
-        sec=$SECONDS
-        FPSC=0
-    } || ((FPSC++))
-    #-{ Print FPS }------------------------------------------------------------
-    case $game in
-        'server') screen+="\e[$endy;$[endx-9]H${DEF}FPS: $RED$FPS ";;
-               *) screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL ${DEF}avg: $RED$FPSA ";;
-    esac
-}
-
-status () {
-    #-{ Print game status }----------------------------------------------------
-    case $type$virus in
-            duel*) enemy=rival   bullets=Ammo;;
-            team*) enemy=aliens  bullets=Ammo;;
-        *covid-19) enemy=viruses bullets=Meds;;
-    esac
-    screen+="\e[1;2H$SKY${BLK}Killed $enemy: $SKY$RED$frags$SKY ${BLK}Life: $SKY$RED$life$SKY ${BLK}$bullets: $SKY$RED$ammo$SKY "
-    case $game in 'server')
-        screen+="\e[$endy;2H$LND${BLK}Killed $enemy: $LND$RED$frags2$LND ${BLK}Life: $LND$RED$life2$LND ${BLK}$bullets: $LND$RED$ammo2$LND ";;
-    esac
-}
-
-fill_screen () {
-    for ((i=0;         i<$lineendy; i++)); do printf "$SKY%${endx}s"; done
-    for ((i=$lineendy; i<$endy;     i++)); do printf "$LND%${endx}s"; done
-}
-
 add_backgound () {
     rndy=$[2+RANDOM%10]; [[ $rndy -gt $[3+enmyendy] ]] && rndy=$[3+enmyendy]
     #-{ Add birds }------------------------------------------------------------
     case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $rndy 2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
 
     #-{ Add msngr }------------------------------------------------------------
-    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $rndy 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
+    case $type in duel) msngrY=2;; *) msngrY=$rndy;; esac
+    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $msngrY 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
 
     #-{ Add clouds }-----------------------------------------------------------
     case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
