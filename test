@@ -46,22 +46,10 @@ get_dimensions () {
     size=( $(stty size) )
     endx=${size[1]}
     endy=${size[0]}
-enmyendy=$[endy-7]
-boomendx=$[endx-10]
-bullendx=$[endx-4 ]
-heroendx=$[endx-15]
-heroendy=$[endy-7 ]
 enmyendy=$[endy-7 ]
-bossendx=$[endx-11]
-bossendy=$[endy-7 ]
-bosshbar=$[endx-10]
 lineendy=$[endy-2 ]
-Sunsendx=$[endx-18]
 cratendx=$[endx-7 ]
 cratendy=$[endy-7 ]
-tre1endy=$[endy-tree1H-2]
-tre2endy=$[endy-tree2H-2]
-tre3endy=$[endy-tree3H-2]
 }
 
 print_sprite () {
@@ -157,7 +145,7 @@ game () {
 
         #-{ Add aliens }-------------------------------------------------------
         [[ $enumber -lt $enmax && $M -eq 0 ]] && {
-            ENM+=("alien $endx $[RANDOM%enmyendy+3] 3 12 0 $[RANDOM%3]   1 0 $[RANDOM%3] 3")
+            ENM+=("alien $endx $[3+RANDOM%enmyendy] 3 12 0 $[RANDOM%3]   1 0 $[RANDOM%3] 3")
             ENM+=("crate $[1+RANDOM%(endx-8)] 5     7 7  0 $[RANDOM%5+5] 0")
             ((enumber++))
         }
