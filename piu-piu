@@ -42,6 +42,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ �
   background=true                                     # background objects visibility             (true)
     bossborn=                                         # boss starter
     tillboss=100                                      # frags needed to fight with boss           (100)
+     version=₁․₁                                      # game varsion in small digits ₀₁₂₃₄₅₆₇₈₉․
      bhealth=100                                      # boss' health                              (100)
      showfps=true                                     # show FPS counter if set                   (true)
      enumber=0                                        # enemies counter                           (0)
@@ -1315,6 +1316,7 @@ intro () {
         printf "$screen"
         [[ $i -gt ${#INT[@]} ]] && break
     done
+    XY $[endx/2+32] 11 "$version"
 }
 
 HCI=0 SCI=1 HSI=0 H1C=${H1C:-$DHC} H1S=${H1S:-$DHS} S1C=${S1C:-$DSC}
