@@ -1,5 +1,5 @@
 # piu-piu-SH
-![screeenshot](https://s7.gifyu.com/images/covidpiu.gif)
+![screeenshot](https://user-images.githubusercontent.com/18072680/78771825-764df880-7999-11ea-99f4-879e231d747b.gif)
 [![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
 
 This is an Old School horizontal scroller 'Shoot Them All' game in bash.
