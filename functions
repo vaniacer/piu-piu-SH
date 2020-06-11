@@ -314,6 +314,7 @@ intro () {
         printf "$screen"
         [[ $i -gt ${#INT[@]} ]] && break
     done
+    XY $[endx/2+32] 11 "$version"
 }
 
 HCI=0 SCI=1 HSI=0 H1C=${H1C:-$DHC} H1S=${H1S:-$DHS} S1C=${S1C:-$DSC}

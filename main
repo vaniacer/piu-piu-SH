@@ -42,6 +42,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ �
   background=true                                     # background objects visibility             (true)
     bossborn=                                         # boss starter
     tillboss=100                                      # frags needed to fight with boss           (100)
+     version=₁․₁                                      # game varsion in small digits ₀₁₂₃₄₅₆₇₈₉․
      bhealth=100                                      # boss' health                              (100)
      showfps=true                                     # show FPS counter if set                   (true)
      enumber=0                                        # enemies counter                           (0)
