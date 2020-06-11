@@ -73,19 +73,6 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ �
        sport=54321
        cport=54322
 
-<<<<<<< HEAD
-    0228)
-        msngr_line1=' Happy birthday '
-        msngr_line2='   Matvey !)    ';;
-
-    0703)
-        msngr_line1='The 8th of March'
-        msngr_line2='  is comming... ';;
-
-    0803)
-        msngr_line1=' Hold on guyz $)'
-        msngr_line2='                ';;
-=======
 [[ -e ~/.piuconf ]] && . ~/.piuconf
 #================================================{ Messages }===========================================================
 case "$day$month$virus" in
@@ -97,7 +84,6 @@ case "$day$month$virus" in
         3006*) ad='Happy birthday Natusya !)';;
         0803*) ad='Hold on guyz $)';;
         0905*) ad='День победы!';;
->>>>>>> dev
 esac
 #------------------------{ Ad plane text }------------------------------------------------------------------------------
 ad_plane_text () {
