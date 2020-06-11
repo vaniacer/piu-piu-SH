@@ -1,0 +1,58 @@
+#!/bin/bash
+#================================================{ Messages }===========================================================
+case "$day$month$virus" in
+    *covid-19) ad='Stay at home!';;&
+        1101*) ad='Happy birthday Yura $)';;
+        0202*) ad='It is groundhog day !)';;
+        2002*) ad='Happy birthday Romka !)';;
+        2802*) ad='Happy birthday Matvey !)';;
+        3006*) ad='Happy birthday Natusya !)';;
+        0803*) ad='Hold on guyz $)';;
+        0905*) ad='День победы!';;
+esac
+#------------------------{ Ad plane text }------------------------------------------------------------------------------
+ad_plane_text () {
+    case $type in duel) ad='Try to catch this!' ad_new=;; esac
+    CM4= CM5=; case "$day$month" in 0905) CM4=$bylw CM5=$bblk;; esac
+    for ((i=0; i<${#ad}; i++)); do ad_new+="$CM5$BLD$red${ad:$i:1} "; done
+    new_ad=( ${ad_new//  /⎕ } ) line=( ${new_ad[@]//*/$CM4$blk-} ) width=$((19+${#new_ad[@]}))
+};  ad_plane_text
+
+#↑ ↓ ← → ▲ ▼ ▶ ◀ ▷ ◁ △ ▽
+sprite_help () {
+    x=$[$endx/2-25/2]
+    y=$[$endy/2-5]
+    XY $[x+19]  $y                                       '▲'
+    XY $[x+19] $[y+1]                              "${RED}W$DEF"
+    XY  $x     $[y+2] "${BLD}Control with:$DEF  ◀ ${RED}A S D$DEF ▶"
+    XY $[x+19] $[y+3]                                    '▼'
+    XY  $x     $[y+5] "${BLD}Shoot\select with:$DEF ${YLW}P $BLD$red-=$GRN>$DEF"
+}
+
+sprite_lose () {
+    x=$[$endx/2-25/2] CM1=$BLD$red
+    y=$[$endy/2-5]    CM2=$DIM$RED
+    XY $x  $y    "$CM1  ____    _    __  __ _____ $DEF"
+    XY $x $[y+1] "$red / ___|  / \  |  \/  | ____|$DEF"
+    XY $x $[y+2] "$red| | __  / _ \ | |\/| |  _|  $DEF"
+    XY $x $[y+3] "$RED| |_\ \/ ___ \| |  | | |___ $DEF"
+    XY $x $[y+4] "$CM2 \____/_/   \_\_|__|_|_____|$DEF"
+    XY $x $[y+5] "$CM1  / _ \ \   / / ____|  _ \  $DEF"
+    XY $x $[y+6] "$red | | | \ \ / /|  _| | |_) | $DEF"
+    XY $x $[y+7] "$RED | |_| |\ V / | |___|  _ <  $DEF"
+    XY $x $[y+8] "$CM2  \___/  \_/  |_____|_| \_| $DEF"
+}
+
+sprite_win () {
+    x=$[$endx/2-25/2] CM1=$BLD$grn
+    y=$[$endy/2-5]    CM2=$DIM$GRN
+    XY $x  $y  "${CM1}__        ______ _    _    $DEF"
+    XY $x $[y+1] "$grn\ \      / /____| |  | |   $DEF"
+    XY $x $[y+2] "$grn \ \ /\ / /  _| | |  | |   $DEF"
+    XY $x $[y+3] "$GRN  \ V  V /| |___| |__| |__ $DEF"
+    XY $x $[y+4] "$CM2 __\_/\_/_|_____|____|____|$DEF"
+    XY $x $[y+5] "$CM1|  _ \ / _ \| \ | | ____| |$DEF"
+    XY $x $[y+6] "$grn| | | | | | |  \| |  _| | |$DEF"
+    XY $x $[y+7] "$GRN| |_| | |_| | |\  | |___|_|$DEF"
+    XY $x $[y+8] "$CM2|____/ \___/|_| \_|_____(_)$DEF"
+}
