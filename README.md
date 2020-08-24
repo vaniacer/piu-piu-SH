@@ -14,3 +14,5 @@ On ubuntu 18.04 you can install it with apt!)
 
 <a href="https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj">piu-piu-asciinema</a></br>
 <a href="https://coub.com/view/1kn2tt">piu-piu-coub</a>
+
+[![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US)  Don't hold yourself, buy me a beer)
