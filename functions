@@ -23,7 +23,7 @@ get_dimensions () {
     msgrendy=$[endy-10]
     tre1endy=$[endy-tree1H-2]
     tre2endy=$[endy-tree2H-2]
-    tre3endy=$[endy-tree3H-3]
+    tre3endy=$[endy-tree3H-2]
 }
 
 bye () { cursor on; exit $1; }
