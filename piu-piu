@@ -59,7 +59,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ �
          rnd=10                                       # random seed 4 bonuses                     (10)
          DHS=★                                        # default symbol                            (★)
          spd=0.0001                                   # game\read speed                           (0.0001)
-         MSN=1111                                     # messanger randomizer                      (1111)
+         MSN=1111                                     # messenger randomizer                      (1111)
          HOU=1111                                     # houses randomizer                         (1111)
           ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
            G=1                                        # gun                                       (1)(max 5)
@@ -759,8 +759,8 @@ case $month in
     09|1[0-1]) T3C=$SKY$DIM$red tree3H=9;; # autumn
 esac
 sprite_tree3 () {
-    case "$day$month" in
-        2[1-9]12|3[0-1]12|0[1-9]01|1001)
+    case "$day:$month" in
+        [23][0-9]:12|0[1-9]:01|10:01)
             mov - && BP3[i]="tree3 $OX $OY 8 12 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
             X1="_Y_$[OX+6]H" X2="_Y_$[OX+4]H"     X3="_Y_$[OX+4]H" X4="_Y_$[OX+4]H$RED"
             X5="_Y_$[OX+2]H" X6="_Y_$[OX+2]H$red" X7="_Y_$[OX+6]H"
@@ -782,7 +782,7 @@ sprite_tree3 () {
             cut $SX $[OY+5] $GRN ''  ''   $X6'○' $GRN'/'     '/'     '/'     '|'     '\\' $CYN'❄'  $GRN'\\' $RED'●'  ' '     #6
             cut $SX $[OY+6] $GRN '_' '/' $cyn'❅' $GRN'/' $YLW'●' $GRN'/'     '|' $RED'○'  $GRN'\\' $cyn'❅'  $GRN'\\' '-' ' ' #7
             cut $SX $[OY+7] $BLK ''  ''      ''      ''      ''      ''   $X7'║'     ' ';;                                   #8
-        0[1-4]|12)
+        *:[01][1-4])
             mov - && BP3[i]="tree3 $OX $OY 8 9 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
             X1="_Y_$[OX+2]H" X2="_Y_$[OX+3]H" X3="_Y_$[OX+1]H" X4="_Y_$[OX+3]H" X5="_Y_$[OX+4]H" X6="_Y_$[OX+4]H" X7="_Y_$[OX+4]H"
             #0123456789A
@@ -1025,7 +1025,7 @@ get_dimensions () {
     msgrendy=$[endy-10]
     tre1endy=$[endy-tree1H-2]
     tre2endy=$[endy-tree2H-2]
-    tre3endy=$[endy-tree3H-3]
+    tre3endy=$[endy-tree3H-2]
 }
 
 bye () { cursor on; exit $1; }
