@@ -22,3 +22,9 @@ BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
 
 ETH: 0xd7e17A37DD936B211790ba70Aa985448277030E8</br>
 ![eth](https://user-images.githubusercontent.com/18072680/106382951-f2577800-63d3-11eb-8c01-f7ade514fb58.png)
+
+MON: 484z9YpiD4VBd4BfsaG7jKGYGuJ84tYJyCJBX4ZnAPqQXsUWgTY14TKRH3JLosFSAsKsv75nyt9yWPkFMUJhryxi7zccHNB</br>
+![mon](https://user-images.githubusercontent.com/18072680/106383275-15832700-63d6-11eb-87d5-8b9f4ba08c40.png)
+
+LTC: LRVPYR7dvRVdNET23gg3fvTwDM9hotQkZw</br>
+![ltc](https://user-images.githubusercontent.com/18072680/106383361-7a3e8180-63d6-11eb-9239-48b6d80c3c4b.png)
