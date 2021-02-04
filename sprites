@@ -492,16 +492,16 @@ sprite_crate () {
 
 sprite_starship () {
     movy && ENM[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i" || { unset ENM[$i]; boom $OX $boomendy; boom $OX $[boomendy-3]; crate=0; }
-    CM1=$SKY$ylw CM2=$SKY$blk CM3=$SKY$BLU SS="$RED ? $CM3"
+    CM1=$SKY$BLD$WHT
     ########################1234567###01234567
     cuty $OX $OY 9 $SKY'       ' #1
-    cuty $OX $OY 8 $SKY'   ▃   ' #2    ▃
+    cuty $OX $OY 8 $CM1'   ▃   ' #2    ▃
     cuty $OX $OY 7 $CM1'  ▞▒▙  ' #3   ▞▒▙
     cuty $OX $OY 6 $CM1' ◢░▒█◣ ' #4  ◢░▒█◣
-    cuty $OX $OY 5 $CM2'  ░▒█  ' #5   ░▒█
-    cuty $OX $OY 4 $CM3'  ░▒█  ' #6   ░▒█
-    cuty $OX $OY 3 $CM3' ╱░▒█╲ ' #7  ╱░▒█╲
-    cuty $OX $OY 2 $CM3'/_░▒█_\' #8 /_░▒█_\
+    cuty $OX $OY 5 $CM1'  ░▒█  ' #5   ░▒█
+    cuty $OX $OY 4 $CM1'  ░▒█  ' #6   ░▒█
+    cuty $OX $OY 3 $CM1' ╱░▒█╲ ' #7  ╱░▒█╲
+    cuty $OX $OY 2 $CM1'/_░▒█_\' #8 /_░▒█_\
     cuty $OX $OY 1 $SKY'       ' #9
 }
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
