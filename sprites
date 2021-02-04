@@ -489,6 +489,21 @@ sprite_crate () {
     cuty $[OX+1] $OY 2  $CM3"╠$SS╣"  #6 ╠ ? ╣ 
     cuty $[OX+1] $OY 1  $CM3'╚═╩═╝'  #7 ╚═╩═╝ 
 }
+
+sprite_starship () {
+    movy && ENM[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i" || { unset ENM[$i]; boom $OX $boomendy; boom $OX $[boomendy-3]; crate=0; }
+    CM1=$SKY$ylw CM2=$SKY$blk CM3=$SKY$BLU SS="$RED ? $CM3"
+    ########################1234567###01234567
+    cuty $OX $OY 9 $SKY'       ' #1
+    cuty $OX $OY 8 $SKY'   ▃   ' #2    ▃
+    cuty $OX $OY 7 $CM1'  ▞▒▙  ' #3   ▞▒▙
+    cuty $OX $OY 6 $CM1' ◢░▒█◣ ' #4  ◢░▒█◣
+    cuty $OX $OY 5 $CM2'  ░▒█  ' #5   ░▒█
+    cuty $OX $OY 4 $CM3'  ░▒█  ' #6   ░▒█
+    cuty $OX $OY 3 $CM3' ╱░▒█╲ ' #7  ╱░▒█╲
+    cuty $OX $OY 2 $CM3'/_░▒█_\' #8 /_░▒█_\
+    cuty $OX $OY 1 $SKY'       ' #9
+}
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
 case $month in
     0[1-4]|12) C1C=$SKY$DIM$CYN;; # winter & early spring
