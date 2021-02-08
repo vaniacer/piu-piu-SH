@@ -497,7 +497,7 @@ sprite_starship () {
     cuty $OX $OY 9 $SKY'       ' #1
     cuty $OX $OY 8 $CM1'   ▃   ' #2    ▃
     cuty $OX $OY 7 $CM1'  ▞▒▙  ' #3   ▞▒▙
-    cuty $OX $OY 6 $CM1' ◢░▒█◣ ' #4  ◢░▒█◣
+    cuty $OX $OY 6 $CM1' ◿░▒█◣ ' #4  ◿░▒█◣
     cuty $OX $OY 5 $CM1'  ░▒█  ' #5   ░▒█
     cuty $OX $OY 4 $CM1'  ░▒█  ' #6   ░▒█
     cuty $OX $OY 3 $CM1' ╱░▒█╲ ' #7  ╱░▒█╲
