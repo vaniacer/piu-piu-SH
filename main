@@ -42,7 +42,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ �
   background=true                                     # background objects visibility             (true)
     bossborn=                                         # boss starter
     tillboss=100                                      # frags needed to fight with boss           (100)
-     version=₁․₁                                      # game varsion in small digits ₀₁₂₃₄₅₆₇₈₉․
+     version='₁․₁'                                    # game varsion in small digits ₀₁₂₃₄₅₆₇₈₉․
      bhealth=100                                      # boss' health                              (100)
      showfps=true                                     # show FPS counter if set                   (true)
      enumber=0                                        # enemies counter                           (0)
@@ -57,7 +57,7 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ �
          DHC=$BLK                                     # default hero color                        ($BLK)
          DSC=$RED                                     # default symbol color                      ($RED)
          rnd=10                                       # random seed 4 bonuses                     (10)
-         DHS=★                                        # default symbol                            (★)
+         DHS='★'                                      # default symbol                            (★)
          spd=0.0001                                   # game\read speed                           (0.0001)
          MSN=1111                                     # messenger randomizer                      (1111)
          HOU=1111                                     # houses randomizer                         (1111)
@@ -83,7 +83,7 @@ game () {
         #-{ Empty screen, print game status adnd FPS }-------------------------
         screen=; status; [[ $showfps ]] && fps_counter
         #-{ Add background }---------------------------------------------------
-        [[ $background ]] && add_backgound
+        [[ $background ]] && add_backgound birds msngr clouds houses trees moving_land
         #-{ Move bitplans }----------------------------------------------------
         BP1=("${BP1[@]}"); for i in ${!BP1[@]}; { OI=(${BP1[i]}); print_sprite; } # small(far) background objects
         BP2=("${BP2[@]}"); for i in ${!BP2[@]}; { OI=(${BP2[i]}); print_sprite; } # medium background objects
@@ -115,7 +115,7 @@ game () {
         fi
     done
 }
-#========================================{ Main game loop client mode }=================================================
+#=========================================={ Client mode game loop }====================================================
 game_client () {
     while true; do
         read_input
@@ -126,6 +126,32 @@ game_client () {
             *             ) printf "$screen";;
         esac
     done
+}
+#==============================================={ Starship intro }======================================================
+starship_intro () {
+    T1=(3 7  11 15 20 30 40 43 $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40])
+    T2=(5 17 23                $[endx-7] $[endx-11] $[endx-35])
+    T3=(4 23                   $[endx-8] $[endx-25])
+
+    for i in ${T1[@]}; { BP1+=("tree1 $i $tre1endy 4 2 0 -1 1 5 0 0"); } # Plant
+    for i in ${T2[@]}; { BP2+=("tree2 $i $tre2endy 6 5 0 -1 1 5 0 0"); } # some
+    for i in ${T3[@]}; { BP3+=("tree3 $i $tre3endy 9 9 0 -1 1 9 0 0"); } # trees
+    BP1+=("starship  $halfendx     $[endy-2] 10 7 0 0 10 10") # add starship
+    BP1+=("startable $[halfendx-4] $[endy-2] 10 1 0 0 10 10") # add startable
+
+    while true; do
+        #-{ Empty screen, print game status adnd FPS }-------------------------
+        screen=; [[ $showfps ]] && fps_counter
+        #-{ Add background }---------------------------------------------------
+        [[ $background ]] && add_backgound birds msngr clouds land
+        #-{ Move bitplans }----------------------------------------------------
+        BP1=("${BP1[@]}"); for i in ${!BP1[@]}; { OI=(${BP1[i]}); print_sprite; } # small(far) background objects
+        BP2=("${BP2[@]}"); for i in ${!BP2[@]}; { OI=(${BP2[i]}); print_sprite; } # medium background objects
+        BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); print_sprite; } # big(closer) background objects
+        #-{ Print everything }-------------------------------------------------
+        printf "$screen"
+    done
+    exit
 }
 #============================================{ Initialisation }=========================================================
 trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT; get_dimensions
@@ -155,4 +181,5 @@ case $game:$type in
                  sender $saddr $sport "${caddr[0]} $cport $H1C $H1S $S1C"
                  game_client;;
 esac
+[[ $1 =~ starship ]] && { ad_new= ad='Got a ticket to Mars?'; ad_plane_text; starship_intro; }
 game

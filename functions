@@ -267,38 +267,50 @@ add_piu () {
     esac
 }
 
-add_backgound () {
-    rndy=$[2+RANDOM%10]; [[ $rndy -gt $[3+enmyendy] ]] && rndy=$[3+enmyendy]
-    #-{ Add birds }------------------------------------------------------------
+backgound_birds () { # Add birds }----------------------------------------------------------------------
     case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $rndy 2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
+}
 
-    #-{ Add msngr }------------------------------------------------------------
+backgound_msngr () { # Add msngr }----------------------------------------------------------------------
     case $type in duel) msngrY=2;; *) msngrY=$rndy;; esac
     case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $msngrY 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
+}
 
-    #-{ Add clouds }-----------------------------------------------------------
+backgound_clouds () { # Add clouds }--------------------------------------------------------------------
     case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
         0:1) BP1+=("cloud1 $endx $rndy 3 6  6 $[6+RANDOM%2] 1 0 0 0");;
         0:2) BP2+=("cloud2 $endx $rndy 3 8  4 $[4+RANDOM%2] 1 0 0 0");;
         0:3) BP3+=("cloud3 $endx $rndy 3 11 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
+}
 
-    #-{ Add house }------------------------------------------------------------
+backgound_houses () { # Add houses }--------------------------------------------------------------------
     case $[RANDOM % $HOU]:$[RANDOM % 3 + 1] in
         0:1) BP1+=("house1 $endx $hos1endy 2 6  6 $[6+RANDOM%2] 1 0 0 0");;
         0:2) BP2+=("house2 $endx $hos2endy 9 30 4 $[4+RANDOM%2] 1 0 0 0");;
         0:3) BP3+=("house3 $endx $hos3endy 4 17 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
+}
 
-    #-{ Add trees }------------------------------------------------------------
+backgound_trees () { # Add trees }----------------------------------------------------------------------
     case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
         0:1) BP1+=("tree1 $endx $tre1endy 3 2 6 $[6+RANDOM%2] 1 0 0 0");;
         0:2) BP2+=("tree2 $endx $tre2endy 6 5 4 $[4+RANDOM%2] 1 0 0 0");;
         0:3) BP3+=("tree3 $endx $tre3endy 9 9 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
+}
 
-    #-{ Print moving land }----------------------------------------------------
+backgound_moving_land () { # Print moving land }--------------------------------------------------------
     screen+="\e[$lineendy;1H$LND${land:$((1-${LX:-1})):$endx}"; [[ ${LX:-1} -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+}
+
+backgound_land () { # Print land }----------------------------------------------------------------------
+    screen+="\e[$lineendy;1H$LND${land:$((1-${LX:-1})):$endx}"
+}
+
+add_backgound () {
+    rndy=$[2+RANDOM%10]; [[ $rndy -gt $[3+enmyendy] ]] && rndy=$[3+enmyendy]
+    for item in "$@"; { backgound_$item; }
 }
 
 #------------------------{ Intro }--------------------------------------------------------------------------------------
