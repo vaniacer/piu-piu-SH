@@ -318,7 +318,7 @@ sprite_boss () {
     fi
     [[ $C1 -gt 0 ]] && ((C1--))
     case "$day$month$virus" in
-        3110)
+        3110*)
             CM1=$SKY$BLD$ylw CM2=$SKY$BLD$RED EYE="$CM2( $CM2⁐ $CM2)"
             X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H" X3="_Y_$[OX+1]H" X4="_Y_$[OX+2]H"
             #0123456789ABCD
