@@ -38,13 +38,14 @@ cursor () {
 mov () {
     case $1  in -) cuter=++;; +) cuter=--;; esac
     case $SC in
-        0) [[ $OX -le -$OW   ]] && return 1
-           [[ $OX -gt  $endx ]] && return 1
-           [[ $AS -ge  $AL   ]] && AS=0  || ((AS++)) # sprites animation
-           [[ $OX -le  1     ]] && ((CS++))
-           ((OX$1$1)); ((CL$cuter)); SC=$SM
-           [[ $CL -lt 0 ]] && CL=0;;
-        *) ((SC--));;
+         (0) [[ $OX -le -$OW   ]] && return 1
+             [[ $OX -gt  $endx ]] && return 1
+             [[ $AS -ge  $AL   ]] && AS=0  || ((AS++)) # sprites animation
+             [[ $OX -le  1     ]] && ((CS++))
+             ((OX$1$1)); ((CL$cuter)); SC=$SM
+             [[ $CL -lt 0 ]] && CL=0;;
+        -*0) [[ $AS -ge  $AL   ]] && AS=0  || ((AS++));; # sprites animation
+         (*) ((SC--));;
     esac
     [[ $OX -le 1 ]] && SX=0 || SX=$OX
 }
@@ -59,11 +60,11 @@ cut () {
 
 movy () { # used in bonus crate
     case $SC in
-        0) [[ $OY -ge $[endy-2] ]]    && return 1
-           [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
-           [[ $CS -le $OH  ]] && ((CS++))
-           ((OY++)); SC=$SM;;
-        *) ((SC--));;
+         (0) [[ $OY -ge $[endy-2] ]]    && return 1
+             [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
+             [[ $CS -le $OH  ]] && ((CS++))
+             ((OY++)); SC=$SM;;
+         (*) ((SC--));;
     esac
 }
 

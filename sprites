@@ -489,7 +489,7 @@ sprite_crate () {
     cuty $[OX+1] $OY 2  $CM3"╠$SS╣"  #6 ╠ ? ╣ 
     cuty $[OX+1] $OY 1  $CM3'╚═╩═╝'  #7 ╚═╩═╝ 
 }
-
+#------------------------{ Starship }-----------------------------------------------------------------------------------
 sprite_starship () {
     BP1[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
     CM1=$SKY$BLD$WHT
@@ -509,6 +509,22 @@ sprite_startable () {
     BP3[i]="startable $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
     ########################1234567890ABCDE###0
     cuty $OX $OY 1 $SKY$YLW'▂▄▆▉▀▉▀▀▀▉▀▉▆▄▂' #1
+}
+
+sock=(
+  "$WHT= $RED≡ $WHT≡ $RED≣ $WHT≣"
+  "$WHT≡ $RED≣ $WHT≣ $RED≡ $WHT≡"
+  "$WHT≣ $RED≡ $WHT≡ $RED≡ $WHT≣"
+)
+sprite_windsock () {
+    mov - && BP2[i]="windsock $OX $OY 2 8 $SC $SM $CS $CL $AS 2" || { unset BP1[i]; return; }
+    X1="_Y_$[OX+6]H" C1C=$SKY$WHT C2C=$SKY$BLK
+    #012345678
+    #1=≡≡≣≣>┐
+    #2      │
+    #################### 1  2  3  4  5      6       7   8  #0
+    cut $SX  $OY    $C1C  ${sock[$AS]} $C2C'>' $C2C'┐' ' ' #1
+    cut $SX $[OY+1] $C2C '' '' '' '' ''    ''   $X1'│' ' ' #2
 }
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
 case $month in
