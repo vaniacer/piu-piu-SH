@@ -82,9 +82,9 @@ mess () {
     cursor off
     XY 1 1 ${DEF}; clear
     case $1 in
-        "win" ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
-        "lose") sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
-        "help") sprite_help;;
+        win ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
+        lose) sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
+        help) sprite_help;;
     esac
 }
 
