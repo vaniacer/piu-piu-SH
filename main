@@ -129,6 +129,8 @@ game_client () {
 }
 #==============================================={ Starship intro }======================================================
 starship_intro () {
+    [[ $1 =~ starship ]] || return
+    ad_new= ad='Got a ticket to Mars?'; ad_plane_text; fill_screen; cursor off
     T1=(3 7  11 15 20 30 40 43 $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40])
     T2=(5 17 23                $[endx-7] $[endx-11] $[endx-35])
     T3=(4 23                   $[endx-8] $[endx-25])
@@ -156,16 +158,14 @@ starship_intro () {
     exit
 }
 #============================================{ Initialisation }=========================================================
-trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT; get_dimensions
-clear; mess "help"; sleep 2
+trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT
+clear; starship_intro $1; mess "help"; sleep 2
 clear; intro; menu
 clear; fill_screen
 cursor off
 #-{ Add hero1 and the Sun }--------------------------------
 BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")
 H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10")
-#-------------------{ Generate grass }----------------------------------------------------------------------------------
-for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 #-{ If server }---------------------------------------------------------------------------------------------------------
 case $game:$type in
     server:team) H2X=1         H2Y=$[halfendy-2];;&
@@ -183,5 +183,4 @@ case $game:$type in
                  sender $saddr $sport "${caddr[0]} $cport $H1C $H1S $S1C"
                  game_client;;
 esac
-[[ $1 =~ starship ]] && { ad_new= ad='Got a ticket to Mars?'; ad_plane_text; starship_intro; }
 game

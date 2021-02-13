@@ -1,4 +1,27 @@
 #!/bin/bash
+size=($(stty size))
+endx=${size[1]}
+endy=${size[0]}
+halfendx=$[endx/2 ]
+halfendy=$[endy/2 ]
+boomendx=$[endx-10]
+boomendy=$[endy-4 ]
+bullendx=$[endx-4 ]
+heroendx=$[endx-15]
+heroendy=$[endy-8 ]
+enmyendy=$[endy-9 ]
+bossendx=$[endx-14]
+bossendy=$[endy-7 ]
+bosshbar=$[endx-10]
+lineendy=$[endy-2 ]
+Sunsendx=$[endx-18]
+hos1endy=$[endy-4 ]
+hos2endy=$[endy-11]
+hos3endy=$[endy-6 ]
+msgrendy=$[endy-10]
+tre1endy=$[endy-6 ]
+tre2endy=$[endy-8 ]
+tre3endy=$[endy-11]
 #================================================{ Sprites }============================================================
 case $month in
     0[1-4]|12) # winter & early spring
@@ -23,10 +46,11 @@ case $month in
         TRE=50;;              # trees rnd
 esac
 case $game in server) BRD=400 CLD=100 TRE=100;; esac
-        
                               # ⎕ - space
   gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █) # grass types
+#-------------------{ Generate grass }----------------------------------------------------------------------------------
+for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 #------------------------{ Hero1 }--------------------------------------------------------------------------------------
 #                                                   center.point   
 mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_"  # '_____ _____'

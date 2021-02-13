@@ -1,31 +1,5 @@
 #!/bin/bash
 #================================================{ Functions }==========================================================
-get_dimensions () {
-    size=($(stty size))
-    endx=${size[1]}
-    endy=${size[0]}
-    halfendx=$[endx/2 ]
-    halfendy=$[endy/2 ]
-    boomendx=$[endx-10]
-    boomendy=$[endy-4 ]
-    bullendx=$[endx-4 ]
-    heroendx=$[endx-15]
-    heroendy=$[endy-8 ]
-    enmyendy=$[endy-9 ]
-    bossendx=$[endx-14]
-    bossendy=$[endy-7 ]
-    bosshbar=$[endx-10]
-    lineendy=$[endy-2 ]
-    Sunsendx=$[endx-18]
-    hos1endy=$[endy-4 ]
-    hos2endy=$[endy-11]
-    hos3endy=$[endy-6 ]
-    msgrendy=$[endy-10]
-    tre1endy=$[endy-tree1H-2]
-    tre2endy=$[endy-tree2H-2]
-    tre3endy=$[endy-tree3H-2]
-}
-
 bye () { cursor on; exit $1; }
 
 cursor () {
