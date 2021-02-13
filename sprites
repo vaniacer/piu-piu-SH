@@ -491,7 +491,7 @@ sprite_crate () {
 }
 #------------------------{ Starship }-----------------------------------------------------------------------------------
 sprite_starship () {
-    BP1[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
+    BP2[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
     CM1=$SKY$BLD$WHT
     ######### ##########1234567###01234567
     cuty $OX $OY 9 $SKY'       ' #1
