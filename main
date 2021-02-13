@@ -137,8 +137,8 @@ starship_intro () {
     for i in ${T2[@]}; { BP2+=("tree2 $i $tre2endy 6 5 0 -1 1 5 0 0"); } # some
     for i in ${T3[@]}; { BP3+=("tree3 $i $tre3endy 9 9 0 -1 1 9 0 0"); } # trees
 
-    BP3+=("startable $[halfendx-4] $[endy-2] 10 1 0  0 10 10    ") # add startable
     BP2+=("starship  $halfendx     $[endy-2] 10 7 0  0 10 10    ") # add starship
+    BP3+=("startable $[halfendx-4] $[endy-2] 10 1 0  0 10 10    ") # add startable
     BP2+=("windsock  30        $[tre1endy+2] 2  8 0 -1 1  7  0 2") # add windsock
 
     while true; do
@@ -184,4 +184,4 @@ case $game:$type in
                  game_client;;
 esac
 [[ $1 =~ starship ]] && { ad_new= ad='Got a ticket to Mars?'; ad_plane_text; starship_intro; }
-game
+gamez
