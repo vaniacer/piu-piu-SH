@@ -197,8 +197,8 @@ boss_health () {
 }
 
 fill_screen () {
-    for ((i=0;        i<lineendy; i++)); do printf "$SKY%${endx}s"; done
-    for ((i=lineendy; i<endy;     i++)); do printf "$LND%${endx}s"; done
+    for ((i=0;        i<landendy; i++)); do printf "$SKY%${endx}s"; done
+    for ((i=landendy; i<endy;     i++)); do printf "$LND%${endx}s"; done
 }
 
 drop_crate () { # in duel mode ad plane'll drop bonus crate
@@ -276,11 +276,11 @@ backgound_trees () { # Add trees }----------------------------------------------
 }
 
 backgound_moving_land () { # Print moving land }--------------------------------------------------------
-    screen+="\e[$lineendy;1H$LND${land:$((1-${LX:-1})):$endx}"; [[ ${LX:-1} -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+    screen+="\e[$landendy;1H$LND${land:$((1-${LX:-1})):$endx}"; [[ ${LX:-1} -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
 }
 
 backgound_land () { # Print land }----------------------------------------------------------------------
-    screen+="\e[$lineendy;1H$LND${land:$((1-${LX:-1})):$endx}"
+    screen+="\e[$landendy;1H$LND${land:$((1-${LX:-1})):$endx}"
 }
 
 add_backgound () {
