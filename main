@@ -134,14 +134,13 @@ starship_intro () {
     T1=(3 7  11 15 20 30 40 43 $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40])
     T2=(5 17 23                $[endx-7] $[endx-11] $[endx-35])
     T3=(4 23                   $[endx-8] $[endx-25])
-
-    for i in ${T1[@]}; { BP1+=("tree1 $i $tre1endy 4 2 0 -1 1 5 0 0"); } # Plant
-    for i in ${T2[@]}; { BP2+=("tree2 $i $tre2endy 6 5 0 -1 1 5 0 0"); } # some
-    for i in ${T3[@]}; { BP3+=("tree3 $i $tre3endy 9 9 0 -1 1 9 0 0"); } # trees
-
-    BP2+=("starship  $halfendx     $[endy-2] 10 7 0  0 10 10    ") # add starship
-    BP3+=("startable $[halfendx-4] $[endy-2] 10 1 0  0 10 10    ") # add startable
-    BP2+=("windsock  30        $[tre1endy+2] 2  8 0 -1 1  7  0 2") # add windsock
+                               #type      $OX           $OY       $OH $OW $SC $SM $CS $CL $AS $AL $C1 $C2
+    for i in ${T1[@]}; { BP1+=("tree1     $i            $tre1endy  4   2   0   -1  1   5   0   0"); }      # Plant
+    for i in ${T2[@]}; { BP2+=("tree2     $i            $tre2endy  6   5   0   -1  1   5   0   0"); }      # some
+    for i in ${T3[@]}; { BP3+=("tree3     $i            $tre3endy  9   9   0   -1  1   9   0   0"); }      # trees
+                         BP2+=("starship  $halfendx     $[endy-2]  10  7   0    0  10  10  0   0")         # add starship
+                         BP3+=("startable $[halfendx-4] $[endy-2]  8   15  0    0  10  10  0   1   0  30") # add startable
+                         BP2+=("windsock  30        $[tre1endy+2]  2   8   0    0  1   7   0   2   0  3 ") # add windsock
 
     while true; do
         #-{ Empty screen, print game status adnd FPS }-------------------------
@@ -158,14 +157,13 @@ starship_intro () {
     exit
 }
 #============================================{ Initialisation }=========================================================
+BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")                   # Sun
+H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10") # Hero
 trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT
 clear; starship_intro $1; mess "help"; sleep 2
 clear; intro; menu
 clear; fill_screen
 cursor off
-#-{ Add hero1 and the Sun }--------------------------------
-BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")
-H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10")
 #-{ If server }---------------------------------------------------------------------------------------------------------
 case $game:$type in
     server:team) H2X=1         H2Y=$[halfendy-2];;&

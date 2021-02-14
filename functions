@@ -18,7 +18,6 @@ mov () {
              [[ $OX -le  1     ]] && ((CS++))
              ((OX$1$1)); ((CL$cuter)); SC=$SM
              [[ $CL -lt 0 ]] && CL=0;;
-        -*0) [[ $AS -ge  $AL   ]] && AS=0  || ((AS++));; # sprites animation
          (*) ((SC--));;
     esac
     [[ $OX -le 1 ]] && SX=0 || SX=$OX

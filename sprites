@@ -516,11 +516,24 @@ sprite_starship () {
     cuty $OX $OY 2 $CM1'│_░▒█_┃' #8│_░▒█_┃
     cuty $OX $OY 1 $SKY'       ' #9
 }
-
+bulb=("$SKYBLD$WHT." "$SKYBLD$RED.")
 sprite_startable () {
-    BP3[i]="startable $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
-    ########################1234567890ABCDE###0
-    cuty $OX $OY 1 $SKY$YLW'▂▄▆▉▀▉▀▀▀▉▀▉▆▄▂' #1
+    case $C1 in # animation
+         (0) [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
+             C1=$C2;;
+         (*) ((C1--));;
+    esac
+    BP3[i]="startable $OX $OY $OH $OW $SC $SM $CS $CL $AS 1 $C1 $C2"
+    CM1=$SKY$BLD$blk$UND CM2=$SKY$BLD$blk
+    #############################1234567890ABCDEFG####0
+    cuty $[OX+13] $OY 8                 ${bulb[$AS]} #1             .
+    cuty $[OX+13] $OY 7              $SKY$CM2'│'     #2             │
+    cuty $[OX+9 ] $OY 6          $SKY$CM1'   ╱┃'     #3         ___╱┃
+    cuty $[OX+9 ] $OY 5          $SKY$CM1'│╳┃╳┃'     #4         │╳┃╳┃
+    cuty $[OX+11] $OY 4            $SKY$CM1'┃╳┃'     #5           ┃╳┃
+    cuty $[OX+11] $OY 3            $SKY$CM1'┃╳┃'     #6           ┃╳┃
+    cuty $[OX+11] $OY 2            $SKY$CM1'┃╳┃'     #7           ┃╳┃
+    cuty  $OX     $OY 1 $SKY$YLW'▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂'  #8▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂
 }
 
 sock=(
@@ -529,14 +542,19 @@ sock=(
   "$WHT≣ $RED≡ $WHT≡ $RED≡ $WHT≣"
 )
 sprite_windsock () {
-    mov - && BP2[i]="windsock $OX $OY 2 8 $SC $SM $CS $CL $AS 2" || { unset BP1[i]; return; }
+    case $C1 in # animation
+         (0) [[ $AS -ge $AL ]] && AS=0 || ((AS++))
+             C1=$C2;;
+         (*) ((C1--));;
+    esac
+    BP2[i]="windsock $OX $OY 2 8 $SC $SM $CS $CL $AS 2 $C1 $C2"
     X1="_Y_$[OX+6]H" C1C=$SKY$WHT C2C=$SKY$BLK
     #012345678
     #1=≡≡≣≣>┐
     #2      │
     #################### 1  2  3  4  5      6       7   8  #0
-    cut $SX  $OY    $C1C  ${sock[$AS]} $C2C'>' $C2C'┐' ' ' #1
-    cut $SX $[OY+1] $C2C '' '' '' '' ''    ''   $X1'│' ' ' #2
+    cut $OX  $OY    $C1C  ${sock[$AS]} $C2C'>' $C2C'┐' ' ' #1
+    cut $OX $[OY+1] $C2C '' '' '' '' ''    ''   $X1'│' ' ' #2
 }
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
 case $month in
