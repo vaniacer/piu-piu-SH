@@ -504,7 +504,7 @@ sprite_crate () {
 #------------------------{ Starship }-----------------------------------------------------------------------------------
 sprite_starship () {
     BP2[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
-    CM1=$SKY$BLD$WHT
+    CM1=$SKY$BLD$WHT; case $month in 0[1-4]|12) CM1=$SKY$DIM$wht;; esac
     ######### ##########1234567###01234567
     cuty $OX $OY 9 $SKY'       ' #1
     cuty $OX $OY 8 $CM1'   ▃   ' #2   ▃
@@ -516,6 +516,7 @@ sprite_starship () {
     cuty $OX $OY 2 $CM1'│_░▒█_┃' #8│_░▒█_┃
     cuty $OX $OY 1 $SKY'       ' #9
 }
+
 bulb=("$SKYBLD$WHT." "$SKYBLD$RED.")
 sprite_startable () {
     case $C1 in # animation
