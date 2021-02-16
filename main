@@ -127,7 +127,7 @@ game_client () {
         esac
     done
 }
-#==============================================={ Starship intro }======================================================
+#============================================={ Starship intro }========================================================
 starship_intro () {
     [[ $1 =~ starship ]] || return
     ad_new= ad='Got a ticket to Mars?'; ad_plane_text; fill_screen; cursor off
@@ -143,8 +143,11 @@ starship_intro () {
                          BP2+=("windsock  $[halfendx-17] $[endy-4] 2   8   0   0   1   7   0   2   0  3 ") # windsock
 
     while true; do
+        XY 1 1 $SECONDS
         #-{ Empty screen, print game status adnd FPS }-------------------------
         screen=; [[ $showfps ]] && fps_counter
+                                #type    $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
+        ((SECONDS==5)) && BP1+=("exhaust $[halfendx-21] $[endy-3] 0   0   0   7   1   9   0   6")
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound birds msngr clouds land
         #-{ Move bitplans }----------------------------------------------------

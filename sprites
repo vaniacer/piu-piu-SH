@@ -516,7 +516,29 @@ sprite_starship () {
     cuty $OX $OY 2 $CM1'│_░▒█_┃' #8│_░▒█_┃
     cuty $OX $OY 1 $SKY'       ' #9
 }
-
+sprite_exhaust () {
+    BX=$OX BY=$OY
+    [[ $AS -ge $AL ]] && { unset BP1[i]; return; }
+    case $AS in ###########################0123456789ABCDEFGJ#################################
+          0) cut $[BX+13] $BY    $RED                  '¸.•´´¯`••.¸';; #            ¸.•´´¯`••.¸
+          1) cut $[BX+10] $[BY-1] $RED               '¸.•´´¯`••.¸'     #         ¸.•´´¯`••.¸
+             cut $[BX+9]  $BY    $RED              '/           ´¯`';; #        /           ´¯`
+          2) cut $[BX+6] $[BY-1] $red           '¸.•´´¯`••.¸'          #     ¸.•´´¯`••.¸
+             cut $[BX+5]  $BY    $red          '/           ´¯`••.¸';; #    /           ´¯`••.¸
+          3) cut $[BX+3] $[BY-2] $DIM$RED    '¸. ´´¯`• .¸'             #   ¸. ´´¯`• .¸
+             cut $[BX+2] $[BY-1] $DIM$RED   '/           ´¯`• .¸'      #  /           ´¯`• .¸
+             cut $[BX+2]  $BY    $DIM$RED   '|                   ´¯';; # |                   ´¯
+          4) cut $[BX+3] $[BY-3] $DIM$red    '¸ - ‾ ´´‾` • _'          #  ¸ - ‾ ´´‾` • _
+             cut $[BX+1] $[BY-2] $DIM$red  '/               `¯ •_'     # /               `¯ •_
+             cut $BX     $[BY-1] $DIM$red '(                     ‾'    #(                     ‾
+             cut $[BX+1]  $BY    $DIM$red  '\                      ';; # \
+          5) cut $[BX+3] $[BY-3] $DIM$red    '              '          # eraser
+             cut $[BX+1] $[BY-2] $DIM$red  '                     '     #
+             cut $BX     $[BY-1] $DIM$red '                       '    #
+             cut $[BX+1]  $BY    $DIM$red  '                       ';; #
+    esac
+    mov -; BP1[i]="exhaust $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
+}
 bulb=("$SKYBLD$WHT." "$SKYBLD$RED.")
 sprite_startable () {
     case $C1 in # animation
