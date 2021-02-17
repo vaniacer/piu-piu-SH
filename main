@@ -146,8 +146,8 @@ starship_intro () {
         XY 1 1 $SECONDS
         #-{ Empty screen, print game status adnd FPS }-------------------------
         screen=; [[ $showfps ]] && fps_counter
-                                #type    $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
-        ((SECONDS==5)) && BP1+=("exhaust $[halfendx-21] $[endy-3] 0   0   0   7   1   9   0   6")
+        # Start the engine (add exhaust sprite)     type    $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
+        ((SECONDS==5)) && [[ -z $ex1 ]] && { BP3+=("exhaust $[halfendx-30] $[endy-3] 4   33  0   7   1   33  0   9"); ex1=1; }
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound birds msngr clouds land
         #-{ Move bitplans }----------------------------------------------------

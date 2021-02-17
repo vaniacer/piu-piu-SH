@@ -518,26 +518,32 @@ sprite_starship () {
 }
 sprite_exhaust () {
     BX=$OX BY=$OY
-    [[ $AS -ge $AL ]] && { unset BP1[i]; return; }
-    case $AS in ###########################0123456789ABCDEFGJ#################################
-          0) cut $[BX+13] $BY    $RED                  '¸.•´´¯`••.¸';; #            ¸.•´´¯`••.¸
-          1) cut $[BX+10] $[BY-1] $RED               '¸.•´´¯`••.¸'     #         ¸.•´´¯`••.¸
-             cut $[BX+9]  $BY    $RED              '/           ´¯`';; #        /           ´¯`
-          2) cut $[BX+6] $[BY-1] $red           '¸.•´´¯`••.¸'          #     ¸.•´´¯`••.¸
-             cut $[BX+5]  $BY    $red          '/           ´¯`••.¸';; #    /           ´¯`••.¸
-          3) cut $[BX+3] $[BY-2] $DIM$RED    '¸. ´´¯`• .¸'             #   ¸. ´´¯`• .¸
-             cut $[BX+2] $[BY-1] $DIM$RED   '/           ´¯`• .¸'      #  /           ´¯`• .¸
-             cut $[BX+2]  $BY    $DIM$RED   '|                   ´¯';; # |                   ´¯
-          4) cut $[BX+3] $[BY-3] $DIM$red    '¸ - ‾ ´´‾` • _'          #  ¸ - ‾ ´´‾` • _
-             cut $[BX+1] $[BY-2] $DIM$red  '/               `¯ •_'     # /               `¯ •_
-             cut $BX     $[BY-1] $DIM$red '(                     ‾'    #(                     ‾
-             cut $[BX+1]  $BY    $DIM$red  '\                      ';; # \
-          5) cut $[BX+3] $[BY-3] $DIM$red    '              '          # eraser
-             cut $[BX+1] $[BY-2] $DIM$red  '                     '     #
-             cut $BX     $[BY-1] $DIM$red '                       '    #
-             cut $[BX+1]  $BY    $DIM$red  '                       ';; #
+    [[ $AS -ge $AL ]] && { unset BP3[i]; return; }  #11111111112222222222333
+    case $AS in ###########################012345678901234567890123456789012######################################
+          0) cut $[BX+23]  $BY    $RED                          '¸.•´´¯`••.¸';; #                      ¸.•´´¯`••.¸
+          1) cut $[BX+21] $[BY-1] $RED                        '¸.•´´¯`••.¸'     #                   ¸.•´´¯`••.¸
+             cut $[BX+19]  $BY    $RED                      '/           ´¯`';; #                  /           ´¯`
+          2) cut $[BX+16] $[BY-1] $red                   '¸.•´´¯`••.¸     '     #               ¸.•´´¯`••.¸
+             cut $[BX+15]  $BY    $red                  '/           ´¯`••.¸';; #              /           ´¯`••.¸
+          3) cut $[BX+13] $[BY-2] $DIM$RED            '¸. ´´¯`• .¸'             #             ¸. ´´¯`• .¸
+             cut $[BX+12] $[BY-1] $DIM$RED           '/           ´¯`• .¸'      #            /           ´¯`• .¸
+             cut $[BX+12]  $BY    $DIM$RED           '|                   ´¯';; #           |                   ´¯
+          4) cut $[BX+13] $[BY-3] $DIM$red            '¸ - ‾ ´´‾` • _'          #           ¸ - ‾ ´´‾` • _
+             cut $[BX+11] $[BY-2] $DIM$red          '/               `¯ •¸'     #          /               `¯ •¸
+             cut $[BX+10] $[BY-1] $DIM$red         '(                     \\'   #         (                     \
+             cut $[BX+10]  $BY    $DIM$red         '|                      ¸';; #         |                      ¸
+          5) cut $[BX+13] $[BY-3] $SKY                '              '          #
+             cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾ `  •   _ '     #           ¸  -  ‾  ‾ `  •   _
+             cut $[BX+10] $[BY-1] $blk             '/                     \\'   #         /                     \
+             cut $[BX+8]   $BY    $blk           '/                        ¸';; #       /                        ¸
+          6) cut $[BX+11] $[BY-2] $SKY               '                   '      #
+             cut $[BX+6]  $[BY-1] $blk          '¸   -   ‾   ‾   `   •  ¸  '    #      ¸   -   ‾   ‾   `   •  ¸
+             cut $[BX+3]   $BY    $blk       '¸                            ‾';; #   ¸                            ‾
+          7) cut $[BX+6]  $[BY-1] $SKY          '                        '      #
+             cut  $BX      $BY    $blk    '¸    -    ‾    ‾     `     •    ¸';; #¸    -    ‾    ‾     `     •    ¸
+          8) cut  $BX      $BY    $SKY    '                                 ';; # eraser
     esac
-    mov -; BP1[i]="exhaust $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
+    mov -; BP3[i]="exhaust $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
 }
 bulb=("$SKYBLD$WHT." "$SKYBLD$RED.")
 sprite_startable () {
