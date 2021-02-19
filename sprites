@@ -529,16 +529,16 @@ sprite_exhaust () {
              cut $[BX+12] $[BY-1] $DIM$RED           '/           ´¯`• .¸'      #            /           ´¯`• .¸
              cut $[BX+12]  $BY    $DIM$RED           '|                   ´¯';; #           |                   ´¯
           4) cut $[BX+13] $[BY-3] $DIM$red            '¸ - ‾ ´´‾` • _'          #           ¸ - ‾ ´´‾` • _
-             cut $[BX+11] $[BY-2] $DIM$red          '/               `¯ •¸'     #          /               `¯ •¸
-             cut $[BX+10] $[BY-1] $DIM$red         '(                     \\'   #         (                     \
+             cut $[BX+11] $[BY-2] $DIM$red          '/               ¯ ¸'       #          /               ¯ ¸
+             cut $[BX+10] $[BY-1] $DIM$red         '(                   ¯¸'     #         (                   ¯¸
              cut $[BX+10]  $BY    $DIM$red         '|                      ¸';; #         |                      ¸
           5) cut $[BX+13] $[BY-3] $SKY                '              '          #
-             cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾ `  •   _ '     #           ¸  -  ‾  ‾ `  •   _
-             cut $[BX+10] $[BY-1] $blk             '/                     \\'   #         /                     \
+             cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾  •  ¸'         #           ¸  -  ‾  ‾  •  ¸
+             cut $[BX+10] $[BY-1] $blk             '/                    ¸'     #         /                    ¸
              cut $[BX+8]   $BY    $blk           '/                        ¸';; #       /                        ¸
           6) cut $[BX+11] $[BY-2] $SKY               '                   '      #
-             cut $[BX+6]  $[BY-1] $blk          '¸   -   ‾   ‾   `   •  ¸  '    #      ¸   -   ‾   ‾   `   •  ¸
-             cut $[BX+3]   $BY    $blk       '¸                            ‾';; #   ¸                            ‾
+             cut $[BX+6]  $[BY-1] $blk          '¸   -   ‾   ‾   `   •  ¸ '     #      ¸   -   ‾   ‾   `   •  ¸
+             cut $[BX+3]   $BY    $blk       '¸                            ¸';; #   ¸                            ¸
           7) cut $[BX+6]  $[BY-1] $SKY          '                        '      #
              cut  $BX      $BY    $blk    '¸    -    ‾    ‾     `     •    ¸';; #¸    -    ‾    ‾     `     •    ¸
           8) cut  $BX      $BY    $SKY    '                                 ';; # eraser

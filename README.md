@@ -20,6 +20,9 @@ On ubuntu 18.04 you can install it with apt!)
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
 ![btc](https://user-images.githubusercontent.com/18072680/106382955-f2f00e80-63d3-11eb-9316-b6653225820c.png)
 
+BCH: qqnssal30x6acrga6zt4pd4q2s2t8um3cyqvd37qs7</br>
+![bch](https://user-images.githubusercontent.com/18072680/108552897-fd326800-7302-11eb-8ae7-97eb0cc81d5e.png)
+
 ETH: 0xd7e17A37DD936B211790ba70Aa985448277030E8</br>
 ![eth](https://user-images.githubusercontent.com/18072680/106382951-f2577800-63d3-11eb-8c01-f7ade514fb58.png)
 
@@ -28,3 +31,12 @@ XMR: 484z9YpiD4VBd4BfsaG7jKGYGuJ84tYJyCJBX4ZnAPqQXsUWgTY14TKRH3JLosFSAsKsv75nyt9
 
 LTC: LRVPYR7dvRVdNET23gg3fvTwDM9hotQkZw</br>
 ![ltc](https://user-images.githubusercontent.com/18072680/106383361-7a3e8180-63d6-11eb-9239-48b6d80c3c4b.png)
+
+DASH: Xtz7P6GasicE9yS8zXkH3PH2qAF2qWJADG</br>
+![dash](https://user-images.githubusercontent.com/18072680/108553387-a11c1380-7303-11eb-9560-81f0deec2fbc.png)
+
+ZEC: t1ZDgHci8yDVkoGvUFG7QtxUNRuzsF1Qtse</br>
+![zec](https://user-images.githubusercontent.com/18072680/108553595-f7895200-7303-11eb-9ca8-17d1c81df7eb.png)
+
+MKR: 0xd7e17A37DD936B211790ba70Aa985448277030E8</br>
+![mkr](https://user-images.githubusercontent.com/18072680/108553822-4505bf00-7304-11eb-9db9-0833141e36c9.png)
