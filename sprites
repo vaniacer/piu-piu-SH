@@ -518,7 +518,7 @@ sprite_starship () {
 }
 sprite_exhaust () {
     BX=$OX BY=$OY
-    [[ $AS -ge $AL ]] && { unset BP3[i]; return; }  #11111111112222222222333
+    [[ $AS -ge $AL ]] && { unset BP2[i]; return; }  #11111111112222222222333
     case $AS in ###########################012345678901234567890123456789012######################################
           0) cut $[BX+23]  $BY    $RED                          '¸.•´´¯`••.¸';; #                      ¸.•´´¯`••.¸
           1) cut $[BX+21] $[BY-1] $RED                        '¸.•´´¯`••.¸'     #                   ¸.•´´¯`••.¸
@@ -531,7 +531,8 @@ sprite_exhaust () {
           4) cut $[BX+13] $[BY-3] $DIM$red            '¸ - ‾ ´´‾` • _'          #           ¸ - ‾ ´´‾` • _
              cut $[BX+11] $[BY-2] $DIM$red          '/               ¯ ¸'       #          /               ¯ ¸
              cut $[BX+10] $[BY-1] $DIM$red         '(                   ¯¸'     #         (                   ¯¸
-             cut $[BX+10]  $BY    $DIM$red         '|                      ¸';; #         |                      ¸
+             cut $[BX+10]  $BY    $DIM$red         '|                      ¸'   #         |                      ¸
+             BP2[0]="burningsock $[halfendx-11] $[endy-5] 3 1 0 3 1 1 0 5";;    # sock'll burn now
           5) cut $[BX+13] $[BY-3] $SKY                '              '          #
              cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾  •  ¸'         #           ¸  -  ‾  ‾  •  ¸
              cut $[BX+10] $[BY-1] $blk             '/                    ¸'     #         /                    ¸
@@ -543,26 +544,22 @@ sprite_exhaust () {
              cut  $BX      $BY    $blk    '¸    -    ‾    ‾     `     •    ¸';; #¸    -    ‾    ‾     `     •    ¸
           8) cut  $BX      $BY    $SKY    '                                 ';; # eraser
     esac
-    mov -; BP3[i]="exhaust $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
+    mov -; BP2[i]="exhaust $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
 }
 bulb=("$SKYBLD$WHT." "$SKYBLD$RED.")
 sprite_startable () {
-    case $C1 in # animation
-         (0) [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
-             C1=$C2;;
-         (*) ((C1--));;
-    esac
-    BP3[i]="startable $OX $OY $OH $OW $SC $SM $CS $CL $AS 1 $C1 $C2"
+    BX=$OX BY=$OY
+    mov -; BP3[i]="startable $BX $BY $OH $OW $SC $SM $CS $CL $AS 1"
     CM1=$SKY$BLD$blk$UND CM2=$SKY$BLD$blk CM3=$SKY$YLW
     #########################1234567890ABCDEFG####0
-    cuty $[OX+13] $OY 8             ${bulb[$AS]} #1             .
-    cuty $[OX+13] $OY 7              $CM2'│'     #2             │
-    cuty $[OX+9 ] $OY 6          $CM1'   ╱┃'     #3         ___╱┃
-    cuty $[OX+9 ] $OY 5          $CM1'│╳┃╳┃'     #4         │╳┃╳┃
-    cuty $[OX+11] $OY 4            $CM1'┃╳┃'     #5           ┃╳┃
-    cuty $[OX+11] $OY 3            $CM1'┃╳┃'     #6           ┃╳┃
-    cuty $[OX+11] $OY 2            $CM1'┃╳┃'     #7           ┃╳┃
-    cuty  $OX     $OY 1 $CM3'▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂'  #8▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂
+    cuty $[BX+13] $OY 8             ${bulb[$AS]} #1             .
+    cuty $[BX+13] $OY 7              $CM2'│'     #2             │
+    cuty $[BX+9 ] $OY 6          $CM1'   ╱┃'     #3         ___╱┃
+    cuty $[BX+9 ] $OY 5          $CM1'│╳┃╳┃'     #4         │╳┃╳┃
+    cuty $[BX+11] $OY 4            $CM1'┃╳┃'     #5           ┃╳┃
+    cuty $[BX+11] $OY 3            $CM1'┃╳┃'     #6           ┃╳┃
+    cuty $[BX+11] $OY 2            $CM1'┃╳┃'     #7           ┃╳┃
+    cuty  $BX     $OY 1 $CM3'▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂'  #8▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂
 }
 
 sock=(
@@ -571,19 +568,31 @@ sock=(
   "$WHT≣ $RED≡ $WHT≡ $RED≡ $WHT≣"
 )
 sprite_windsock () {
-    case $C1 in # animation
-         (0) [[ $AS -ge $AL ]] && AS=0 || ((AS++))
-             C1=$C2;;
-         (*) ((C1--));;
-    esac
-    BP2[i]="windsock $OX $OY 2 8 $SC $SM $CS $CL $AS 2 $C1 $C2"
-    X1="_Y_$[OX+6]H" C1C=$SKY$WHT C2C=$SKY$BLK
+    BX=$OX BY=$OY
+    mov -; BP2[i]="windsock $BX $BY 2 8 $SC $SM $CS $CL $AS 2"
+    X1="_Y_$[OX+6]H" CM1=$SKY$WHT CM2=$SKY$DIM$WHT
     #012345678
     #1=≡≡≣≣>┐
     #2      │
     #################### 1  2  3  4  5      6       7   8  #0
-    cut $OX  $OY    $C1C  ${sock[$AS]} $C2C'>' $C2C'┐' ' ' #1
-    cut $OX $[OY+1] $C2C '' '' '' '' ''    ''   $X1'│' ' ' #2
+    cut $OX  $OY    $CM1  ${sock[$AS]} $CM2'>' $CM2'┐' ' ' #1
+    cut $OX $[OY+1] $CM2 '' '' '' '' ''    ''   $X1'│' ' ' #2
+}
+
+bs1=(' ' ' ' '⡀' '⠆' '⠂' ' ')
+bs2=('⠆' '⠇' '⠃' '⠅' '⠆' '⠇')
+sprite_burningsock () {
+    BX=$OX BY=$OY
+    mov -; BP2[i]="burningsock $BX $BY 3 1 $SC $SM $CS $CL $AS 5"
+    CM1=$SKY$DIM$BLK CM2=$SKY$BLD$RED CM3=$SKY$BLD$YLW
+    #01
+    #1⡀
+    #2⠃
+    #3│
+    ####################      1      #0
+    cut $BX  $OY    $CM3 ${bs1[$AS]} #1
+    cut $BX $[OY+1] $CM2 ${bs2[$AS]} #2
+    cut $BX $[OY+2] $CM1     '│'     #3
 }
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
 case $month in
