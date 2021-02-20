@@ -1061,7 +1061,11 @@ sprite_exhaust () {
              cut $[BX+11] $[BY-2] $DIM$red          '/               ¯ ¸'       #          /               ¯ ¸
              cut $[BX+10] $[BY-1] $DIM$red         '(                   ¯¸'     #         (                   ¯¸
              cut $[BX+10]  $BY    $DIM$red         '|                      ¸'   #         |                      ¸
-             BP2[0]="burningsock $[halfendx-12] $[endy-5] 3 1 0 3 1 1 0 5";;    # sock'll burn now
+             BP1[1]= BP1[2]= BP1[3]=
+             BP2[0]="burningsock $[halfendx-12] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # sock &
+             BP2[1]="burningsock $[halfendx-8 ] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # these
+             BP2[2]="burningsock $[halfendx-15] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # trees
+             BP2[3]="burningsock $[halfendx-18] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5";; # burn )
           5) cut $[BX+13] $[BY-3] $SKY                '              '          #
              cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾  •  ¸'         #           ¸  -  ‾  ‾  •  ¸
              cut $[BX+10] $[BY-1] $blk             '/                    ¸'     #         /                    ¸
@@ -1561,11 +1565,11 @@ game_client () {
 starship_intro () {
     [[ $1 =~ starship ]] || return
     ad_new= ad='Got a ticket to Mars?'; ad_plane_text; fill_screen; cursor off
-    T1=(3 7  11 15 20 30 40 43 $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40])
-    T2=(5 17 23                $[endx-7] $[endx-11] $[endx-35])
-    T3=(4 23                   $[endx-8] $[endx-25])
-                               #type      $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
-                         BP2+=("windsock  $[halfendx-17] $[endy-4] 2   8   0   0   1   7   0   2")    # windsock
+    T1=($[halfendx-8] $[halfendx-15] $[halfendx-18] $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40] 3 7 11 15 20)
+    T2=($[endx-7] $[endx-11] $[endx-35] 5 17 23)
+    T3=($[endx-8] $[endx-25] 4 23)
+       # reserved for burning # type      $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
+        BP2+=('' '' ''); BP2+=("windsock  $[halfendx-17] $[endy-4] 2   8   0   0   1   7   0   2")    # windsock
                          BP2+=("starship  $halfendx      $[endy-2] 10  7   0   0   10  10  0   0")    # starship
                          BP3+=("startable $[halfendx-4]  $[endy-2] 8   15  0   10  10  10  0   1")    # startable
     for i in ${T1[@]}; { BP1+=("tree1     $i             $tre1endy 4   2   0  -1   1   5   0   0"); } # Plant
@@ -1577,7 +1581,7 @@ starship_intro () {
         #-{ Empty screen, print game status adnd FPS }-------------------------
         screen=; [[ $showfps ]] && fps_counter
         # Start the engine (add exhaust sprite)      type        $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
-        ((SECONDS==5)) && [[ -z $ex1 ]] && { BP2+=( "exhaust     $[halfendx-30] $[endy-3] 4   33  0   7   1   33  0   9"); ex1=1; }
+        ((SECONDS==5)) && [[ -z $ex1 ]] && { BP2+=( "exhaust     $[halfendx-31] $[endy-3] 4   33  0   7   1   33  0   9"); ex1=1; }
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound birds msngr clouds land
         #-{ Move bitplans }----------------------------------------------------

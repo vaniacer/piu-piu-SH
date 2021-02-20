@@ -134,8 +134,8 @@ starship_intro () {
     T1=($[halfendx-8] $[halfendx-15] $[halfendx-18] $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40] 3 7 11 15 20)
     T2=($[endx-7] $[endx-11] $[endx-35] 5 17 23)
     T3=($[endx-8] $[endx-25] 4 23)
-                               #type      $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
-                         BP2+=("windsock  $[halfendx-17] $[endy-4] 2   8   0   0   1   7   0   2")    # windsock
+       # reserved for burning # type      $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
+        BP2+=('' '' ''); BP2+=("windsock  $[halfendx-17] $[endy-4] 2   8   0   0   1   7   0   2")    # windsock
                          BP2+=("starship  $halfendx      $[endy-2] 10  7   0   0   10  10  0   0")    # starship
                          BP3+=("startable $[halfendx-4]  $[endy-2] 8   15  0   10  10  10  0   1")    # startable
     for i in ${T1[@]}; { BP1+=("tree1     $i             $tre1endy 4   2   0  -1   1   5   0   0"); } # Plant

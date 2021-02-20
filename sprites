@@ -532,11 +532,11 @@ sprite_exhaust () {
              cut $[BX+11] $[BY-2] $DIM$red          '/               ¯ ¸'       #          /               ¯ ¸
              cut $[BX+10] $[BY-1] $DIM$red         '(                   ¯¸'     #         (                   ¯¸
              cut $[BX+10]  $BY    $DIM$red         '|                      ¸'   #         |                      ¸
-             BP2[0]= BP1[1]= BP1[2]= BP1[3]=
-             BP2+=("burningsock $[halfendx-12] $[endy-5] 3 1 0 3 1 1 $[RANDOM%5] 5")   # sock &
-             BP2+=("burningsock $[halfendx-8 ] $[endy-5] 3 1 0 3 1 1 $[RANDOM%5] 5")   # these
-             BP2+=("burningsock $[halfendx-15] $[endy-5] 3 1 0 3 1 1 $[RANDOM%5] 5")   # trees
-             BP2+=("burningsock $[halfendx-18] $[endy-5] 3 1 0 3 1 1 $[RANDOM%5] 5");; # burn )
+             BP1[1]= BP1[2]= BP1[3]=
+             BP2[0]="burningsock $[halfendx-12] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # sock &
+             BP2[1]="burningsock $[halfendx-8 ] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # these
+             BP2[2]="burningsock $[halfendx-15] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # trees
+             BP2[3]="burningsock $[halfendx-18] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5";; # burn )
           5) cut $[BX+13] $[BY-3] $SKY                '              '          #
              cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾  •  ¸'         #           ¸  -  ‾  ‾  •  ¸
              cut $[BX+10] $[BY-1] $blk             '/                    ¸'     #         /                    ¸
