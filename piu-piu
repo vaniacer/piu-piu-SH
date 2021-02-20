@@ -68,12 +68,409 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ �
        life2=3                                        # hero2 life counter                        (3)
        ammo2=100                                      # hero2 ammo counter                        (100)
           G2=1                                        # hero2 gun                                 (1)(max 5)
-       caddr=( $(ip a | grep 'inet ' | sed '/127.0.0.1/d; s/.*inet //g; s|/.*$||g') )
+       caddr=( hostname -I )
        saddr=
        sport=54321
        cport=54322
 
 [[ -e ~/.piuconf ]] && . ~/.piuconf
+#================================================{ Functions }==========================================================
+bye () { cursor on; exit $1; }
+
+cursor () {
+    case $1 in
+         on) stty  echo; printf "$CON";;
+        off) stty -echo; printf "$COF";;
+    esac
+}
+
+mov () {
+    case $1  in -) cuter=++;; +) cuter=--;; esac
+    case $SC in
+         (0) [[ $OX -le -$OW   ]] && return 1
+             [[ $OX -gt  $endx ]] && return 1
+             [[ $AS -ge  $AL   ]] && AS=0  || ((AS++)) # sprites animation
+             [[ $OX -le  1     ]] && ((CS++))
+             ((OX$1$1)); ((CL$cuter)); SC=$SM
+             [[ $CL -lt 0 ]] && CL=0;;
+         (*) ((SC--));;
+    esac
+    [[ $OX -le 1 ]] && SX=0 || SX=$OX
+}
+
+cut () {
+    xcord=$1 ycord=$2 color=$3; shift 3
+    screen+="\e[$ycord;${xcord}H$color"
+    printf -v spr %s "${@:$CS:$CL}"
+    spr="${spr//_Y_/'\e['$ycord;}"
+    screen+="${spr//⎕/ }"
+}
+
+movy () { # used in bonus crate
+    case $SC in
+         (0) [[ $OY -ge $[endy-2] ]]    && return 1
+             [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
+             [[ $CS -le $OH  ]] && ((CS++))
+             ((OY++)); SC=$SM;;
+         (*) ((SC--));;
+    esac
+}
+
+cuty () { # used in bonus crate
+    xcord=$1 ycord=$2 cuter=$3; shift 3
+    [[ $CS -ge $cuter ]] && screen+="\e[$[ycord-cuter];${xcord}H$@"
+}
+
+bonus () { # get random bonus from alien or not
+    case $[RANDOM % $rnd] in
+        0) ENM+=("${bonuses[$[RANDOM%${#bonuses[@]}]]} $OX $[OY-1] 3 5 0 2 1 0 0 0 ${#ENM[@]}")
+    esac
+}
+
+mess () {
+    cursor off
+    XY 1 1 ${DEF}; clear
+    case $1 in
+        win ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
+        lose) sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
+        help) sprite_help;;
+    esac
+}
+
+print_sprite () {
+    OT=${OI[0]}   # object type
+    OX=${OI[1]}   # X coordinate
+    OY=${OI[2]}   # Y coordinate
+    OH=${OI[3]}   # object hight
+    OW=${OI[4]}   # object width
+    SC=${OI[5]}   # speed counter
+    SM=${OI[6]}   # speed max
+    CS=${OI[7]}   # cuting start
+    CL=${OI[8]}   # cuting lenght
+    AS=${OI[9]}   # animation start
+    AL=${OI[10]}  # animation lenght
+    C1=${OI[11]}  # custom obj parameter 1
+    C2=${OI[12]}  # custom obj parameter 2
+    [[ $OT ]] && sprite_$OT
+}
+
+listener   () { input2=$(nc -l -p $sport); }
+read_input () { read -t$spd -srn1 input &> /dev/null; }
+sender     () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do :; done; }
+
+control_hero1 () {
+    read_input
+    case $input in
+        [wW]) [[ $H1Y  -gt 2               ]] && ((H1Y--));;
+        [aA]) [[ $H1X  -gt 1               ]] && ((H1X--));;
+        [sS]) [[ $H1Y  -lt $heroendy       ]] && ((H1Y++));;
+        [dD]) [[ $H1X  -lt $heroendx       ]] && ((H1X++));;
+        [pP]) [[ $ammo -ge $G && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 1 $G; ((ammo-=$G)); };;
+    esac
+}
+
+control_hero2 () {
+    case $input2 in
+        [wW]) [[ $H2Y   -gt 2                ]] && ((H2Y--));;
+        [aA]) [[ $H2X   -gt 1                ]] && ((H2X--));;
+        [sS]) [[ $H2Y   -lt $heroendy        ]] && ((H2Y++));;
+        [dD]) [[ $H2X   -lt $heroendx        ]] && ((H2X++));;
+        [pP]) [[ $ammo2 -ge $G2 && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 2 $G2; ((ammo2-=$G2)); };;
+    esac
+}
+
+rndmbonus () {
+    case $1:$[RANDOM%3] in
+          1:0) ((life++)) ;;
+          2:0) ((life2++));;
+          1:1) ((ammo+=100)) ;;
+          2:1) ((ammo2+=100));;
+          1:2) [[ $G  -lt 5 ]] && ((G++)) ;;
+          2:2) [[ $G2 -lt 5 ]] && ((G2++));;
+    esac
+}
+collbooom () { unset ENM[obj_i]; boom $obj_x $obj_y; }
+collision () {
+    hero=$1 re="$2"
+    case $type in
+        'duel') target=("${HER[@]}" "${ENM[@]}");;
+             *) target=("${ENM[@]}");;
+    esac
+    [[ ${target[@]} =~ $re ]] && {
+        match=($BASH_REMATCH)
+        obj_i=${match[@]:11:1}
+        obj_x=${match[@]:1:1}
+        obj_y=${match[@]:2:1}
+        case $match:$hero in
+              bfire:*) collbooom; return 0;;
+               boss:*) ((bhealth--)); boom $3 $4; return 0;;
+               life:1) collbooom; ((life++))    ; return 1;;
+               life:2) collbooom; ((life2++))   ; return 1;;
+               ammo:1) collbooom; ((ammo+=100)) ; return 1;;
+               ammo:2) collbooom; ((ammo2+=100)); return 1;;
+#              alien:*) collbooom; ((enumber--)) ; return 0;;
+              gunup:1) collbooom; [[ $G  -lt 5 ]] && ((G++))  ; return 1;;
+              gunup:2) collbooom; [[ $G2 -lt 5 ]] && ((G2++)) ; return 1;;
+              alien:1) collbooom; ((enumber--)) ; ((frags++)) ; bonus; return 0;;
+              alien:2) collbooom; ((enumber--)) ; ((frags2++)); bonus; return 0;;
+              hero1:2) ((frags2++)); ((life--)) ; BOOM $obj_x $obj_y ; return 0;;
+              hero2:1) ((frags++)) ; ((life2--)); BOOM $obj_x $obj_y ; return 0;;
+              crate:*) collbooom; crate=0; boom $obj_x $[obj_y-3]; boom $obj_x $[obj_y-6]; rndmbonus $hero; return 1;;
+        esac
+    }
+}
+
+boom () {
+    XB=$1 YB=$2
+    [[ $XB -lt     2     ]] && XB=2
+    [[ $XB -gt $boomendx ]] && XB=$boomendx
+    BP3+=("boom $XB $YB 0 0 0 $[RANDOM%3] 1 9 0 5")
+}
+
+BOOM () {  XB=$1   YB=$2
+    boom  $XB    $[YB+1]
+    boom $[XB+4]  $YB
+    boom $[XB+1] $[YB+1]
+    boom $[XB+3]  $YB
+    boom  $XB    $[YB+1]
+}
+
+fps_counter () { #-{ Print FPS }-----------------------------------------------
+    [[ $SECONDS -gt $sec ]] && {
+        FPS=$FPSC AVG+=($FPS)
+        [[ $FPSL ]] || FPSL=$FPS
+        [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
+        [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
+        (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
+        sec=$SECONDS
+        FPSC=0
+    } || ((FPSC++))
+    case $game in
+        'server') screen+="\e[$endy;$[endx-9]H${DEF}FPS: $RED$FPS ";;
+               *) screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL ${DEF}avg: $RED$FPSA ";;
+    esac
+}
+
+status () { #-{ Print game status }--------------------------------------------
+    case $type:$virus in
+         (duel:*       ) enemy=rival   bullets=Ammo;;
+         (   *:covid-19) enemy=viruses bullets=Meds;;
+         (team:*       ) enemy=aliens  bullets=Ammo;;
+    esac
+    screen+="\e[1;2H$SKY${BLK}Killed $enemy: $SKY$RED$frags$SKY ${BLK}Life: $SKY$RED$life$SKY ${BLK}$bullets: $SKY$RED$ammo$SKY "
+    case $game in 'server')
+        screen+="\e[$endy;2H$LND${BLK}Killed $enemy: $LND$RED$frags2$LND ${BLK}Life: $LND$RED$life2$LND ${BLK}$bullets: $LND$RED$ammo2$LND ";;
+    esac
+}
+
+boss_health () {
+    bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
+    for (( i=0  ; i<hp; i++ )); do bar="█$bar"; done
+    for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
+    screen+="\e[$[endy-1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
+}
+
+fill_screen () {
+    for ((i=0;        i<landendy; i++)); do printf "$SKY%${endx}s"; done
+    for ((i=landendy; i<endy;     i++)); do printf "$LND%${endx}s"; done
+}
+
+drop_crate () { # in duel mode ad plane'll drop bonus crate
+    case $type:$crate in duel:0)
+        [[ $OX -eq $halfendx ]] && { crate=1 ENM+=("crate $[halfendx-1] 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
+    esac
+}
+
+add_enm () {
+    [[ $BR -gt 0 ]] && ((BR--))
+    [[ $enumber -lt $enmax && $BR -eq 0 ]] || return
+    ENM+=("alien $1 $2 3 5 0 $[RANDOM%2] 1 ${3:-0} $[RANDOM%3] 3 ${#ENM[@]}")
+    ((enumber++))
+    BR=20
+}
+
+add_piu () {
+    PX=$1 PY=$2 PH=$3 PS=$4
+    case $PS in
+        1) PIU+=("piu$PH $[PX+12] $[PY+3] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+
+        2) PIU+=("piu$PH $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
+                                                                                      #
+                 "piu$PH $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+
+        3) PIU+=("piu$PH $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
+                 "piu$PH $[PX+13] $[PY+3] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
+                 "piu$PH $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+
+        4) PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
+                 "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
+                                                                                      #
+                 "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
+                 "piu$PH $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+
+        5) PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
+                 "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
+                 "piu$PH $[PX+14] $[PY+3] 1 4 0 0 1 $[endx-(PX+14)] $[RANDOM%3] 3"    #   -=>
+                 "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
+                 "piu$PH $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+    esac
+}
+
+backgound_birds () { # Add birds }----------------------------------------------------------------------
+    case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $rndy 2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
+}
+
+backgound_msngr () { # Add msngr }----------------------------------------------------------------------
+    case $type in duel) msngrY=2;; *) msngrY=$rndy;; esac
+    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $msngrY 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
+}
+
+backgound_clouds () { # Add clouds }--------------------------------------------------------------------
+    case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
+        0:1) BP1+=("cloud1 $endx $rndy 3 6  6 $[6+RANDOM%2] 1 0 0 0");;
+        0:2) BP2+=("cloud2 $endx $rndy 3 8  4 $[4+RANDOM%2] 1 0 0 0");;
+        0:3) BP3+=("cloud3 $endx $rndy 3 11 2 $[2+RANDOM%2] 1 0 0 0");;
+    esac
+}
+
+backgound_houses () { # Add houses }--------------------------------------------------------------------
+    case $[RANDOM % $HOU]:$[RANDOM % 3 + 1] in
+        0:1) BP1+=("house1 $endx $hos1endy 2 6  6 $[6+RANDOM%2] 1 0 0 0");;
+        0:2) BP2+=("house2 $endx $hos2endy 9 30 4 $[4+RANDOM%2] 1 0 0 0");;
+        0:3) BP3+=("house3 $endx $hos3endy 4 17 2 $[2+RANDOM%2] 1 0 0 0");;
+    esac
+}
+
+backgound_trees () { # Add trees }----------------------------------------------------------------------
+    case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
+        0:1) BP1+=("tree1 $endx $tre1endy 3 2 6 $[6+RANDOM%2] 1 0 0 0");;
+        0:2) BP2+=("tree2 $endx $tre2endy 6 5 4 $[4+RANDOM%2] 1 0 0 0");;
+        0:3) BP3+=("tree3 $endx $tre3endy 9 9 2 $[2+RANDOM%2] 1 0 0 0");;
+    esac
+}
+
+backgound_moving_land () { # Print moving land }--------------------------------------------------------
+    screen+="\e[$landendy;1H$LND${land:$((1-${LX:-1})):$endx}"; [[ ${LX:-1} -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+}
+
+backgound_land () { # Print land }----------------------------------------------------------------------
+    screen+="\e[$landendy;1H$LND${land:$((1-${LX:-1})):$endx}"
+}
+
+add_backgound () {
+    rndy=$[2+RANDOM%10]; [[ $rndy -gt $[3+enmyendy] ]] && rndy=$[3+enmyendy]
+    for item in "$@"; { backgound_$item; }
+}
+
+#------------------------{ Intro }--------------------------------------------------------------------------------------
+intro () {
+    i=0  #    start X                           target X
+    INT=("PIU $endx 3 9 41 0 0 1 0          0 0 $[endx/2-35]"
+         "PIU $endx 3 9 41 0 0 1 0          0 0 $[endx/2-1]"
+         "ARR 1    12 6 28 0 0 0 $[endx-29] 0 0 $[endx/2-16]")
+    while true; do
+        sleep $spd; screen=
+        OI=(${INT[i]})
+        print_sprite || ((i++))
+        printf "$screen"
+        [[ $i -gt ${#INT[@]} ]] && break
+    done
+    XY $[endx/2+32] 11 "$version"
+}
+
+HCI=0 SCI=1 HSI=0 H1C=${H1C:-$DHC} H1S=${H1S:-$DHS} S1C=${S1C:-$DSC}
+hero_sign=(★ ☭ ✚ ✙ ✠ ✡ ✦ ✧ ✩ ✪ ☘ ☠ ☢ ☣ ☯ ❃ ❂ ❁ ✿ ❀ ✣ ♣ ♠ ♥ ♦ ❤ ● ☻ ♀ ♂)
+hero_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT)
+sign_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT)
+hero_config () {
+    screen=
+    [[ $AS -gt 0 ]] && ((AS--)) || AS=3
+    CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND TR=${tailrotor[AS]} OX=$[$endx/2-9] OY=$[$endy/2-6] CS=1 CL=20
+    # Using the same 'cut' function to print hero as in the game to preserve this nicely done tabled structure
+    ######X####Y#####CLR  1   2   3       4        5       6       7       8        9       A        B       C       D       E   F   G  #0
+    cut $OX  $OY    $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #1
+    cut $OX $[OY+1] $CM1 ' ' '_' '_'     ' '                                         ${mainrotor[AS]}                               ' ' #2
+    cut $OX $[OY+2] $CM2 ' ' '|' $TR $CM1'\\' $CM1'_' $CM1'_' $CM1'_' $CM3'.'  $CM3'-' $CM3'╨'  $CM4'─' $CM4'｡' $CM1'_' $SKY' ' ' ' ' ' #3
+    cut $OX $[OY+3] $CM2 ' ' '`' '─'     '´'      '‾'     '‾'     '‷'     '\\' $blk'°' $S1C$H1S $SKY' ' $blk'º' $blk'¯' $CM1']' '─' ' ' #4
+    cut $OX $[OY+4] $CM2 ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      '‾'     '‾'      '‾'     '‾'     '‾' $SKY' ' ' ' ' ' #5
+    cut $OX $[OY+5] $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #6
+    printf "$screen"
+
+    for i in ${!hero_sign[@]}; {
+        [[ $i -eq $HSI ]] && selected=$DEF$BLD$RED || selected=$DEF
+        [[ $i -lt $[${#hero_sign[@]}/2] ]] \
+            && XY $[MX+12+i*2] $MY     "$selected${hero_sign[i]}$DEF" \
+            || XY $[MX+12+i*2-${#hero_sign[@]}] $[MY+1] "$selected${hero_sign[i]}$DEF"
+    }
+    for i in ${!sign_color[@]}; {
+        [[ $i -eq $SCI ]] && selected=$BLD || selected=$DEF
+        XY $[MX+12+i*2] $[MY+2] "$selected${sign_color[i]}●$DEF"
+    }
+    for i in ${!hero_color[@]}; {
+        [[ $i -eq $HCI ]] && selected=$BLD || selected=$DEF
+        XY $[MX+12+i*2] $[MY+3] "$selected${hero_color[i]}●$DEF"
+    }
+}
+
+submenu () {
+    case "${items[item]}$1" in
+        'Hero  sign+') [[ $HSI -lt $[${#hero_sign[@]}-1] ]] && ((HSI++));;
+        'Hero  sign-') [[ $HSI -gt 0 ]] && ((HSI--));;
+        'Sign color+') [[ $SCI -lt $[${#sign_color[@]}-1] ]] && ((SCI++));;
+        'Sign color-') [[ $SCI -gt 0 ]] && ((SCI--));;
+        'Hero color+') [[ $HCI -lt $[${#hero_color[@]}-1] ]] && ((HCI++));;
+        'Hero color-') [[ $HCI -gt 0 ]] && ((HCI--));;
+    esac
+    H1C=${hero_color[HCI]} H1S=${hero_sign[HSI]} S1C=${sign_color[SCI]}
+}
+
+item=1
+selector () {
+    read -t$spd -srn1 input &> /dev/null
+    case $input in
+        [wW]) [[ $item -gt 1 ]] && ((item--));;
+        [aA]) submenu -;;
+        [sS]) [[ $item -lt $[${#items[@]}-1] ]] && ((item++));;
+        [dD]) submenu +;;
+        [pP]) return $item;;
+    esac;     return 0
+}
+
+printf -v eraser %40s
+clr    () { for i in ${!items[@]}; { XY $MX $[MY+i] "$eraser"; }; }
+Hero   () { :; }
+Sign   () { :; }
+back   () { clr; menu; }
+start  () { return  1; }
+team   () { type=duel; multiplayer; }
+duel   () { type=team; multiplayer; }
+server () { game=server; clr; menu; }
+single () { game=single; clr; menu; }
+cancel () { apply; H1C=$DHC; H1S=$DHS; S1C=$DSC; }
+client () { clr; game=client; enter_server; clr; menu; }
+apply  () { printf "$DEF"; clear; intro; show_hero=; item=1; items=('' "start $game" 'multiplayer' 'configure' 'exit'); }
+configure    () { clear; show_hero=1; items=('' 'Hero  sign' 'Sign color' 'Hero color' 'apply' 'cancel'); }
+multiplayer  () { clr; items=('' 'server' 'client' 'single' "$type" 'back'); }
+enter_server () {
+    XY $[$endx/2-10] $[$endy-4] "${RED}Enter server IP: "
+    XY $[$endx/2-10] $[$endy-3] "$BLD$WHT"
+    cursor on; read -p ' ' -e saddr; cursor off
+}
+
+game=single
+type=team
+menu () {
+     item=1 MX=$[$endx/4+4] MY=$[$endy-6]
+    items=('' "start $game" 'multiplayer' 'configure' 'exit')
+    while true; do
+        selector || ${items[$?]// */} || break
+        [[ $show_hero ]] && hero_config
+        for i in ${!items[@]}; {
+            [[ $i -eq $item ]] && selected=$BLD$RED || selected=$DEF
+            XY $MX $[MY+i] "$selected${items[i]}$DEF"
+        }
+    done
+}
 #================================================{ Messages }===========================================================
 case "$day$month$virus" in
     *covid-19) ad='Stay at home!';;&
@@ -131,6 +528,7 @@ sprite_win () {
     XY $x $[y+7] "$GRN| |_| | |_| | |\  | |___|_|$DEF"
     XY $x $[y+8] "$CM2|____/ \___/|_| \_|_____(_)$DEF"
 }
+size=($(stty size)) endx=${size[1]} endy=${size[0]} halfendx=$[endx/2] halfendy=$[endy/2]
 #================================================{ Sprites }============================================================
 case $month in
     0[1-4]|12) # winter & early spring
@@ -155,18 +553,23 @@ case $month in
         TRE=50;;              # trees rnd
 esac
 case $game in server) BRD=400 CLD=100 TRE=100;; esac
-        
                               # ⎕ - space
   gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █) # grass types
+#-------------------{ Generate grass }----------------------------------------------------------------------------------
+for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land} landendy=$[endy-2]
 #------------------------{ Hero1 }--------------------------------------------------------------------------------------
 #                                                   center.point   
 mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_"  # '_____ _____'
            "      ⎕       ⎕       ⎕ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕       ⎕       ⎕"  # '   _____   '
            "      ⎕       ⎕       ⎕       ⎕ ${blk}_       ⎕ ${blk}_       ⎕       ⎕       ⎕       ⎕"  # '    _ _    '
            "      ⎕       ⎕       ⎕ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕       ⎕       ⎕") # '   _____   '
+
 tailrotor=("$blk|" "$blk/" "$blk─" $blk'\\') # '|' '/' '─' '\'
+heroendx=$[endx-15]
+heroendy=$[endy-8 ]
 [[ $virus ]] && { DHS=☢ DHC=$RED DSC=$YLW; }
+
 sprite_hero1 () {
     control_hero1 $H1X $H1Y
     mov - || { unset HER[i]; return; }
@@ -208,6 +611,7 @@ sprite_hero1 () {
     collision 1 "$re" && { BOOM $OX $OY; ((life--)); }
     HER[i]="hero1 $OX $OY 6 16 $SC $SM $CS $CL $AS $AL $C1 $C2"
 }
+
 sprite_hero2 () {
     mov - || { unset HER[i]; return; }
     if [[ $life2 -gt 0 ]]; then
@@ -270,6 +674,7 @@ shoot=(
     "$BLD$red- $BLD$red="  # -=>
     "    $red=     $red-"  # =->
     "    $RED-         ⎕") # - >
+bullendx=$[endx-4]
 sprite_piu1 () {
     case $type in
         'duel') re="hero2 ($OX|$[OX+1]) ($[OY-1]|$[OY-2]|$[OY-3]|$[OY-4]).*";;
@@ -337,7 +742,7 @@ small=("${SKY}⎕  ${SKY}⎕  ${RED}o"
        "${SKY}⎕  ${RED}o  ${SKY}⎕"
        "${RED}o  ${SKY}⎕  ${SKY}⎕"
        "${SKY}⎕  ${SKY}⎕  ${SKY}⎕")
-
+enmyendy=$[endy-9 ]
 CM1=$SKY$UND$BLD$grn
 pumtop=( "$CM1"'\\' "$CM1"'\\' "$CM1|" "$CM1|" "$CM1/" "$CM1/")
 pumface=("${RED}O ${RED}… ${RED}o"
@@ -428,6 +833,10 @@ mouthlow=("${RED}V   ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}V"
           ${RED}'`'" ${RED}- ${RED}- ${RED}- ${RED}- ${RED}- ${RED}´"
           "${RED}V   ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}V"
           "${RED}V   ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}V")
+
+bossendx=$[endx-14]
+bossendy=$[endy-7 ]
+bosshbar=$[endx-10]
 
 TX=$halfendx TY=$bossendy
 sprite_boss () {
@@ -607,7 +1016,7 @@ sprite_msngr () {
     cut $SX $[OY+1] $CM2 ''   $X2'_' '_'     '_'    '_'      '_'     '/'     '_' '/' ' ' ''  '' $X3$CM4'+' $CM4'-' $CM4'-' ${line[@]}  $SKY${flame1[AS]}  #2
     cut $SX $[OY+2] $CM1 '(' $UND'°' ' ' $CM2'\\'   ' '  $CM3'|' $UND' ' $CM3')' '-' '-' '-' '<'   $CM5'|' $CM5' ' ${new_ad[@]} $CM5' ' $SKY${flame2[AS]} #3
     cut $SX $[OY+3] $CM2 ''      ''  ''       '' $X4'\\' $CM3'|'     ' '     ''  ''  ''  ''  '' $X5$CM4'+' ${line[@]} $SKY${flame3[AS]}                   #4
-}
+};  msgrendy=$[endy-10]
 
 sprite_crate () {
     movy && ENM[$i]="crate $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i" || { unset ENM[$i]; boom $OX $boomendy; boom $OX $[boomendy-3]; crate=0; }
@@ -623,8 +1032,8 @@ sprite_crate () {
 }
 #------------------------{ Starship }-----------------------------------------------------------------------------------
 sprite_starship () {
-    BP1[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
-    CM1=$SKY$BLD$WHT
+    BP2[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
+    CM1=$SKY$BLD$WHT; case $month in 0[1-4]|12) CM1=$SKY$DIM$wht;; esac
     ######### ##########1234567###01234567
     cuty $OX $OY 9 $SKY'       ' #1
     cuty $OX $OY 8 $CM1'   ▃   ' #2   ▃
@@ -636,11 +1045,50 @@ sprite_starship () {
     cuty $OX $OY 2 $CM1'│_░▒█_┃' #8│_░▒█_┃
     cuty $OX $OY 1 $SKY'       ' #9
 }
-
+sprite_exhaust () {
+    BX=$OX BY=$OY
+    [[ $AS -ge $AL ]] && { unset BP2[i]; return; }  #11111111112222222222333
+    case $AS in ###########################012345678901234567890123456789012######################################
+          0) cut $[BX+23]  $BY    $RED                          '¸.•´´¯`••.¸';; #                      ¸.•´´¯`••.¸
+          1) cut $[BX+21] $[BY-1] $RED                        '¸.•´´¯`••.¸'     #                   ¸.•´´¯`••.¸
+             cut $[BX+19]  $BY    $RED                      '/           ´¯`';; #                  /           ´¯`
+          2) cut $[BX+16] $[BY-1] $red                   '¸.•´´¯`••.¸     '     #               ¸.•´´¯`••.¸
+             cut $[BX+15]  $BY    $red                  '/           ´¯`••.¸';; #              /           ´¯`••.¸
+          3) cut $[BX+13] $[BY-2] $DIM$RED            '¸. ´´¯`• .¸'             #             ¸. ´´¯`• .¸
+             cut $[BX+12] $[BY-1] $DIM$RED           '/           ´¯`• .¸'      #            /           ´¯`• .¸
+             cut $[BX+12]  $BY    $DIM$RED           '|                   ´¯';; #           |                   ´¯
+          4) cut $[BX+13] $[BY-3] $DIM$red            '¸ - ‾ ´´‾` • _'          #           ¸ - ‾ ´´‾` • _
+             cut $[BX+11] $[BY-2] $DIM$red          '/               ¯ ¸'       #          /               ¯ ¸
+             cut $[BX+10] $[BY-1] $DIM$red         '(                   ¯¸'     #         (                   ¯¸
+             cut $[BX+10]  $BY    $DIM$red         '|                      ¸'   #         |                      ¸
+             BP2[0]="burningsock $[halfendx-12] $[endy-5] 3 1 0 3 1 1 0 5";;    # sock'll burn now
+          5) cut $[BX+13] $[BY-3] $SKY                '              '          #
+             cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾  •  ¸'         #           ¸  -  ‾  ‾  •  ¸
+             cut $[BX+10] $[BY-1] $blk             '/                    ¸'     #         /                    ¸
+             cut $[BX+8]   $BY    $blk           '/                        ¸';; #       /                        ¸
+          6) cut $[BX+11] $[BY-2] $SKY               '                   '      #
+             cut $[BX+6]  $[BY-1] $blk          '¸   -   ‾   ‾   `   •  ¸ '     #      ¸   -   ‾   ‾   `   •  ¸
+             cut $[BX+3]   $BY    $blk       '¸                            ¸';; #   ¸                            ¸
+          7) cut $[BX+6]  $[BY-1] $SKY          '                        '      #
+             cut  $BX      $BY    $blk    '¸    -    ‾    ‾     `     •    ¸';; #¸    -    ‾    ‾     `     •    ¸
+          8) cut  $BX      $BY    $SKY    '                                 ';; # eraser
+    esac
+    mov -; BP2[i]="exhaust $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
+}
+bulb=("$SKYBLD$WHT." "$SKYBLD$RED.")
 sprite_startable () {
-    BP3[i]="startable $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
-    ########################1234567890ABCDE###0
-    cuty $OX $OY 1 $SKY$YLW'▂▄▆▉▀▉▀▀▀▉▀▉▆▄▂' #1
+    BX=$OX BY=$OY
+    mov -; BP3[i]="startable $BX $BY $OH $OW $SC $SM $CS $CL $AS 1"
+    CM1=$SKY$BLD$blk$UND CM2=$SKY$BLD$blk CM3=$SKY$YLW
+    #########################1234567890ABCDEFG####0
+    cuty $[BX+13] $OY 8             ${bulb[$AS]} #1             .
+    cuty $[BX+13] $OY 7              $CM2'│'     #2             │
+    cuty $[BX+9 ] $OY 6          $CM1'   ╱┃'     #3         ___╱┃
+    cuty $[BX+9 ] $OY 5          $CM1'│╳┃╳┃'     #4         │╳┃╳┃
+    cuty $[BX+11] $OY 4            $CM1'┃╳┃'     #5           ┃╳┃
+    cuty $[BX+11] $OY 3            $CM1'┃╳┃'     #6           ┃╳┃
+    cuty $[BX+11] $OY 2            $CM1'┃╳┃'     #7           ┃╳┃
+    cuty  $BX     $OY 1 $CM3'▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂'  #8▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂
 }
 
 sock=(
@@ -649,14 +1097,31 @@ sock=(
   "$WHT≣ $RED≡ $WHT≡ $RED≡ $WHT≣"
 )
 sprite_windsock () {
-    mov - && BP2[i]="windsock $OX $OY 2 8 $SC $SM $CS $CL $AS 2" || { unset BP1[i]; return; }
-    X1="_Y_$[OX+6]H" C1C=$SKY$WHT C2C=$SKY$BLK
+    BX=$OX BY=$OY
+    mov -; BP2[i]="windsock $BX $BY 2 8 $SC $SM $CS $CL $AS 2"
+    X1="_Y_$[OX+6]H" CM1=$SKY$WHT CM2=$SKY$DIM$WHT
     #012345678
     #1=≡≡≣≣>┐
     #2      │
     #################### 1  2  3  4  5      6       7   8  #0
-    cut $SX  $OY    $C1C  ${sock[$AS]} $C2C'>' $C2C'┐' ' ' #1
-    cut $SX $[OY+1] $C2C '' '' '' '' ''    ''   $X1'│' ' ' #2
+    cut $OX  $OY    $CM1  ${sock[$AS]} $CM2'>' $CM2'┐' ' ' #1
+    cut $OX $[OY+1] $CM2 '' '' '' '' ''    ''   $X1'│' ' ' #2
+}
+
+bs1=(' ' ' ' '⡀' '⠆' '⠂' ' ')
+bs2=('⠆' '⠇' '⠃' '⠅' '⠆' '⠇')
+sprite_burningsock () {
+    BX=$OX BY=$OY
+    mov -; BP2[i]="burningsock $BX $BY 3 1 $SC $SM $CS $CL $AS 5"
+    CM1=$SKY$DIM$BLK CM2=$SKY$BLD$RED CM3=$SKY$BLD$YLW
+    #01
+    #1⡀
+    #2⠃
+    #3│
+    ####################      1      #0
+    cut $BX  $OY    $CM3 ${bs1[$AS]} #1
+    cut $BX $[OY+1] $CM2 ${bs2[$AS]} #2
+    cut $BX $[OY+2] $CM1     '│'     #3
 }
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
 case $month in
@@ -718,7 +1183,7 @@ case $month in
     0[1-4]|12) T1C=$SKY$DIM$WHT tree1H=3;; # winter & early spring
     0[5-8]   ) T1C=$SKY$DIM$GRN tree1H=4;; # late spring & summer
     09|1[0-1]) T1C=$SKY$DIM$YLW tree1H=4;; # autumn
-esac
+esac;           tre1endy=$[endy-tree1H-2]
 sprite_tree1 () {
     case $month in
         0[1-4]|12)
@@ -752,7 +1217,7 @@ case $month in
     0[1-4]|12) T2C=$SKY$WHT tree2H=5;; # winter & early spring
     0[5-8]   ) T2C=$SKY$GRN tree2H=6;; # late spring & summer
     09|1[0-1]) T2C=$SKY$YLW tree2H=6;; # autumn
-esac
+esac;       tre2endy=$[endy-tree2H-2]
 sprite_tree2 () {
     case $month in
         0[1-4]|12)
@@ -794,7 +1259,7 @@ case $month in
     0[1-4]|12) T3C=$SKY$BLD$cyn tree3H=8;; # winter & early spring
     0[5-8]   ) T3C=$SKY$GRN     tree3H=9;; # late spring & summer
     09|1[0-1]) T3C=$SKY$DIM$red tree3H=9;; # autumn
-esac
+esac;           tre3endy=$[endy-tree3H-2]
 sprite_tree3 () {
     case "$day:$month" in
         [23][0-9]:12|0[1-9]:01|10:01)
@@ -891,7 +1356,8 @@ sprite_house1 () { #                          ▕ ╪ ╫ ╬ ╭ ╮ ╯ ▀ �
     ####################  1   2   3   4   5   6  #0
     cut $SX  $OY    $CM1 '▁' '▂' '▃' '▂' '▁' ' ' #1
     cut $SX $[OY+1] $CM2 '│' '▘' '▝' '▝' '|' ' ' #2
-}
+};  hos1endy=$[endy-4]
+
 sprite_house2 () {
     mov - && BP2[i]="house2 $OX $OY 9 30 $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
     CM1="$SKY$BLU" CM2=$SKY$BLD$YLW CM3=$SKY$YLW CM4=$SKY$ylw CM5=$SKY$blk
@@ -917,7 +1383,8 @@ sprite_house2 () {
     cut $SX $[OY+6] $CM1 ''  ''  ''  ''  ''  '' $X7'┮'   '┷'   '━'   '━' '━' '┷' '┭'     ' '                                                                                     #7
     cut $SX $[OY+7] $CM5 ''  ''  ''  ''  ''  '' $X8'│'   ' '   '▛'   '▔' '▜' ' ' '│' $CM1'▄' $CM1'▄' $CM1'▄' $CM1'▄' $CM1'▂' $CM1'▁' ' '                                         #8
     cut $SX $[OY+8] $CM5 '▂' ' ' '╬' ' ' '▃' ' '   '┃'   ' '   '▌'   '▒' '▐' ' ' '┃'     ' '     '▘'     '▗'     '▘'     '┿'     '┃' '▗' ' ' '╂' ' ' '╪' ' ' '▄' ' ' ' ' '▖' ' ' #9
-}
+};  hos2endy=$[endy-11]
+
 sprite_house3 () {
     mov - && BP3[i]="house3 $OX $OY 4 17 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
     CM1=$SKY$DIM$MGN CM2=$SKY$blk CM3=$SKY$DIM$CYN X1="_Y_$[OX+5]H" X2="_Y_$[OX+2]H" X3="_Y_$[OX+2]H"
@@ -931,8 +1398,10 @@ sprite_house3 () {
     cut $SX $[OY+1] $CM1 ''  ''   $X2'▂'     '▄'     '▆'     '█'     '█'     '▆'     '▄' '▂'     ' '                                         #2
     cut $SX $[OY+2] $CM2 ''  ''   $X3'┃'     '╒'     '╕'     '╒'     '╕'     '╒'     '╕' '┃'     ' ' '┮'     '━'     '┭' ' '                 #3
     cut $SX $[OY+3] $CM3 '╠' '╬' $CM2'┃' $CM2'┵' $CM2'┘' $CM2'┵' $CM2'┶' $CM2'└' $CM2'┶' '┃' $CM3'╬' '╣' $CM2'▓' $CM3'╠' '╬' '╣' $CM2'▖' ' ' #4
-}
+};  hos3endy=$[endy-6 ]
 #------------------------{ BOOM }---------------------------------------------------------------------------------------
+boomendx=$[endx-10]
+boomendy=$[endy-4 ]
 sprite_boom () {
     BX=$OX BY=$OY
     [[ $AS -ge $AL ]] && { unset BP3[i]; return; }
@@ -958,6 +1427,7 @@ sprite_boom () {
     mov -; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
 }
 #------------------------{ Sun }----------------------------------------------------------------------------------------
+Sunsendx=$[endx-18]
 sprite_Sun () {
     mov -; BP1[i]="Sun $Sunsendx 1 9 18 $SC 7 $CS $CL $AS $AL"
     case $AS in
@@ -1037,431 +1507,6 @@ sprite_ARR () {
     cut $SX $[OY+4] $C1 '' $X1⎕ ▒    ⎕    ▒    ▒    ⎕    ⎕ $C2▒ $C2▓ $C2▓ $C2▓ $C2▓ $C6▒ $C6▓ $C3█ $C3█ $C3█ $C1░                                  #5
     cut $SX $[OY+5] $C1 ''   '' ''  '' $X2⎕    ░    ░    ░    ⎕    ▒    ▒    ▒    ⎕    ░    ░    ▒    ▒    ░                                       #6
 }
-
-#================================================{ Functions }==========================================================
-get_dimensions () {
-    size=($(stty size))
-    endx=${size[1]}
-    endy=${size[0]}
-    halfendx=$[endx/2 ]
-    halfendy=$[endy/2 ]
-    boomendx=$[endx-10]
-    boomendy=$[endy-4 ]
-    bullendx=$[endx-4 ]
-    heroendx=$[endx-15]
-    heroendy=$[endy-8 ]
-    enmyendy=$[endy-9 ]
-    bossendx=$[endx-14]
-    bossendy=$[endy-7 ]
-    bosshbar=$[endx-10]
-    lineendy=$[endy-2 ]
-    Sunsendx=$[endx-18]
-    hos1endy=$[endy-4 ]
-    hos2endy=$[endy-11]
-    hos3endy=$[endy-6 ]
-    msgrendy=$[endy-10]
-    tre1endy=$[endy-tree1H-2]
-    tre2endy=$[endy-tree2H-2]
-    tre3endy=$[endy-tree3H-2]
-}
-
-bye () { cursor on; exit $1; }
-
-cursor () {
-    case $1 in
-         on) stty  echo; printf "$CON";;
-        off) stty -echo; printf "$COF";;
-    esac
-}
-
-mov () {
-    case $1  in -) cuter=++;; +) cuter=--;; esac
-    case $SC in
-         (0) [[ $OX -le -$OW   ]] && return 1
-             [[ $OX -gt  $endx ]] && return 1
-             [[ $AS -ge  $AL   ]] && AS=0  || ((AS++)) # sprites animation
-             [[ $OX -le  1     ]] && ((CS++))
-             ((OX$1$1)); ((CL$cuter)); SC=$SM
-             [[ $CL -lt 0 ]] && CL=0;;
-        -*0) [[ $AS -ge  $AL   ]] && AS=0  || ((AS++));; # sprites animation
-         (*) ((SC--));;
-    esac
-    [[ $OX -le 1 ]] && SX=0 || SX=$OX
-}
-
-cut () {
-    xcord=$1 ycord=$2 color=$3; shift 3
-    screen+="\e[$ycord;${xcord}H$color"
-    printf -v spr %s "${@:$CS:$CL}"
-    spr="${spr//_Y_/'\e['$ycord;}"
-    screen+="${spr//⎕/ }"
-}
-
-movy () { # used in bonus crate
-    case $SC in
-         (0) [[ $OY -ge $[endy-2] ]]    && return 1
-             [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
-             [[ $CS -le $OH  ]] && ((CS++))
-             ((OY++)); SC=$SM;;
-         (*) ((SC--));;
-    esac
-}
-
-cuty () { # used in bonus crate
-    xcord=$1 ycord=$2 cuter=$3; shift 3
-    [[ $CS -ge $cuter ]] && screen+="\e[$[ycord-cuter];${xcord}H$@"
-}
-
-bonus () { # get random bonus from alien or not
-    case $[RANDOM % $rnd] in
-        0) ENM+=("${bonuses[$[RANDOM%${#bonuses[@]}]]} $OX $[OY-1] 3 5 0 2 1 0 0 0 ${#ENM[@]}")
-    esac
-}
-
-mess () {
-    cursor off
-    XY 1 1 ${DEF}; clear
-    case $1 in
-        win ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
-        lose) sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
-        help) sprite_help;;
-    esac
-}
-
-print_sprite () {
-    OT=${OI[0]}   # object type
-    OX=${OI[1]}   # X coordinate
-    OY=${OI[2]}   # Y coordinate
-    OH=${OI[3]}   # object hight
-    OW=${OI[4]}   # object width
-    SC=${OI[5]}   # speed counter
-    SM=${OI[6]}   # speed max
-    CS=${OI[7]}   # cuting start
-    CL=${OI[8]}   # cuting lenght
-    AS=${OI[9]}   # animation start
-    AL=${OI[10]}  # animation lenght
-    C1=${OI[11]}  # custom obj parameter 1
-    C2=${OI[12]}  # custom obj parameter 2
-    [[ $OT ]] && sprite_$OT
-}
-
-listener   () { input2=$(nc -l -p $sport); }
-read_input () { read -t$spd -srn1 input &> /dev/null; }
-sender     () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do :; done; }
-
-control_hero1 () {
-    read_input
-    case $input in
-        [wW]) [[ $H1Y  -gt 2               ]] && ((H1Y--));;
-        [aA]) [[ $H1X  -gt 1               ]] && ((H1X--));;
-        [sS]) [[ $H1Y  -lt $heroendy       ]] && ((H1Y++));;
-        [dD]) [[ $H1X  -lt $heroendx       ]] && ((H1X++));;
-        [pP]) [[ $ammo -ge $G && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 1 $G; ((ammo-=$G)); };;
-    esac
-}
-
-control_hero2 () {
-    case $input2 in
-        [wW]) [[ $H2Y   -gt 2                ]] && ((H2Y--));;
-        [aA]) [[ $H2X   -gt 1                ]] && ((H2X--));;
-        [sS]) [[ $H2Y   -lt $heroendy        ]] && ((H2Y++));;
-        [dD]) [[ $H2X   -lt $heroendx        ]] && ((H2X++));;
-        [pP]) [[ $ammo2 -ge $G2 && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 2 $G2; ((ammo2-=$G2)); };;
-    esac
-}
-
-rndmbonus () {
-    case $1:$[RANDOM%3] in
-          1:0) ((life++)) ;;
-          2:0) ((life2++));;
-          1:1) ((ammo+=100)) ;;
-          2:1) ((ammo2+=100));;
-          1:2) [[ $G  -lt 5 ]] && ((G++)) ;;
-          2:2) [[ $G2 -lt 5 ]] && ((G2++));;
-    esac
-}
-collbooom () { unset ENM[obj_i]; boom $obj_x $obj_y; }
-collision () {
-    hero=$1 re="$2"
-    case $type in
-        'duel') target=("${HER[@]}" "${ENM[@]}");;
-             *) target=("${ENM[@]}");;
-    esac
-    [[ ${target[@]} =~ $re ]] && {
-        match=($BASH_REMATCH)
-        obj_i=${match[@]:11:1}
-        obj_x=${match[@]:1:1}
-        obj_y=${match[@]:2:1}
-        case $match:$hero in
-              bfire:*) collbooom; return 0;;
-               boss:*) ((bhealth--)); boom $3 $4; return 0;;
-               life:1) collbooom; ((life++))    ; return 1;;
-               life:2) collbooom; ((life2++))   ; return 1;;
-               ammo:1) collbooom; ((ammo+=100)) ; return 1;;
-               ammo:2) collbooom; ((ammo2+=100)); return 1;;
-#              alien:*) collbooom; ((enumber--)) ; return 0;;
-              gunup:1) collbooom; [[ $G  -lt 5 ]] && ((G++))  ; return 1;;
-              gunup:2) collbooom; [[ $G2 -lt 5 ]] && ((G2++)) ; return 1;;
-              alien:1) collbooom; ((enumber--)) ; ((frags++)) ; bonus; return 0;;
-              alien:2) collbooom; ((enumber--)) ; ((frags2++)); bonus; return 0;;
-              hero1:2) ((frags2++)); ((life--)) ; BOOM $obj_x $obj_y ; return 0;;
-              hero2:1) ((frags++)) ; ((life2--)); BOOM $obj_x $obj_y ; return 0;;
-              crate:*) collbooom; crate=0; boom $obj_x $[obj_y-3]; boom $obj_x $[obj_y-6]; rndmbonus $hero; return 1;;
-        esac
-    }
-}
-
-boom () {
-    XB=$1 YB=$2
-    [[ $XB -lt     2     ]] && XB=2
-    [[ $XB -gt $boomendx ]] && XB=$boomendx
-    BP3+=("boom $XB $YB 0 0 0 $[RANDOM%3] 1 9 0 5")
-}
-
-BOOM () {  XB=$1   YB=$2
-    boom  $XB    $[YB+1]
-    boom $[XB+4]  $YB
-    boom $[XB+1] $[YB+1]
-    boom $[XB+3]  $YB
-    boom  $XB    $[YB+1]
-}
-
-fps_counter () { #-{ Print FPS }-----------------------------------------------
-    [[ $SECONDS -gt $sec ]] && {
-        FPS=$FPSC AVG+=($FPS)
-        [[ $FPSL ]] || FPSL=$FPS
-        [[ $FPS -gt $FPSM  ]] && FPSM=$FPS
-        [[ $FPS -lt $FPSL  ]] && FPSL=$FPS
-        (( ${#AVG[@]} == 5 )) && { avg="${AVG[@]}"; FPSA=$(( (${avg// /+})/5 )); AVG=(); }
-        sec=$SECONDS
-        FPSC=0
-    } || ((FPSC++))
-    case $game in
-        'server') screen+="\e[$endy;$[endx-9]H${DEF}FPS: $RED$FPS ";;
-               *) screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL ${DEF}avg: $RED$FPSA ";;
-    esac
-}
-
-status () { #-{ Print game status }--------------------------------------------
-    case $type:$virus in
-         (duel:*       ) enemy=rival   bullets=Ammo;;
-         (   *:covid-19) enemy=viruses bullets=Meds;;
-         (team:*       ) enemy=aliens  bullets=Ammo;;
-    esac
-    screen+="\e[1;2H$SKY${BLK}Killed $enemy: $SKY$RED$frags$SKY ${BLK}Life: $SKY$RED$life$SKY ${BLK}$bullets: $SKY$RED$ammo$SKY "
-    case $game in 'server')
-        screen+="\e[$endy;2H$LND${BLK}Killed $enemy: $LND$RED$frags2$LND ${BLK}Life: $LND$RED$life2$LND ${BLK}$bullets: $LND$RED$ammo2$LND ";;
-    esac
-}
-
-boss_health () {
-    bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
-    for (( i=0  ; i<hp; i++ )); do bar="█$bar"; done
-    for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
-    screen+="\e[$[endy-1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
-}
-
-fill_screen () {
-    for ((i=0;        i<lineendy; i++)); do printf "$SKY%${endx}s"; done
-    for ((i=lineendy; i<endy;     i++)); do printf "$LND%${endx}s"; done
-}
-
-drop_crate () { # in duel mode ad plane'll drop bonus crate
-    case $type:$crate in duel:0)
-        [[ $OX -eq $halfendx ]] && { crate=1 ENM+=("crate $[halfendx-1] 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
-    esac
-}
-
-add_enm () {
-    [[ $BR -gt 0 ]] && ((BR--))
-    [[ $enumber -lt $enmax && $BR -eq 0 ]] || return
-    ENM+=("alien $1 $2 3 5 0 $[RANDOM%2] 1 ${3:-0} $[RANDOM%3] 3 ${#ENM[@]}")
-    ((enumber++))
-    BR=20
-}
-
-add_piu () {
-    PX=$1 PY=$2 PH=$3 PS=$4
-    case $PS in
-        1) PIU+=("piu$PH $[PX+12] $[PY+3] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
-
-        2) PIU+=("piu$PH $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
-                                                                                      #
-                 "piu$PH $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
-
-        3) PIU+=("piu$PH $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
-                 "piu$PH $[PX+13] $[PY+3] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                 "piu$PH $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
-
-        4) PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
-                 "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                                                                                      #
-                 "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                 "piu$PH $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
-
-        5) PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
-                 "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                 "piu$PH $[PX+14] $[PY+3] 1 4 0 0 1 $[endx-(PX+14)] $[RANDOM%3] 3"    #   -=>
-                 "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                 "piu$PH $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
-    esac
-}
-
-backgound_birds () { # Add birds }----------------------------------------------------------------------
-    case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $rndy 2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
-}
-
-backgound_msngr () { # Add msngr }----------------------------------------------------------------------
-    case $type in duel) msngrY=2;; *) msngrY=$rndy;; esac
-    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $msngrY 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
-}
-
-backgound_clouds () { # Add clouds }--------------------------------------------------------------------
-    case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
-        0:1) BP1+=("cloud1 $endx $rndy 3 6  6 $[6+RANDOM%2] 1 0 0 0");;
-        0:2) BP2+=("cloud2 $endx $rndy 3 8  4 $[4+RANDOM%2] 1 0 0 0");;
-        0:3) BP3+=("cloud3 $endx $rndy 3 11 2 $[2+RANDOM%2] 1 0 0 0");;
-    esac
-}
-
-backgound_houses () { # Add houses }--------------------------------------------------------------------
-    case $[RANDOM % $HOU]:$[RANDOM % 3 + 1] in
-        0:1) BP1+=("house1 $endx $hos1endy 2 6  6 $[6+RANDOM%2] 1 0 0 0");;
-        0:2) BP2+=("house2 $endx $hos2endy 9 30 4 $[4+RANDOM%2] 1 0 0 0");;
-        0:3) BP3+=("house3 $endx $hos3endy 4 17 2 $[2+RANDOM%2] 1 0 0 0");;
-    esac
-}
-
-backgound_trees () { # Add trees }----------------------------------------------------------------------
-    case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
-        0:1) BP1+=("tree1 $endx $tre1endy 3 2 6 $[6+RANDOM%2] 1 0 0 0");;
-        0:2) BP2+=("tree2 $endx $tre2endy 6 5 4 $[4+RANDOM%2] 1 0 0 0");;
-        0:3) BP3+=("tree3 $endx $tre3endy 9 9 2 $[2+RANDOM%2] 1 0 0 0");;
-    esac
-}
-
-backgound_moving_land () { # Print moving land }--------------------------------------------------------
-    screen+="\e[$lineendy;1H$LND${land:$((1-${LX:-1})):$endx}"; [[ ${LX:-1} -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
-}
-
-backgound_land () { # Print land }----------------------------------------------------------------------
-    screen+="\e[$lineendy;1H$LND${land:$((1-${LX:-1})):$endx}"
-}
-
-add_backgound () {
-    rndy=$[2+RANDOM%10]; [[ $rndy -gt $[3+enmyendy] ]] && rndy=$[3+enmyendy]
-    for item in "$@"; { backgound_$item; }
-}
-
-#------------------------{ Intro }--------------------------------------------------------------------------------------
-intro () {
-    i=0  #    start X                           target X
-    INT=("PIU $endx 3 9 41 0 0 1 0          0 0 $[endx/2-35]"
-         "PIU $endx 3 9 41 0 0 1 0          0 0 $[endx/2-1]"
-         "ARR 1    12 6 28 0 0 0 $[endx-29] 0 0 $[endx/2-16]")
-    while true; do
-        sleep $spd; screen=
-        OI=(${INT[i]})
-        print_sprite || ((i++))
-        printf "$screen"
-        [[ $i -gt ${#INT[@]} ]] && break
-    done
-    XY $[endx/2+32] 11 "$version"
-}
-
-HCI=0 SCI=1 HSI=0 H1C=${H1C:-$DHC} H1S=${H1S:-$DHS} S1C=${S1C:-$DSC}
-hero_sign=(★ ☭ ✚ ✙ ✠ ✡ ✦ ✧ ✩ ✪ ☘ ☠ ☢ ☣ ☯ ❃ ❂ ❁ ✿ ❀ ✣ ♣ ♠ ♥ ♦ ❤ ● ☻ ♀ ♂)
-hero_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT)
-sign_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT)
-hero_config () {
-    screen=
-    [[ $AS -gt 0 ]] && ((AS--)) || AS=3
-    CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND TR=${tailrotor[AS]} OX=$[$endx/2-9] OY=$[$endy/2-6] CS=1 CL=20
-    # Using the same 'cut' function to print hero as in the game to preserve this nicely done tabled structure
-    ######X####Y#####CLR  1   2   3       4        5       6       7       8        9       A        B       C       D       E   F   G  #0
-    cut $OX  $OY    $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #1
-    cut $OX $[OY+1] $CM1 ' ' '_' '_'     ' '                                         ${mainrotor[AS]}                               ' ' #2
-    cut $OX $[OY+2] $CM2 ' ' '|' $TR $CM1'\\' $CM1'_' $CM1'_' $CM1'_' $CM3'.'  $CM3'-' $CM3'╨'  $CM4'─' $CM4'｡' $CM1'_' $SKY' ' ' ' ' ' #3
-    cut $OX $[OY+3] $CM2 ' ' '`' '─'     '´'      '‾'     '‾'     '‷'     '\\' $blk'°' $S1C$H1S $SKY' ' $blk'º' $blk'¯' $CM1']' '─' ' ' #4
-    cut $OX $[OY+4] $CM2 ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      '‾'     '‾'      '‾'     '‾'     '‾' $SKY' ' ' ' ' ' #5
-    cut $OX $[OY+5] $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #6
-    printf "$screen"
-
-    for i in ${!hero_sign[@]}; {
-        [[ $i -eq $HSI ]] && selected=$DEF$BLD$RED || selected=$DEF
-        [[ $i -lt $[${#hero_sign[@]}/2] ]] \
-            && XY $[MX+12+i*2] $MY     "$selected${hero_sign[i]}$DEF" \
-            || XY $[MX+12+i*2-${#hero_sign[@]}] $[MY+1] "$selected${hero_sign[i]}$DEF"
-    }
-    for i in ${!sign_color[@]}; {
-        [[ $i -eq $SCI ]] && selected=$BLD || selected=$DEF
-        XY $[MX+12+i*2] $[MY+2] "$selected${sign_color[i]}●$DEF"
-    }
-    for i in ${!hero_color[@]}; {
-        [[ $i -eq $HCI ]] && selected=$BLD || selected=$DEF
-        XY $[MX+12+i*2] $[MY+3] "$selected${hero_color[i]}●$DEF"
-    }
-}
-
-submenu () {
-    case "${items[item]}$1" in
-        'Hero  sign+') [[ $HSI -lt $[${#hero_sign[@]}-1] ]] && ((HSI++));;
-        'Hero  sign-') [[ $HSI -gt 0 ]] && ((HSI--));;
-        'Sign color+') [[ $SCI -lt $[${#sign_color[@]}-1] ]] && ((SCI++));;
-        'Sign color-') [[ $SCI -gt 0 ]] && ((SCI--));;
-        'Hero color+') [[ $HCI -lt $[${#hero_color[@]}-1] ]] && ((HCI++));;
-        'Hero color-') [[ $HCI -gt 0 ]] && ((HCI--));;
-    esac
-    H1C=${hero_color[HCI]} H1S=${hero_sign[HSI]} S1C=${sign_color[SCI]}
-}
-
-item=1
-selector () {
-    read -t$spd -srn1 input &> /dev/null
-    case $input in
-        [wW]) [[ $item -gt 1 ]] && ((item--));;
-        [aA]) submenu -;;
-        [sS]) [[ $item -lt $[${#items[@]}-1] ]] && ((item++));;
-        [dD]) submenu +;;
-        [pP]) return $item;;
-    esac;     return 0
-}
-
-printf -v eraser %40s
-clr    () { for i in ${!items[@]}; { XY $MX $[MY+i] "$eraser"; }; }
-Hero   () { :; }
-Sign   () { :; }
-back   () { clr; menu; }
-start  () { return  1; }
-team   () { type=duel; multiplayer; }
-duel   () { type=team; multiplayer; }
-server () { game=server; clr; menu; }
-single () { game=single; clr; menu; }
-cancel () { apply; H1C=$DHC; H1S=$DHS; S1C=$DSC; }
-client () { clr; game=client; enter_server; clr; menu; }
-apply  () { printf "$DEF"; clear; intro; show_hero=; item=1; items=('' "start $game" 'multiplayer' 'configure' 'exit'); }
-configure    () { clear; show_hero=1; items=('' 'Hero  sign' 'Sign color' 'Hero color' 'apply' 'cancel'); }
-multiplayer  () { clr; items=('' 'server' 'client' 'single' "$type" 'back'); }
-enter_server () {
-    XY $[$endx/2-10] $[$endy-4] "${RED}Enter server IP: "
-    XY $[$endx/2-10] $[$endy-3] "$BLD$WHT"
-    cursor on; read -p ' ' -e saddr; cursor off
-}
-
-game=single
-type=team
-menu () {
-     item=1 MX=$[$endx/4+4] MY=$[$endy-6]
-    items=('' "start $game" 'multiplayer' 'configure' 'exit')
-    while true; do
-        selector || ${items[$?]// */} || break
-        [[ $show_hero ]] && hero_config
-        for i in ${!items[@]}; {
-            [[ $i -eq $item ]] && selected=$BLD$RED || selected=$DEF
-            XY $MX $[MY+i] "$selected${items[i]}$DEF"
-        }
-    done
-}
 #======================================{ Main game loop single or server mode }=========================================
 game () {
     while true; do
@@ -1512,23 +1557,27 @@ game_client () {
         esac
     done
 }
-#==============================================={ Starship intro }======================================================
+#============================================={ Starship intro }========================================================
 starship_intro () {
+    [[ $1 =~ starship ]] || return
+    ad_new= ad='Got a ticket to Mars?'; ad_plane_text; fill_screen; cursor off
     T1=(3 7  11 15 20 30 40 43 $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40])
     T2=(5 17 23                $[endx-7] $[endx-11] $[endx-35])
     T3=(4 23                   $[endx-8] $[endx-25])
-
-    for i in ${T1[@]}; { BP1+=("tree1 $i $tre1endy 4 2 0 -1 1 5 0 0"); } # Plant
-    for i in ${T2[@]}; { BP2+=("tree2 $i $tre2endy 6 5 0 -1 1 5 0 0"); } # some
-    for i in ${T3[@]}; { BP3+=("tree3 $i $tre3endy 9 9 0 -1 1 9 0 0"); } # trees
-
-    BP1+=("starship  $halfendx     $[endy-2] 10 7 0  0 10 10    ") # add starship
-    BP1+=("startable $[halfendx-4] $[endy-2] 10 1 0  0 10 10    ") # add startable
-    BP2+=("windsock  30        $[tre1endy+2] 2  8 0 -1 1  7  0 2") # add windsock
+                               #type      $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
+                         BP2+=("windsock  $[halfendx-17] $[endy-4] 2   8   0   0   1   7   0   2")    # windsock
+                         BP2+=("starship  $halfendx      $[endy-2] 10  7   0   0   10  10  0   0")    # starship
+                         BP3+=("startable $[halfendx-4]  $[endy-2] 8   15  0   10  10  10  0   1")    # startable
+    for i in ${T1[@]}; { BP1+=("tree1     $i             $tre1endy 4   2   0  -1   1   5   0   0"); } # Plant
+    for i in ${T2[@]}; { BP2+=("tree2     $i             $tre2endy 6   5   0  -1   1   5   0   0"); } # some
+    for i in ${T3[@]}; { BP3+=("tree3     $i             $tre3endy 9   9   0  -1   1   9   0   0"); } # trees
 
     while true; do
+        XY 1 1 $SECONDS
         #-{ Empty screen, print game status adnd FPS }-------------------------
         screen=; [[ $showfps ]] && fps_counter
+        # Start the engine (add exhaust sprite)      type        $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
+        ((SECONDS==5)) && [[ -z $ex1 ]] && { BP2+=( "exhaust     $[halfendx-30] $[endy-3] 4   33  0   7   1   33  0   9"); ex1=1; }
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound birds msngr clouds land
         #-{ Move bitplans }----------------------------------------------------
@@ -1541,16 +1590,13 @@ starship_intro () {
     exit
 }
 #============================================{ Initialisation }=========================================================
-trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT; get_dimensions
-clear; mess "help"; sleep 2
+BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")                   # Sun
+H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10") # Hero
+trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT
+clear; starship_intro $1; mess "help"; sleep 2
 clear; intro; menu
 clear; fill_screen
 cursor off
-#-{ Add hero1 and the Sun }--------------------------------
-BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")
-H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10")
-#-------------------{ Generate grass }----------------------------------------------------------------------------------
-for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land}
 #-{ If server }---------------------------------------------------------------------------------------------------------
 case $game:$type in
     server:team) H2X=1         H2Y=$[halfendy-2];;&
@@ -1568,5 +1614,4 @@ case $game:$type in
                  sender $saddr $sport "${caddr[0]} $cport $H1C $H1S $S1C"
                  game_client;;
 esac
-[[ $1 =~ starship ]] && { ad_new= ad='Got a ticket to Mars?'; ad_plane_text; starship_intro; }
 game

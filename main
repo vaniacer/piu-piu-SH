@@ -74,9 +74,9 @@ que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    â–‘ â–
        cport=54322
 
 [[ -e ~/.piuconf ]] && . ~/.piuconf
+. ./functions #_FUNCTIONS_
 . ./messages  #_MESSAGES_
 . ./sprites   #_SPRITES_
-. ./functions #_FUNCTIONS_
 #======================================{ Main game loop single or server mode }=========================================
 game () {
     while true; do

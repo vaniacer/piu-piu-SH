@@ -532,7 +532,7 @@ sprite_exhaust () {
              cut $[BX+11] $[BY-2] $DIM$red          '/               ¯ ¸'       #          /               ¯ ¸
              cut $[BX+10] $[BY-1] $DIM$red         '(                   ¯¸'     #         (                   ¯¸
              cut $[BX+10]  $BY    $DIM$red         '|                      ¸'   #         |                      ¸
-             BP2[0]="burningsock $[halfendx-11] $[endy-5] 3 1 0 3 1 1 0 5";;    # sock'll burn now
+             BP2[0]="burningsock $[halfendx-12] $[endy-5] 3 1 0 3 1 1 0 5";;    # sock'll burn now
           5) cut $[BX+13] $[BY-3] $SKY                '              '          #
              cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾  •  ¸'         #           ¸  -  ‾  ‾  •  ¸
              cut $[BX+10] $[BY-1] $blk             '/                    ¸'     #         /                    ¸
@@ -978,4 +978,3 @@ sprite_ARR () {
     cut $SX $[OY+4] $C1 '' $X1⎕ ▒    ⎕    ▒    ▒    ⎕    ⎕ $C2▒ $C2▓ $C2▓ $C2▓ $C2▓ $C6▒ $C6▓ $C3█ $C3█ $C3█ $C1░                                  #5
     cut $SX $[OY+5] $C1 ''   '' ''  '' $X2⎕    ░    ░    ░    ⎕    ▒    ▒    ▒    ⎕    ░    ░    ▒    ▒    ░                                       #6
 }
-
