@@ -277,7 +277,7 @@ fill_screen () {
 
 drop_crate () { # in duel mode ad plane'll drop bonus crate
     case $type:$crate in duel:0)
-        [[ $OX -eq $halfendx ]] && { crate=1 ENM+=("crate $[halfendx-1] 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
+        [[ $OX -eq $halfx ]] && { crate=1 ENM+=("crate $[halfx1] 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
     esac
 }
 
@@ -528,7 +528,7 @@ sprite_win () {
     XY $x $[y+7] "$GRN| |_| | |_| | |\  | |___|_|$DEF"
     XY $x $[y+8] "$CM2|____/ \___/|_| \_|_____(_)$DEF"
 }
-size=($(stty size)) endx=${size[1]} endy=${size[0]} halfendx=$[endx/2] halfendy=$[endy/2]
+size=($(stty size)) endx=${size[1]} endy=${size[0]} halfx=$[endx/2] halfy=$[endy/2]
 #================================================{ Sprites }============================================================
 case $month in
     0[1-4]|12) # winter & early spring
@@ -838,7 +838,7 @@ bossendx=$[endx-14]
 bossendy=$[endy-7 ]
 bosshbar=$[endx-10]
 
-TX=$halfendx TY=$bossendy
+TX=$halfx TY=$bossendy
 sprite_boss () {
     [[ $H2Y ]] && HY=$[H2Y-1] || HY=$[H1Y-1] # kill client first
     if [[ $bhealth -gt 0 ]]; then
@@ -848,7 +848,7 @@ sprite_boss () {
         [[ $OY -lt $HY ]] && ((OY++))
         [[ $OY -gt $HY ]] && ((OY--)) # this is a black magic
         [[ $OX -gt $TX ]] && mov - || { TX=$bossendx; SX=$OX; }
-        [[ $OX -lt $TX ]] && mov + || { TX=$halfendx; SX=$OX; }
+        [[ $OX -lt $TX ]] && mov + || { TX=$halfx; SX=$OX; }
         #-{ Aliens out }-------------------------------------------------------
         EX=$[OX+2] EY=$[OY+5]; [[ $EY -gt $[enmyendy+3] ]] && EY=$[enmyendy+3]
     else # when boss' health goes to 0 it starts to fall, explodes and bounces on the ground
@@ -1062,10 +1062,10 @@ sprite_exhaust () {
              cut $[BX+10] $[BY-1] $DIM$red         '(                   ¯¸'     #         (                   ¯¸
              cut $[BX+10]  $BY    $DIM$red         '|                      ¸'   #         |                      ¸
              BP1[1]= BP1[2]= BP1[3]=
-             BP2[0]="burningsock $[halfendx-12] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # sock &
-             BP2[1]="burningsock $[halfendx-8 ] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # these
-             BP2[2]="burningsock $[halfendx-15] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # trees
-             BP2[3]="burningsock $[halfendx-18] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5";; # burn )
+             BP2[0]="burningsock $[halfx-12] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # sock &
+             BP2[1]="burningsock $[halfx-8 ] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # these
+             BP2[2]="burningsock $[halfx-15] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"   # trees
+             BP2[3]="burningsock $[halfx-18] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5";; # burn )
           5) cut $[BX+13] $[BY-3] $SKY                '              '          #
              cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾  •  ¸'         #           ¸  -  ‾  ‾  •  ¸
              cut $[BX+10] $[BY-1] $blk             '/                    ¸'     #         /                    ¸
@@ -1527,7 +1527,7 @@ game () {
         BP3=("${BP3[@]}"); for i in ${!BP3[@]}; { OI=(${BP3[i]}); print_sprite; } # big(closer) background objects
         #-{ BOSS }-------------------------------------------------------------
         if [[ $[frags+frags2] -ge $tillboss ]]; then # add boss object
-            [[ $bossborn ]] || { ENM+=("boss $endx $halfendy 6 14 0 0 1 0 $[RANDOM%3] 3 20 10"); bossborn=true; }
+            [[ $bossborn ]] || { ENM+=("boss $endx $halfy 6 14 0 0 1 0 $[RANDOM%3] 3 20 10"); bossborn=true; }
             boss_health # Print boss' health bar
             #-{ Add aliens }---------------------------------------------------
             [[ $bhealth -gt 0 ]] && add_enm $EX $EY 5 # aliens come out from boss
@@ -1565,23 +1565,23 @@ game_client () {
 starship_intro () {
     [[ $1 =~ starship ]] || return
     ad_new= ad='Got a ticket to Mars?'; ad_plane_text; fill_screen; cursor off
-    T1=($[halfendx-8] $[halfendx-15] $[halfendx-18] $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40] 3 7 11 15 20)
-    T2=($[endx-7] $[endx-11] $[endx-35] 5 17 23)
-    T3=($[endx-8] $[endx-25] 4 23)
+    T1=($[halfx-8] $[halfx-15] $[halfx-18] $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40] 3 7 11 15 20)
+    T2=($[endx-7]  $[endx-11]  $[endx-35] 5 17 23)
+    T3=($[endx-8]  $[endx-25]  4 23)
        # reserved for burning # type      $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
-        BP2+=('' '' ''); BP2+=("windsock  $[halfendx-17] $[endy-4] 2   8   0   0   1   7   0   2")    # windsock
-                         BP2+=("starship  $halfendx      $[endy-2] 10  7   0   0   10  10  0   0")    # starship
-                         BP3+=("startable $[halfendx-4]  $[endy-2] 8   15  0   10  10  10  0   1")    # startable
-    for i in ${T1[@]}; { BP1+=("tree1     $i             $tre1endy 4   2   0  -1   1   5   0   0"); } # Plant
-    for i in ${T2[@]}; { BP2+=("tree2     $i             $tre2endy 6   5   0  -1   1   5   0   0"); } # some
-    for i in ${T3[@]}; { BP3+=("tree3     $i             $tre3endy 9   9   0  -1   1   9   0   0"); } # trees
+        BP2+=('' '' ''); BP2+=("windsock  $[halfx-17] $[endy-4] 2   8   0   0   1   7   0   2")    # windsock
+                         BP2+=("starship   $halfx     $[endy-2] 10  7   0   0   10  10  0   0")    # starship
+                         BP3+=("startable $[halfx-4]  $[endy-2] 8   15  0   10  10  10  0   1")    # startable
+    for i in ${T1[@]}; { BP1+=("tree1     $i          $tre1endy 4   2   0  -1   1   5   0   0"); } # Plant
+    for i in ${T2[@]}; { BP2+=("tree2     $i          $tre2endy 6   5   0  -1   1   5   0   0"); } # some
+    for i in ${T3[@]}; { BP3+=("tree3     $i          $tre3endy 9   9   0  -1   1   9   0   0"); } # trees
 
     while true; do
         XY 1 1 $SECONDS
         #-{ Empty screen, print game status adnd FPS }-------------------------
         screen=; [[ $showfps ]] && fps_counter
         # Start the engine (add exhaust sprite)      type        $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
-        ((SECONDS==5)) && [[ -z $ex1 ]] && { BP2+=( "exhaust     $[halfendx-31] $[endy-3] 4   33  0   7   1   33  0   9"); ex1=1; }
+        ((SECONDS==5)) && [[ -z $ex1 ]] && { BP2+=( "exhaust     $[halfx-31] $[endy-3] 4   33  0   7   1   33  0   9"); ex1=1; }
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound birds msngr clouds land
         #-{ Move bitplans }----------------------------------------------------
@@ -1603,8 +1603,8 @@ clear; fill_screen
 cursor off
 #-{ If server }---------------------------------------------------------------------------------------------------------
 case $game:$type in
-    server:team) H2X=1         H2Y=$[halfendy-2];;&
-    server:duel) H2X=$heroendx H2Y=$[halfendy-2] H1Y=$[halfendy-2] enmax=0; ad_plane_text;;&
+    server:team) H2X=1         H2Y=$[halfy-2];;&
+    server:duel) H2X=$heroendx H2Y=$[halfy-2] H1Y=$[halfy-2] enmax=0; ad_plane_text;;&
     server:*   ) XY 2 1 $SKY$RED"Server mode. Waiting for client..."
                  HER+=("hero2 $H2X $H2Y 6 16 0 0 1 15 0 3 15 10")
                  clnt=( $(nc -l -p $sport) )

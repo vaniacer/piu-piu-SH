@@ -202,7 +202,7 @@ fill_screen () {
 
 drop_crate () { # in duel mode ad plane'll drop bonus crate
     case $type:$crate in duel:0)
-        [[ $OX -eq $halfendx ]] && { crate=1 ENM+=("crate $[halfendx-1] 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
+        [[ $OX -eq $halfx ]] && { crate=1 ENM+=("crate $[halfx1] 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
     esac
 }
 
