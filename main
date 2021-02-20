@@ -131,9 +131,9 @@ game_client () {
 starship_intro () {
     [[ $1 =~ starship ]] || return
     ad_new= ad='Got a ticket to Mars?'; ad_plane_text; fill_screen; cursor off
-    T1=(3 7  11 15 20 30 40 43 $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40])
-    T2=(5 17 23                $[endx-7] $[endx-11] $[endx-35])
-    T3=(4 23                   $[endx-8] $[endx-25])
+    T1=($[halfendx-8] $[halfendx-15] $[halfendx-18] $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40] 3 7 11 15 20)
+    T2=($[endx-7] $[endx-11] $[endx-35] 5 17 23)
+    T3=($[endx-8] $[endx-25] 4 23)
                                #type      $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
                          BP2+=("windsock  $[halfendx-17] $[endy-4] 2   8   0   0   1   7   0   2")    # windsock
                          BP2+=("starship  $halfendx      $[endy-2] 10  7   0   0   10  10  0   0")    # starship
@@ -147,7 +147,7 @@ starship_intro () {
         #-{ Empty screen, print game status adnd FPS }-------------------------
         screen=; [[ $showfps ]] && fps_counter
         # Start the engine (add exhaust sprite)      type        $OX            $OY      $OH $OW $SC $SM $CS $CL $AS $AL
-        ((SECONDS==5)) && [[ -z $ex1 ]] && { BP2+=( "exhaust     $[halfendx-30] $[endy-3] 4   33  0   7   1   33  0   9"); ex1=1; }
+        ((SECONDS==5)) && [[ -z $ex1 ]] && { BP2+=( "exhaust     $[halfendx-31] $[endy-3] 4   33  0   7   1   33  0   9"); ex1=1; }
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound birds msngr clouds land
         #-{ Move bitplans }----------------------------------------------------
