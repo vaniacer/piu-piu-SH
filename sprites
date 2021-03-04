@@ -569,14 +569,18 @@ sprite_startable () {
 }
 
 sprite_lift () {
-    BX=$OX BY=$OY
-    [[ $lift_up ]] && mov; ((AS>=AL)) && lift_up=
+    BX=$OX BY=$OY BU=$BY BL=$BX
+    case $lift in
+        ( up  )  mov; ((AS<AL)) && BU=$[BY-AS] || lift=left   BY=$[BY-AL+1] AS=0;;
+        (left )  mov; ((AS<AL)) && BL=$[BX-AS] || lift= ex1=1 BX=$[BX-AL+1] AS=0;;
+    esac
+
     BP4[i]="lift $BX $BY 1 1 $SC $SM 1 1  $AS $AL"
     CM1=$SKY$BLK
     #01
     #1▉
     ###################### 1  #0
-    cut $BX $[BY-AS] $CM1 '▉' #1
+    cut $BL $BU $CM1 '▉' #1
 }
 
 sock=(
