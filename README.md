@@ -1,5 +1,5 @@
 # PIU-PIU Happy new year!)
-![screeenshot](https://user-images.githubusercontent.com/18072680/34253060-1ae25446-e657-11e7-8daa-19f57d1ebbf1.gif)
+![piu-piu_to_Mars](https://user-images.githubusercontent.com/18072680/113054416-0dffb480-91b2-11eb-904f-6e2088f180af.gif)
 [![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
 
 This is an Old School horizontal scroller 'Shoot Them All' game in bash.

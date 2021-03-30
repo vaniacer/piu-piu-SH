@@ -136,16 +136,16 @@ starship_intro () {
     T3=($[endx-8]  $[endx-25]  4 23)
        # reserved for burning # type      $OX         $OY      $OH $OW $SC $SM $CS $CL $AS $AL
         BP2+=('' '' ''); BP2+=("windsock  $[halfx-17] $[endy-4] 2   8   0   0   1   7   0   2")    # windsock
-                         BP2+=("starship   $halfx     $[endy-2] 10  7   0   0   10  10  0   0")    # starship
-                         BP3+=("startable $[halfx-4]  $[endy-2] 8   15  0   50  10  10  0   1")    #
+                         BP2+=("starship   $halfx      $endy    10  7   0   10  10  10  0   5")    # starship
+                         BP3+=("startable $[halfx-4]  $[endy-2] 8   15  0   50  10  10  0   1")    # startable
                          BP4+=("lift      $[halfx+8]  $[endy-4] 1   3   0   30  1   1   0   4")    # lift
     for i in ${T1[@]}; { BP1+=("tree1      $i         $tre1endy 4   2   0  -1   1   5   0   0"); } # Plant
     for i in ${T2[@]}; { BP2+=("tree2      $i         $tre2endy 6   5   0  -1   1   5   0   0"); } # some
     for i in ${T3[@]}; { BP3+=("tree3      $i         $tre3endy 9   9   0  -1   1   9   0   0"); } # trees
     while true; do
-        XY 1 1 " $SECONDS $lift ${BP4[0]} "
+#        XY 1 1 " $SECONDS "
         #-{ Empty screen, print game status adnd FPS }-------------------------
-        screen=; [[ $showfps ]] && fps_counter; ((SECONDS==3)) && lift=up
+        screen=; [[ $showfps ]] && fps_counter; ((SECONDS==15)) && lift=up
         # Start the engine (add exhaust sprite)
         [[   $ex1   ]] && { BP2+=( "exhaust $[halfx-31] $[endy-3] 4 33 0 7 1 33 0 9"); ex1=; }
         #-{ Add background }---------------------------------------------------

@@ -490,7 +490,7 @@ sprite_msngr () {
 };  msgrendy=$[endy-10]
 
 sprite_crate () {
-    movy && ENM[$i]="crate $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i" || { unset ENM[$i]; boom $OX $boomendy; boom $OX $[boomendy-3]; crate=0; }
+    movy + && ENM[$i]="crate $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i" || { unset ENM[$i]; boom $OX $boomendy; boom $OX $[boomendy-3]; crate=0; }
     CM1=$SKY$ylw CM2=$SKY$blk CM3=$SKY$BLU SS="$RED ? $CM3"
     ########################1234567###01234567
     cuty  $OX    $OY 7 $SKY'       ' #1       
@@ -503,18 +503,22 @@ sprite_crate () {
 }
 #------------------------{ Starship }-----------------------------------------------------------------------------------
 sprite_starship () {
-    BP2[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i"
+    [[ $takeoff ]] && { movy - && eng1=" ${bs1[$AS]}${bs1[$AS]}${bs1[$AS]} " eng2="  ${bs2[$AS]}  " || mess tobe; }
+    BP2[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL $AS $AL 0 0 $i"
     CM1=$SKY$BLD$WHT; case $month in 0[1-4]|12) CM1=$SKY$DIM$wht;; esac
-    ######### ##########1234567###01234567
-    cuty $OX $OY 9 $SKY'       ' #1
-    cuty $OX $OY 8 $CM1'   ▃   ' #2   ▃
-    cuty $OX $OY 7 $CM1' ◿▞▒▙◣ ' #3 ◿▞▒▙◣
-    cuty $OX $OY 6 $CM1'  ░▒█  ' #4  ░▒█
-    cuty $OX $OY 5 $CM1'  ░▒█  ' #5  ░▒█
-    cuty $OX $OY 4 $CM1'  ░▒█  ' #6  ░▒█
-    cuty $OX $OY 3 $CM1' ╱░▒█╲ ' #7 ╱░▒█╲
-    cuty $OX $OY 2 $CM1'│_░▒█_┃' #8│_░▒█_┃
-    cuty $OX $OY 1 $SKY'       ' #9
+    #####################1234567###01234567
+    cuty $OX $OY 10 $CM1'   ▃   ' #1   ▃
+    cuty $OX $OY 9  $CM1' ◿▞▒▙◣ ' #2 ◿▞▒▙◣
+    cuty $OX $OY 8  $CM1'  ░▒█  ' #3  ░▒█
+    cuty $OX $OY 7  $CM1'  ░▒█  ' #4  ░▒█
+    cuty $OX $OY 6  $CM1'  ░▒█  ' #5  ░▒█
+    cuty $OX $OY 5  $CM1' ╱░▒█╲ ' #6 ╱░▒█╲
+    cuty $OX $OY 4  $CM1'│_░▒█_┃' #7│_░▒█_┃
+    [[ $takeoff ]] && {
+    cuty $OX $OY 3  $RED" $eng1 " #8  ⠇⠆⠁
+    cuty $OX $OY 2  $YLW" $eng2 " #9   ⠁⠆
+    cuty $OX $OY 1  $SKY'       ' #10
+    }
 }
 
 sprite_exhaust () {
@@ -534,10 +538,11 @@ sprite_exhaust () {
              cut $[BX+10] $[BY-1] $DIM$red         '(                   ¯¸'     #         (                   ¯¸
              cut $[BX+10]  $BY    $DIM$red         '|                      ¸'   #         |                      ¸
              BP1[1]= BP1[2]= BP1[3]=
-             BP2[0]="torch $[halfx-12] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"     # sock &
-             BP2[1]="torch $[halfx-8 ] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"     # these
-             BP2[2]="torch $[halfx-15] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5"     # trees
-             BP2[3]="torch $[halfx-18] $[endy-5] 3 1 0 3 1 1 $[RANDOM%6] 5";;   # burn )
+             BP2[0]="torch $[halfx-12] $[endy-5] 3 1 0 $[3+RANDOM%3] 1 1 $[RANDOM%6] 5" # burn
+             BP2[1]="torch $[halfx-8 ] $[endy-5] 3 1 0 $[3+RANDOM%3] 1 1 $[RANDOM%6] 5" # sock &
+             BP2[2]="torch $[halfx-15] $[endy-5] 3 1 0 $[3+RANDOM%3] 1 1 $[RANDOM%6] 5" # these
+             BP2[3]="torch $[halfx-18] $[endy-5] 3 1 0 $[3+RANDOM%3] 1 1 $[RANDOM%6] 5" # trees)
+             takeoff=1;;
           5) cut $[BX+13] $[BY-3] $SKY                '              '          #
              cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾  •  ¸'         #           ¸  -  ‾  ‾  •  ¸
              cut $[BX+10] $[BY-1] $blk             '/                    ¸'     #         /                    ¸
@@ -557,22 +562,30 @@ sprite_startable () {
     BX=$OX BY=$OY
     mov -; BP3[i]="startable $BX $BY $OH $OW $SC $SM $CS $CL $AS 1"
     CM1=$SKY$BLD$blk$UND CM2=$SKY$BLD$blk CM3=$SKY$YLW
-    #########################1234567890ABCDEFG####0
-    cuty $[BX+13] $OY 8             ${bulb[$AS]} #1             .
-    cuty $[BX+13] $OY 7              $CM2'│'     #2             │
-    cuty $[BX+9 ] $OY 6          $CM1'   ╱┃'     #3         ___╱┃
-    cuty $[BX+9 ] $OY 5          $CM1'│╳┃╳┃'     #4         │╳┃╳┃
-    cuty $[BX+11] $OY 4            $CM1'┃╳┃'     #5           ┃╳┃
-    cuty $[BX+11] $OY 3            $CM1'┃╳┃'     #6           ┃╳┃
-    cuty $[BX+11] $OY 2            $CM1'┃╳┃'     #7           ┃╳┃
-    cuty  $BX     $OY 1 $CM3'▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂'  #8▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂
+    ###########################1234567890ABCDEFG####0
+    cuty $[BX+13]   $OY 8             ${bulb[$AS]} #1             .
+    cuty $[BX+13]   $OY 7              $CM2'│'     #2             │
+    cuty $[BX+12]   $OY 6             $CM1'╱┃'     #3         ___╱┃
+    cuty $[BX+9+TM] $OY 5          $CM1'│╳┃╳┃'     #4         │╳┃╳┃
+    cuty $[BX+11]   $OY 4            $CM1'┃╳┃'     #5           ┃╳┃
+    cuty $[BX+11]   $OY 3            $CM1'┃╳┃'     #6           ┃╳┃
+    cuty $[BX+11]   $OY 2            $CM1'┃╳┃'     #7           ┃╳┃
+    cuty  $BX       $OY 1 $CM3'▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂'  #8▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂
+    case  $TM in
+        ''|0) cuty $[BX+9+TM]  $OY 6 $CM1'   ';;   #top spaces move
+           1) cuty $[BX+9+TM]  $OY 6 $CM1'  '
+              cuty $[BX+13+TM] $OY 6 $CM1' '  ;;
+           2) cuty $[BX+9+TM]  $OY 6 $CM1' '
+              cuty $[BX+12+TM] $OY 6 $CM1'  ' ;;
+    esac
 }
 
 sprite_lift () {
     BX=$OX BY=$OY BU=$BY BL=$BX
     case $lift in
-        ( up  )  mov; ((AS<AL)) && BU=$[BY-AS] || lift=left   BY=$[BY-AL+1] AS=0;;
-        (left )  mov; ((AS<AL)) && BL=$[BX-AS] || lift= ex1=1 BX=$[BX-AL+1] AS=0;;
+        ( up  ) mov; ((AS<AL)) && BU=$[BY-AS]        || lift=left   BY=$[BY-AL+1] AS=0;;
+        (left ) mov; ((AS<AL)) && BL=$[BX-AS]        || lift=right  BX=$[BX-AL+1] AS=0 AL=3;;
+        (right) mov; ((AS<AL)) && BL=$[BX+AS] TM=$AS || lift= ex1=1 BX=$[BX+AL-1] AS=0;;
     esac
 
     BP4[i]="lift $BX $BY 1 1 $SC $SM 1 1  $AS $AL"
@@ -600,11 +613,12 @@ sprite_windsock () {
     cut $OX $[OY+1] $CM2 '' '' '' '' ''    ''   $X1'│' #2
 }
 
-bs1=(' ' ' ' '⡀' '⠆' '⠂' ' ')
-bs2=('⠆' '⠇' '⠃' '⠅' '⠆' '⠇')
+#⠁⠂⠃⠄⠅⠆⠇⠈⠉⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⡀⡁⡂⡃⡄⡅⡆⡇⡈⡉⡐⡑⡒⡓⡔⡕⡖⡗⡘⡙⡠⡡⡢⡣⡤⡥⡦⡧⡨⡩⡰⡱⡲⡳⡴⡵⡶⡷⡸⡹⢀⢁⢂⢃⢄⢅⢆⢇⢈⢉⢐⢑⢒⢓⢔⢕⢖⢗⢘⢙
+bs1=('⎕' '⎕' '⡀' '⠆' '⠇' '⠂' '⎕')
+bs2=('⠆' '⠇' '⠃' '⠁' '⎕' '⎕' '⠄')
 sprite_torch () {
     BX=$OX BY=$OY
-    mov -; BP2[i]="torch $BX $BY 3 1 $SC $SM $CS $CL $AS 5"
+    mov -; BP2[i]="torch $BX $BY 3 1 $SC $SM $CS $CL $AS 6"
     CM1=$SKY$DIM$BLK CM2=$SKY$BLD$RED CM3=$SKY$BLD$YLW
     #01
     #1⡀

@@ -31,19 +31,21 @@ cut () {
     screen+="${spr//⎕/ }"
 }
 
-movy () { # used in bonus crate
-    case $SC in
-         (0) [[ $OY -ge $[endy-2] ]]    && return 1
-             [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
-             [[ $CS -le $OH  ]] && ((CS++))
-             ((OY++)); SC=$SM;;
-         (*) ((SC--));;
+movy () {
+    case $SC:$1 in
+          (*:-) [[ $OY -le 1         ]] && return 1;;&
+          (*:+) [[ $OY -ge $[endy-2] ]] && return 1;;&
+          (0:*) [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
+                [[ $CS -le $OH  ]] && ((CS++))
+                ((OY$1$1)); SC=$SM;;
+          (*:*) ((SC--));;
     esac
 }
 
 cuty () { # used in bonus crate
-    xcord=$1 ycord=$2 cuter=$3; shift 3
-    [[ $CS -ge $cuter ]] && screen+="\e[$[ycord-cuter];${xcord}H$@"
+    xcord=$1 ycord=$2 cuter=$3 ypos=$[ycord-cuter]; shift 3
+    [[ $ypos -lt 1    ]] && ypos=1
+    [[ $CS -ge $cuter ]] && spr="\e[$ypos;${xcord}H$@" screen+="${spr//⎕/ }"
 }
 
 bonus () { # get random bonus from alien or not
@@ -58,6 +60,7 @@ mess () {
     case $1 in
         win ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
         lose) sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
+        tobe) sprite_tobe; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
         help) sprite_help;;
     esac
 }
@@ -171,8 +174,8 @@ fps_counter () { #-{ Print FPS }-----------------------------------------------
         FPSC=0
     } || ((FPSC++))
     case $game in
-        'server') screen+="\e[$endy;$[endx-9]H${DEF}FPS: $RED$FPS ";;
-               *) screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL ${DEF}avg: $RED$FPSA ";;
+        'server') screen+="\e[$endy;$[endx-9]H$LND${BLK}FPS: $RED$FPS $DEF";;
+               *) screen+="\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}max: $RED$FPSM ${BLK}low: $RED$FPSL ${BLK}avg: $RED$FPSA $DEF";;
     esac
 }
 
