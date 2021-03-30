@@ -1,4 +1,4 @@
-# PIU-PIU Happy new year!)
+# PIU-PIU to Mars!)
 ![piu-piu_to_Mars](https://user-images.githubusercontent.com/18072680/113054416-0dffb480-91b2-11eb-904f-6e2088f180af.gif)
 [![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
 
