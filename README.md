@@ -15,6 +15,8 @@ On ubuntu 18.04 you can install it with apt!)
 <a href="https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj">piu-piu-asciinema</a></br>
 <a href="https://coub.com/view/1kn2tt">piu-piu-coub</a>
 
+<a href="https://twitter.com/Vaniacer?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @Vaniacer</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) Feel free to support the project!)</br>
 
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
