@@ -145,7 +145,7 @@ starship_intro () {
     while true; do
 #        XY 1 1 " $SECONDS "
         #-{ Empty screen, print game status adnd FPS }-------------------------
-        screen=; [[ $showfps ]] && fps_counter; ((SECONDS==15)) && lift=up
+        screen=; [[ $showfps ]] && fps_counter; ((SECONDS==10)) && lift=up
         # Start the engine (add exhaust sprite)
         [[   $ex1   ]] && { BP2+=( "exhaust $[halfx-31] $[endy-3] 4 33 0 7 1 33 0 9"); ex1=; }
         #-{ Add background }---------------------------------------------------
