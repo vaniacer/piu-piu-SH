@@ -15,7 +15,7 @@ On ubuntu 18.04 you can install it with apt!)
 <a href="https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj">piu-piu-asciinema</a> </br>
 <a href="https://coub.com/view/1kn2tt">piu-piu-coub</a> </br>
 
-[![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FVaniacer%2Fstatus%2F1376996237631758339%3Fs%3D20)](https://twitter.com/Vaniacer/status/1376996237631758339?s=20) </br>
+[![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2FVaniacer%2Fstatus%2F1376996237631758339%3Fs%3D20)](https://twitter.com/Vaniacer/status/1400401415747612673) </br>
 [![Twitter Follow](https://img.shields.io/twitter/follow/Vaniacer?style=social)](https://twitter.com/Vaniacer)
 
 
