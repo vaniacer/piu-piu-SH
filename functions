@@ -26,7 +26,7 @@ get_dimensions () {
     tre3endy=$[endy-tree3H-2]
 }
 
-bye () { cursor on; exit $1; }
+bye () { cursor on; clear; ls; exit $1; }
 
 cursor () {
     case $1 in

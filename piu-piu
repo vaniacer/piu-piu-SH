@@ -38,35 +38,35 @@ XY () { printf "\e[$2;${1}H$3"; }                                   #|       ░
 line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 # Create sequence like {0..(X-1)}                                    | ░ ░ ░ ░░░░░░▒▒▒▒ ▒▒▒▓ ▓▓▓▒▒▒▒▒░░░░░░ ░ ░ ░ ░ ░
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ ░ ░░░ ░ ░░ ░░░▒ ▒▒▒░░░░░░░ ░ ░
-#----{ Start opt }------------------------------------{ description  }---------------------{ def. values }--------------
-  background=true                                     # background objects visibility             (true)
-    bossborn=                                         # boss starter
-    tillboss=100                                      # frags needed to fight with boss           (100)
-     version=₁․₁                                      # game varsion in small digits ₀₁₂₃₄₅₆₇₈₉․
-     bhealth=100                                      # boss' health                              (100)
-     showfps=true                                     # show FPS counter if set                   (true)
-     enumber=0                                        # enemies counter                           (0)
-     bonuses=("ammo" "life" "ammo" "gunup" "ammo")    # bonuses, more ammo, less life ang gunup
-       enmax=100                                      # max number of enemies                     (10)
-       crate=0                                        # crate drop                                (0)
-       frags=0                                        # hero1 frags counter                       (0)
-        life=3                                        # hero1 life counter                        (3)
-        ammo=100                                      # hero1 ammo counter                        (100)
-         DHC=$BLK                                     # default hero color                        ($BLK)
-         DSC=$RED                                     # default symbol color                      ($RED)
-         rnd=10                                       # random seed 4 bonuses                     (10)
-         DHS=★                                        # default symbol                            (★)
-         spd=0.0001                                   # game\read speed                           (0.0001)
-         MSN=1111                                     # messenger randomizer                      (1111)
-         HOU=1111                                     # houses randomizer                         (1111)
-          ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
-           G=1                                        # gun                                       (1)(max 5)
-read year month day < <(date +'%Y %m %d')             # get year, month, day
-#----{ Multipleyer config }---------------------------{ description  }---------------------{ def. values }--------------
-      frags2=0                                        # hero2 frags counter                       (0)
-       life2=3                                        # hero2 life counter                        (3)
-       ammo2=100                                      # hero2 ammo counter                        (100)
-          G2=1                                        # hero2 gun                                 (1)(max 5)
+#----{ Start opt }------------------------------------------{ description  }--------------------{ def. values }---------
+  background=true                                           # background objects visibility            (true)
+    bossborn=                                               # boss starter
+    tillboss=100                                            # frags needed to fight with boss          (100)
+     version=₁․₁                                            # game version in small digits ₀₁₂₃₄₅₆₇₈₉․
+     bhealth=100                                            # boss' health                             (100)
+     showfps=true                                           # show FPS counter if set                  (true)
+     enumber=0                                              # enemies counter                          (0)
+     bonuses=("ammo" "life" "ammo" "gunup" "ammo")          # bonuses, more ammo, less life ang gunup
+       enmax=100                                            # max number of enemies                    (10)
+       crate=0                                              # crate drop                               (0)
+       frags=0                                              # hero1 frags counter                      (0)
+        life=3                                              # hero1 life counter                       (3)
+        ammo=100                                            # hero1 ammo counter                       (100)
+         DHC=$BLK                                           # default hero color                       ($BLK)
+         DSC=$RED                                           # default symbol color                     ($RED)
+         rnd=10                                             # random seed 4 bonuses                    (10)
+         DHS=★                                              # default symbol                           (★)
+         spd=0.0001                                         # game\read speed                          (0.0001)
+         MSN=1111                                           # messenger randomizer                     (1111)
+         HOU=1111                                           # houses randomizer                        (1111)
+          ad='Die alien scum!'                              # ad plane message                         'Die alien scum!'
+           G=1                                              # gun                                      (1)(max 5)
+read year month day dow < <(LANG=en.US date +'%Y %m %d %a') # get year, month, day and day of week
+#----{ Multipleyer config }---------------------------------{ description  }--------------------{ def. values }---------
+      frags2=0                                              # hero2 frags counter                      (0)
+       life2=3                                              # hero2 life counter                       (3)
+       ammo2=100                                            # hero2 ammo counter                       (100)
+          G2=1                                              # hero2 gun                                (1)(max 5)
        caddr=( $(ip a | grep 'inet ' | sed '/127.0.0.1/d; s/.*inet //g; s|/.*$||g') )
        saddr=
        sport=54321
@@ -75,8 +75,9 @@ case $day$month in 0104) ammo=0;; esac # O_o
 
 [[ -e ~/.piuconf ]] && . ~/.piuconf
 #================================================{ Messages }===========================================================
-case "$day$month$virus" in
-    *covid-19) ad='Stay at home!';;&
+case "$day$month${virus,,}${dow,,}" in
+   *covid-19*) ad='Stay at home!';;&
+        *fri*) ad='All work and no play makes Jack a dull boy';;&
         1101*) ad='Happy birthday Yura $)' ;;
         0202*) ad='It is groundhog day !)' ;;
         2002*) ad='Happy birthday Romka !)';;
@@ -1030,7 +1031,7 @@ get_dimensions () {
     tre3endy=$[endy-tree3H-2]
 }
 
-bye () { cursor on; exit $1; }
+bye () { cursor on; clear; ls; exit $1; }
 
 cursor () {
     case $1 in

@@ -1,7 +1,8 @@
 #!/bin/bash
 #================================================{ Messages }===========================================================
-case "$day$month$virus" in
-    *covid-19) ad='Stay at home!';;&
+case "$day$month${virus,,}${dow,,}" in
+   *covid-19*) ad='Stay at home!';;&
+        *fri*) ad='All work and no play makes Jack a dull boy';;&
         1101*) ad='Happy birthday Yura $)' ;;
         0202*) ad='It is groundhog day !)' ;;
         2002*) ad='Happy birthday Romka !)';;
