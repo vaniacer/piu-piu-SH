@@ -1,6 +1,6 @@
 # Piu-piu further...
 
-![china](https://user-images.githubusercontent.com/18072680/164943815-e69fc4c6-eddc-496a-8799-7c4a76953b03.gif)
+![pphell](https://user-images.githubusercontent.com/18072680/198956841-3d1e57f1-bc38-4a4a-b6f3-8f84fe2925b9.gif)
 [![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
 
 This is an Old School horizontal scroller 'Shoot Them All' game in bash.
