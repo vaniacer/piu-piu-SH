@@ -1,20 +1,30 @@
-# PIU-PIU to Mars!)
+# And here the story goes...
+
+Alien invasion! Where are they coming from? Let's shoot them all down first then asks questions.
+
+![boss](https://user-images.githubusercontent.com/18072680/204158330-40e0a29d-3ad2-409a-9457-eb98a91486ac.gif)
+
+This large mother ... ship is you primary target, but first fight through 100 or more of smaller ones.
+
+![story](https://user-images.githubusercontent.com/18072680/204155032-702de947-40d0-4831-96b1-19d4d63148db.gif)
+
+Our engineers scanned the remains of the mothership and found some Mars' dust. Now we know that they came from Mars, 
+but their goals are not clear. We could squeeze some information out of the main ship's crew, but they didn't survive... 
+And the small ones was just an automated strike drones. We have no other choice but to visit them on their home planet. 
+Our Starship is already on the launch pad, do not waist more time, the Mars is calling!
+
 ![piu-piu_to_Mars](https://user-images.githubusercontent.com/18072680/113054416-0dffb480-91b2-11eb-904f-6e2088f180af.gif)
-[![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
 
-This is an Old School horizontal scroller 'Shoot Them All' game in bash.
-With multiplayer modes team and duel. You have to defeat 100 aliens to fight with Boss.
-I'm using netcat for client-server exchange in multiplayer mode.
-So netcat have to be installed on system if you wish to play with friend.
-Terminals on both hosts have to be with equal dimensions.<br>
-Read about it <a href="https://habrahabr.ru/post/335960">here</a>.
+The game written in pure bash. It supports multiplayer modes team and duel. Netcat used for client-server exchange in multiplayer mode.
+So it has to be installed in the system if you wish to play with friend. Terminals on both hosts has to be of equal dimensions
+for better visual experience. <br>
 
-On ubuntu 18.04 you can install it with apt!)
+On ubuntu 18.04 you can install it with apt, but there is not the latest version(
 <pre>sudo apt install -y piu-piu</pre>
 
-<a href="https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj">piu-piu-asciinema</a></br>
-<a href="https://coub.com/view/1kn2tt">piu-piu-coub</a>
+[![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
 
+---
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) Feel free to support the project!)</br>
 
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>

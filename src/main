@@ -111,7 +111,7 @@ game () {
         esac
         if [[ $the_end ]]; then
             case $game in 'server') listener; sender $caddr $cport $the_end;; esac
-            mess $the_end
+            mess $the_end; [[ $type != duel ]] && starship_intro starship
         fi
     done
 }
@@ -122,14 +122,17 @@ game_client () {
         sender $saddr $sport $input
         screen="$(nc -l -p $cport)"
         case $screen in
-            'win' | 'lose') mess   "$screen";;
-            *             ) printf "$screen";;
+             'win' ) mess   "$screen"; [[ $type != duel ]] && starship_intro starship;;
+             'lose') mess   "$screen";;
+             *     ) printf "$screen";;
         esac
     done
 }
 #============================================={ Starship intro }========================================================
 starship_intro () {
     [[ $1 =~ starship ]] || return
+    time_to_start=$((SECONDS+10))
+    BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2") BP2=() BP3=() BP4=()
     ad_new= ad='Got a ticket to Mars?'; ad_plane_text; fill_screen; cursor off
     T1=($[halfx-8] $[halfx-15] $[halfx-18] $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40] 3 7 11 15 20)
     T2=($[endx-7]  $[endx-11]  $[endx-35] 5 17 23)
@@ -143,9 +146,8 @@ starship_intro () {
     for i in ${T2[@]}; { BP2+=("tree2      $i         $tre2endy 6   5   0  -1   1   5   0   0"); } # some
     for i in ${T3[@]}; { BP3+=("tree3      $i         $tre3endy 9   9   0  -1   1   9   0   0"); } # trees
     while true; do
-#        XY 1 1 " $SECONDS "
         #-{ Empty screen, print game status adnd FPS }-------------------------
-        screen=; [[ $showfps ]] && fps_counter; ((SECONDS==10)) && lift=up
+        screen=; [[ $showfps ]] && fps_counter; ((SECONDS==time_to_start)) && lift=up
         # Start the engine (add exhaust sprite)
         [[   $ex1   ]] && { BP2+=( "exhaust $[halfx-31] $[endy-3] 4 33 0 7 1 33 0 9"); ex1=; }
         #-{ Add background }---------------------------------------------------

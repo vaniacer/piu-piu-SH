@@ -1,5 +1,5 @@
 #!/bin/bash
-target=piu-piu
+target=../piu-piu
 sed -n '1,/_FUNCTIONS_/p' main    >  $target
 sed '1d' functions                >> $target
 sed '1d' messages                 >> $target

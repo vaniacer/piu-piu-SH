@@ -58,7 +58,7 @@ mess () {
     cursor off
     XY 1 1 ${DEF}; clear
     case $1 in
-        win ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
+        win ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; the_story; return 0;;
         lose) sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
         tobe) sprite_tobe; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
         help) sprite_help;;
@@ -192,10 +192,10 @@ status () { #-{ Print game status }--------------------------------------------
 }
 
 boss_health () {
-    bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
+    bar=; hp=$((bosshbar * bhealth / 100)); hm=$((endx - 10))
     for (( i=0  ; i<hp; i++ )); do bar="█$bar"; done
     for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
-    screen+="\e[$[endy-1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
+    screen+="\e[$((endy-1));1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 }
 
 fill_screen () {

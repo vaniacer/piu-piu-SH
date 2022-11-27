@@ -319,11 +319,11 @@ sprite_boss () {
         [[ $OY -lt $HY ]] && ((OY++))
         [[ $OY -gt $HY ]] && ((OY--)) # this is a black magic
         [[ $OX -gt $TX ]] && mov - || { TX=$bossendx; SX=$OX; }
-        [[ $OX -lt $TX ]] && mov + || { TX=$halfx; SX=$OX; }
+        [[ $OX -lt $TX ]] && mov + || { TX=$halfx   ; SX=$OX; }
         #-{ Aliens out }-------------------------------------------------------
         EX=$[OX+2] EY=$[OY+5]; [[ $EY -gt $[enmyendy+3] ]] && EY=$[enmyendy+3]
     else # when boss' health goes to 0 it starts to fall, explodes and bounces on the ground
-        AS=0; SM=3; mov - || the_end=win
+        bhealth=0; AS=0; SM=3;   mov - || the_end=win
         [[ $OY -lt $TY ]] && ((OY++))  || { TY=$[bossendy-C2]; ((C2--)); }
         [[ $OY -gt $TY ]] && ((OY--))  ||   TY=$bossendy
         [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $OX $OY; C1=15; }
@@ -764,7 +764,7 @@ sprite_tree2 () {
 case $month in
     0[1-4]|12) T3C=$SKY$BLD$cyn tree3H=8;; # winter & early spring
     0[5-8]   ) T3C=$SKY$GRN     tree3H=9;; # late spring & summer
-    09|1[0-1]) T3C=$SKY$DIM$red tree3H=9;; # autumn
+    09|1[0-1]) T3C=$SKY$DIM$red tree3H=8;; # autumn
 esac;           tre3endy=$[endy-tree3H-2]
 sprite_tree3 () {
     case "$day:$month" in
