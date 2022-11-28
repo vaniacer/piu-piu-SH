@@ -133,7 +133,7 @@ mess () {
     cursor off
     XY 1 1 ${DEF}; clear
     case $1 in
-        win ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
+        win ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; the_story; return 0;;
         lose) sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
         tobe) sprite_tobe; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
         help) sprite_help;;
@@ -267,10 +267,10 @@ status () { #-{ Print game status }--------------------------------------------
 }
 
 boss_health () {
-    bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
+    bar=; hp=$((bosshbar * bhealth / 100)); hm=$((endx - 10))
     for (( i=0  ; i<hp; i++ )); do bar="█$bar"; done
     for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
-    screen+="\e[$[endy-1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
+    screen+="\e[$((endy-1));1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 }
 
 fill_screen () {
@@ -543,7 +543,42 @@ sprite_tobe () {
     XY $x $[y+6] $CM4'\ \ /_/\___//_.___/__/ \___\__///_/_//_/ /_/__,_|__|_,_|_    '$DEF
     XY $x $[y+7] $CM5' \_\____ ______  __   -----------  __________  ----'"$CM1  ______ __"$DEF
 }
+#------------------------{ And here the story goes... }-----------------------------------------------------------------
+the_story(){
+    color="$DEF$BLD$RED" # main color
+    story=(
+        "$DEF${RED}Our ${color}research team started to observe the debris of alien mothership."
+        "${color}But it's already clear that they are came from $DEF${red}Mars.$DEF${RED}.$DEF$DIM${red}."
+        ''
+        "${color}The research will be continued but we must act quickly and start our $DEF${red}Mars $DEF${RED}mission $DEF$DIM${red}immediately."
+        "${color}One famous $DEF${RED}ornithologist ${color}agree to help us with the transport."
+        "${color}Prepare all what is needed for this mission at once."
+        "${color}The fait of whole $DEF${RED}mankind ${color}is at $DEF${red}stake!$DEF${RED}.$DEF$DIM${red}."
+        "${color}Be brave, it could be a one way ticket."
+        ''
+        ''
+        "${color}Go$DEF${red}od $DEF${RED}lu$DEF$DIM${red}ck!.."
+        ''
+        ''
+        "${color}end of transmission"
+        "${color}press any $DEF${red}key $DEF${RED}to $DEF$DIM${red}continue "
+    )
 
+    clear
+    x=3 y=2
+    for line in "${story[@]}"; do
+        size=${#line}
+        for ((i=1; i<=size; i++)); {
+            [[ ${line:$((i-1)):3} =~ \\e\[ ]] && ((i+=6))
+            XY $x $y "${line:0:i}"
+            sleep 0.05
+        }
+        ((y++))
+    done
+    printf "$DEF"
+    read   -srn1
+    clear
+}
 
 
 
@@ -875,11 +910,11 @@ sprite_boss () {
         [[ $OY -lt $HY ]] && ((OY++))
         [[ $OY -gt $HY ]] && ((OY--)) # this is a black magic
         [[ $OX -gt $TX ]] && mov - || { TX=$bossendx; SX=$OX; }
-        [[ $OX -lt $TX ]] && mov + || { TX=$halfx; SX=$OX; }
+        [[ $OX -lt $TX ]] && mov + || { TX=$halfx   ; SX=$OX; }
         #-{ Aliens out }-------------------------------------------------------
         EX=$[OX+2] EY=$[OY+5]; [[ $EY -gt $[enmyendy+3] ]] && EY=$[enmyendy+3]
     else # when boss' health goes to 0 it starts to fall, explodes and bounces on the ground
-        AS=0; SM=3; mov - || the_end=win
+        bhealth=0; AS=0; SM=3;   mov - || the_end=win
         [[ $OY -lt $TY ]] && ((OY++))  || { TY=$[bossendy-C2]; ((C2--)); }
         [[ $OY -gt $TY ]] && ((OY--))  ||   TY=$bossendy
         [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $OX $OY; C1=15; }
@@ -1320,7 +1355,7 @@ sprite_tree2 () {
 case $month in
     0[1-4]|12) T3C=$SKY$BLD$cyn tree3H=8;; # winter & early spring
     0[5-8]   ) T3C=$SKY$GRN     tree3H=9;; # late spring & summer
-    09|1[0-1]) T3C=$SKY$DIM$red tree3H=9;; # autumn
+    09|1[0-1]) T3C=$SKY$DIM$red tree3H=8;; # autumn
 esac;           tre3endy=$[endy-tree3H-2]
 sprite_tree3 () {
     case "$day:$month" in
@@ -1603,7 +1638,7 @@ game () {
         esac
         if [[ $the_end ]]; then
             case $game in 'server') listener; sender $caddr $cport $the_end;; esac
-            mess $the_end
+            mess $the_end; [[ $type != duel ]] && starship_intro starship
         fi
     done
 }
@@ -1614,14 +1649,17 @@ game_client () {
         sender $saddr $sport $input
         screen="$(nc -l -p $cport)"
         case $screen in
-            'win' | 'lose') mess   "$screen";;
-            *             ) printf "$screen";;
+             'win' ) mess   "$screen"; [[ $type != duel ]] && starship_intro starship;;
+             'lose') mess   "$screen";;
+             *     ) printf "$screen";;
         esac
     done
 }
 #============================================={ Starship intro }========================================================
 starship_intro () {
     [[ $1 =~ starship ]] || return
+    time_to_start=$((SECONDS+10))
+    BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2") BP2=() BP3=() BP4=()
     ad_new= ad='Got a ticket to Mars?'; ad_plane_text; fill_screen; cursor off
     T1=($[halfx-8] $[halfx-15] $[halfx-18] $[endx-5] $[endx-9]  $[endx-15] $[endx-17] $[endx-25] $[endx-40] 3 7 11 15 20)
     T2=($[endx-7]  $[endx-11]  $[endx-35] 5 17 23)
@@ -1635,9 +1673,8 @@ starship_intro () {
     for i in ${T2[@]}; { BP2+=("tree2      $i         $tre2endy 6   5   0  -1   1   5   0   0"); } # some
     for i in ${T3[@]}; { BP3+=("tree3      $i         $tre3endy 9   9   0  -1   1   9   0   0"); } # trees
     while true; do
-#        XY 1 1 " $SECONDS "
         #-{ Empty screen, print game status adnd FPS }-------------------------
-        screen=; [[ $showfps ]] && fps_counter; ((SECONDS==10)) && lift=up
+        screen=; [[ $showfps ]] && fps_counter; ((SECONDS==time_to_start)) && lift=up
         # Start the engine (add exhaust sprite)
         [[   $ex1   ]] && { BP2+=( "exhaust $[halfx-31] $[endy-3] 4 33 0 7 1 33 0 9"); ex1=; }
         #-{ Add background }---------------------------------------------------
