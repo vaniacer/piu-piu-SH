@@ -17,8 +17,6 @@ On ubuntu 18.04 you can install it with apt!)
 <a href="https://coub.com/view/1kn2tt">piu-piu-coub</a> </br>
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/Vaniacer?style=social)](https://twitter.com/Vaniacer)
-
-
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) <sup>Feel free to support the project!)</sup>
 </br>
 
