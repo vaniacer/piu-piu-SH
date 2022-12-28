@@ -1,5 +1,8 @@
-# And here the story goes...
+# Happiu-piu new year!)
 
+![gif](https://user-images.githubusercontent.com/18072680/34253060-1ae25446-e657-11e7-8daa-19f57d1ebbf1.gif)
+
+And here the story goes...
 Alien invasion! Where are they coming from? Let's shoot them all down first then asks questions.
 
 ![boss](https://user-images.githubusercontent.com/18072680/204158330-40e0a29d-3ad2-409a-9457-eb98a91486ac.gif)
