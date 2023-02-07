@@ -1,6 +1,6 @@
-# Happiu-piu new year!)
+# Piu-piu all the way!)
 
-![gif](https://user-images.githubusercontent.com/18072680/34253060-1ae25446-e657-11e7-8daa-19f57d1ebbf1.gif)
+![gif](https://user-images.githubusercontent.com/18072680/34843658-2207ce84-f720-11e7-858e-83eaec80fea1.gif)
 [![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
 
 This is an Old School horizontal scroller 'Shoot Them All' game in bash.
@@ -20,6 +20,7 @@ On ubuntu 18.04 you can install it with apt!)
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) <sup>Feel free to support the project!)</sup>
 </br>
 
+Send me two bitcoins and I'll send you one back!)</br>
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
 ![btc](https://user-images.githubusercontent.com/18072680/106382955-f2f00e80-63d3-11eb-9316-b6653225820c.png)
 
