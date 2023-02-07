@@ -1,8 +1,5 @@
-# Happiu-piu new year!)
+# And here the story goes...
 
-![gif](https://user-images.githubusercontent.com/18072680/34253060-1ae25446-e657-11e7-8daa-19f57d1ebbf1.gif)
-
-And here the story goes...
 Alien invasion! Where are they coming from? Let's shoot them all down first then asks questions.
 
 ![boss](https://user-images.githubusercontent.com/18072680/204158330-40e0a29d-3ad2-409a-9457-eb98a91486ac.gif)
@@ -31,6 +28,7 @@ On ubuntu 18.04 you can install it with apt, but there is not the latest version
 [![Twitter Follow](https://img.shields.io/twitter/follow/Vaniacer?style=social)](https://twitter.com/Vaniacer)
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) <sup>Feel free to support the project!)</sup>
 
+Send me two bitcoins and I'll send you one back!)
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
 ![btc](https://user-images.githubusercontent.com/18072680/106382955-f2f00e80-63d3-11eb-9316-b6653225820c.png)
 
