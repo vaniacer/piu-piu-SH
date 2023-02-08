@@ -28,7 +28,7 @@ On ubuntu 18.04 you can install it with apt, but there is not the latest version
 [![Twitter Follow](https://img.shields.io/twitter/follow/Vaniacer?style=social)](https://twitter.com/Vaniacer)
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) <sup>Feel free to support the project!)</sup>
 
-Send me two bitcoins and I'll send you one back!)</br>
+Send me some coins and I'll send you one big 'Thank You!' back!)</br>
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
 ![btc](https://user-images.githubusercontent.com/18072680/106382955-f2f00e80-63d3-11eb-9316-b6653225820c.png)
 
