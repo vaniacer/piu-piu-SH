@@ -20,9 +20,12 @@ On ubuntu 18.04 you can install it with apt!)
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) <sup>Feel free to support the project!)</sup>
 </br>
 
-Send me some coins and I'll send you one big 'Thank You!' back!)</br>
+~~Twitter~~ DOGE: D7qJBRU3UpXES9EwtvE8YZSNAVgFEmz3py</br>
+![dodge](https://user-images.githubusercontent.com/18072680/229992296-f415eadb-645b-4229-81c7-e269485c635d.png)
+
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
 ![btc](https://user-images.githubusercontent.com/18072680/106382955-f2f00e80-63d3-11eb-9316-b6653225820c.png)
+
 
 BCH: qqnssal30x6acrga6zt4pd4q2s2t8um3cyqvd37qs7</br>
 ![bch](https://user-images.githubusercontent.com/18072680/108552897-fd326800-7302-11eb-8ae7-97eb0cc81d5e.png)
