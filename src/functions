@@ -82,8 +82,8 @@ print_sprite () {
     [[ $OT ]] && sprite_$OT
 }
 
-listener   () { input2=$(timeout 0.3 nc -l -p $sport 2>/dev/null); }
 read_input () { read -t$spd -srn1 input  &>/dev/null ; }
+listener   () { input2=$(nc -l -p $sport 2>/dev/null); }
 sender     () { until nc -q0 $1 $2 2>/dev/null <<< "$3"; do :; done; }
 
 control_hero1 () {
@@ -382,7 +382,7 @@ multiplayer  () { clr; items=('' 'server' 'client' 'single' "$type" 'back'); }
 enter_server () {
     XY $[$endx/2-10] $[$endy-4] "${RED}Enter server IP: "
     XY $[$endx/2-10] $[$endy-3] "$BLD$WHT"
-    cursor on; read -p ' ' -e saddr; cursor off
+    cursor on; read -p ' ' -i "$saddr" -e saddr; cursor off
 }
 
 game=single

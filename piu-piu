@@ -38,37 +38,36 @@ XY () { printf "\e[$2;${1}H$3"; }                                   #|       ░
 line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 # Create sequence like {0..(X-1)}                                    | ░ ░ ░ ░░░░░░▒▒▒▒ ▒▒▒▓ ▓▓▓▒▒▒▒▒░░░░░░ ░ ░ ░ ░ ░
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ ░ ░░░ ░ ░░ ░░░▒ ▒▒▒░░░░░░░ ░ ░
-#----{ Start opt }------------------------------------{ description  }---------------------{ def. values }--------------
-  background=true                                     # background objects visibility             (true)
-    storyspd=0.05                                     # story texting speed                       (0.05)
-    bossborn=                                         # boss starter
-    tillboss=100                                      # frags needed to fight with boss           (100)
-     version='₁․₁'                                    # game varsion in small digits ₀₁₂₃₄₅₆₇₈₉․
-     bhealth=100                                      # boss' health                              (100)
-     showfps=true                                     # show FPS counter if set                   (true)
-     enumber=0                                        # enemies counter                           (0)
-     bonuses=("ammo" "life" "ammo" "gunup" "ammo")    # bonuses, more ammo, less life ang gunup
-       enmax=100                                      # max number of enemies                     (10)
-       month=$(date +'%m')                            # get current month
-       crate=0                                        # crate drop                                (0)
-       frags=0                                        # hero1 frags counter                       (0)
-        life=3                                        # hero1 life counter                        (3)
-        ammo=100                                      # hero1 ammo counter                        (100)
-         day=$(date +'%d')                            # get current  day
-         DHC=$BLK                                     # default hero color                        ($BLK)
-         DSC=$RED                                     # default symbol color                      ($RED)
-         rnd=10                                       # random seed 4 bonuses                     (10)
-         DHS='★'                                      # default symbol                            (★)
-         spd=0.0001                                   # game\read speed                           (0.0001)
-         MSN=1111                                     # messenger randomizer                      (1111)
-         HOU=1111                                     # houses randomizer                         (1111)
-          ad='Die alien scum!'                        # ad plane message                          'Die alien scum!'
-           G=1                                        # gun                                       (1)(max 5)
-#----{ Multipleyer config }---------------------------{ description  }---------------------{ def. values }--------------
-      frags2=0                                        # hero2 frags counter                       (0)
-       life2=3                                        # hero2 life counter                        (3)
-       ammo2=100                                      # hero2 ammo counter                        (100)
-          G2=1                                        # hero2 gun                                 (1)(max 5)
+#----{ Start opt }--------------------------------------{ description  }---------------------{ def. values }------------
+  background=true                                       # background objects visibility             (true)
+    storyspd=0.05                                       # story texting speed                       (0.05)
+    bossborn=                                           # boss starter
+    tillboss=100                                        # frags needed to fight with boss           (100)
+     version='₁․₁'                                      # game varsion in small digits ₀₁₂₃₄₅₆₇₈₉․
+     bhealth=100                                        # boss' health                              (100)
+     showfps=true                                       # show FPS counter if set                   (true)
+     enumber=0                                          # enemies counter                           (0)
+     bonuses=("ammo" "life" "ammo" "gunup" "ammo")      # bonuses, more ammo, less life ang gunup
+       enmax=100                                        # max number of enemies                     (10)
+       crate=0                                          # crate drop                                (0)
+       frags=0                                          # hero1 frags counter                       (0)
+        life=3                                          # hero1 life counter                        (3)
+        ammo=100                                        # hero1 ammo counter                        (100)
+         DHC=$BLK                                       # default hero color                        ($BLK)
+         DSC=$RED                                       # default symbol color                      ($RED)
+         rnd=10                                         # random seed 4 bonuses                     (10)
+         DHS='★'                                        # default symbol                            (★)
+         spd=0.0001                                     # game\read speed                           (0.0001)
+         MSN=1111                                       # messenger randomizer                      (1111)
+         HOU=1111                                       # houses randomizer                         (1111)
+          ad='Die alien scum!'                          # ad plane message                          'Die alien scum!'
+           G=1                                          # gun                                       (1)(max 5)
+read year month day dow < <(LANG=C date +'%Y %m %d %a') # get year, month, day and day of week at once
+#----{ Multipleyer config }-----------------------------{ description  }---------------------{ def. values }------------
+      frags2=0                                          # hero2 frags counter                       (0)
+       life2=3                                          # hero2 life counter                        (3)
+       ammo2=100                                        # hero2 ammo counter                        (100)
+          G2=1                                          # hero2 gun                                 (1)(max 5)
        caddr=( $(hostname -I) )
        saddr=
        sport=54321
@@ -158,8 +157,8 @@ print_sprite () {
     [[ $OT ]] && sprite_$OT
 }
 
-listener   () { input2=$(timeout 0.3 nc -l -p $sport 2>/dev/null); }
 read_input () { read -t$spd -srn1 input  &>/dev/null ; }
+listener   () { input2=$(nc -l -p $sport 2>/dev/null); }
 sender     () { until nc -q0 $1 $2 2>/dev/null <<< "$3"; do :; done; }
 
 control_hero1 () {
@@ -458,7 +457,7 @@ multiplayer  () { clr; items=('' 'server' 'client' 'single' "$type" 'back'); }
 enter_server () {
     XY $[$endx/2-10] $[$endy-4] "${RED}Enter server IP: "
     XY $[$endx/2-10] $[$endy-3] "$BLD$WHT"
-    cursor on; read -p ' ' -e saddr; cursor off
+    cursor on; read -p ' ' -i "$saddr" -e saddr; cursor off
 }
 
 game=single
@@ -476,15 +475,19 @@ menu () {
     done
 }
 #================================================{ Messages }===========================================================
-case "$day$month$virus" in
-    *covid-19) ad='Stay at home!';;&
-        1101*) ad='Happy birthday Yura $)';;
-        0202*) ad='It is groundhog day !)';;
-        2002*) ad='Happy birthday Romka !)';;
-        2802*) ad='Happy birthday Matvey !)';;
-        3006*) ad='Happy birthday Natusya !)';;
-        0803*) ad='Hold on guyz $)';;
-        0905*) ad='День победы!';;
+case "$day$month${virus,,}${dow,,}" in
+   *covid-19*) ad='Stay at home!'                              ;;&
+        *fri*) ad='All work and no play makes Jack a dull boy' ;;&
+        3112*) ad="Happiu-piu new $((year+1))"' year!)'        ;;
+        1101*) ad='Happy birthday Yura $)'                     ;;
+        0202*) ad='It is groundhog day, again !)'              ;;
+        2002*) ad='Happy birthday Romka !)'                    ;;
+        2302*) ad='Where is my socks and shaving foam!?'       ;;
+        2802*) ad='Happy birthday Matvey !)'                   ;;
+        0803*) ad='Hold on guyz $)'                            ;;
+        1803*) ad='Happy birthday Ivinco !)'                   ;;
+        0905*) ad='День победы!'                               ;;
+        3006*) ad='Happy birthday Natusya !)'                  ;;
 esac
 #------------------------{ Ad plane text }------------------------------------------------------------------------------
 ad_plane_text () {
@@ -552,7 +555,8 @@ the_story(){
         "$DEF${RED}Our ${color}research team started to observe the debris of alien mothership."
         "${color}But it's already clear that they are came from $DEF${red}Mars.$DEF${RED}.$DEF$DIM${red}."
         ''
-        "${color}The research will be continued but we must act quickly and start our $DEF${red}Mars $DEF${RED}mission $DEF$DIM${red}immediately."
+        "${color}The research will be continued but we must act quickly."
+        "${color}Lets start our $DEF${red}Mars $DEF${RED}mission $DEF$DIM${red}immediately."
         "${color}One famous $DEF${RED}ornithologist ${color}agree to help us with the transport."
         "${color}Prepare all what is needed for this mission at once."
         "${color}The fait of whole $DEF${RED}mankind ${color}is at $DEF${red}stake!$DEF${RED}.$DEF$DIM${red}."
@@ -1638,8 +1642,7 @@ game_client () {
     while true; do
         read_input
         sender $saddr $sport $input
-        old=$screen
-        screen=$(timeout 0.3 nc -l -p $cport 2>/dev/null) || screen=$old
+        screen=$(nc -l -p $cport 2>/dev/null)
         case $screen in
              'win' ) mess   "$screen"; [[ $type != duel ]] && starship_intro starship;;
              'lose') mess   "$screen";;

@@ -1,17 +1,18 @@
 #!/bin/bash
 #================================================{ Messages }===========================================================
 case "$day$month${virus,,}${dow,,}" in
-   *covid-19*) ad='Stay at home!';;&
-        *fri*) ad='All work and no play makes Jack a dull boy';;&
-        1101*) ad='Happy birthday Yura $)' ;;
-        0202*) ad='It is groundhog day !)' ;;
-        2002*) ad='Happy birthday Romka !)';;
-        2802*) ad='Happy birthday Matvey !)' ;;
-        3006*) ad='Happy birthday Natusya !)';;
-        2302*) ad='Where is my socks and shaving foam!?';;
-        3112*) ad="Happiu-piu new $((year+1))"' year!)' ;;
-        0803*) ad='Hold on guyz $)';;
-        0905*) ad='День победы!'   ;;
+   *covid-19*) ad='Stay at home!'                              ;;&
+        *fri*) ad='All work and no play makes Jack a dull boy' ;;&
+        3112*) ad="Happiu-piu new $((year+1))"' year!)'        ;;
+        1101*) ad='Happy birthday Yura $)'                     ;;
+        0202*) ad='It is groundhog day, again !)'              ;;
+        2002*) ad='Happy birthday Romka !)'                    ;;
+        2302*) ad='Where is my socks and shaving foam!?'       ;;
+        2802*) ad='Happy birthday Matvey !)'                   ;;
+        0803*) ad='Hold on guyz $)'                            ;;
+        1803*) ad='Happy birthday Ivinco !)'                   ;;
+        0905*) ad='День победы!'                               ;;
+        3006*) ad='Happy birthday Natusya !)'                  ;;
 esac
 #------------------------{ Ad plane text }------------------------------------------------------------------------------
 ad_plane_text () {
@@ -79,7 +80,8 @@ the_story(){
         "$DEF${RED}Our ${color}research team started to observe the debris of alien mothership."
         "${color}But it's already clear that they are came from $DEF${red}Mars.$DEF${RED}.$DEF$DIM${red}."
         ''
-        "${color}The research will be continued but we must act quickly and start our $DEF${red}Mars $DEF${RED}mission $DEF$DIM${red}immediately."
+        "${color}The research will be continued but we must act quickly."
+        "${color}Lets start our $DEF${red}Mars $DEF${RED}mission $DEF$DIM${red}immediately."
         "${color}One famous $DEF${RED}ornithologist ${color}agree to help us with the transport."
         "${color}Prepare all what is needed for this mission at once."
         "${color}The fait of whole $DEF${RED}mankind ${color}is at $DEF${red}stake!$DEF${RED}.$DEF$DIM${red}."
