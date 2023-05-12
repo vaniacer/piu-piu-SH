@@ -104,14 +104,3 @@ the_story(){
     read   -srn1
     clear
 }
-
-
-
-
-
-
-
-
-
-
-
