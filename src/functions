@@ -82,9 +82,9 @@ print_sprite () {
     [[ $OT ]] && sprite_$OT
 }
 
-listener   () { input2=$(nc -l -p $sport); }
-read_input () { read -t$spd -srn1 input &> /dev/null; }
-sender     () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do :; done; }
+listener   () { input2=$(timeout 0.3 nc -l -p $sport 2>/dev/null); }
+read_input () { read -t$spd -srn1 input  &>/dev/null ; }
+sender     () { until nc -q0 $1 $2 2>/dev/null <<< "$3"; do :; done; }
 
 control_hero1 () {
     read_input
@@ -205,7 +205,7 @@ fill_screen () {
 
 drop_crate () { # in duel mode ad plane'll drop bonus crate
     case $type:$crate in duel:0)
-        [[ $OX -eq $halfx ]] && { crate=1 ENM+=("crate $[halfx1] 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
+        [[ $OX -eq $halfx ]] && { crate=1 ENM+=("crate $halfx 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
     esac
 }
 

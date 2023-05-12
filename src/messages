@@ -70,6 +70,7 @@ sprite_tobe () {
 }
 #------------------------{ And here the story goes... }-----------------------------------------------------------------
 the_story(){
+    [[ $type == duel ]] && exit
     color="$DEF$BLD$RED" # main color
     story=(
         "$DEF${RED}Our ${color}research team started to observe the debris of alien mothership."
@@ -96,7 +97,7 @@ the_story(){
         for ((i=1; i<=size; i++)); {
             [[ ${line:$((i-1)):3} =~ \\e\[ ]] && ((i+=6))
             XY $x $y "${line:0:i}"
-            sleep 0.05
+            sleep $storyspd
         }
         ((y++))
     done

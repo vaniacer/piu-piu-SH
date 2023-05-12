@@ -8,7 +8,7 @@ This large mother ... ship is you primary target, but first fight through 100 or
 
 ![story](https://user-images.githubusercontent.com/18072680/204155032-702de947-40d0-4831-96b1-19d4d63148db.gif)
 
-Our engineers scanned the remains of the mothership and found some Mars' dust. Now we know that they came from Mars, 
+Our engineers scanned the remains of the mothership and found some Martian dust. Now we know that they came from Mars, 
 but their goals are not clear. We could squeeze some information out of the main ship's crew, but they didn't survive... 
 And the small ones was just an automated strike drones. We have no other choice but to visit them on their home planet. 
 Our Starship is already on the launch pad, do not waist more time, the Mars is calling!
@@ -19,7 +19,7 @@ The game written in pure bash. It supports multiplayer modes team and duel. Netc
 So it has to be installed in the system if you wish to play with friend. Terminals on both hosts has to be of equal dimensions
 for better visual experience. <br>
 
-On ubuntu 18.04 you can install it with apt, but there is not the latest version(
+On Ubuntu starting from version 18.04 you can install it with apt, but it's not the latest version(
 <pre>sudo apt install -y piu-piu</pre>
 
 [![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
@@ -28,7 +28,7 @@ On ubuntu 18.04 you can install it with apt, but there is not the latest version
 [![Twitter Follow](https://img.shields.io/twitter/follow/Vaniacer?style=social)](https://twitter.com/Vaniacer)
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) <sup>Feel free to support the project!)</sup>
 
-~~Twitter~~ DOGE: D7qJBRU3UpXES9EwtvE8YZSNAVgFEmz3py</br>
+~~Titter~~ DOGE: D7qJBRU3UpXES9EwtvE8YZSNAVgFEmz3py</br>
 ![dodge](https://user-images.githubusercontent.com/18072680/229992296-f415eadb-645b-4229-81c7-e269485c635d.png)
 
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
