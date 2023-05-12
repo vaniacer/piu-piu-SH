@@ -1,4 +1,5 @@
 #!/bin/bash
+size=($(stty size)) endx=${size[1]} endy=${size[0]} halfx=$[endx/2] halfy=$[endy/2]
 #================================================{ Sprites }============================================================
 case $month in
     0[1-4]|12) # winter & early spring
@@ -23,18 +24,23 @@ case $month in
         TRE=50;;              # trees rnd
 esac
 case $game in server) BRD=400 CLD=100 TRE=100;; esac
-        
                               # ⎕ - space
   gun=(─ ─ ═ ≡ ≣ 𝄚)
 grass=(│ ' ' ║ ' ' ░ ' ' ▒ ' ' ▓ ' ' █) # grass types
+#-------------------{ Generate grass }----------------------------------------------------------------------------------
+for ((i=0; i<$endx; i++)); do land+=${grass[$[RANDOM % ${#grass[*]}]]}; done; land+=$land; LN=${#land} landendy=$[endy-2]
 #------------------------{ Hero1 }--------------------------------------------------------------------------------------
 #                                                   center.point   
 mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_"  # '_____ _____'
            "      ⎕       ⎕       ⎕ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕       ⎕       ⎕"  # '   _____   '
            "      ⎕       ⎕       ⎕       ⎕ ${blk}_       ⎕ ${blk}_       ⎕       ⎕       ⎕       ⎕"  # '    _ _    '
            "      ⎕       ⎕       ⎕ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕       ⎕       ⎕") # '   _____   '
+
 tailrotor=("$blk|" "$blk/" "$blk─" $blk'\\') # '|' '/' '─' '\'
+heroendx=$[endx-15]
+heroendy=$[endy-8 ]
 [[ $virus ]] && { DHS=☢ DHC=$RED DSC=$YLW; }
+
 sprite_hero1 () {
     control_hero1 $H1X $H1Y
     mov - || { unset HER[i]; return; }
@@ -76,6 +82,7 @@ sprite_hero1 () {
     collision 1 "$re" && { BOOM $OX $OY; ((life--)); }
     HER[i]="hero1 $OX $OY 6 16 $SC $SM $CS $CL $AS $AL $C1 $C2"
 }
+
 sprite_hero2 () {
     mov - || { unset HER[i]; return; }
     if [[ $life2 -gt 0 ]]; then
@@ -138,6 +145,7 @@ shoot=(
     "$BLD$red- $BLD$red="  # -=>
     "    $red=     $red-"  # =->
     "    $RED-         ⎕") # - >
+bullendx=$[endx-4]
 sprite_piu1 () {
     case $type in
         'duel') re="hero2 ($OX|$[OX+1]) ($[OY-1]|$[OY-2]|$[OY-3]|$[OY-4]).*";;
@@ -205,7 +213,7 @@ small=("${SKY}⎕  ${SKY}⎕  ${RED}o"
        "${SKY}⎕  ${RED}o  ${SKY}⎕"
        "${RED}o  ${SKY}⎕  ${SKY}⎕"
        "${SKY}⎕  ${SKY}⎕  ${SKY}⎕")
-
+enmyendy=$[endy-9 ]
 CM1=$SKY$UND$BLD$grn
 pumtop=( "$CM1"'\\' "$CM1"'\\' "$CM1|" "$CM1|" "$CM1/" "$CM1/")
 pumface=("${RED}O ${RED}… ${RED}o"
@@ -297,7 +305,11 @@ mouthlow=("${RED}V   ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}V"
           "${RED}V   ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}V"
           "${RED}V   ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}V")
 
-TX=$halfendx TY=$bossendy
+bossendx=$[endx-14]
+bossendy=$[endy-7 ]
+bosshbar=$[endx-10]
+
+TX=$halfx TY=$bossendy
 sprite_boss () {
     [[ $H2Y ]] && HY=$[H2Y-1] || HY=$[H1Y-1] # kill client first
     if [[ $bhealth -gt 0 ]]; then
@@ -307,18 +319,18 @@ sprite_boss () {
         [[ $OY -lt $HY ]] && ((OY++))
         [[ $OY -gt $HY ]] && ((OY--)) # this is a black magic
         [[ $OX -gt $TX ]] && mov - || { TX=$bossendx; SX=$OX; }
-        [[ $OX -lt $TX ]] && mov + || { TX=$halfendx; SX=$OX; }
+        [[ $OX -lt $TX ]] && mov + || { TX=$halfx   ; SX=$OX; }
         #-{ Aliens out }-------------------------------------------------------
         EX=$[OX+2] EY=$[OY+5]; [[ $EY -gt $[enmyendy+3] ]] && EY=$[enmyendy+3]
     else # when boss' health goes to 0 it starts to fall, explodes and bounces on the ground
-        AS=0; SM=3; mov - || the_end=win
+        bhealth=0; AS=0; SM=3;   mov - || the_end=win
         [[ $OY -lt $TY ]] && ((OY++))  || { TY=$[bossendy-C2]; ((C2--)); }
         [[ $OY -gt $TY ]] && ((OY--))  ||   TY=$bossendy
         [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $OX $OY; C1=15; }
     fi
     [[ $C1 -gt 0 ]] && ((C1--))
     case "$day$month$virus" in
-        3110)
+        3110*)
             CM1=$SKY$BLD$ylw CM2=$SKY$BLD$RED EYE="$CM2( $CM2⁐ $CM2)"
             X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H" X3="_Y_$[OX+1]H" X4="_Y_$[OX+2]H"
             #0123456789ABCD
@@ -475,10 +487,10 @@ sprite_msngr () {
     cut $SX $[OY+1] $CM2 ''   $X2'_' '_'     '_'    '_'      '_'     '/'     '_' '/' ' ' ''  '' $X3$CM4'+' $CM4'-' $CM4'-' ${line[@]}  $SKY${flame1[AS]}  #2
     cut $SX $[OY+2] $CM1 '(' $UND'°' ' ' $CM2'\\'   ' '  $CM3'|' $UND' ' $CM3')' '-' '-' '-' '<'   $CM5'|' $CM5' ' ${new_ad[@]} $CM5' ' $SKY${flame2[AS]} #3
     cut $SX $[OY+3] $CM2 ''      ''  ''       '' $X4'\\' $CM3'|'     ' '     ''  ''  ''  ''  '' $X5$CM4'+' ${line[@]} $SKY${flame3[AS]}                   #4
-}
+};  msgrendy=$[endy-10]
 
 sprite_crate () {
-    movy && ENM[$i]="crate $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i" || { unset ENM[$i]; boom $OX $boomendy; boom $OX $[boomendy-3]; crate=0; }
+    movy + && ENM[$i]="crate $OX $OY $OH $OW $SC $SM $CS $CL 0 0 0 0 $i" || { unset ENM[$i]; boom $OX $boomendy; boom $OX $[boomendy-3]; crate=0; }
     CM1=$SKY$ylw CM2=$SKY$blk CM3=$SKY$BLU SS="$RED ? $CM3"
     ########################1234567###01234567
     cuty  $OX    $OY 7 $SKY'       ' #1       
@@ -488,6 +500,134 @@ sprite_crate () {
     cuty $[OX+1] $OY 3  $CM3'╔╧╦╧╗'  #5 ╔╧╦╧╗ 
     cuty $[OX+1] $OY 2  $CM3"╠$SS╣"  #6 ╠ ? ╣ 
     cuty $[OX+1] $OY 1  $CM3'╚═╩═╝'  #7 ╚═╩═╝ 
+}
+#------------------------{ Starship }-----------------------------------------------------------------------------------
+sprite_starship () {
+    [[ $takeoff ]] && { movy - && eng1=" ${bs1[$AS]}${bs1[$AS]}${bs1[$AS]} " eng2="  ${bs2[$AS]}  " || mess tobe; }
+    BP2[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL $AS $AL 0 0 $i"
+    CM1=$SKY$BLD$WHT; case $month in 0[1-4]|12) CM1=$SKY$DIM$wht;; esac
+    #####################1234567###01234567
+    cuty $OX $OY 10 $CM1'   ▃   ' #1   ▃
+    cuty $OX $OY 9  $CM1' ◿▞▒▙◣ ' #2 ◿▞▒▙◣
+    cuty $OX $OY 8  $CM1'  ░▒█  ' #3  ░▒█
+    cuty $OX $OY 7  $CM1'  ░▒█  ' #4  ░▒█
+    cuty $OX $OY 6  $CM1'  ░▒█  ' #5  ░▒█
+    cuty $OX $OY 5  $CM1' ╱░▒█╲ ' #6 ╱░▒█╲
+    cuty $OX $OY 4  $CM1'│_░▒█_┃' #7│_░▒█_┃
+    [[ $takeoff ]] && {
+    cuty $OX $OY 3  $RED" $eng1 " #8  ⠇⠆⠁
+    cuty $OX $OY 2  $YLW" $eng2 " #9   ⠁⠆
+    cuty $OX $OY 1  $SKY'       ' #10
+    }
+}
+
+sprite_exhaust () {
+    BX=$OX BY=$OY
+    [[ $AS -ge $AL ]] && { unset BP2[i]; return; }  #11111111112222222222333
+    case $AS in ###########################012345678901234567890123456789012######################################
+          0) cut $[BX+23]  $BY    $RED                          '¸.•´´¯`••.¸';; #                      ¸.•´´¯`••.¸
+          1) cut $[BX+21] $[BY-1] $RED                        '¸.•´´¯`••.¸'     #                   ¸.•´´¯`••.¸
+             cut $[BX+19]  $BY    $RED                      '/           ´¯`';; #                  /           ´¯`
+          2) cut $[BX+16] $[BY-1] $red                   '¸.•´´¯`••.¸     '     #               ¸.•´´¯`••.¸
+             cut $[BX+15]  $BY    $red                  '/           ´¯`••.¸';; #              /           ´¯`••.¸
+          3) cut $[BX+13] $[BY-2] $DIM$RED            '¸. ´´¯`• .¸'             #             ¸. ´´¯`• .¸
+             cut $[BX+12] $[BY-1] $DIM$RED           '/           ´¯`• .¸'      #            /           ´¯`• .¸
+             cut $[BX+12]  $BY    $DIM$RED           '|                   ´¯';; #           |                   ´¯
+          4) cut $[BX+13] $[BY-3] $DIM$red            '¸ - ‾ ´´‾` • _'          #           ¸ - ‾ ´´‾` • _
+             cut $[BX+11] $[BY-2] $DIM$red          '/               ¯ ¸'       #          /               ¯ ¸
+             cut $[BX+10] $[BY-1] $DIM$red         '(                   ¯¸'     #         (                   ¯¸
+             cut $[BX+10]  $BY    $DIM$red         '|                      ¸'   #         |                      ¸
+             BP1[1]= BP1[2]= BP1[3]=
+             BP2[0]="torch $[halfx-12] $[endy-5] 3 1 0 $[3+RANDOM%3] 1 1 $[RANDOM%6] 5" # burn
+             BP2[1]="torch $[halfx-8 ] $[endy-5] 3 1 0 $[3+RANDOM%3] 1 1 $[RANDOM%6] 5" # sock &
+             BP2[2]="torch $[halfx-15] $[endy-5] 3 1 0 $[3+RANDOM%3] 1 1 $[RANDOM%6] 5" # these
+             BP2[3]="torch $[halfx-18] $[endy-5] 3 1 0 $[3+RANDOM%3] 1 1 $[RANDOM%6] 5" # trees)
+             takeoff=1;;
+          5) cut $[BX+13] $[BY-3] $SKY                '              '          #
+             cut $[BX+12] $[BY-2] $blk               '¸  -  ‾  ‾  •  ¸'         #           ¸  -  ‾  ‾  •  ¸
+             cut $[BX+10] $[BY-1] $blk             '/                    ¸'     #         /                    ¸
+             cut $[BX+8]   $BY    $blk           '/                        ¸';; #       /                        ¸
+          6) cut $[BX+11] $[BY-2] $SKY               '                   '      #
+             cut $[BX+6]  $[BY-1] $blk          '¸   -   ‾   ‾   `   •  ¸ '     #      ¸   -   ‾   ‾   `   •  ¸
+             cut $[BX+3]   $BY    $blk       '¸                            ¸';; #   ¸                            ¸
+          7) cut $[BX+6]  $[BY-1] $SKY          '                        '      #
+             cut  $BX      $BY    $blk    '¸    -    ‾    ‾     `     •    ¸';; #¸    -    ‾    ‾     `     •    ¸
+          8) cut  $BX      $BY    $SKY    '                                 ';; # eraser
+    esac
+    mov -; BP2[i]="exhaust $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
+}
+
+bulb=("$SKYBLD$WHT." "$SKYBLD$RED.")
+sprite_startable () {
+    BX=$OX BY=$OY
+    mov -; BP3[i]="startable $BX $BY $OH $OW $SC $SM $CS $CL $AS 1"
+    CM1=$SKY$BLD$blk$UND CM2=$SKY$BLD$blk CM3=$SKY$YLW
+    ###########################1234567890ABCDEFG####0
+    cuty $[BX+13]   $OY 8             ${bulb[$AS]} #1             .
+    cuty $[BX+13]   $OY 7              $CM2'│'     #2             │
+    cuty $[BX+12]   $OY 6             $CM1'╱┃'     #3         ___╱┃
+    cuty $[BX+9+TM] $OY 5          $CM1'│╳┃╳┃'     #4         │╳┃╳┃
+    cuty $[BX+11]   $OY 4            $CM1'┃╳┃'     #5           ┃╳┃
+    cuty $[BX+11]   $OY 3            $CM1'┃╳┃'     #6           ┃╳┃
+    cuty $[BX+11]   $OY 2            $CM1'┃╳┃'     #7           ┃╳┃
+    cuty  $BX       $OY 1 $CM3'▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂'  #8▂▄▆▉▀▉▀▀▀▉▀▉▉▉▆▄▂
+    case  $TM in
+        ''|0) cuty $[BX+9+TM]  $OY 6 $CM1'   ';;   #top spaces move
+           1) cuty $[BX+9+TM]  $OY 6 $CM1'  '
+              cuty $[BX+13+TM] $OY 6 $CM1' '  ;;
+           2) cuty $[BX+9+TM]  $OY 6 $CM1' '
+              cuty $[BX+12+TM] $OY 6 $CM1'  ' ;;
+    esac
+}
+
+sprite_lift () {
+    BX=$OX BY=$OY BU=$BY BL=$BX
+    case $lift in
+        ( up  ) mov; ((AS<AL)) && BU=$[BY-AS]        || lift=left   BY=$[BY-AL+1] AS=0;;
+        (left ) mov; ((AS<AL)) && BL=$[BX-AS]        || lift=right  BX=$[BX-AL+1] AS=0 AL=3;;
+        (right) mov; ((AS<AL)) && BL=$[BX+AS] TM=$AS || lift= ex1=1 BX=$[BX+AL-1] AS=0;;
+    esac
+
+    BP4[i]="lift $BX $BY 1 1 $SC $SM 1 1  $AS $AL"
+    CM1=$SKY$BLK
+    #01
+    #1▉
+    ###################### 1  #0
+    cut $BL $BU $CM1 '▉' #1
+}
+
+sock=(
+  "$WHT= $RED≡ $WHT≡ $RED≣ $WHT≣"
+  "$WHT≡ $RED≣ $WHT≣ $RED≡ $WHT≡"
+  "$WHT≣ $RED≡ $WHT≡ $RED≡ $WHT≣"
+)
+sprite_windsock () {
+    BX=$OX BY=$OY
+    mov -; BP2[i]="windsock $BX $BY 2 8 $SC $SM $CS $CL $AS 2"
+    X1="_Y_$[OX+6]H" CM1=$SKY$WHT CM2=$SKY$DIM$WHT
+    #01234567
+    #1=≡≡≣≣>┐
+    #2      │
+    #################### 1  2  3  4  5      6       7  #0
+    cut $OX  $OY    $CM1  ${sock[$AS]} $CM2'>' $CM2'┐' #1
+    cut $OX $[OY+1] $CM2 '' '' '' '' ''    ''   $X1'│' #2
+}
+
+#⠁⠂⠃⠄⠅⠆⠇⠈⠉⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⡀⡁⡂⡃⡄⡅⡆⡇⡈⡉⡐⡑⡒⡓⡔⡕⡖⡗⡘⡙⡠⡡⡢⡣⡤⡥⡦⡧⡨⡩⡰⡱⡲⡳⡴⡵⡶⡷⡸⡹⢀⢁⢂⢃⢄⢅⢆⢇⢈⢉⢐⢑⢒⢓⢔⢕⢖⢗⢘⢙
+bs1=('⎕' '⎕' '⡀' '⠆' '⠇' '⠂' '⎕')
+bs2=('⠆' '⠇' '⠃' '⠁' '⎕' '⎕' '⠄')
+sprite_torch () {
+    BX=$OX BY=$OY
+    mov -; BP2[i]="torch $BX $BY 3 1 $SC $SM $CS $CL $AS 6"
+    CM1=$SKY$DIM$BLK CM2=$SKY$BLD$RED CM3=$SKY$BLD$YLW
+    #01
+    #1⡀
+    #2⠃
+    #3│
+    ####################      1      #0
+    cut $BX  $OY    $CM3 ${bs1[$AS]} #1
+    cut $BX $[OY+1] $CM2 ${bs2[$AS]} #2
+    cut $BX $[OY+2] $CM1     '│'     #3
 }
 #------------------------{ Clouds }-------------------------------------------------------------------------------------
 case $month in
@@ -549,7 +689,7 @@ case $month in
     0[1-4]|12) T1C=$SKY$DIM$WHT tree1H=3;; # winter & early spring
     0[5-8]   ) T1C=$SKY$DIM$GRN tree1H=4;; # late spring & summer
     09|1[0-1]) T1C=$SKY$DIM$YLW tree1H=4;; # autumn
-esac
+esac;           tre1endy=$[endy-tree1H-2]
 sprite_tree1 () {
     case $month in
         0[1-4]|12)
@@ -583,7 +723,7 @@ case $month in
     0[1-4]|12) T2C=$SKY$WHT tree2H=5;; # winter & early spring
     0[5-8]   ) T2C=$SKY$GRN tree2H=6;; # late spring & summer
     09|1[0-1]) T2C=$SKY$YLW tree2H=6;; # autumn
-esac
+esac;       tre2endy=$[endy-tree2H-2]
 sprite_tree2 () {
     case $month in
         0[1-4]|12)
@@ -624,8 +764,8 @@ sprite_tree2 () {
 case $month in
     0[1-4]|12) T3C=$SKY$BLD$cyn tree3H=8;; # winter & early spring
     0[5-8]   ) T3C=$SKY$GRN     tree3H=9;; # late spring & summer
-    09|1[0-1]) T3C=$SKY$DIM$red tree3H=9;; # autumn
-esac
+    09|1[0-1]) T3C=$SKY$DIM$red tree3H=8;; # autumn
+esac;           tre3endy=$[endy-tree3H-2]
 sprite_tree3 () {
     case "$day:$month" in
         [23][0-9]:12|0[1-9]:01|10:01)
@@ -722,7 +862,8 @@ sprite_house1 () { #                          ▕ ╪ ╫ ╬ ╭ ╮ ╯ ▀ �
     ####################  1   2   3   4   5   6  #0
     cut $SX  $OY    $CM1 '▁' '▂' '▃' '▂' '▁' ' ' #1
     cut $SX $[OY+1] $CM2 '│' '▘' '▝' '▝' '|' ' ' #2
-}
+};  hos1endy=$[endy-4]
+
 sprite_house2 () {
     mov - && BP2[i]="house2 $OX $OY 9 30 $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
     CM1="$SKY$BLU" CM2=$SKY$BLD$YLW CM3=$SKY$YLW CM4=$SKY$ylw CM5=$SKY$blk
@@ -748,7 +889,8 @@ sprite_house2 () {
     cut $SX $[OY+6] $CM1 ''  ''  ''  ''  ''  '' $X7'┮'   '┷'   '━'   '━' '━' '┷' '┭'     ' '                                                                                     #7
     cut $SX $[OY+7] $CM5 ''  ''  ''  ''  ''  '' $X8'│'   ' '   '▛'   '▔' '▜' ' ' '│' $CM1'▄' $CM1'▄' $CM1'▄' $CM1'▄' $CM1'▂' $CM1'▁' ' '                                         #8
     cut $SX $[OY+8] $CM5 '▂' ' ' '╬' ' ' '▃' ' '   '┃'   ' '   '▌'   '▒' '▐' ' ' '┃'     ' '     '▘'     '▗'     '▘'     '┿'     '┃' '▗' ' ' '╂' ' ' '╪' ' ' '▄' ' ' ' ' '▖' ' ' #9
-}
+};  hos2endy=$[endy-11]
+
 sprite_house3 () {
     mov - && BP3[i]="house3 $OX $OY 4 17 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
     CM1=$SKY$DIM$MGN CM2=$SKY$blk CM3=$SKY$DIM$CYN X1="_Y_$[OX+5]H" X2="_Y_$[OX+2]H" X3="_Y_$[OX+2]H"
@@ -762,8 +904,10 @@ sprite_house3 () {
     cut $SX $[OY+1] $CM1 ''  ''   $X2'▂'     '▄'     '▆'     '█'     '█'     '▆'     '▄' '▂'     ' '                                         #2
     cut $SX $[OY+2] $CM2 ''  ''   $X3'┃'     '╒'     '╕'     '╒'     '╕'     '╒'     '╕' '┃'     ' ' '┮'     '━'     '┭' ' '                 #3
     cut $SX $[OY+3] $CM3 '╠' '╬' $CM2'┃' $CM2'┵' $CM2'┘' $CM2'┵' $CM2'┶' $CM2'└' $CM2'┶' '┃' $CM3'╬' '╣' $CM2'▓' $CM3'╠' '╬' '╣' $CM2'▖' ' ' #4
-}
+};  hos3endy=$[endy-6 ]
 #------------------------{ BOOM }---------------------------------------------------------------------------------------
+boomendx=$[endx-10]
+boomendy=$[endy-4 ]
 sprite_boom () {
     BX=$OX BY=$OY
     [[ $AS -ge $AL ]] && { unset BP3[i]; return; }
@@ -789,6 +933,7 @@ sprite_boom () {
     mov -; BP3[i]="boom $BX $BY 0 0 $SC $SM $CS $CL $AS $AL"
 }
 #------------------------{ Sun }----------------------------------------------------------------------------------------
+Sunsendx=$[endx-18]
 sprite_Sun () {
     mov -; BP1[i]="Sun $Sunsendx 1 9 18 $SC 7 $CS $CL $AS $AL"
     case $AS in
@@ -868,4 +1013,3 @@ sprite_ARR () {
     cut $SX $[OY+4] $C1 '' $X1⎕ ▒    ⎕    ▒    ▒    ⎕    ⎕ $C2▒ $C2▓ $C2▓ $C2▓ $C2▓ $C6▒ $C6▓ $C3█ $C3█ $C3█ $C1░                                  #5
     cut $SX $[OY+5] $C1 ''   '' ''  '' $X2⎕    ░    ░    ░    ⎕    ▒    ▒    ▒    ⎕    ░    ░    ▒    ▒    ░                                       #6
 }
-

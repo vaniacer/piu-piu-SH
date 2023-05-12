@@ -1,31 +1,38 @@
-# Piu-piu all the way!)
+# And here the story goes...
 
-![gif](https://user-images.githubusercontent.com/18072680/34843658-2207ce84-f720-11e7-858e-83eaec80fea1.gif)
-[![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
+Alien invasion! Where are they coming from? Let's shoot them all down first then asks questions.
 
-This is an Old School horizontal scroller 'Shoot Them All' game in bash.
-With multiplayer modes team and duel. You have to defeat 100 aliens to fight with Boss.
-I'm using netcat for client-server exchange in multiplayer mode.
-So netcat have to be installed on system if you wish to play with friend.
-Terminals on both hosts have to be with equal dimensions.<br>
-Read about it <a href="https://habrahabr.ru/post/335960">here</a>.
+![boss](https://user-images.githubusercontent.com/18072680/204158330-40e0a29d-3ad2-409a-9457-eb98a91486ac.gif)
 
-On ubuntu 18.04 you can install it with apt!)
+This large mother ... ship is you primary target, but first fight through 100 or more of smaller ones.
+
+![story](https://user-images.githubusercontent.com/18072680/204155032-702de947-40d0-4831-96b1-19d4d63148db.gif)
+
+Our engineers scanned the remains of the mothership and found some Martian dust. Now we know that they came from Mars, 
+but their goals are not clear. We could squeeze some information out of the main ship's crew, but they didn't survive... 
+And the small ones was just an automated strike drones. We have no other choice but to visit them on their home planet. 
+Our Starship is already on the launch pad, do not waist more time, the Mars is calling!
+
+![piu-piu_to_Mars](https://user-images.githubusercontent.com/18072680/113054416-0dffb480-91b2-11eb-904f-6e2088f180af.gif)
+
+The game written in pure bash. It supports multiplayer modes team and duel. Netcat used for client-server exchange in multiplayer mode.
+So it has to be installed in the system if you wish to play with friend. Terminals on both hosts has to be of equal dimensions
+for better visual experience. <br>
+
+On Ubuntu starting from version 18.04 you can install it with apt, but it's not the latest version(
 <pre>sudo apt install -y piu-piu</pre>
 
-<a href="https://asciinema.org/a/DDLzQOgSrqVa3yS6zBoc37rhj">piu-piu-asciinema</a> </br>
-<a href="https://coub.com/view/1kn2tt">piu-piu-coub</a> </br>
+[![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
 
+---
 [![Twitter Follow](https://img.shields.io/twitter/follow/Vaniacer?style=social)](https://twitter.com/Vaniacer)
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) <sup>Feel free to support the project!)</sup>
-</br>
 
-~~Twitter~~ DOGE: D7qJBRU3UpXES9EwtvE8YZSNAVgFEmz3py</br>
+~~Titter~~ DOGE: D7qJBRU3UpXES9EwtvE8YZSNAVgFEmz3py</br>
 ![dodge](https://user-images.githubusercontent.com/18072680/229992296-f415eadb-645b-4229-81c7-e269485c635d.png)
 
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
 ![btc](https://user-images.githubusercontent.com/18072680/106382955-f2f00e80-63d3-11eb-9316-b6653225820c.png)
-
 
 BCH: qqnssal30x6acrga6zt4pd4q2s2t8um3cyqvd37qs7</br>
 ![bch](https://user-images.githubusercontent.com/18072680/108552897-fd326800-7302-11eb-8ae7-97eb0cc81d5e.png)

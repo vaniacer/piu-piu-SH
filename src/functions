@@ -1,32 +1,6 @@
 #!/bin/bash
 #================================================{ Functions }==========================================================
-get_dimensions () {
-    size=($(stty size))
-    endx=${size[1]}
-    endy=${size[0]}
-    halfendx=$[endx/2 ]
-    halfendy=$[endy/2 ]
-    boomendx=$[endx-10]
-    boomendy=$[endy-4 ]
-    bullendx=$[endx-4 ]
-    heroendx=$[endx-15]
-    heroendy=$[endy-8 ]
-    enmyendy=$[endy-9 ]
-    bossendx=$[endx-14]
-    bossendy=$[endy-7 ]
-    bosshbar=$[endx-10]
-    lineendy=$[endy-2 ]
-    Sunsendx=$[endx-18]
-    hos1endy=$[endy-4 ]
-    hos2endy=$[endy-11]
-    hos3endy=$[endy-6 ]
-    msgrendy=$[endy-10]
-    tre1endy=$[endy-tree1H-2]
-    tre2endy=$[endy-tree2H-2]
-    tre3endy=$[endy-tree3H-2]
-}
-
-bye () { cursor on; clear; ls; exit $1; }
+bye () { cursor on; exit $1; }
 
 cursor () {
     case $1 in
@@ -38,13 +12,13 @@ cursor () {
 mov () {
     case $1  in -) cuter=++;; +) cuter=--;; esac
     case $SC in
-        0) [[ $OX -le -$OW   ]] && return 1
-           [[ $OX -gt  $endx ]] && return 1
-           [[ $AS -ge  $AL   ]] && AS=0  || ((AS++)) # sprites animation
-           [[ $OX -le  1     ]] && ((CS++))
-           ((OX$1$1)); ((CL$cuter)); SC=$SM
-           [[ $CL -lt 0 ]] && CL=0;;
-        *) ((SC--));;
+         (0) [[ $OX -le -$OW   ]] && return 1
+             [[ $OX -gt  $endx ]] && return 1
+             [[ $AS -ge  $AL   ]] && AS=0  || ((AS++)) # sprites animation
+             [[ $OX -le  1     ]] && ((CS++))
+             ((OX$1$1)); ((CL$cuter)); SC=$SM
+             [[ $CL -lt 0 ]] && CL=0;;
+         (*) ((SC--));;
     esac
     [[ $OX -le 1 ]] && SX=0 || SX=$OX
 }
@@ -57,19 +31,21 @@ cut () {
     screen+="${spr//⎕/ }"
 }
 
-movy () { # used in bonus crate
-    case $SC in
-        0) [[ $OY -ge $[endy-2] ]]    && return 1
-           [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
-           [[ $CS -le $OH  ]] && ((CS++))
-           ((OY++)); SC=$SM;;
-        *) ((SC--));;
+movy () {
+    case $SC:$1 in
+          (*:-) [[ $OY -le 1         ]] && return 1;;&
+          (*:+) [[ $OY -ge $[endy-2] ]] && return 1;;&
+          (0:*) [[ $AS -ge $AL  ]] && AS=0 || ((AS++))
+                [[ $CS -le $OH  ]] && ((CS++))
+                ((OY$1$1)); SC=$SM;;
+          (*:*) ((SC--));;
     esac
 }
 
 cuty () { # used in bonus crate
-    xcord=$1 ycord=$2 cuter=$3; shift 3
-    [[ $CS -ge $cuter ]] && screen+="\e[$[ycord-cuter];${xcord}H$@"
+    xcord=$1 ycord=$2 cuter=$3 ypos=$[ycord-cuter]; shift 3
+    [[ $ypos -lt 1    ]] && ypos=1
+    [[ $CS -ge $cuter ]] && spr="\e[$ypos;${xcord}H$@" screen+="${spr//⎕/ }"
 }
 
 bonus () { # get random bonus from alien or not
@@ -82,9 +58,10 @@ mess () {
     cursor off
     XY 1 1 ${DEF}; clear
     case $1 in
-        "win" ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; bye 0;;
-        "lose") sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
-        "help") sprite_help;;
+        win ) sprite_win ; XY 0 ${endy}; read -t3 -n1000 trash; the_story; return 0;;
+        lose) sprite_lose; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
+        tobe) sprite_tobe; XY 0 ${endy}; read -t3 -n1000 trash; bye 1;;
+        help) sprite_help;;
     esac
 }
 
@@ -105,9 +82,9 @@ print_sprite () {
     [[ $OT ]] && sprite_$OT
 }
 
-listener   () { input2=$(nc -l -p $sport); }
-read_input () { read -t$spd -srn1 input &> /dev/null; }
-sender     () { until nc -q0 $1 $2 2> /dev/null <<< "$3"; do :; done; }
+listener   () { input2=$(timeout 0.3 nc -l -p $sport 2>/dev/null); }
+read_input () { read -t$spd -srn1 input  &>/dev/null ; }
+sender     () { until nc -q0 $1 $2 2>/dev/null <<< "$3"; do :; done; }
 
 control_hero1 () {
     read_input
@@ -197,8 +174,8 @@ fps_counter () { #-{ Print FPS }-----------------------------------------------
         FPSC=0
     } || ((FPSC++))
     case $game in
-        'server') screen+="\e[$endy;$[endx-9]H${DEF}FPS: $RED$FPS ";;
-               *) screen+="\e[$endy;2H${DEF}FPS: $RED$FPS ${DEF}max: $RED$FPSM ${DEF}low: $RED$FPSL ${DEF}avg: $RED$FPSA ";;
+        'server') screen+="\e[$endy;$[endx-9]H$LND${BLK}FPS: $RED$FPS $DEF";;
+               *) screen+="\e[$endy;2H$LND${BLK}FPS: $RED$FPS ${BLK}max: $RED$FPSM ${BLK}low: $RED$FPSL ${BLK}avg: $RED$FPSA $DEF";;
     esac
 }
 
@@ -215,20 +192,20 @@ status () { #-{ Print game status }--------------------------------------------
 }
 
 boss_health () {
-    bar=; hp=$[bosshbar * bhealth / 100]; hm=$[endx - 10]
+    bar=; hp=$((bosshbar * bhealth / 100)); hm=$((endx - 10))
     for (( i=0  ; i<hp; i++ )); do bar="█$bar"; done
     for (( i=$hp; i<hm; i++ )); do bar="$bar "; done
-    screen+="\e[$[endy-1];1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
+    screen+="\e[$((endy-1));1H$LND $BLD${RED}BOSS: $LND$BLK|$BLD$RED$bar$LND$BLK|$LND"
 }
 
 fill_screen () {
-    for ((i=0;        i<lineendy; i++)); do printf "$SKY%${endx}s"; done
-    for ((i=lineendy; i<endy;     i++)); do printf "$LND%${endx}s"; done
+    for ((i=0;        i<landendy; i++)); do printf "$SKY%${endx}s"; done
+    for ((i=landendy; i<endy;     i++)); do printf "$LND%${endx}s"; done
 }
 
 drop_crate () { # in duel mode ad plane'll drop bonus crate
     case $type:$crate in duel:0)
-        [[ $OX -eq $halfendx ]] && { crate=1 ENM+=("crate $[halfendx-1] 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
+        [[ $OX -eq $halfx ]] && { crate=1 ENM+=("crate $halfx 6 7 7 0 $[RANDOM%5+5] 0 0 0 0 ${#ENM[@]}"); };;
     esac
 }
 
@@ -267,38 +244,50 @@ add_piu () {
     esac
 }
 
-add_backgound () {
-    rndy=$[2+RANDOM%10]; [[ $rndy -gt $[3+enmyendy] ]] && rndy=$[3+enmyendy]
-    #-{ Add birds }------------------------------------------------------------
+backgound_birds () { # Add birds }----------------------------------------------------------------------
     case $[RANDOM % $BRD] in 0) BP1+=("bird  $endx $rndy 2 2  0 $[3+RANDOM%3] 1 0 $[RANDOM%2] 2");; esac
+}
 
-    #-{ Add msngr }------------------------------------------------------------
+backgound_msngr () { # Add msngr }----------------------------------------------------------------------
     case $type in duel) msngrY=2;; *) msngrY=$rndy;; esac
     case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $msngrY 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
+}
 
-    #-{ Add clouds }-----------------------------------------------------------
+backgound_clouds () { # Add clouds }--------------------------------------------------------------------
     case $[RANDOM % $CLD]:$[RANDOM % 3 + 1] in
         0:1) BP1+=("cloud1 $endx $rndy 3 6  6 $[6+RANDOM%2] 1 0 0 0");;
         0:2) BP2+=("cloud2 $endx $rndy 3 8  4 $[4+RANDOM%2] 1 0 0 0");;
         0:3) BP3+=("cloud3 $endx $rndy 3 11 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
+}
 
-    #-{ Add house }------------------------------------------------------------
+backgound_houses () { # Add houses }--------------------------------------------------------------------
     case $[RANDOM % $HOU]:$[RANDOM % 3 + 1] in
         0:1) BP1+=("house1 $endx $hos1endy 2 6  6 $[6+RANDOM%2] 1 0 0 0");;
         0:2) BP2+=("house2 $endx $hos2endy 9 30 4 $[4+RANDOM%2] 1 0 0 0");;
         0:3) BP3+=("house3 $endx $hos3endy 4 17 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
+}
 
-    #-{ Add trees }------------------------------------------------------------
+backgound_trees () { # Add trees }----------------------------------------------------------------------
     case $[RANDOM % $TRE]:$[RANDOM % 3 + 1] in
         0:1) BP1+=("tree1 $endx $tre1endy 3 2 6 $[6+RANDOM%2] 1 0 0 0");;
         0:2) BP2+=("tree2 $endx $tre2endy 6 5 4 $[4+RANDOM%2] 1 0 0 0");;
         0:3) BP3+=("tree3 $endx $tre3endy 9 9 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
+}
 
-    #-{ Print moving land }----------------------------------------------------
-    screen+="\e[$lineendy;1H$LND${land:$((1-${LX:-1})):$endx}"; [[ ${LX:-1} -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+backgound_moving_land () { # Print moving land }--------------------------------------------------------
+    screen+="\e[$landendy;1H$LND${land:$((1-${LX:-1})):$endx}"; [[ ${LX:-1} -lt -$[$LN/2] ]] && LX=-1 || ((LX--))
+}
+
+backgound_land () { # Print land }----------------------------------------------------------------------
+    screen+="\e[$landendy;1H$LND${land:$((1-${LX:-1})):$endx}"
+}
+
+add_backgound () {
+    rndy=$[2+RANDOM%10]; [[ $rndy -gt $[3+enmyendy] ]] && rndy=$[3+enmyendy]
+    for item in "$@"; { backgound_$item; }
 }
 
 #------------------------{ Intro }--------------------------------------------------------------------------------------
