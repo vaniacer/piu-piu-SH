@@ -1,14 +1,17 @@
 #!/bin/bash
 #================================================{ Messages }===========================================================
-case "$day$month$virus" in
-    *covid-19) ad='Stay at home!';;&
-        1101*) ad='Happy birthday Yura $)';;
-        0202*) ad='It is groundhog day !)';;
+case "$day$month${virus,,}${dow,,}" in
+   *covid-19*) ad='Stay at home!';;&
+        *fri*) ad='All work and no play makes Jack a dull boy';;&
+        1101*) ad='Happy birthday Yura $)' ;;
+        0202*) ad='It is groundhog day !)' ;;
         2002*) ad='Happy birthday Romka !)';;
-        2802*) ad='Happy birthday Matvey !)';;
+        2802*) ad='Happy birthday Matvey !)' ;;
         3006*) ad='Happy birthday Natusya !)';;
+        2302*) ad='Where is my socks and shaving foam!?';;
+        3112*) ad="Happiu-piu new $((year+1))"' year!)' ;;
         0803*) ad='Hold on guyz $)';;
-        0905*) ad='День победы!';;
+        0905*) ad='День победы!'   ;;
 esac
 #------------------------{ Ad plane text }------------------------------------------------------------------------------
 ad_plane_text () {
