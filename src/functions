@@ -69,14 +69,14 @@ print_sprite () {
     OT=${OI[0]}   # object type
     OX=${OI[1]}   # X coordinate
     OY=${OI[2]}   # Y coordinate
-    OH=${OI[3]}   # object hight
+    OH=${OI[3]}   # object height
     OW=${OI[4]}   # object width
     SC=${OI[5]}   # speed counter
     SM=${OI[6]}   # speed max
-    CS=${OI[7]}   # cuting start
-    CL=${OI[8]}   # cuting lenght
+    CS=${OI[7]}   # cutting start
+    CL=${OI[8]}   # cutting length
     AS=${OI[9]}   # animation start
-    AL=${OI[10]}  # animation lenght
+    AL=${OI[10]}  # animation length
     C1=${OI[11]}  # custom obj parameter 1
     C2=${OI[12]}  # custom obj parameter 2
     [[ $OT ]] && sprite_$OT
