@@ -22,8 +22,6 @@ for better visual experience. <br>
 On Ubuntu starting from version 18.04 you can install it with apt, but it's not the latest version(
 <pre>sudo apt install -y piu-piu</pre>
 
-[![Run on Repl.it](https://repl.it/badge/github/vaniacer/piu-piu-SH)](https://repl.it/github/vaniacer/piu-piu-SH)
-
 ---
 [![Twitter Follow](https://img.shields.io/twitter/follow/Vaniacer?style=social)](https://twitter.com/Vaniacer)
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) <sup>Feel free to support the project!)</sup>
