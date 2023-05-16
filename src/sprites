@@ -512,15 +512,16 @@ sprite_crate () {
 sprite_starship () {
     [[ $takeoff ]] && { movy - && eng1=" ${bs1[$AS]}${bs1[$AS]}${bs1[$AS]} " eng2="  ${bs2[$AS]}  " || mess tobe; }
     BP2[$i]="starship $OX $OY $OH $OW $SC $SM $CS $CL $AS $AL 0 0 $i"
-    CM1=$SKY$BLD$WHT; case $month in 0[1-4]|12) CM1=$SKY$DIM$wht;; esac
-    #####################1234567###01234567
-    cuty $OX $OY 10 $CM1'   ▃   ' #1   ▃
-    cuty $OX $OY 9  $CM1' ◿▞▒▙◣ ' #2 ◿▞▒▙◣
-    cuty $OX $OY 8  $CM1'  ░▒█  ' #3  ░▒█
-    cuty $OX $OY 7  $CM1'  ░▒█  ' #4  ░▒█
-    cuty $OX $OY 6  $CM1'  ░▒█  ' #5  ░▒█
-    cuty $OX $OY 5  $CM1' ╱░▒█╲ ' #6 ╱░▒█╲
-    cuty $OX $OY 4  $CM1'│_░▒█_┃' #7│_░▒█_┃
+    CM1=$SKY$BLD$WHT SB=$bwht; case $month in 0[1-4]|12) CM1=$SKY$DIM$wht SB=$BWHT;; esac
+    HS="$S1C$SB$H1S$CM1"
+    #####################1234567   567###01234567
+    cuty $OX $OY 10 $CM1'   ▃   '       #1   ▃
+    cuty $OX $OY 9  $CM1' ◿▞'"$HS"'▙◣ ' #2 ◿▞★▙◣
+    cuty $OX $OY 8  $CM1'  ░▒█  '       #3  ░▒█
+    cuty $OX $OY 7  $CM1'  ░▒█  '       #4  ░▒█
+    cuty $OX $OY 6  $CM1'  ░▒█  '       #5  ░▒█
+    cuty $OX $OY 5  $CM1' ╱░▒█╲ '       #6 ╱░▒█╲
+    cuty $OX $OY 4  $CM1'│_░▒█_┃'       #7│_░▒█_┃
     [[ $takeoff ]] && {
     cuty $OX $OY 3  $RED" $eng1 " #8  ⠇⠆⠁
     cuty $OX $OY 2  $YLW" $eng2 " #9   ⠁⠆
