@@ -1,0 +1,127 @@
+#!/bin/bash
+
+[[ $penis ]] && {
+    heroendx=$[endx-15]
+    heroendy=$[endy-9 ]
+}
+
+sprite_penis1 () {
+    mov - || { unset HER[i];  return; }
+    [[ $1 ]] || control_hero1 $H1X $H1Y
+    if [[ $life -gt 0 ]]; then
+       OX=$H1X OY=$H1Y CL=16 CS=1
+    else # when hero's health goes to 0 it starts to fall, explodes and bounces on the ground
+       AS=0 SM=3  #spd=0.1
+       [[ $OY -lt $TY ]] && ((OY++))  || { TY=$[heroendy-C2+2]; ((C2--)); }
+       [[ $OY -gt $TY ]] && ((OY--))  ||   TY=$[heroendy+2]
+       [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $SX $[OY-2]; C1=15; }
+       screen+="\\e[$[endy-1];$[OX+OW]H$LND "
+    fi
+
+    case $type in
+     'duel')
+         re="crate ($[OX+7]|$[OX+8]|$[OX+9]|$[OX+10]|$[OX+11]) ($[OY+2]|$[OY+3]|$[OY+4]|$[OY+5]|$[OY+6]).*";;
+     'team')
+         re="(life|ammo|gunup) ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]|$[OY+3]|$[OY+4]).*|"
+        re+="alien ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]).*|alien ($[OX+6]|$[OX+7]) ($[OY+3]|$[OY+4]).*|"
+        re+="bfire ($[OX+12]|$[OX+13]) ($[OY+2]|$[OY+3]).*|bfire ($[OX+6]|$[OX+7]) ($[OY+3]|$[OY+4]).*|"
+        re+="boss ($[OX+12]|$[OX+13]) $[OY-1].*";;
+    esac
+
+    T1=${shoot[AS]}; local x1=$OX x2=$SX
+    CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$S1C
+    ((x2<1)) && x2=1; [[ $1 ]] && ((x1++)); X2="_Y_$[x2+2]H" X3="_Y_$[x1+0]H" X4="_Y_$[x2+11]H"
+    #00000000001111111#0
+    #01234567890123456#0
+    #1                #1
+    #2   _____ _____  #2
+    #3    .-──╨──▅▃   #3
+    #4 -=╳ ______▜▉▉▖ #4
+    #5   / |\     ▔▔  #5
+    #6  (__)_)        #6
+    #7                #7        0     0     0 0  0      0      0     0 1  1     1     1     1     1 1 #0
+    ######X####Y####CLR# 1      2     3     4 5  6      7      8     9 0  1     2     3     4     5 6 #0
+    cut $SX  $OY    $SKY  ''    '' $X2⎕     ⎕ ⎕  ⎕      ⎕      ⎕     ⎕ ⎕  ⎕     ⎕     ⎕     ⎕     ⎕   #1
+    cut $SX $[OY+1] $CM1  ''    '' $X2⎕                       ${mainrotor[AS]}                    ⎕   #2
+    cut $SX $[OY+2] $CM1  ⎕     ⎕     ⎕     ⎕ .  -      ─      ─     ╨ ─  ─ $CM3▅     ▃ $SKY⎕     ⎕ ⎕ #3
+    cut $SX $[OY+3] $CM2  ⎕       $T1   $CM2╳ ⎕  _      _      _     _ _  _ $CM3▜     ▉     ▉     ▖ ⎕ #4
+    cut $SX $[OY+4] $CM2  ⎕     ⎕     ⎕     / ⎕ \| $CM1\\      ⎕ $SKY⎕ ⎕  ⎕     ⎕ $CM3▔     ▔ $SKY⎕ ⎕ #5
+    cut $SX $[OY+5] $CM2  '' $X3⎕    \(     _ _ \)      _ $CM1\)     ⎕ '' '' $X4⎕     ⎕     ⎕     ⎕   #6
+    cut $SX $[OY+6] $SKY  '' $X3⎕     ⎕     ⎕ ⎕  ⎕      ⎕      ⎕     ⎕                                #7
+
+    [[  $C1 -gt 0 ]]  && ((C1--))
+    collision 1 "$re" && { BOOM $OX $OY; ((life--)); }
+    HER[i]="penis1 $OX $OY 7 16 $SC $SM $CS $CL $AS $AL $C1 $C2"
+}
+
+sprite_penis2 () {
+    mov - || { unset HER[i]; return; }
+    if [[ $life2 -gt 0 ]]; then
+        CS=1 CL=18 OX=$H2X OY=$H2Y
+    else # when heros health goes to 0 it starts to fall, explodes and bounces on the ground
+        AS=0 SM=3 H2Y=
+        [[ $OY -lt $TY ]] && ((OY++))  || { TY=$[heroendy-C2+2]; ((C2--)); }
+        [[ $OY -gt $TY ]] && ((OY--))  ||   TY=$[heroendy+2]
+        [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $SX $[OY-2]; C1=15; }
+        screen+="\\e[$[endy-1];$[OX+OW]H$LND "
+    fi
+
+    T1=${shoot[AS]}; local x1=$OX x2=$SX
+    CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$S1C
+    ((x2<1)) && x2=1; [[ $1 ]] && ((x1++)); X2="_Y_$[x2+2]H" X3="_Y_$[x1+0]H" X4="_Y_$[x2+11]H"
+
+    T1=${shoot[AS]}; local x1=$OX x2=$SX
+    CM1=$SKY$H2C$BLD CM2=$SKY$DIM$H2C CM3=$SKY$S2C
+    ((x2<1)) && x2=1; [[ $1 ]] && ((x1++))
+    case $type in
+     'duel') control_hero2 $[H2X-10] $H2Y
+             re="crate ($[OX-4]|$[OX-3]|$[OX-2]|$[OX-1]|$OX) ($[OY+2]|$[OY+3]|$[OY+4]|$[OY+5]|$[OY+6]).*"
+             X1="_Y_$[x2+1]H" X2="_Y_$[x1+6]H"
+             #00000000001111111#
+             #01234567890123456#0
+             #1                #1
+             #2  _____ _____   #2
+             #3   ▃▅──╨──-.    #3
+             #4 ▗▉▉▛______ ╳=- #4
+             #5  ▔▔     /| \   #5
+             #6        (_(__)  #6
+             #7                #7  0     0  0  0     0      0  0     0  0     1  1 1      1      1  1 1 #0
+             ######X####Y#####CLR# 1     2  3  4     5      6  7     8  9     0  1 2      3      4  5 6 #0
+             cut $SX  $OY    $SKY  '' $X1⎕  ⎕  ⎕     ⎕      ⎕  ⎕     ⎕  ⎕     ⎕  ⎕ ⎕      ⎕             #1
+             cut $SX $[OY+1] $CM1  '' $X1⎕                    ${mainrotor[AS]}            ⎕             #2
+             cut $SX $[OY+2] $CM3  ⎕     ⎕  ⎕  ▃     ▅ $CM2\─  ─     ╨  ─     ─  - .      ⎕      ⎕  ⎕ ⎕ #3
+             cut $SX $[OY+3] $CM3  ⎕     ▗  ▉  ▉     ▛ $CM2\_  _     _  _     _  _ ⎕      ╳      $T1  ⎕ #4
+             cut $SX $[OY+4] $CM3  ⎕     ⎕  ▔  ▔ $SKY⎕      ⎕  ⎕     ⎕  ⎕ $CM2/ \| ⎕ $CM1\\      ⎕  ⎕ ⎕ #5
+             cut $SX $[OY+5] $CM2  '' $X1⎕  ⎕  ⎕     ⎕      '' '' $X2⎕ \(     _ \( _      _ $CM1\)  ⎕   #6
+             cut $SX $[OY+6] $SKY  ''    '' '' ''    ''     '' '' $X2⎕  ⎕     ⎕  ⎕ ⎕      ⎕      ⎕;;    #7
+
+     'team') control_hero2 $H2X $H2Y
+             re="(life|ammo|gunup) ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]|$[OY+3]|$[OY+4]).*|"
+             re+="alien ($[OX+12]|$[OX+13]) ($[OY+1]|$[OY+2]).*|alien ($[OX+6]|$[OX+7]) ($[OY+3]|$[OY+4]).*|"
+             re+="bfire ($[OX+12]|$[OX+13]) ($[OY+2]|$[OY+3]).*|bfire ($[OX+6]|$[OX+7]) ($[OY+3]|$[OY+4]).*|"
+             re+="boss ($[OX+12]|$[OX+13]) $[OY-1].*"
+
+             X2="_Y_$[x2+2]H" X3="_Y_$[x1+0]H" X4="_Y_$[x2+11]H"
+             #00000000001111111#0
+             #01234567890123456#0
+             #1                #1
+             #2   _____ _____  #2
+             #3    .-──╨──▅▃   #3
+             #4 -=╳ ______▜▉▉▖ #4
+             #5   / |\     ▔▔  #5
+             #6  (__)_)        #6
+             #7                #7        0     0     0 0  0      0      0     0 1  1     1     1     1     1 1 #0
+             ######X####Y####CLR# 1      2     3     4 5  6      7      8     9 0  1     2     3     4     5 6 #0
+             cut $SX  $OY    $SKY  ''    '' $X2⎕     ⎕ ⎕  ⎕      ⎕      ⎕     ⎕ ⎕  ⎕     ⎕     ⎕     ⎕     ⎕   #1
+             cut $SX $[OY+1] $CM1  ''    '' $X2⎕                       ${mainrotor[AS]}                    ⎕   #2
+             cut $SX $[OY+2] $CM1  ⎕     ⎕     ⎕     ⎕ .  -      ─      ─     ╨ ─  ─ $CM3▅     ▃ $SKY⎕     ⎕ ⎕ #3
+             cut $SX $[OY+3] $CM2  ⎕       $T1   $CM2╳ ⎕  _      _      _     _ _  _ $CM3▜     ▉     ▉     ▖ ⎕ #4
+             cut $SX $[OY+4] $CM2  ⎕     ⎕     ⎕     / ⎕ \| $CM1\\      ⎕ $SKY⎕ ⎕  ⎕     ⎕ $CM3▔     ▔ $SKY⎕ ⎕ #5
+             cut $SX $[OY+5] $CM2  '' $X3⎕    \(     _ _ \)      _ $CM1\)     ⎕ '' '' $X4⎕     ⎕     ⎕     ⎕   #6
+             cut $SX $[OY+6] $SKY  '' $X3⎕     ⎕     ⎕ ⎕  ⎕      ⎕      ⎕     ⎕                                #7
+     esac
+
+     [[ $C1 -gt 0   ]] && ((C1--))
+     collision 2 "$re" && { BOOM $OX $OY; ((life2--)); }
+     HER[i]="penis2 $OX $OY 7 16 $SC $SM $CS $CL $AS $AL $C1 $C2"
+}

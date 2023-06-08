@@ -67,19 +67,19 @@ mess () {
 
 print_sprite () {
     OT=${OI[0]}   # object type
-    OX=${OI[1]}   # X coordinate
-    OY=${OI[2]}   # Y coordinate
-    OH=${OI[3]}   # object hight
+    OX=${OI[1]}   # object X coordinate
+    OY=${OI[2]}   # object Y coordinate
+    OH=${OI[3]}   # object height
     OW=${OI[4]}   # object width
     SC=${OI[5]}   # speed counter
     SM=${OI[6]}   # speed max
-    CS=${OI[7]}   # cuting start
-    CL=${OI[8]}   # cuting lenght
+    CS=${OI[7]}   # cutting start
+    CL=${OI[8]}   # cutting length
     AS=${OI[9]}   # animation start
-    AL=${OI[10]}  # animation lenght
+    AL=${OI[10]}  # animation length
     C1=${OI[11]}  # custom obj parameter 1
     C2=${OI[12]}  # custom obj parameter 2
-    [[ $OT ]] && sprite_$OT
+    [[ $OT ]] &&  sprite_$OT
 }
 
 read_input () { read -t$spd -srn1 input  &>/dev/null ; }
@@ -88,22 +88,22 @@ sender     () { until nc -q0 $1 $2 2>/dev/null <<< "$3"; do :; done; }
 
 control_hero1 () {
     read_input
-    case $input in
-        [wW]) [[ $H1Y  -gt 2               ]] && ((H1Y--));;
-        [aA]) [[ $H1X  -gt 1               ]] && ((H1X--));;
-        [sS]) [[ $H1Y  -lt $heroendy       ]] && ((H1Y++));;
-        [dD]) [[ $H1X  -lt $heroendx       ]] && ((H1X++));;
-        [pP]) [[ $ammo -ge $G && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 1 $G; ((ammo-=$G)); };;
+    case ${input,,} in
+           w) (( H1Y  > 2            )) && ((H1Y--));;
+           a) (( H1X  > 2            )) && ((H1X--));;
+           s) (( H1Y  < heroendy     )) && ((H1Y++));;
+           d) (( H1X  < heroendx     )) && ((H1X++));;
+           p) (( ammo > G && C1 == 0 )) && { C1=7; add_piu $1 $2 1 $G; ((ammo-=$G)); };;
     esac
 }
 
 control_hero2 () {
-    case $input2 in
-        [wW]) [[ $H2Y   -gt 2                ]] && ((H2Y--));;
-        [aA]) [[ $H2X   -gt 1                ]] && ((H2X--));;
-        [sS]) [[ $H2Y   -lt $heroendy        ]] && ((H2Y++));;
-        [dD]) [[ $H2X   -lt $heroendx        ]] && ((H2X++));;
-        [pP]) [[ $ammo2 -ge $G2 && $C1 -eq 0 ]] && { C1=7; add_piu $1 $2 2 $G2; ((ammo2-=$G2)); };;
+    case ${input2,,} in
+           w) (( H2Y   > 2             )) && ((H2Y--));;
+           a) (( H2X   > 2             )) && ((H2X--));;
+           s) (( H2Y   < heroendy      )) && ((H2Y++));;
+           d) (( H2X   < heroendx      )) && ((H2X++));;
+           p) (( ammo2 > G2 && C1 == 0 )) && { C1=7; add_piu $1 $2 2 $G2; ((ammo2-=$G2)); };;
     esac
 }
 
@@ -141,8 +141,8 @@ collision () {
               gunup:2) collbooom; [[ $G2 -lt 5 ]] && ((G2++)) ; return 1;;
               alien:1) collbooom; ((enumber--)) ; ((frags++)) ; bonus; return 0;;
               alien:2) collbooom; ((enumber--)) ; ((frags2++)); bonus; return 0;;
-              hero1:2) ((frags2++)); ((life--)) ; BOOM $obj_x $obj_y ; return 0;;
-              hero2:1) ((frags++)) ; ((life2--)); BOOM $obj_x $obj_y ; return 0;;
+              hero1:2|penis1:2 )  ((frags2++))  ; ((life--))  ; BOOM $obj_x $obj_y ; return 0;;
+              hero2:1|penis2:1 )  ((frags++))   ; ((life2--)) ; BOOM $obj_x $obj_y ; return 0;;
               crate:*) collbooom; crate=0; boom $obj_x $[obj_y-3]; boom $obj_x $[obj_y-6]; rndmbonus $hero; return 1;;
         esac
     }
@@ -218,7 +218,7 @@ add_enm () {
 }
 
 add_piu () {
-    PX=$1 PY=$2 PH=$3 PS=$4
+    local PX=$1 PY=$2 PH=$3 PS=$4
     case $PS in
         1) PIU+=("piu$PH $[PX+12] $[PY+3] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
 
@@ -313,15 +313,8 @@ sign_color=($BLK $RED $GRN $YLW $BLU $MGN $CYN $WHT)
 hero_config () {
     screen=
     [[ $AS -gt 0 ]] && ((AS--)) || AS=3
-    CM1=$SKY$H1C$BLD CM2=$SKY$DIM$H1C CM3=$SKY$H1C CM4=$SKY$BLD$H1C$UND TR=${tailrotor[AS]} OX=$[$endx/2-9] OY=$[$endy/2-6] CS=1 CL=20
-    # Using the same 'cut' function to print hero as in the game to preserve this nicely done tabled structure
-    ######X####Y#####CLR  1   2   3       4        5       6       7       8        9       A        B       C       D       E   F   G  #0
-    cut $OX  $OY    $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #1
-    cut $OX $[OY+1] $CM1 ' ' '_' '_'     ' '                                         ${mainrotor[AS]}                               ' ' #2
-    cut $OX $[OY+2] $CM2 ' ' '|' $TR $CM1'\\' $CM1'_' $CM1'_' $CM1'_' $CM3'.'  $CM3'-' $CM3'╨'  $CM4'─' $CM4'｡' $CM1'_' $SKY' ' ' ' ' ' #3
-    cut $OX $[OY+3] $CM2 ' ' '`' '─'     '´'      '‾'     '‾'     '‷'     '\\' $blk'°' $S1C$H1S $SKY' ' $blk'º' $blk'¯' $CM1']' '─' ' ' #4
-    cut $OX $[OY+4] $CM2 ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      '‾'     '‾'      '‾'     '‾'     '‾' $SKY' ' ' ' ' ' #5
-    cut $OX $[OY+5] $SKY ' ' ' ' ' '     ' '      ' '     ' '     ' '     ' '      ' '     ' '      ' '     ' '     ' '     ' ' ' ' ' ' #6
+    CS=1 CL=20 H1X=$OX H1Y=$OY
+    sprite_${ht}1 stop
     printf "$screen"
 
     for i in ${!hero_sign[@]}; {
@@ -377,12 +370,18 @@ single () { game=single; clr; menu; }
 cancel () { apply; H1C=$DHC; H1S=$DHS; S1C=$DSC; }
 client () { clr; game=client; enter_server; clr; menu; }
 apply  () { printf "$DEF"; clear; intro; show_hero=; item=1; items=('' "start $game" 'multiplayer' 'configure' 'exit'); }
-configure    () { clear; show_hero=1; items=('' 'Hero  sign' 'Sign color' 'Hero color' 'apply' 'cancel'); }
 multiplayer  () { clr; items=('' 'server' 'client' 'single' "$type" 'back'); }
 enter_server () {
     XY $[$endx/2-10] $[$endy-4] "${RED}Enter server IP: "
     XY $[$endx/2-10] $[$endy-3] "$BLD$WHT"
     cursor on; read -p ' ' -i "$saddr" -e saddr; cursor off
+}
+configure    () {
+    clear
+    show_hero=1
+    items=('' 'Hero  sign' 'Sign color' 'Hero color' 'apply' 'cancel')
+    OX=$[$endx/2-9] OY=$[$endy/2-6]
+    for i in {0..7}; { XY $((OX-1)) $((OY+i)) "$SKY                    "; }
 }
 
 game=single

@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 #------------------------{ Dev info }-----------------------------------------------------------------------------------
 # Created by: Ivan Marov <ie.marov@gmail.com>
-# Source: https://github.com/vaniacer/piu-piu-SH
-# check bash version
-case ${BASH_VERSINFO[@]::2} in [1-3]' '[0-9][0-9]|[1-3]' '[0-9]|'4 '[0-1])
-    echo -e "\nYour BASH is too short!) 4.2+ required to run this game, your is - ${BASH_VERSINFO[@]}"
-    exit 1;;
-esac      #                                                                  ░ ░ ░░░ ░ ░░ ░░░▒ ▒▒▒░░░ ░░ ░░ ░ ░
+# Source: https://github.com/vaniacer/piu-piu-SH                         ░ ░ ░░░ ░ ░░ ░░░▒ ▒▒▒░░░ ░░ ░░ ░ ░
 #--------------------------------------------------------------------+ ░   ░░░░ ░░░░▒▒▒▒ ▒▒▒▓ ▓▓▓▒▒▒▒▒▒▒░░░░ ░░░░ ░ ░ ░
 # Color picker, usage: printf $BLD$CUR$RED$BBLU'Hello World!'$DEF    |   ░
 #-------------------------+--------------------------------+---------+        ░   ░░░ ░░     ░  ░░      ░░  ░░ ░
@@ -38,16 +33,22 @@ XY () { printf "\e[$2;${1}H$3"; }                                   #|       ░
 line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 # Create sequence like {0..(X-1)}                                    | ░ ░ ░ ░░░░░░▒▒▒▒ ▒▒▒▓ ▓▓▓▒▒▒▒▒░░░░░░ ░ ░ ░ ░ ░
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ ░ ░░░ ░ ░░ ░░░▒ ▒▒▒░░░░░░░ ░ ░
-#----{ Start opt }--------------------------------------{ description  }---------------------{ def. values }------------
+#--------------------{ check bash version }--------------------------+--------------------------------------------------
+tversion="4.2"                                          # needed  bash version
+cversion="${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}"      # current bash version
+gawk '{if($1>$2){exit 1}}' <<< "$tversion $cversion" || {
+    printf "\nYour BASH is too short!) $BLD$tversion+$DEF required to run this game, your is - $BLD$BASH_VERSION$DEF\n"
+    exit 1
+} #--{ Start opt }--------------------------------------{ description  }---------------------{ def. values }------------
   background=true                                       # background objects visibility             (true)
     storyspd=0.05                                       # story texting speed                       (0.05)
     bossborn=                                           # boss starter
     tillboss=100                                        # frags needed to fight with boss           (100)
-     version='₁․₁'                                      # game varsion in small digits ₀₁₂₃₄₅₆₇₈₉․
+     version='₁․₁'                                      # game version in small digits ₀₁₂₃₄₅₆₇₈₉․
      bhealth=100                                        # boss' health                              (100)
      showfps=true                                       # show FPS counter if set                   (true)
      enumber=0                                          # enemies counter                           (0)
-     bonuses=("ammo" "life" "ammo" "gunup" "ammo")      # bonuses, more ammo, less life ang gunup
+     bonuses=("ammo" "life" "ammo" "gunup" "ammo")      # bonuses, more ammo, less life ang gun power ups
        enmax=100                                        # max number of enemies                     (10)
        crate=0                                          # crate drop                                (0)
        frags=0                                          # hero1 frags counter                       (0)
@@ -74,13 +75,14 @@ read year month day dow < <(LANG=C date +'%Y %m %d %a') # get year, month, day a
        cport=54322
 
 [[ -e ~/.piuconf ]] && . ~/.piuconf
-. ./functions #_FUNCTIONS_
-. ./messages  #_MESSAGES_
-. ./sprites   #_SPRITES_
+. ./functions       #_FUNCTIONS_
+. ./messages        #_MESSAGES_
+. ./sprites         #_SPRITES_
+. ./sprites_penis   #_PENIS_
 #======================================{ Main game loop single or server mode }=========================================
 game () {
     while true; do
-        #-{ Empty screen, print game status adnd FPS }-------------------------
+        #-{ Empty screen, print game status and FPS }--------------------------
         screen=; status; [[ $showfps ]] && fps_counter
         #-{ Add background }---------------------------------------------------
         [[ $background ]] && add_backgound birds msngr clouds houses trees moving_land
@@ -163,19 +165,21 @@ starship_intro () {
     exit
 }
 #============================================{ Initialisation }=========================================================
-BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")                   # Sun
-H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10") # Hero
+                hw=16 hh=6 ht=hero
+[[ $penis ]] && hw=18 hh=7 ht=penis
 trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT
 clear; starship_intro $1; mess "help"; sleep 2
 clear; intro; menu
 clear; fill_screen
 cursor off
+BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")                       # Sun
+H1X=2 H1Y=2 HER=("${ht}1 $H1X $H1Y $hh $hw 0 0 1 15 0 3 15 10") # Hero
 #-{ If server }---------------------------------------------------------------------------------------------------------
 case $game:$type in
-    server:team) H2X=1         H2Y=$[halfy-2];;&
+    server:team) H2X=2         H2Y=$[halfy-2];;&
     server:duel) H2X=$heroendx H2Y=$[halfy-2] H1Y=$[halfy-2] enmax=0; ad_plane_text;;&
     server:*   ) XY 2 1 $SKY$RED"Server mode. Waiting for client..."
-                 HER+=("hero2 $H2X $H2Y 6 16 0 0 1 15 0 3 15 10")
+                 HER+=("${ht}2 $H2X $H2Y $hh $hw 0 0 1 15 0 3 15 10")
                  clnt=( $(nc -l -p $sport) )
                  caddr=${clnt[0]}
                  cport=${clnt[1]}
