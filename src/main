@@ -75,9 +75,10 @@ read year month day dow < <(LANG=C date +'%Y %m %d %a') # get year, month, day a
        cport=54322
 
 [[ -e ~/.piuconf ]] && . ~/.piuconf
-. ./functions #_FUNCTIONS_
-. ./messages  #_MESSAGES_
-. ./sprites   #_SPRITES_
+. ./functions       #_FUNCTIONS_
+. ./messages        #_MESSAGES_
+. ./sprites         #_SPRITES_
+. ./sprites_penis   #_PENIS_
 #======================================{ Main game loop single or server mode }=========================================
 game () {
     while true; do
@@ -164,19 +165,21 @@ starship_intro () {
     exit
 }
 #============================================{ Initialisation }=========================================================
-BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")                   # Sun
-H1X=1 H1Y=2 HER=("hero1 $H1X $H1Y 6 16 0 0 1 15 0 3 15 10") # Hero
+                hw=16 hh=6 ht=hero
+[[ $penis ]] && hw=18 hh=7 ht=penis
 trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT
 clear; starship_intro $1; mess "help"; sleep 2
 clear; intro; menu
 clear; fill_screen
 cursor off
+BP1=("Sun $Sunsendx 1 9 18 0 7 1 20 0 2")                       # Sun
+H1X=2 H1Y=2 HER=("${ht}1 $H1X $H1Y $hh $hw 0 0 1 15 0 3 15 10") # Hero
 #-{ If server }---------------------------------------------------------------------------------------------------------
 case $game:$type in
-    server:team) H2X=1         H2Y=$[halfy-2];;&
+    server:team) H2X=2         H2Y=$[halfy-2];;&
     server:duel) H2X=$heroendx H2Y=$[halfy-2] H1Y=$[halfy-2] enmax=0; ad_plane_text;;&
     server:*   ) XY 2 1 $SKY$RED"Server mode. Waiting for client..."
-                 HER+=("hero2 $H2X $H2Y 6 16 0 0 1 15 0 3 15 10")
+                 HER+=("${ht}2 $H2X $H2Y $hh $hw 0 0 1 15 0 3 15 10")
                  clnt=( $(nc -l -p $sport) )
                  caddr=${clnt[0]}
                  cport=${clnt[1]}
