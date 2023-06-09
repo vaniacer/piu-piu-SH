@@ -166,7 +166,7 @@ starship_intro () {
 }
 #============================================{ Initialisation }=========================================================
                 hw=16 hh=6 ht=hero
-[[ $penis ]] && hw=18 hh=7 ht=penis
+[[ $penis ]] && hw=16 hh=7 ht=penis
 trap : ALRM; trap bye INT TERM SIGINT SIGTERM EXIT
 clear; starship_intro $1; mess "help"; sleep 2
 clear; intro; menu

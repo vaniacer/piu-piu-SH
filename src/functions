@@ -263,9 +263,9 @@ backgound_clouds () { # Add clouds }--------------------------------------------
 
 backgound_houses () { # Add houses }--------------------------------------------------------------------
     case $[RANDOM % $HOU]:$[RANDOM % 3 + 1] in
-        0:1) BP1+=("house1 $endx $hos1endy 2 6  6 $[6+RANDOM%2] 1 0 0 0");;
-        0:2) BP2+=("house2 $endx $hos2endy 9 30 4 $[4+RANDOM%2] 1 0 0 0");;
-        0:3) BP3+=("house3 $endx $hos3endy 4 17 2 $[2+RANDOM%2] 1 0 0 0");;
+        0:1)                 BP1+=("house1 $endx $hos1endy 2 6  6 $[6+RANDOM%2] 1 0 0 0");;
+        0:2) [[ $penis ]] || BP2+=("house2 $endx $hos2endy 9 30 4 $[4+RANDOM%2] 1 0 0 0");;
+        0:3)                 BP3+=("house3 $endx $hos3endy 4 17 2 $[2+RANDOM%2] 1 0 0 0");;
     esac
 }
 
