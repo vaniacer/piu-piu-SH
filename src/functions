@@ -49,9 +49,7 @@ cuty () { # used in bonus crate
 }
 
 bonus () { # get random bonus from alien or not
-    case $[RANDOM % $rnd] in
-        0) ENM+=("${bonuses[$[RANDOM%${#bonuses[@]}]]} $OX $[OY-1] 3 5 0 2 1 0 0 0 ${#ENM[@]}")
-    esac
+    ((RANDOM % $rnd == 0)) && ENM+=("${bonuses[$[RANDOM%${#bonuses[@]}]]} $OX $[OY-1] 3 5 0 2 1 0 0 0 ${#ENM[@]}")
 }
 
 mess () {
@@ -87,26 +85,33 @@ listener   () { input2=$(nc -l -p $sport 2>/dev/null); }
 sender     () { until nc -q0 $1 $2 2>/dev/null <<< "$3"; do :; done; }
 
 control_hero1 () {
+    local L=0
     read_input
+    [[ $penis ]] && L=G
     case ${input,,} in
            w) (( H1Y  > 2            )) && ((H1Y--));;
            a) (( H1X  > 2            )) && ((H1X--));;
            s) (( H1Y  < heroendy     )) && ((H1Y++));;
-           d) (( H1X  < heroendx     )) && ((H1X++));;
-           p) (( ammo > G && C1 == 0 )) && { C1=7; add_piu $1 $2 1 $G; ((ammo-=$G)); };;
+           d) (( H1X  < (heroendx-L) )) && ((H1X++));;
+           p) (( ammo > G && C1 == 0 )) && { C1=7; add_piu $(($1+L)) $2 1 $G; ((ammo-=$G)); };;
     esac
 }
 
 control_hero2 () {
+    local L=0
+    [[ $penis ]] && L=G2
+    [[ $duel  ]] || L=0
     case ${input2,,} in
            w) (( H2Y   > 2             )) && ((H2Y--));;
            a) (( H2X   > 2             )) && ((H2X--));;
            s) (( H2Y   < heroendy      )) && ((H2Y++));;
-           d) (( H2X   < heroendx      )) && ((H2X++));;
-           p) (( ammo2 > G2 && C1 == 0 )) && { C1=7; add_piu $1 $2 2 $G2; ((ammo2-=$G2)); };;
+           d) (( H2X   < (heroendx-L)  )) && ((H2X++));;
+           p) (( ammo2 > G2 && C1 == 0 )) && { C1=7; add_piu $(($1+L)) $2 2 $G2; ((ammo2-=$G2)); };;
     esac
 }
 
+gunmax=5
+[[ $penis ]] && gunmax=50
 rndmbonus () {
     case $1:$[RANDOM%3] in
           1:0) ((life++)) ;;
@@ -136,9 +141,9 @@ collision () {
                life:2) collbooom; ((life2++))   ; return 1;;
                ammo:1) collbooom; ((ammo+=100)) ; return 1;;
                ammo:2) collbooom; ((ammo2+=100)); return 1;;
-#              alien:*) collbooom; ((enumber--)) ; return 0;;
-              gunup:1) collbooom; [[ $G  -lt 5 ]] && ((G++))  ; return 1;;
-              gunup:2) collbooom; [[ $G2 -lt 5 ]] && ((G2++)) ; return 1;;
+#             alien:*) collbooom; ((enumber--)) ; return 0;;
+              gunup:1) collbooom; [[ $G  -lt $gunmax ]] && ((G++))   ; return 1;;
+              gunup:2) collbooom; [[ $G2 -lt $gunmax ]] && ((G2++))  ; return 1;;
               alien:1) collbooom; ((enumber--)) ; ((frags++)) ; bonus; return 0;;
               alien:2) collbooom; ((enumber--)) ; ((frags2++)); bonus; return 0;;
               hero1:2|penis1:2 )  ((frags2++))  ; ((life--))  ; BOOM $obj_x $obj_y ; return 0;;
@@ -236,7 +241,7 @@ add_piu () {
                  "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
                  "piu$PH $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
 
-        5) PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
+      5|*) PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
                  "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
                  "piu$PH $[PX+14] $[PY+3] 1 4 0 0 1 $[endx-(PX+14)] $[RANDOM%3] 3"    #   -=>
                  "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
