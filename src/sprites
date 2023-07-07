@@ -41,8 +41,8 @@ mainrotor=("${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕ ${blk}_ ${blk}_ ${
            "      ⎕       ⎕       ⎕ ${blk}_ ${blk}_ ${blk}_ ${blk}_ ${blk}_       ⎕       ⎕       ⎕") # '   _____   '
 
 tailrotor=("$blk|" "$blk/" "$blk─" $blk'\\') # '|' '/' '─' '\'
-heroendx=$[endx-15]
-heroendy=$[endy-8 ]
+heroendx=$((endx-15))
+heroendy=$((endy-8 ))
 [[ $virus ]] && DHS=☢ DHC=$RED DSC=$YLW
 
 sprite_hero1 () {
@@ -74,7 +74,7 @@ sprite_hero1 () {
     #1                                                 █▓▒░                           ___                                        _/ o \_
     #2 __ _____ _____                                         ___                    (  o)                                      /O   O  \
     #3 |X\___.-╨─｡_                     -=>                  ( o )                    `¯´            █▓▒░     ___              (   O    O)
-    #4 `─´‾‾‷\°★ º¯]─         - >                      ->     `¯´                                            (o  )              `¯¯---¯¯´
+    #4 `─´‾‾‷\°★ º¯]-         - >                      ->     `¯´                                            (o  )              `¯¯---¯¯´
     #5        ‾‾‾‾‾                                                                                           `¯´
     #6                    0   0   0       0        0       0       0       0        0       1        1       1       1       1   1   1
     ######X####Y#####CLR  1   2   3       4        5       6       7       8        9       0        1       2       3       4   5   6  #0
@@ -196,9 +196,10 @@ sprite_piu1 () {
 }
 
 sprite_piu2 () {
-    case $type in
-        'duel') direction='-' re="${ht}1 ($[OX-10]|$[OX-11]) ($[OY-1]|$[OY-2]|$[OY-3]|$[OY-4]).*";;
-        'team') direction='+' re="alien ($OX|$[OX+1]) $[OY-1].*|boss ($OX|$[OX+1]) ($[OY-2]|$[OY-3]|$[OY-4]).*";;
+    case $type:$penis in
+          duel:?*) direction='-' re="${ht}1 ($[OX-9-G]|$[OX-10-G]) ($[OY-1]|$[OY-2]|$[OY-3]|$[OY-4]).*";;
+          duel:*)  direction='-' re="${ht}1 ($[OX-10]|$[OX-11]) ($[OY-1]|$[OY-2]|$[OY-3]|$[OY-4]).*";;
+          team:*)  direction='+' re="alien ($OX|$[OX+1]) $[OY-1].*|boss ($OX|$[OX+1]) ($[OY-2]|$[OY-3]|$[OY-4]).*";;
     esac
     mov $direction && PIU[i]="piu2 $OX $OY 1 4 $SC $SM $CS $CL $AS 3" || { unset PIU[i]; return; }
     case "$day:$month:$virus:$type:$penis" in
@@ -475,41 +476,53 @@ sprite_life () {
     cut $SX $[OY+2] $CM1 '' $X1'V' ' '      #3
 }
 sprite_gunup () {
-    mov - && ENM[i]="gunup $OX $OY 3 4 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; return; }
+    local L=4
+    [[ $penis ]] && L=7
+    mov - && ENM[i]="gunup $OX $OY 3 $L $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; return; }
     CM1=$SKY$BLK CM2=$SKY$blk CM3=$SKY$UND$blk
-    case ${G} in
-        1) #01234
-           #1‖—— 
-           #2‖   
-           #3‖—— 
-           ####################  1       2       3   4    #0
-           cut $SX  $OY    $CM1 '‖' $CM2'—' $CM2'—' ' '   #1
-           cut $SX $[OY+1] $CM1 '‖' $SKY' '               #2
-           cut $SX $[OY+2] $CM1 '‖' $CM2'—' $CM2'—' ' ';; #3
-        2) #01234
-           #1‖—— 
-           #2‖—— 
-           #3‖—— 
-           ####################  1       2       3   4    #0
-           cut $SX  $OY    $CM1 '‖' $CM2'—' $CM2'—' ' '   #1
-           cut $SX $[OY+1] $CM1 '‖' $CM2'—' $CM2'—' ' '   #2
-           cut $SX $[OY+2] $CM1 '‖' $CM2'—' $CM2'—' ' ';; #3
-        3) #01234
-           #1‖== 
-           #2‖   
-           #3‖== 
-           ####################  1       2       3       4    #0
-           cut $SX  $OY    $CM1 '‖' $CM3'‾' $CM3'‾' $SKY' '   #1
-           cut $SX $[OY+1] $CM1 '‖' $SKY' '                   #2
-           cut $SX $[OY+2] $CM1 '‖' $CM3'‾' $CM3'‾' $SKY' ';; #3
-        *) #01234
-           #1‖== 
-           #2‖—— 
-           #3‖== 
-           ####################  1       2       3       4    #0
-           cut $SX  $OY    $CM1 '‖' $CM3'‾' $CM3'‾' $SKY' '   #1
-           cut $SX $[OY+1] $CM1 '‖' $CM2'—' $CM2'—'     ' '   #2
-           cut $SX $[OY+2] $CM1 '‖' $CM3'‾' $CM3'‾' $SKY' ';; #3
+    case $G:$penis in
+          *:?*) #Penis mode)
+                CM1=$SKY$DIM$BLU CM2=$DIM$UND$BLU CM3=$SKY$BLD$BLU CM4=$SKY$BLD$UND$BLU
+                #012345670
+                #1 ____  1
+                #2/vgr\\ 2
+                #3\999// 3
+                ####################  1        2       3       4       5        6        7    #0
+                cut $SX  $OY    $CM3 ' '      '_'     '_'     '_'     '_'  $SKY' '            #1
+                cut $SX $[OY+1] $CM1 '/'      'v'     'g'     'r'     '\\' $CM4'\\' $SKY' '   #2
+                cut $SX $[OY+2] $CM1 '\\' $CM2'9' $CM2'9' $CM2'9' $CM2'/'  $CM3'/'  $SKY' ';; #3
+          1:*)  #012340
+                #1‖—— 1
+                #2‖   2
+                #3‖—— 3
+                ####################  1       2       3   4    #0
+                cut $SX  $OY    $CM1 '‖' $CM2'—' $CM2'—' ' '   #1
+                cut $SX $[OY+1] $CM1 '‖' $SKY' '               #2
+                cut $SX $[OY+2] $CM1 '‖' $CM2'—' $CM2'—' ' ';; #3
+          2:*)  #012340
+                #1‖—— 1
+                #2‖—— 2
+                #3‖—— 3
+                ####################  1       2       3   4    #0
+                cut $SX  $OY    $CM1 '‖' $CM2'—' $CM2'—' ' '   #1
+                cut $SX $[OY+1] $CM1 '‖' $CM2'—' $CM2'—' ' '   #2
+                cut $SX $[OY+2] $CM1 '‖' $CM2'—' $CM2'—' ' ';; #3
+          3:*)  #012340
+                #1‖== 1
+                #2‖   2
+                #3‖== 3
+                ####################  1       2       3       4    #0
+                cut $SX  $OY    $CM1 '‖' $CM3'‾' $CM3'‾' $SKY' '   #1
+                cut $SX $[OY+1] $CM1 '‖' $SKY' '                   #2
+                cut $SX $[OY+2] $CM1 '‖' $CM3'‾' $CM3'‾' $SKY' ';; #3
+          *:*)  #012340
+                #1‖== 1
+                #2‖—— 2
+                #3‖== 3
+                ####################  1       2       3       4    #0
+                cut $SX  $OY    $CM1 '‖' $CM3'‾' $CM3'‾' $SKY' '   #1
+                cut $SX $[OY+1] $CM1 '‖' $CM2'—' $CM2'—'     ' '   #2
+                cut $SX $[OY+2] $CM1 '‖' $CM3'‾' $CM3'‾' $SKY' ';; #3
     esac
 }
 #------------------------{ Ad plane }-----------------------------------------------------------------------------------
