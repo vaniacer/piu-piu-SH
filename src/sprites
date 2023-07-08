@@ -101,6 +101,7 @@ sprite_hero2 () {
         screen+="\\e[$[endy-1];$[OX+OW]H$LND "
     fi
 
+    sp=' '; ((G2>4)) && sp='　'
     CM1=$SKY$H2C$BLD CM2=$SKY$DIM$H2C CM3=$SKY$H2C CM4=$SKY$BLD$H2C$UND TR=${tailrotor[AS]} GN=$SKY$BLD$BLK${gun[$G2]}
     case $type in
      'duel') control_hero2 $[H2X-10] $H2Y
@@ -116,10 +117,10 @@ sprite_hero2 () {
              #6                    0   0       0       0       0       0       0        0       0       1   1   1   1   1       1   1
              ####################  1   2       3       4       5       6       7        8       9       0   1   2   3   4       5   6  #0
              cut $SX  $OY    $SKY ' ' ' '     ' '     ' '     ' '     ' '     ' '      ' '     ' '     ' ' ' ' ' ' ' ' ' '     ' ' ' ' #1
-             cut $SX $[OY+1] $CM1 ' '                                   ${mainrotor[AS]}                       ' ' $CM1'_'     '_' ' ' #2
-             cut $SX $[OY+2] $CM1 ' ' ' '     ' '     '_' $CM4'｡'     '─' $CM3'╨'      '-'     '.' $CM1'_' '_' '_' '/' $TR $CM1'|' ' ' #3
+             cut $SX $[OY+1] $CM1 "$sp"                                 ${mainrotor[AS]}                       ' ' $CM1'_'     '_' ' ' #2
+             cut $SX $[OY+2] $CM1 ' ' ' '     "$sp"   '_' $CM4'｡'     '─' $CM3'╨'      '-'     '.' $CM1'_' '_' '_' '/' $TR $CM1'|' ' ' #3
              cut $SX $[OY+3] $CM2 ' ' $GN $CM2'[' $blk'¯' $blk'º' $SKY' ' $S2C$H2S $blk'°' $CM2'/'     '‷' '‾' '‾' '`' '─'     '´' ' ' #4
-             cut $SX $[OY+4] $CM2 ' ' ' '     ' '     '‾'     '‾'     '‾'     '‾'      '‾'     ' '     ' ' ' ' ' ' ' ' ' '     ' ' ' ' #5
+             cut $SX $[OY+4] $CM2 ' ' ' '     "$sp"   '‾'     '‾'     '‾'     '‾'      '‾'     ' '     ' ' ' ' ' ' ' ' ' '     ' ' ' ' #5
              cut $SX $[OY+5] $SKY ''  ''   $X1' '     ' '     ' '     ' '     ' '      ' '     ' ';;                                   #6
 
      'team') control_hero2 $H2X $H2Y
@@ -206,7 +207,7 @@ sprite_piu2 () {
           *:*:*:duel:?*)
             CM1=$SKY$BLD$WHT
             #01234
-            #1<=-
+            #1○—_
             ################  1      2    3       4   #0
             cut $SX $OY $CM1 '○' ${cumback[AS]} $SKY⎕;; #1
           *:*:*:duel:*)

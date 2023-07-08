@@ -224,28 +224,44 @@ add_enm () {
 
 add_piu () {
     local PX=$1 PY=$2 PH=$3 PS=$4
-    case $PS in
-        1) PIU+=("piu$PH $[PX+12] $[PY+3] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+    case $PS:$PH:$type in
+           1:*:*)    PIU+=("piu$PH $[PX+12] $[PY+3] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
 
-        2) PIU+=("piu$PH $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
-                                                                                      #
-                 "piu$PH $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+           2:*:*)    PIU+=("piu$PH $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
+                                                                                                #
+                           "piu$PH $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
 
-        3) PIU+=("piu$PH $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
-                 "piu$PH $[PX+13] $[PY+3] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                 "piu$PH $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+           3:2:duel) PIU+=("piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  <=-
+                           "piu$PH $[PX+12] $[PY+3] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # <=-
+                           "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3");; #  <=-
 
-        4) PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
-                 "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                                                                                      #
-                 "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                 "piu$PH $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+           3:*:*)    PIU+=("piu$PH $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
+                           "piu$PH $[PX+13] $[PY+3] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
+                           "piu$PH $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
 
-      5|*) PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
-                 "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                 "piu$PH $[PX+14] $[PY+3] 1 4 0 0 1 $[endx-(PX+14)] $[RANDOM%3] 3"    #   -=>
-                 "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
-                 "piu$PH $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
+           4:2:duel) PIU+=("piu$PH $[PX+13] $[PY+1] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  <=-
+                           "piu$PH $[PX+12] $[PY+2] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # <=-
+                                                                                                #
+                           "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    # <=-
+                           "piu$PH $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; #  <=-
+
+           4:*:*)    PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
+                           "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
+                                                                                                #
+                           "piu$PH $[PX+12] $[PY+4] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    #  -=>
+                           "piu$PH $[PX+13] $[PY+5] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3");; # -=>
+
+           *:2:duel) PIU+=("piu$PH $[PX+14] $[PY+1] 1 4 0 0 1 $[endx-(PX+14)] $[RANDOM%3] 3"    #   <=-
+                           "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  <=-
+                           "piu$PH $[PX+12] $[PY+3] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # <=-
+                           "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  <=-
+                           "piu$PH $[PX+14] $[PY+5] 1 4 0 0 1 $[endx-(PX+14)] $[RANDOM%3] 3");; #   <=-
+
+           *:*:*)    PIU+=("piu$PH $[PX+12] $[PY+1] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3"    # -=>
+                           "piu$PH $[PX+13] $[PY+2] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
+                           "piu$PH $[PX+14] $[PY+3] 1 4 0 0 1 $[endx-(PX+14)] $[RANDOM%3] 3"    #   -=>
+                           "piu$PH $[PX+13] $[PY+4] 1 4 0 0 1 $[endx-(PX+13)] $[RANDOM%3] 3"    #  -=>
+                           "piu$PH $[PX+12] $[PY+5] 1 4 0 0 1 $[endx-(PX+12)] $[RANDOM%3] 3");; # -=>
     esac
 }
 
