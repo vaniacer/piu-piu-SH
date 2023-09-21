@@ -1434,7 +1434,7 @@ sprite_tree2 () {
 case $month in
     0[1-4]|12) T3C=$SKY$BLD$cyn tree3H=8;; # winter & early spring
     0[5-8]   ) T3C=$SKY$GRN     tree3H=9;; # late spring & summer
-    09|1[0-1]) T3C=$SKY$DIM$red tree3H=8;; # autumn
+    09|1[0-1]) T3C=$SKY$DIM$red tree3H=9;; # autumn
 esac;           tre3endy=$[endy-tree3H-2]
 sprite_tree3 () {
     case "$day:$month" in
