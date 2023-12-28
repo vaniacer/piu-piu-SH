@@ -1,9 +1,8 @@
 #!/bin/bash
-
 [[ $penis ]] && {
-    heroendx=$[endx-15]
-    heroendy=$[endy-9 ]
-}
+
+heroendx=$[endx-15]
+heroendy=$[endy-9 ]
 
 enl1=('' ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─)
 enl2=('' _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _)
@@ -127,3 +126,64 @@ sprite_penis2 () {
      collision 2 "$re" && { BOOM $OX $OY; ((life2--)); }
      HER[i]="penis2 $OX $OY 7 $[15+G2] $SC $SM $CS $CL $AS $AL $C1 $C2"
 }
+
+#------------------------{ Shoots }-------------------------------------------------------------------------------------
+case "$day:$month" in
+      *:[01][1-4]) CM1=$SKY$BLD$CYN;;
+                *) CM1=$SKY$BLD$WHT;;
+esac
+cumback=(              # ● ⊕ ⊙ ○
+    "${CM1}— ${CM1}‾"  # ○‾— ○—‾
+    "${CM1}— ${CM1}—"  # ○—— ○‾—
+    "${CM1}— ${CM1}_"  # ○_— ○—_
+    "${CM1}— ${CM1}—") # ○—— ○_—
+cum=(                  # ● ⊕ ⊙ ○
+    "${CM1}‾ ${CM1}—"  # ‾—○ —‾○
+    "${CM1}— ${CM1}—"  # ——○ ‾—○
+    "${CM1}_ ${CM1}—"  # _—○ —_○
+    "${CM1}— ${CM1}—") # ——○ _—○
+
+sprite_piu1 () {
+    case $type in
+        'duel') re="${ht}2 ($OX|$[OX+1]) ($[OY-1]|$[OY-2]|$[OY-3]|$[OY-4]).*";;
+        'team') re="alien ($OX|$[OX+1]) $[OY-1].*|boss ($OX|$[OX+1]) ($[OY-2]|$[OY-3]|$[OY-4]).*";;
+    esac;  mov + && PIU[i]="piu1 $OX $OY 1 4 $SC $SM $CS $CL $AS 3" || { unset PIU[i]; return; }
+
+    case "$day:$month" in
+          *:[01][1-4]) CM1=$SKY$BLD$CYN;;
+                    *) CM1=$SKY$BLD$WHT;;
+    esac
+
+    #01234
+    #1 —_○
+    ################  1    2    3       4 #0
+    cut $OX $OY $SKY ' ' ${cum[AS]} $CM1○ #1
+    collision 1 "$re" $OX $[OY-1] && unset PIU[i]
+}
+
+sprite_piu2 () {
+    case $type in
+         'duel') direction='-' re="${ht}1 ($[OX-9-G]|$[OX-10-G]) ($[OY-1]|$[OY-2]|$[OY-3]|$[OY-4]).*";;
+         'team') direction='+' re="alien ($OX|$[OX+1]) $[OY-1].*|boss ($OX|$[OX+1]) ($[OY-2]|$[OY-3]|$[OY-4]).*";;
+    esac;   mov $direction && PIU[i]="piu2 $OX $OY 1 4 $SC $SM $CS $CL $AS 3" || { unset PIU[i]; return; }
+
+    case "$day:$month" in
+          *:[01][1-4]) CM1=$SKY$BLD$CYN;;
+                    *) CM1=$SKY$BLD$WHT;;
+    esac
+
+    case "$type" in
+         'duel')
+                 #01234
+                 #1○—_
+                 ################  1      2    3       4   #0
+                 cut $SX $OY $CM1 '○' ${cumback[AS]} $SKY⎕;; #1
+
+              *) #01234
+                 #1 —_○
+                 ################ 1   2   3        4   #0
+                 cut $OX $OY $SKY ⎕ ${cum[AS]} $CM1○;; #1
+    esac;        collision 2 "$re" $OX $[OY-1] && unset PIU[i]
+}
+
+} # the end of the penis (the tip)
