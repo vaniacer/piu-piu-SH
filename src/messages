@@ -3,6 +3,7 @@
 case "$day$month${virus,,}${dow,,}" in
    *covid-19*) ad='Stay at home!'                              ;;&
         *fri*) ad='All work and no play makes Jack a dull boy' ;;&
+        2[5-9]07*fri|3[01]07*fri) ad='Sysadmins will save us all!';; # Last friday of july Sysadmin day!)
         0112*) ad="Winter is coming..."                        ;;
         3112*) ad="Happiu-piu new $((year+1))"' year!)'        ;;
         1101*) ad='Happy birthday Yura $)'                     ;;
