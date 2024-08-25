@@ -30,6 +30,9 @@ On Ubuntu starting from version 18.04 you can install it with apt, but it's not 
 ~~Titter~~ DOGE: D7qJBRU3UpXES9EwtvE8YZSNAVgFEmz3py</br>
 ![dodge](https://user-images.githubusercontent.com/18072680/229992296-f415eadb-645b-4229-81c7-e269485c635d.png)
 
+TON: 0xd7e17A37DD936B211790ba70Aa985448277030E8
+![ton](https://github.com/user-attachments/assets/93ed3c9e-b445-4316-b617-33f4d0f055be)
+
 BTC: 1LxRxsyXP389YW3Ezw9YzNetE5VYj1RaJf</br>
 ![btc](https://user-images.githubusercontent.com/18072680/106382955-f2f00e80-63d3-11eb-9316-b6653225820c.png)
 
