@@ -78,6 +78,11 @@ read year month day dow < <(LANG=C date +'%Y %m %d %a') # get year, month, day a
 . ./functions       #_FUNCTIONS_
 . ./messages        #_MESSAGES_
 . ./sprites         #_SPRITES_
+. ./sprites_heroes  #_HEROES_
+. ./sprites_aliens  #_ALIENS_
+. ./sprites_clouds  #_CLOUDS_
+. ./sprites_houses  #_HOUSES_
+. ./sprites_trees   #_TREES_
 . ./sprites_penis   #_PENIS_
 #======================================{ Main game loop single or server mode }=========================================
 game () {

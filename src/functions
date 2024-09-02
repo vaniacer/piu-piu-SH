@@ -271,7 +271,11 @@ backgound_birds () { # Add birds }----------------------------------------------
 
 backgound_msngr () { # Add msngr }----------------------------------------------------------------------
     case $type in duel) msngrY=2;; *) msngrY=$rndy;; esac
-    case $[RANDOM % $MSN] in 0) BP2+=("msngr $endx $msngrY 4 20 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3");; esac
+    case $[RANDOM % $MSN] in 0)
+        ((ad_index++)); [[ ${ad[ad_index]} ]] || ad_index=0
+        BP2+=("msngr $endx $msngrY 4 ${width[ad_index]} 0 $[1+RANDOM%4] 1 0 $[RANDOM%3] 3 $ad_index");;
+        #              1      2    3         4          5       6       7 8      9      10    11
+    esac
 }
 
 backgound_clouds () { # Add clouds }--------------------------------------------------------------------

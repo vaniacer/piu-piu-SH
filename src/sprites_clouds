@@ -1,0 +1,56 @@
+#!/bin/bash
+#------------------------{ Clouds }-------------------------------------------------------------------------------------
+case $month in
+    0[1-4]|12) C1C=$SKY$DIM$CYN;; # winter & early spring
+    0[5-8]   ) C1C=$SKY$DIM$WHT;; # late spring & summer
+    09|1[0-1]) C1C=$SKY$blk    ;; # autumn
+esac
+sprite_cloud1 () {
+    mov - && BP1[i]="cloud1 $OX $OY 3 6 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
+    X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H"
+    #01234567
+    #1 ,-+.
+    #2(    )
+    #3 `+-´
+    ####################  1     2   3   4   5   6   7  #0
+    cut $SX  $OY    $C1C '' $X1',' '-' '+' '.' ' '     #1
+    cut $SX $[OY+1] $C1C '('   ' ' ' ' ' ' ' ' ')' ' ' #2
+    cut $SX $[OY+2] $C1C '' $X2'`' '+' '-' '´' ' '     #3
+}
+
+case $month in
+    0[1-4]|12) C2C=$SKY$CYN;; # winter & early spring
+    0[5-8]   ) C2C=$SKY$WHT;; # late spring & summer
+    09|1[0-1]) C2C=$SKY$BLK;; # autumn
+esac
+sprite_cloud2 () {
+    mov - && BP2[i]="cloud2 $OX $OY 3 8 $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
+    X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H"
+    #0123456789
+    #1 ,-._..
+    #2(      )
+    #3 `-...´
+    ####################  1     2   3   4   5   6   7   8   9  #0
+    cut $SX  $OY    $C2C '' $X1',' '-' '.' '_' '.' '.' ' '     #1
+    cut $SX $[OY+1] $C2C '('   ' ' ' ' ' ' ' ' ' ' ' ' ')' ' ' #2
+    cut $SX $[OY+2] $C2C '' $X2'`' '-' '.' '.' '.' '´' ' '     #3
+}
+
+case $month in
+    0[1-4]|12) C3C=$SKY$BLD$CYN;; # winter & early spring
+    0[5-8]   ) C3C=$SKY$BLD$WHT;; # late spring & summer
+    09|1[0-1]) C3C=$SKY$DIM$BLK;; # autumn
+esac
+sprite_cloud3 () {
+    mov - && BP3[i]="cloud3 $OX $OY 3 11 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
+    X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H"
+    #0000000000111
+    #0123456789012
+    #1 ,+¯`.-¯`.
+    #2(         )
+    #3 `--.,,.-´          0     0   0   0   0   0   0   0   0   1   1   1
+    ####################  1     2   3   4   5   6   7   8   9   0   1   2  #0
+    cut $SX  $OY    $C3C '' $X1',' '+' '¯' '`' '.' '-' '¯' '`' '.' ' '     #1
+    cut $SX $[OY+1] $C3C '('   ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ')' ' ' #2
+    cut $SX $[OY+2] $C3C '' $X2'`' '-' '-' '.' ',' ',' '.' '-' '´' ' '     #3
+}

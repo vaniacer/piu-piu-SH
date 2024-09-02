@@ -4,10 +4,21 @@ sed -n '1,/_FUNCTIONS_/p' main    >  $target
 sed '1d' functions                >> $target
 sed '1d' messages                 >> $target
 sed '1d' sprites                  >> $target
+sed '1d' sprites_heroes           >> $target
+sed '1d' sprites_aliens           >> $target
+sed '1d' sprites_clouds           >> $target
+sed '1d' sprites_houses           >> $target
+sed '1d' sprites_trees            >> $target
 sed '1d' sprites_penis            >> $target
 sed -n '/_PENIS_/,$p'     main    >> $target
+
 sed -i '/_PENIS_/d;
+        /_TREES_/d;
+        /_CLOUDS_/d;
+        /_HOUSES_/d;
+        /_ALIENS_/d;
+        /_HEROES_/d;
         /_SPRITES_/d;
-        /_FUNCTIONS_/d;
-        /_MESSAGES_/d'  $target
+        /_MESSAGES_/d;
+        /_FUNCTIONS_/d' $target
 chmod +x $target

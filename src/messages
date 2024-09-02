@@ -1,5 +1,20 @@
 #!/bin/bash
 #================================================{ Messages }===========================================================
+september_the_3rd=(
+    'Я календарь переверну'
+    'И снова третье сентября'
+    'На фото я твоё взгляну'
+    'И снова третье сентября'
+    'Но почему, но почему'
+    'Расстаться всё же нам пришлось?'
+    'Ведь было всё у нас всерьёз'
+    'Второго сентября'
+    'Но почему, но почему'
+    'Расстаться всё же нам пришлось?'
+    'Ведь было всё у нас всерьёз'
+    'Второго сентября ... '
+)
+
 case "$day$month${virus,,}${dow,,}" in
    *covid-19*) ad='Stay at home!'                              ;;&
         *fri*) ad='All work and no play makes Jack a dull boy' ;;&
@@ -15,14 +30,27 @@ case "$day$month${virus,,}${dow,,}" in
         1803*) ad='Happy birthday Ivinco !)'                   ;;
         0905*) ad='День победы!'                               ;;
         3006*) ad='Happy birthday Natusya !)'                  ;;
-        0309*) ad='Я календарь переверну...'                   ;;
+        0309*) ad=("${september_the_3rd[@]}")                  ;;
 esac
+
 #------------------------{ Ad plane text }------------------------------------------------------------------------------
+ad_index=0
 ad_plane_text () {
     case $type in duel) ad='Try to catch this!' ad_new=;; esac
     CM4= CM5=; case "$day$month" in 0905) CM4=$bylw CM5=$bblk;; esac
-    for ((i=0; i<${#ad}; i++)); do ad_new+="$CM5$BLD$red${ad:$i:1} "; done
-    new_ad=( ${ad_new//  /⎕ } ) line=( ${new_ad[@]//*/$CM4$blk-} ) width=$((19+${#new_ad[@]}))
+
+    for ad_index in ${!ad[@]}; do
+        ad_new=
+        line_new=
+        ad_text=${ad[ad_index]}
+        for ((i=0; i<${#ad_text}; i++)); {
+            ad_new+="$CM5$BLD$red${ad_text:$i:1} "
+            line_new+="$CM4$blk- "
+        }
+        line[ad_index]=${line_new//  /⎕ }
+        new_ad[ad_index]=${ad_new//  /⎕ }
+        width[ad_index]=$((19+${#ad_text}))
+    done
 };  ad_plane_text
 
 #↑ ↓ ← → ▲ ▼ ▶ ◀ ▷ ◁ △ ▽

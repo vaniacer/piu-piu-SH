@@ -1,0 +1,200 @@
+#!/bin/bash
+#------------------------{ Trees }--------------------------------------------------------------------------------------
+case $month in
+    0[12]|12) T1C=$SKY$DIM$WHT;; # winter
+    0[345]  ) T1C=$SKY$DIM$grn;; # spring
+    0[678]  ) T1C=$SKY$DIM$GRN;; # summer
+    09|1[01]) T1C=$SKY$DIM$YLW;; # autumn
+esac;         tre1endy=$[endy-5]
+sprite_tree1 () {
+    case $month in
+        12|0[12])
+            mov - && BP1[i]="tree1 $OX $OY 3 3 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
+            CM1="$SKY$DIM$blk" X1="_Y_$[OX+1]H"
+            #01234
+            #1 |/
+            #2\|
+            #3 |
+            ####################  1        2   3   4  #0
+            cut $SX  $OY    $T1C ''    $X1'|' '/' ' ' #1
+            cut $SX $[OY+1] $T1C '\\' $CM1'|' ' '     #2
+            cut $SX $[OY+2] $CM1 ''    $X1'|' ' ';;   #3
+        0[345]|09|1[01])
+            mov - && BP1[i]="tree1 $OX $OY 3 3 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
+            CM1="$SKY$DIM$blk" X1="_Y_$[OX+1]H"
+            #01234
+            #1 _
+            #2\|/
+            #3 |
+            ####################  1        2       3    4  #0
+            cut $SX  $OY    $T1C ''    $X1'_'     ' '      #1
+            cut $SX $[OY+1] $T1C '\\' $CM1'|' $T1C'/'  ' ' #2
+            cut $SX $[OY+2] $CM1 ''    $X1'|'     ' ';;    #3
+        *)
+            mov - && BP1[i]="tree1 $OX $OY 3 3 $SC $SM $CS $CL $AS $AL" || { unset BP1[i]; return; }
+            CM1="$SKY$DIM$blk" X1="_Y_$[OX+1]H"
+            #01234
+            #1/‾\
+            #2\|/
+            #3 |
+            ####################  1        2       3    4  #0
+            cut $SX  $OY    $T1C '/'      '‾'     '\\' ' ' #1
+            cut $SX $[OY+1] $T1C '\\' $CM1'|' $T1C'/'  ' ' #2
+            cut $SX $[OY+2] $CM1 ''    $X1'|'     ' ';;    #3
+    esac
+}
+
+case $month in
+    0[12]|12) T2C=$SKY$WHT;; # winter
+    0[345]  ) T2C=$SKY$grn;; # spring
+    0[678]  ) T2C=$SKY$GRN;; # summer
+    09|1[01]) T2C=$SKY$YLW;; # autumn
+esac;         tre2endy=$[endy-7]
+sprite_tree2 () {
+    case $month in
+        12|0[12])
+            mov - && BP2[i]="tree2 $OX $OY 5 5 $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
+            X1="_Y_$[OX+1]H" X2="_Y_$[OX+2]H" X3="_Y_$[OX+3]H"
+            #0123456
+            #1   |_
+            #2\||/
+            #3 \║|_
+            #4  ║/
+            #5  ║
+            ####################  1     2        3       4   5   6  #0
+            cut $SX  $OY    $T2C ''    ''       ''   $X3'|' '_' ' ' #1
+            cut $SX $[OY+1] $T2C '\\'  '|'  $blk'|'     '/' ' '     #2
+            cut $SX $[OY+2] $blk '' $X1'\\'     '║' $T2C'|' '_' ' ' #3
+            cut $SX $[OY+3] $blk ''    ''    $X2'║'     '/' ' '     #4
+            cut $SX $[OY+4] $blk ''    ''    $X2'║'     ' ';;       #5
+        0[345]|09|1[01])
+            mov - && BP2[i]="tree2 $OX $OY 5 5 $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
+            X1="_Y_$[OX+1]H"
+            #0123456
+            #1/‾\
+            #2\|/
+            #3 ║/‾\
+            #4 ║/_/
+            #5 ║
+            ####################  1        2       3       4   5    6  #0
+            cut $SX  $OY    $T2C '/'      '‾'     '\\'    ' '          #1
+            cut $SX $[OY+1] $T2C '\\' $blk'|' $T2C'/'     ' '          #2
+            cut $SX $[OY+2] $blk ''    $X1'║' $T2C'/'     '‾' '\\' ' ' #3
+            cut $SX $[OY+3] $blk ''    $X1'║'     '/' $T2C'_' '/'  ' ' #4
+            cut $SX $[OY+4] $blk ''    $X1'║'     ' ';;                #5
+        *)
+            mov - && BP2[i]="tree2 $OX $OY 5 5 $SC $SM $CS $CL $AS $AL" || { unset BP2[i]; return; }
+            X1="_Y_$[OX+1]H" X2="_Y_$[OX+2]H"
+            #0123456
+            #1/‾‾‾\
+            #2\ | /
+            #3 \║/\
+            #4  ║_/
+            #5  ║
+            ####################  1     2        3       4       5    6  #0
+            cut $SX  $OY    $T2C '/'   '‾'      '‾'     '‾'     '\\' ' ' #1
+            cut $SX $[OY+1] $T2C '\\'  ' '  $blk'|'     ' ' $T2C'/'  ' ' #2
+            cut $SX $[OY+2] $T2C '' $X1'\\' $blk'║' $T2C'/' $T2C'\\' ' ' #3
+            cut $SX $[OY+3] $blk ''    ''    $X2'║' $T2C'_' $T2C'/'  ' ' #4
+            cut $SX $[OY+4] $blk ''    ''    $X2'║'     ' ';;            #5
+    esac
+}
+
+case $month in
+    0[12]|12) T3C=$SKY$BLD$cyn;; # winter
+    0[345]  ) T3C=$SKY$DIM$grn;; # spring
+    0[678]  ) T3C=$SKY$GRN    ;; # summer
+    09|1[01]) T3C=$SKY$DIM$red;; # autumn
+esac;         tre3endy=$[endy-10]
+sprite_tree3 () {
+    case "$day:$month" in
+        [23][0-9]:12|0[1-9]:01|10:01)
+            mov - && BP3[i]="tree3 $OX $OY 8 12 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
+            X2="_Y_$[OX+2]H" X4="_Y_$[OX+4]H" X6="_Y_$[OX+6]H"
+            #00000000001111
+            #01234567890123
+            #1      ★
+            #2    _❅|●
+            #3    -/○\❄-
+            #4    ●/|\\○
+            #5  _/❄/●\❅\
+            #6  ○///|\❄\●
+            #7_/❅/●/|○\❅\-
+            #8      ║             0   0         0       0          0       0       0       0        0        1        1    1   1
+            ####################  1   2         3       4          5       6       7       8        9        0        1    2   3  #0
+            cut $SX  $OY    $RED ''  ''        ''      ''         ''      ''   $X6'★'     ' '                                     #1
+            cut $SX $[OY+1] $GRN ''  ''        ''      ''      $X4'_' $cyn'❅' $GRN'|' $BLU'●'      ' '                            #2
+            cut $SX $[OY+2] $GRN ''  ''        ''      ''      $X4'-'     '/' $YLW'○' $GRN'\\' $CYN'❄'  $GRN'-'      ' '          #3
+            cut $SX $[OY+3] $GRN ''  ''        ''      ''  $RED$X4'●' $GRN'/'     '|'     '\\'     '\\' $ylw'○'      ' '          #4
+            cut $SX $[OY+4] $GRN ''  ''     $X2'_'     '/'    $cyn'❄' $GRN'/' $blu'●' $GRN'\\' $cyn'❅'  $GRN'\\'     ' '          #5
+            cut $SX $[OY+5] $GRN ''  '' $red$X2'○' $GRN'/'        '/'     '/'     '|'     '\\' $CYN'❄'  $GRN'\\' $RED'●'  ' '     #6
+            cut $SX $[OY+6] $GRN '_' '/'   $cyn'❅' $GRN'/'    $YLW'●' $GRN'/'     '|' $RED'○'  $GRN'\\' $cyn'❅'  $GRN'\\' '-' ' ' #7
+            cut $SX $[OY+7] $BLK ''  ''        ''      ''         ''      ''   $X6'║'     ' ';;                                   #8
+        *:12|*:0[12])
+            mov - && BP3[i]="tree3 $OX $OY 8 9 $SC $SM $CS $CL $AS $AL" || { unset BP3[i]; return; }
+            X2="_Y_$[OX+1]H" X2="_Y_$[OX+2]H" X3="_Y_$[OX+3]H" X4="_Y_$[OX+4]H"
+            #00000000001
+            #01234567890
+            #1  \|
+            #2   \| |_
+            #3_\_ ║/
+            #4 /\ ║ \/_
+            #5   \║ /
+            #6    ║/
+            #7    ║
+            #8    ║               0     0     0     0       0       0       0    0   0   1
+            ####################  1     2     3     4       5       6       7    8   9   0  #0
+            cut $SX  $OY    $T3C ''    '' $X2'\\'  '|'     ' '                              #1
+            cut $SX $[OY+1] $BLK ''    ''    '' $X3'\\'    '|'     ' ' $T3C'|'  '_' ' '     #2
+            cut $SX $[OY+2] $T3C '_'   '\\'  '_'   ' ' $BLK'║'     '/'     ' '              #3
+            cut $SX $[OY+3] $T3C '' $X1'/'   '\\'  ' ' $BLK'║' $T3C' '     '\\' '/' '_' ' ' #4
+            cut $SX $[OY+4] $BLK ''    ''    '' $X3'\\'    '║'     ' '     '/'  ' '         #5
+            cut $SX $[OY+5] $BLK ''    ''    ''    ''   $X4'║'     '/'     ' '              #6
+            cut $SX $[OY+6] $BLK ''    ''    ''    ''   $X4'║'     ' '                      #7
+            cut $SX $[OY+7] $BLK ''    ''    ''    ''   $X4'║'     ' ';;                    #8
+        *:0[345]|*:09|*:1[01])
+            mov - && BP3[i]="tree3 $OX $OY 8 9 $SC $SM $CS $CL $AS $AL" || { unset B3[i]; return; }
+            X1="_Y_$[OX+1]H" X2="_Y_$[OX+2]H" X4="_Y_$[OX+4]H"
+            #00000000001
+            #01234567890
+            #1  /‾‾/‾\
+            #2/‾‾\|\|/
+            #3\_\/║/
+            #4 /‾\║ __
+            #5 \_\║|/_|
+            #6    ║/
+            #7    ║
+            #8    ║               0     0       0        0        0       0       0       0    0   1
+            ####################  1     2       3        4        5       6       7       8    9   0  #0
+            cut $SX  $OY    $T3C ''    ''   $X2'/'      '‾'      '‾' $T3C'/'     '‾'     '\\' ' '     #1
+            cut $SX $[OY+1] $T2C '/'   '‾'     '‾'      '\\' $BLK'|' $T3C'\\'    '|'     '/'  ' '     #2
+            cut $SX $[OY+2] $T2C '\\'  '_' $BLK'\\' $T2C'/'  $BLK'║' $T3C'/'     ' '                  #3
+            cut $SX $[OY+3] $T3C '' $X1'/'     '‾'      '\\' $BLK'║'     ' ' $T2C'_'     '_'  ' '     #4
+            cut $SX $[OY+4] $T3C '' $X1'\\'    '_'  $BLK'\\'     '║' $T2C'|' $BLK'/' $T2C'_'  '|' ' ' #5
+            cut $SX $[OY+5] $BLK ''    ''      ''       ''    $X4'║'     '/'     ' '                  #6
+            cut $SX $[OY+6] $BLK ''    ''      ''       ''    $X4'║'     ' '                          #7
+            cut $SX $[OY+7] $BLK ''    ''      ''       ''    $X4'║'     ' ';;                        #8
+        *)
+            mov - && BP3[i]="tree3 $OX $OY 8 9 $SC $SM $CS $CL $AS $AL" || { unset B3[i]; return; }
+            X2="_Y_$[OX+2]H" X3="_Y_$[OX+3]H" X4="_Y_$[OX+4]H"
+            #00000000001
+            #01234567890
+            #1  /‾‾‾\
+            #2  \ | /
+            #3/‾‾\║/
+            #4\_\/║/‾‾\
+            #5   \║|/_/
+            #6    ║/
+            #7    ║
+            #8    ║               0     0       0        0        0       0       0       0   0    1
+            ####################  1     2       3        4        5       6       7       8   9    0  #0
+            cut $SX  $OY    $T3C ''    ''   $X2'/'      '‾'      '‾'     '‾'     '\\'    ' '          #1
+            cut $SX $[OY+1] $T3C ''    ''   $X2'\\'     ' '  $BLK'|'     ' ' $T3C'/'     ' '          #2
+            cut $SX $[OY+2] $T3C '/'   '‾'     '‾'      '\\' $BLK'║' $T3C'/'     ' '                  #3
+            cut $SX $[OY+3] $T3C '\\'  '_' $BLK'\\' $T3C'/'  $BLK'║' $T3C'/'     '‾'     '‾' '\\' ' ' #4
+            cut $SX $[OY+4] $BLK ''    ''      ''    $X3'\\'     '║' $T3C'|' $BLK'/' $T3C'_' '/'  ' ' #5
+            cut $SX $[OY+5] $BLK ''    ''      ''       ''    $X4'║'     '/'     ' '                  #6
+            cut $SX $[OY+6] $BLK ''    ''      ''       ''    $X4'║'     ' '                          #7
+            cut $SX $[OY+7] $BLK ''    ''      ''       ''    $X4'║'     ' ';;                        #8
+    esac
+}

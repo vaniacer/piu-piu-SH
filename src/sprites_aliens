@@ -1,0 +1,200 @@
+#!/bin/bash
+bshoot=('█ ▓ ▒ ░'
+        '▓ ▒ ░ ▒'
+        '▒ ░ ▒ ▓'
+        '░ ▒ ▓ █'
+        '▒ ▓ █ ▓'
+        '▓ █ ▓ ▒')
+sprite_bfire () {
+    CM1=$SKY$BLD$ylw
+    mov - && ENM[i]="bfire $OX $OY 1 5 $SC $SM $CS $CL $AS 5 $i" || { unset ENM[i]; return; }
+    #012345
+    #1█▓▒░
+    ################ 1   2   3   4  5  #0
+    cut $SX $OY $CM1 ${bshoot[AS]} ' ' #1
+}
+#------------------------{ Aliens }-------------------------------------------------------------------------------------
+small=("${SKY}⎕  ${SKY}⎕  ${RED}o"
+       "${SKY}⎕  ${RED}o  ${SKY}⎕"
+       "${RED}o  ${SKY}⎕  ${SKY}⎕"
+       "${SKY}⎕  ${SKY}⎕  ${SKY}⎕")
+enmyendy=$[endy-9 ]
+CM1=$SKY$UND$BLD$grn
+pumtop=( "$CM1"'\\' "$CM1"'\\' "$CM1|" "$CM1|" "$CM1/" "$CM1/")
+pumface=("${RED}O ${RED}… ${RED}o"
+         "${RED}… ${RED}o       ⎕"
+         "${RED}o       ⎕ ${RED}O"
+         "      ⎕       ⎕       ⎕$CM1"
+         "      ⎕       ⎕ ${RED}O"
+         "      ⎕ ${RED}O ${RED}…")
+
+top1=("$RED." "$RED," "$RED'" "$RED'")
+top2=("$RED'" "$RED'" "$RED." "$RED,")
+mid1=("$RED-" "$RED+" "$RED'" "$RED'")
+mid2=("$RED+" "$RED'" "$RED'" "$RED-")
+bot1=($RED'´'  $RED'"' $RED'`' $RED'"')
+bot2=($RED'"'  $RED'`' $RED'"' $RED'´')
+cen=("$RED"o  "$RED+" "$RED*" "$RED+")
+
+sprite_alien () {
+    case "$day$month$virus" in
+        3110)
+            mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 5 $i" || { unset ENM[i]; ((enumber--)); return; }
+            CM1=$SKY$BLD$ylw CM2=$SKY$UND$DIM$grn CM3=$SKY$ylw X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H"
+            #0123456
+            #1 _\_
+            #2(O…o)
+            #3 `¯´
+            ####################  1     2        3            4   5   6  #0
+            cut $SX  $OY    $CM1 '' $X1'_' ${pumtop[AS]} $CM1'_' ' '     #1
+            cut $SX $[OY+1] $CM1 '('       ${pumface[AS]}  "$CM1"')' ' ' #2
+            cut $SX $[OY+2] $CM1 '' $X2'`'      '¯'          '´' ' ';;   #3
+        *covid-19)
+            mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; ((enumber--)); return; }
+            CM1=$SKY$DIM$BLK X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H"
+            #0123456
+            #1 ._,
+            #2-(*)-
+            #3 ´‾`
+            ####################  1           2         3          4    5          6  #0
+            cut $SX  $OY    $CM1 '' $X1${top1[AS]} $CM1'_' ${top2[AS]} ' '            #1
+            cut $SX $[OY+1] $CM1 ${mid1[AS]} '(' ${cen[AS]} "$CM1"')' ${mid2[AS]} ' ' #2
+            cut $SX $[OY+2] $CM1 '' $X2${bot1[AS]} $CM1'‾' ${bot2[AS]} ' ';;          #3
+        *)
+            mov - && ENM[i]="alien $OX $OY 3 5 $SC $SM $CS $CL $AS 3 $i" || { unset ENM[i]; ((enumber--)); return; }
+            CM1=$SKY$DIM$BLK CM2=$BLD$BLK X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H"
+            #0123456
+            #1 ___
+            #2( o )
+            #3 `¯´
+            ####################  1     2       3       4    5   6  #0
+            cut $SX  $OY    $CM1 '' $X1'_' $CM2'_' $CM1'_'  ' '     #1
+            cut $SX $[OY+1] $CM1 '('     ${small[AS]} "$CM1"')' ' ' #2
+            cut $SX $[OY+2] $CM1 '' $X2'`'     '¯'     '´'  ' ';;   #3
+    esac
+}
+
+big1=("      ⎕       ⎕ ${YLW}O           ⎕       ⎕       ⎕ ${YLW}O"
+      "      ⎕       ⎕       ⎕ $BLD${YLW}O       ⎕       ⎕       ⎕"
+      "${YLW}O       ⎕       ⎕           ⎕ ${YLW}O       ⎕       ⎕"
+      "      ⎕ ${YLW}O       ⎕           ⎕       ⎕ ${YLW}O       ⎕")
+
+big2=("      ⎕ ${BLU}O       ⎕           ⎕       ⎕ ${BLU}O       ⎕"
+      "${BLU}O       ⎕       ⎕           ⎕ ${BLU}O       ⎕       ⎕"
+      "      ⎕       ⎕       ⎕ $BLU${BLD}O       ⎕       ⎕       ⎕"
+      "      ⎕       ⎕ ${BLU}O           ⎕       ⎕       ⎕ ${BLU}O")
+
+big3=("    ⎕ $RED*       ⎕     ⎕       ⎕ $RED+     ⎕"
+      "$RED+     ⎕       ⎕     ⎕ ${RED}o     ⎕     ⎕"
+      "    ⎕     ⎕       ⎕ $RED+       ⎕     ⎕     ⎕"
+      "    ⎕     ⎕ ${RED}o     ⎕       ⎕     ⎕ $RED+")
+
+big4=("      ⎕     ⎕ $RED*     ⎕     ⎕       ⎕ $RED+"
+      "      ⎕     ⎕     ⎕ $RED+     ⎕       ⎕     ⎕"
+      "${RED}o     ⎕     ⎕     ⎕ $RED*       ⎕     ⎕"
+      "      ⎕ $RED*     ⎕     ⎕     ⎕ ${RED}o     ⎕")
+
+mouthtop=("${RED}/ ${RED}V ${RED}V ${RED}V ${RED}V ${RED}V $RED"'\\'
+          "${RED}/ ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v $RED"'\\'
+          "${RED}. ${RED}- ${RED}- ${RED}- ${RED}- ${RED}- ${RED}."
+          "      ⎕       ⎕       ⎕       ⎕       ⎕       ⎕       ⎕"
+          "${RED}. ${RED}- ${RED}- ${RED}- ${RED}- ${RED}- ${RED}."
+          "${RED}/ ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}"'\\'
+          "${RED}/ ${RED}V ${RED}V ${RED}V ${RED}V ${RED}V ${RED}"'\\')
+
+mouthlow=("${RED}V   ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}V"
+          "${RED}V   ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}V"
+          ${RED}'`'" ${RED}¯ ${RED}¯ ${RED}¯ ${RED}¯ ${RED}¯ ${RED}´"
+          "      ⎕   ${RED}‾ ${RED}‾ ${RED}‾ ${RED}‾ ${RED}‾       ⎕"
+          ${RED}'`'" ${RED}- ${RED}- ${RED}- ${RED}- ${RED}- ${RED}´"
+          "${RED}V   ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}^ ${RED}V"
+          "${RED}V   ${RED}v ${RED}v ${RED}v ${RED}v ${RED}v ${RED}V")
+
+bossendx=$[endx-14]
+bossendy=$[endy-7 ]
+bosshbar=$[endx-10]
+
+TX=$halfx TY=$bossendy
+sprite_boss () {
+    [[ $H2Y ]] && HY=$[H2Y-1] || HY=$[H1Y-1] # kill client first
+    if [[ $bhealth -gt 0 ]]; then
+        #-{ Boss fire }--------------------------------------------------------
+        [[ $OY -eq $HY && $C1 -eq 0 ]] && { ENM+=("bfire $[OX-4] $[OY+4] 1 5 0 0 1 5 $[RANDOM%5] 5 ${#ENM[@]}"); C1=20; }
+        #-{ Boss move }--------------------------------------------------------
+        [[ $OY -lt $HY ]] && ((OY++))
+        [[ $OY -gt $HY ]] && ((OY--)) # this is a black magic
+        [[ $OX -gt $TX ]] && mov - || { TX=$bossendx; SX=$OX; }
+        [[ $OX -lt $TX ]] && mov + || { TX=$halfx   ; SX=$OX; }
+        #-{ Aliens out }-------------------------------------------------------
+        EX=$[OX+2] EY=$[OY+5]; [[ $EY -gt $[enmyendy+3] ]] && EY=$[enmyendy+3]
+    else # when boss' health goes to 0 it starts to fall, explodes and bounces on the ground
+        bhealth=0; AS=0; SM=3;   mov - || the_end=win
+        [[ $OY -lt $TY ]] && ((OY++))  || { TY=$[bossendy-C2]; ((C2--)); }
+        [[ $OY -gt $TY ]] && ((OY--))  ||   TY=$bossendy
+        [[ $OX -gt -10 && $C1 -eq 0 ]] && { BOOM $OX $OY; C1=15; }
+    fi
+    [[ $C1 -gt 0 ]] && ((C1--))
+    case "$day$month$virus" in
+        3110*)
+            CM1=$SKY$BLD$ylw CM2=$SKY$BLD$RED EYE="$CM2( $CM2⁐ $CM2)"
+            X1="_Y_$[OX+1]H" X2="_Y_$[OX+1]H" X3="_Y_$[OX+1]H" X4="_Y_$[OX+2]H"
+            #00000000001111
+            #01234567890123
+            #1
+            #2   .-./.-.
+            #3  /(_) (_)\
+            #4 ❲ /VVVVV\ ❳
+            #5  \VvvvvvV/
+            #6   `¯---¯´
+            #7                    0     0     0   0   0   0         0           0   0   1   1       1   1
+            ####################  1     2     3   4   5   6         7           8   9   0   1       2   3  #0
+            cut $SX  $OY    $SKY '' $X1' '   ' ' ' ' ' ' ' '       ' '         ' ' ' ' ' ' ' '     ' '     #1
+            cut $SX $[OY+1] $CM1 '' $X2' '   ' ' '.' '-' '.' ${pumtop[AS]} $CM1'.' '-' '.' ' '     ' ' ' ' #2
+            cut $SX $[OY+2] $CM1 ' '   ' '   '/'    $EYE           ' '            $EYE $CM1'\\'    ' ' ' ' #3
+            cut $SX $[OY+3] $CM1 ' '   '❲'   ' '           ${mouthtop[AS]}                 ' ' $CM1'❳' ' ' #4
+            cut $SX $[OY+4] $CM1 ' '   ' '   '\\'          ${mouthlow[AS]}             $CM1'/'     ' ' ' ' #5
+            cut $SX $[OY+5] $CM1 '' $X3' '   ' ' '`' '¯' '-'       '-'         '-' '¯' '´' ' '     ' '     #6
+            cut $SX $[OY+6] $SKY ''    '' $X4' ' ' ' ' ' ' '       ' '         ' ' ' ' ' ' ' '             #7
+            ENM[i]="boss $OX $OY 6 14 $SC $SM $CS $CL $AS 6 $C1 $C2";;
+        *covid-19)
+            CM1=$SKY$DIM$BLK CM2=$BLD$BLK X1="_Y_$[OX+2]H" X2="_Y_$[OX+2]H" X3="_Y_$[OX+1]H" X4="_Y_$[OX+1]H"
+            #00000000001111
+            #01234567890123
+            #1
+            #2   . ___,
+            #3   /`   `\
+            #4 +| *   o |+
+            #5  \   +   /
+            #6  *`-.,.-`+
+            #7                    0        0      0        0           0   0   0   0       0       1       1       1       1
+            ####################  1        2      3        4           5   6   7   8       9       0       1       2       3  #0
+            cut $SX  $OY    $SKY ''       ''  $X1' '      ' '         ' ' ' ' ' ' ' '     ' '     ' '     ' '                 #1
+            cut $SX $[OY+1] $CM1 ''       ''  $X2' '  ${top2[AS]} $CM1' ' '_' '_' '_' ${top1[AS]} ' '     ' '                 #2
+            cut $SX $[OY+2] $CM1 ' '      ' '    ' '      '/'         '`' ' ' ' ' ' '     '`'     '\\'    ' '     ' '     ' ' #3
+            cut $SX $[OY+3] $CM1 ' ' ${mid2[AS]} '|'                  ${big3[AS]}                     $CM1'|' ${mid1[AS]} ' ' #4
+            cut $SX $[OY+4] $CM1 ' '      ' '    '\\'                 ${big4[AS]}                     $CM1'/'     ' '     ' ' #5
+            cut $SX $[OY+5] $CM1 ''    $X3' ' ${bot2[AS]} $CM1'`'     '-' '.' ',' '.'     '-'     '`' ${bot1[AS]} ' '         #6
+            cut $SX $[OY+6] $SKY ''    $X4' '    ' '      ' '         ' ' ' ' ' ' ' '     ' '     ' '     ' '     ' '         #7
+            ENM[i]="boss $OX $OY 7 13 $SC $SM $CS $CL $AS 3 $C1 $C2";;
+        *)
+            CM1=$SKY$DIM$BLK CM2=$BLD$BLK X1="_Y_$[OX+4]H" X2="_Y_$[OX+2]H" X3="_Y_$[OX+1]H" X4="_Y_$[OX+1]H"
+            #00000000001111
+            #01234567890123
+            #1
+            #2     ___
+            #3   _/   \_
+            #4  /       \
+            #5 (         )
+            #6  `¯¯---¯¯´
+            #7                    0     0     0   0     0    0   0   0       0    1   1         1   1
+            ####################  1     2     3   4     5    6   7   8       9    0   1         2   3  #0
+            cut $SX  $OY    $SKY ''    ''    ''  '' $X1' '  ' ' ' ' ' '     ' '                        #1
+            cut $SX $[OY+1] $CM2 ''    '' $X2' ' ' '   ' '  '_' '_' '_'     ' '  ' ' ' '               #2
+            cut $SX $[OY+2] $CM1 '' $X3' '   ' ' '_'   '/' ${small[AS]} $CM2'\\' '_' ' '       ' '     #3
+            cut $SX $[OY+3] $CM1 ' '   ' '   '/'            ${big1[AS]}          $CM2'\\'      ' ' ' ' #4
+            cut $SX $[OY+4] $CM1 ' '   '('   ' '            ${big2[AS]}              ' ' "$CM2"')' ' ' #5
+            cut $SX $[OY+5] $CM1 ' '   ' '   '`' '¯'   '¯'  '-' '-' '-'     '¯'  '¯' '´'       ' ' ' ' #6
+            cut $SX $[OY+6] $SKY '' $X4' '   ' ' ' '   ' '  ' ' ' ' ' '     ' '  ' ' ' '       ' '     #7
+            ENM[i]="boss $OX $OY 6 14 $SC $SM $CS $CL $AS $AL $C1 $C2";;
+    esac
+}
