@@ -30,7 +30,7 @@ case "$day$month${virus,,}${dow,,}" in
         1803*) ad='Happy birthday Ivinco !)'                   ;;
         0905*) ad='День победы!'                               ;;
         3006*) ad='Happy birthday Natusya !)'                  ;;
-        0309*) ad=("${september_the_3rd[@]}")                  ;;
+        0309*) ad=("${september_the_3rd[@]}") MSN=333          ;;
 esac
 
 #------------------------{ Ad plane text }------------------------------------------------------------------------------
