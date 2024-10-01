@@ -34,12 +34,15 @@ line () { printf -v _L %$2s; printf -- "${_L// /$1}"; }             #|
 # Create sequence like {0..(X-1)}                                    | ░ ░ ░ ░░░░░░▒▒▒▒ ▒▒▒▓ ▓▓▓▒▒▒▒▒░░░░░░ ░ ░ ░ ░ ░
 que () { printf -v _N %$1s; _N=(${_N// / 1}); printf "${!_N[*]}"; } #|    ░ ░ ░░░ ░ ░░ ░░░▒ ▒▒▒░░░░░░░ ░ ░
 #--------------------{ check bash version }--------------------------+--------------------------------------------------
-tversion="4.2"                                          # needed  bash version
-cversion="${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}"      # current bash version
-gawk '{if($1>$2){exit 1}}' <<< "$tversion $cversion" || {
-    printf "\nYour BASH is too short!) $BLD$tversion+$DEF required to run this game, your is - $BLD$BASH_VERSION$DEF\n"
+tversion=(4 2) # target bash version
+vfail(){
+    printf "\nYour BASH is too short!) $BLD%s.%s+$DEF required to run this game," ${tversion[@]}
+    printf " your is - $BLD%s$DEF\n" $BASH_VERSION
     exit 1
-} #--{ Start opt }--------------------------------------{ description  }---------------------{ def. values }------------
+}
+(( ${BASH_VERSINFO[0]} >= ${tversion[0]} )) || vfail 1
+(( ${BASH_VERSINFO[0]} == ${tversion[0]} )) && { (( ${BASH_VERSINFO[1]} >= ${tversion[1]} )) || vfail 2; }
+#----{ Start opt }--------------------------------------{ description  }---------------------{ def. values }------------
   background=true                                       # background objects visibility             (true)
     storyspd=0.05                                       # story texting speed                       (0.05)
     bossborn=                                           # boss starter
