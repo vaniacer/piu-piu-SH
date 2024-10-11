@@ -27,7 +27,7 @@ On Ubuntu starting from version 18.04 you can install it with apt, but it's not 
 [![Twitter Follow](https://img.shields.io/twitter/follow/Vaniacer?style=social)](https://twitter.com/Vaniacer)
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sshto?locale.x=en_US) <sup>Feel free to support the project!)</sup>
 
-На еду по СБП<br/>
+СБПшка на пиво<br/>
 ![4food](https://github.com/user-attachments/assets/db4500f2-3399-469c-995e-808b87c48f1e)
 
 DOGE: D7qJBRU3UpXES9EwtvE8YZSNAVgFEmz3py</br>
